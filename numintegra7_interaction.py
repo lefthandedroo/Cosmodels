@@ -40,10 +40,9 @@ Krysztoff, Luke
 the equations are correct. if solver doens't have a problem when feeding data 
 in at each calculation then a_dot as a_dot and not equation shouldn't matter] -
 worked out in the end
+git test
 
 what interaction terms could there be?
-
-git test
 
 NOT AN ASSIGNMENT
 """
@@ -53,16 +52,34 @@ import numpy as np
 from pylab import figure, plot, xlabel, grid, legend, title
 from matplotlib.font_manager import FontProperties
 
+#def vectorfield(v, t, w):
+#    a, a_dot, e_dash_m, e_dash_de, omega0m, omega0de = v
+#    w_m, w_de = w
+#    lamb_m = -2e-2 #10
+#    lamb_de = 2e-2
+#    # Create f = [a_dot, a_dotdot, e'_dotm, e'_dotde, omegam_dot, omegade_dot]:
+#    f = [a_dot, 
+#         (-a/2)*(e_dash_m*(1+3*w_m)+e_dash_de*(1+3*w_de)), 
+#         -3*(a_dot/a)*(e_dash_m*(1+w_m+lamb_m/3*a/a_dot)),
+#         -3*(a_dot/a)*(e_dash_de*(1+w_de+lamb_de/3*a/a_dot)),
+#         (H0**2)*e_dash_m*(2*a/a_dot)*(1-a*(-a/2)*(e_dash_m*(1+3*w_m)+
+#                           e_dash_de*(1+3*w_de))/a_dot**2)+(a/a_dot)**2*
+#                           (-3*a_dot/a*e_dash_m*(1+w_m)),
+#         (H0**2)*e_dash_de*(2*a/a_dot)*(1-a*(-a/2)*(e_dash_m*(1+3*w_m)+
+#                            e_dash_de*(1+3*w_de))/a_dot**2)+(a/a_dot)**2*
+#                            (-3*a_dot/a*e_dash_de*(1+w_de))]
+#        
+#    return f
+
 def vectorfield(v, t, w):
     a, a_dot, e_dash_m, e_dash_de, omega0m, omega0de = v
     w_m, w_de = w
-    lamb_m = -2e-2 #10
-    lamb_de = 2e-2
+    lamb = 2e-1 #10
     # Create f = [a_dot, a_dotdot, e'_dotm, e'_dotde, omegam_dot, omegade_dot]:
     f = [a_dot, 
          (-a/2)*(e_dash_m*(1+3*w_m)+e_dash_de*(1+3*w_de)), 
-         -3*(a_dot/a)*(e_dash_m*(1+w_m+lamb_m/3*a/a_dot)),
-         -3*(a_dot/a)*(e_dash_de*(1+w_de+lamb_de/3*a/a_dot)),
+         -3*(a_dot/a)*(e_dash_m*(1+w_m-lamb/3*a/a_dot)),
+         -3*(a_dot/a)*(e_dash_de*(1+w_de+lamb/3*a/a_dot)),
          (H0**2)*e_dash_m*(2*a/a_dot)*(1-a*(-a/2)*(e_dash_m*(1+3*w_m)+
                            e_dash_de*(1+3*w_de))/a_dot**2)+(a/a_dot)**2*
                            (-3*a_dot/a*e_dash_m*(1+w_m)),
@@ -74,7 +91,7 @@ def vectorfield(v, t, w):
 
 # a past which to discard values, value chosen by looking at the plot 
 # set arbitrarily - sometimes jumps over the result(?)
-a_d = 10e-3 
+a_d = 10e-6 
 
 # time in 1/H0 to integrate until, if this time isn't long enough to reach a_d
 # then "time" will be added to integration time until a_d is reached
