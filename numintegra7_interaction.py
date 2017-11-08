@@ -41,8 +41,15 @@ the equations are correct. if solver doens't have a problem when feeding data
 in at each calculation then a_dot as a_dot and not equation shouldn't matter] -
 worked out in the end
 git test
-
 what interaction terms could there be?
+
+
+to get Omega's
+xx = e_dashm / (e_dashm + e_dashde )
+
+yy = e_dashde / (e_dashm + e_dashde )
+
+plot(t_cut,xx,t_cut,yy)
 
 NOT AN ASSIGNMENT
 """
@@ -132,7 +139,7 @@ def vectorfield(v, t, w, lamb):
 # Parameters (script specific)
     
 # Interaction term, rate at which DE decays into matter.
-lamb = 5e-1
+lamb = 0.25
 
 # Last value for a before results are to be considered 
 # invalid due to close proximity to big bang, a_d is set
@@ -231,7 +238,7 @@ while True:
     title('Cut results for $\omega$ = %s, $\lambda$ = %s, age = %s $H_0^{-1}$'
           %(w,lamb,age))
     
-    while False:    # Looped to make it faster to switch plots on and off.
+    while True:    # Looped to make it faster to switch plots on and off.
         # e_dashm
         figure()
         xlabel('time in $H_0^{-1}$')
