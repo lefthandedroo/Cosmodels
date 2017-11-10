@@ -42,6 +42,10 @@ in at each calculation then a_dot as a_dot and not equation shouldn't matter] -
 worked out in the end
 git test
 what interaction terms could there be?
+add lambda to Omega calculation 
+
+add luminosity distance to integration and plot
+
 
 
 
@@ -55,44 +59,6 @@ import numpy as np
 from pylab import figure, plot, scatter, xlabel, grid, legend, title, annotate
 from matplotlib.font_manager import FontProperties
 
-#def vectorfield(v, t, w):
-#    """
-#    Takes in    v = values at time now
-#                w = omega parameters
-#                lamb = interaction constant.
-#                
-#    Returns a function with     a_dot, a_dotdot, 
-#                                e'_dotm, e'_dotde, 
-#                                omegam_dot, omegade_dot,
-#    ready to be integrated with odeint.
-#    Uses different lambdas for different fluids.
-#    """
-#    (a, a_dot, e_dash_m, e_dash_de, omega0m, omega0de) = v
-#    (w_m, w_de) = w
-#    
-#    lamb_m = -2e-2 #10
-#    lamb_de = 2e-2
-#    
-#    # Create f = [a_dot, a_dotdot, e'_dotm, e'_dotde, omegam_dot, omegade_dot]:
-#    f = [# a_dot
-#         a_dot,
-#         # a_dotdot
-#         (-a/2) * (e_dash_m * (1+3*w_m) + e_dash_de * (1+3*w_de)),
-#         # e'_dotm
-#         -3 * (a_dot/a) * (e_dash_m * (1 + w_m + lamb_m/3 * a/a_dot)),
-#         # e'_dotde
-#         -3 * (a_dot/a) * (e_dash_de * (1 + w_de + lamb_de/3 * a/a_dot)),
-#         # omegam_dot
-#         (H0**2) * e_dash_m * (2*a/a_dot) * (1 - a * (-a/2) 
-#             * (e_dash_m * (1+3*w_m) + e_dash_de * (1+3*w_de)) 
-#             / a_dot**2) + (a/a_dot)**2 * (-3 * a_dot/a * e_dash_m * (1+w_m)),
-#        # omegade_dot
-#         (H0**2) * e_dash_de * (2*a/a_dot) * (1 - a * (-a/2) 
-#             * (e_dash_m * (1+3*w_m) + e_dash_de * (1+3*w_de)) 
-#             / a_dot**2) + (a/a_dot)**2 * (-3 * a_dot/a * e_dash_de * (1+w_de))
-#         ]
-#        
-#    return f
 
 def vectorfield(v, t, w, lamb):
     """
@@ -103,30 +69,35 @@ def vectorfield(v, t, w, lamb):
     Returns a function with     a_dot, a_dotdot, 
                                 e'_dotm, e'_dotde, 
                                 omegam_dot, omegade_dot,
+                                dl_dot
     ready to be integrated with odeint.
     Uses same lambdas for all fluids.
     """
-    (a, a_dot, e_dashm, e_dashde, omegam, omegade) = v
+    (a, a_dot, e_dashm, e_dashde, omegam, omegade, dl_dot) = v
     (w_m, w_de) = w
     
-    # Create f = [a_dot, a_dotdot, e'_dotm, e'_dotde, omegam_dot, omegade_dot]:
-    f = [# a_dot
+    # f = [a_dot, a_dotdot, e'_dotm, e'_dotde, omegam_dot, omegade_dot, dl_dot]:
+    f = [# a_dot (=scale factor)
          a_dot,
          # a_dotdot
          (-a/2) * (e_dashm * (1+3*w_m) + e_dashde * (1+3*w_de)), 
-         # e'_dotm
-         -3 * (a_dot/a) * (e_dashm * (1 + w_m -lamb/3 * a/a_dot 
-              * e_dashde/e_dashm )),
+         # e'_dotm (=density(t) / crit density(t0))
+         -3 * (a_dot/a) * e_dashm * (1 + w_m -lamb/3 * a/a_dot 
+              * e_dashde/e_dashm ),
          # e'_dotde
-         -3 * (a_dot/a) * (e_dashde * (1 + w_de +lamb/3 * a/a_dot)),
-         # omegam_dot
+         -3 * (a_dot/a) * e_dashde * (1 + w_de +lamb/3 * a/a_dot),
+         # omegam_dot (=density(t) / crit density(t))
          (H0**2) * e_dashm * (2*a/a_dot) * (1 - a * (-a/2) 
              * (e_dashm * (1+3*w_m) + e_dashde * (1+3*w_de)) 
-             / a_dot**2) + (a/a_dot)**2 * (-3 * a_dot/a * e_dashm * (1+w_m)),
+             / a_dot**2) + (a/a_dot)**2 * (-3 * (a_dot/a) * e_dashm 
+             * (1 + w_m -lamb/3 * a/a_dot * e_dashde/e_dashm)),
          # omegade_dot        
          (H0**2) * e_dashde * (2*a/a_dot) * (1 - a * (-a/2) 
              * (e_dashm * (1+3*w_m) + e_dashde * (1+3*w_de)) 
-             / a_dot**2) + (a/a_dot)**2 * (-3 * a_dot/a * e_dashde * (1+w_de))
+             / a_dot**2) + (a/a_dot)**2 * (-3 * (a_dot/a) 
+             * e_dashde * (1 + w_de +lamb/3 * a/a_dot)),
+         # dl_dot (=luminosty distance)
+         a/a_dot
          ]
         
     return f
@@ -162,6 +133,7 @@ e_dash0m = 0.3  # e_m(t)/ec(t0)
 e_dash0de = 0.7 # e_de(t)/ec(t0)
 omega0m = 0.3   # e_m(t)/ec(t)
 omega0de = 0.7  # e_de(t)/ec(t)
+dl0 = 1.0
 
 # ODE solver parameters:
 abserr = 1.0e-8
@@ -175,7 +147,7 @@ while True:
     t = [stoptime * tH * float(i) / (numpoints - 1) for i in range(numpoints)]
     
     # Pack up the initial conditions and eq of state parameters.
-    v0 = [a0, a_dot0, e_dash0m, e_dash0de, omega0m, omega0de]
+    v0 = [a0, a_dot0, e_dash0m, e_dash0de, omega0m, omega0de, dl0]
     w = [w_m, w_de]
     
     # Call the ODE solver.
@@ -189,6 +161,7 @@ while True:
     e_dashde = vsol[:,3]
     omegam = vsol[:,4]
     omegade = vsol[:,5]
+    dl = vsol[:,6]
 
     
     # Find where results start to get strange (smaller than a_d):
@@ -213,6 +186,7 @@ while True:
     omegam = omegam[:blowup]
     omegade = omegade[:blowup]
     omegatot = np.add(omegam,omegade)
+    dl = dl[:blowup]
     
     # Find when density of DE was equal to that of matter.  Rounding the omegas
     # to avoid not finding an instance of equality.
@@ -232,6 +206,14 @@ while True:
     legend((r'$a$', r'$\.a$'), prop=FontProperties(size=16))
     title('Cut results for $\omega$ = %s, $\lambda$ = %s, age = %s $H_0^{-1}$'
           %(w,lamb,age))
+    
+    # Luminosity distance dl.
+    figure()
+    xlabel('time in $H_0^{-1}$')
+    grid(True)
+    plot(t_cut, dl, lw=1)
+    title('Luminosity distance for $\omega$ = %s, $\lambda$ = %s,'
+          ' age = %s $H_0^{-1}$'%(w,lamb,age))
     
     while False:    # Looped to make it faster to switch plots on and off.
         # e_dashm
@@ -265,17 +247,21 @@ while True:
     title('Cut results for $\omega$ = %s, $\lambda$ = %s, age = %s $H_0^{-1}$'
           %(w,lamb,age))
     
-    # Verified omegam and omegade using e_dashm and e_dashde.
-    vomegam = e_dashm / (e_dashm + e_dashde)
-    vomegade = e_dashde / (e_dashm + e_dashde)
-    
-    figure()
-    xlabel('time in $H_0^{-1}$')
-    grid(True)
-    plot(t_cut,vomegam,t_cut,vomegade)
-    legend((r'$\Omega_m$', r'$\Omega_{DE}$'), prop=FontProperties(size=16))
-    title('Verified $\Omega_m$ and $\Omega_{DE}$ for $\lambda$ = %s, age = %s $H_0^{-1}$'
-          %(lamb,age))
+    while False:
+        # Verified omegam and omegade using e_dashm and e_dashde.
+        vomegam = e_dashm / (e_dashm + e_dashde)
+        vomegade = e_dashde / (e_dashm + e_dashde)
+        
+        figure()
+        xlabel('time in $H_0^{-1}$')
+        grid(True)
+        plot(t_cut,vomegam,t_cut,vomegade)
+        legend((r'$\Omega_m$', r'$\Omega_{DE}$'), prop=FontProperties(size=16))
+        title('Verified $\Omega_m$ and $\Omega_{DE}$ for'
+              ' $\lambda$ = %s, age = %s $H_0^{-1}$'
+              %(lamb,age))
+        break
+        
     break
         
 
