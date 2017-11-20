@@ -43,12 +43,10 @@ worked out in the end
 git test
 what interaction terms could there be?
 add lambda to Omega calculation 
-
 add luminosity distance to integration and plot
-
-
-
-
+move input to top (z, omega)
+find absolute magniteds for supernova (-19)
+Classic paper on Gaussian processes from Ben's lecture
 
 
 NOT AN ASSIGNMENT
@@ -69,14 +67,15 @@ def vectorfield(v, t, w, lamb):
     Returns a function with     a_dot, a_dotdot, 
                                 e'_dotm, e'_dotde, 
                                 omegam_dot, omegade_dot,
+                                z_dot,
                                 dl_dot
     ready to be integrated with odeint.
     Uses same lambdas for all fluids.
     """
-    (a, a_dot, e_dashm, e_dashde, omegam, omegade, dl_dot) = v
+    (a, a_dot, e_dashm, e_dashde, omegam, omegade, z, dl) = v
     (w_m, w_de) = w
     
-    # f = [a_dot, a_dotdot, e'_dotm, e'_dotde, omegam_dot, omegade_dot, dl_dot]:
+    # fist derivatives of functions I want to find:
     f = [# a_dot (=scale factor)
          a_dot,
          # a_dotdot
@@ -96,8 +95,10 @@ def vectorfield(v, t, w, lamb):
              * (e_dashm * (1+3*w_m) + e_dashde * (1+3*w_de)) 
              / a_dot**2) + (a/a_dot)**2 * (-3 * (a_dot/a) 
              * e_dashde * (1 + w_de +lamb/3 * a/a_dot)),
+         # z_dot (=redshift)
+         -a_dot/a**2,
          # dl_dot (=luminosty distance)
-         a/a_dot
+         -1/a
          ]
         
     return f
@@ -106,12 +107,19 @@ def vectorfield(v, t, w, lamb):
 # Parameters (script specific)
     
 # Interaction term, rate at which DE decays into matter.
-lamb = 0.25
+lamb = 0
+
+# t=t0 fraction of matter and dark energy compared to critical density.
+m = 0.3
+de = 0.7
 
 # Last value for a before results are to be considered 
 # invalid due to close proximity to big bang, a_d is set
 # somewhat arbitrarily - sometimes jumps over the result(?).
 a_d = 10e-6 
+
+# Value to display redshift up to (and including). 
+ztrim = 6
 
 # Time (in 1/H0) to integrate until.  If this time isn't long enough for a to 
 # decrease to a_d then stoptime will be extended by time until a_d is reached.
@@ -121,7 +129,7 @@ time = 0.6
 # Standard cosmological parameters.
 H0 = 1       # Hubble parameter at t=now
 tH = 1.0/H0  # Hubble time
-# Eq of state for known fluids:
+# Eq of state parameters for known fluids:
 w_r = 1/3     # radiation
 w_m = 0.0     # matter
 w_de = -1.0   # cosmological constant (dark energy?)
@@ -129,11 +137,12 @@ w_de = -1.0   # cosmological constant (dark energy?)
 # Initial conditions at time = t0.
 a0 = 1.0        # scale factor
 a_dot0 = 1.0    # speed of expansion
-e_dash0m = 0.3  # e_m(t)/ec(t0)
-e_dash0de = 0.7 # e_de(t)/ec(t0)
-omega0m = 0.3   # e_m(t)/ec(t)
-omega0de = 0.7  # e_de(t)/ec(t)
-dl0 = 1.0
+e_dash0m = m    # e_m(t)/ec(t0)
+e_dash0de = de  # e_de(t)/ec(t0)
+omega0m = m     # e_m(t)/ec(t)
+omega0de = de   # e_de(t)/ec(t)
+z0 = 0
+dl0 = 0
 
 # ODE solver parameters:
 abserr = 1.0e-8
@@ -147,7 +156,7 @@ while True:
     t = [stoptime * tH * float(i) / (numpoints - 1) for i in range(numpoints)]
     
     # Pack up the initial conditions and eq of state parameters.
-    v0 = [a0, a_dot0, e_dash0m, e_dash0de, omega0m, omega0de, dl0]
+    v0 = [a0, a_dot0, e_dash0m, e_dash0de, omega0m, omega0de, z0, dl0]
     w = [w_m, w_de]
     
     # Call the ODE solver.
@@ -161,8 +170,9 @@ while True:
     e_dashde = vsol[:,3]
     omegam = vsol[:,4]
     omegade = vsol[:,5]
-    dl = vsol[:,6]
-
+    z = vsol[:,6]
+    dl = vsol[:,7]
+    
     
     # Find where results start to get strange (smaller than a_d):
     blowups = np.where(a < a_d)    # Tuple with indecies of a so
@@ -186,10 +196,12 @@ while True:
     omegam = omegam[:blowup]
     omegade = omegade[:blowup]
     omegatot = np.add(omegam,omegade)
-    dl = dl[:blowup]
+    z = z[:blowup]
+    dl = dl[:blowup] * (1+z)
     
-    # Find when density of DE was equal to that of matter.  Rounding the omegas
-    # to avoid not finding an instance of equality.
+    
+    # Find when density of DE was equal to that of matter.  Rounding the 
+    # omegas to avoid not finding an instance of equality.
     equiv = np.argmin(abs(omegam - omegade))    # Index of time of equivlence.
     equiv = np.asarray(equiv)                   # Converting to nparray.
     
@@ -197,8 +209,17 @@ while True:
     age = t_cut[np.argmin(t_cut)]
     age = -round(age, 2)
     
+    # Trim redshift to remove meaningless values (z > 10) if such are present.
+    if np.max(z) > ztrim:
+        ztrim = np.where(z > ztrim)
+        ztrim = np.asarray(ztrim)
+        ztrim = ztrim[0,0]
+        t_trim = t[:ztrim]
+        z_trim = z[:ztrim]
+        dl_trim = dl[:ztrim]
+    
     # Plotting selected results:
-    # a and a_dot
+    # a and a_dot vs time.
     figure()
     xlabel('time in $H_0^{-1}$')
     grid(True)
@@ -207,13 +228,43 @@ while True:
     title('Cut results for $\omega$ = %s, $\lambda$ = %s, age = %s $H_0^{-1}$'
           %(w,lamb,age))
     
-    # Luminosity distance dl.
-    figure()
-    xlabel('time in $H_0^{-1}$')
-    grid(True)
-    plot(t_cut, dl, lw=1)
-    title('Luminosity distance for $\omega$ = %s, $\lambda$ = %s,'
+    while False:
+        # Luminosity distance dl vs time.
+        figure()
+        xlabel('time in $H_0^{-1}$')
+        grid(True)
+        plot(t_cut, dl, 'tab:purple', lw=1)
+        title('$D_L$ vs time for $\omega$ = %s, $\lambda$ = %s,'
           ' age = %s $H_0^{-1}$'%(w,lamb,age))
+        break
+    
+    # Luminosity distance dl vs redshift.
+    figure()
+    xlabel('redshift $z$')
+    grid(True)
+    plot(z_trim, dl_trim, 'tab:green', lw=1)
+    title('$D_L$ vs redshift for $\omega$ = %s, $\lambda$ = %s,'
+          ' age = %s $H_0^{-1}$'%(w,lamb,age))
+    
+    while False:
+        # Redshift vs time.
+        figure()
+        xlabel('time in $H_0^{-1}$')
+        grid(True)
+        plot(t_trim, z_trim, 'tab:pink', lw=1)
+        title('Redshift evolution for $\omega$ = %s, $\lambda$ = %s,'
+          ' age = %s $H_0^{-1}$'%(w,lamb,age))
+        break
+    
+    while False:
+        # Time vs redshift.
+        figure()
+        xlabel('z')
+        grid(True)
+        plot(z_trim, t_trim, 'tab:pink', lw=1)
+        title('Time evolution with $z$ for $\omega$ = %s, $\lambda$ = %s,'
+          ' age = %s $H_0^{-1}$'%(w,lamb,age))
+        break
     
     while False:    # Looped to make it faster to switch plots on and off.
         # e_dashm
@@ -265,7 +316,7 @@ while True:
     break
         
 
-# Complete results with blow up resulting from a approaching big bang point.
+# Complete results with blow up resulting from a approaching big bang.
 while False:  
     figure()
     xlabel('time in $H_0^{-1}$')
