@@ -63,7 +63,7 @@ Write pseudocode first to get the understanding about what I'm doing.
 
 
 2) Use mcmc to re-fit the data to that sample and work out what parameters 
-    (constraints)I get on omegam and omegade
+    (constraints) I get on omegam and omegade
 
 3) What would happen if error were 1%? or 50%? How does it change my parameters
 
@@ -80,6 +80,9 @@ make numintegra8 give D_L in parsecs
 put plots and calculation into separate functions
 
 
+lookup how to call a function from a function froa a function to keep them separate
+but be able to call in one line
+neaten up the code
 
 
 NOT AN ASSIGNMENT
@@ -447,3 +450,141 @@ for i in range(len(dlpc)):
     m.append(5 * log10(dlpc[i]/10) + M)
     
 merr = gnoise(m,p)
+
+#z is x
+#m is y
+
+
+###############################################################################
+###############################################################################
+###############################################################################
+###############################    STATISTICS    ##############################
+###############################################################################
+###############################################################################
+###############################################################################
+
+x, y, yerr, sigma = odesolve(lamb,m,de)
+
+try:
+    timet0 = time.time()    # starting script timer
+    
+
+    
+    N = n        # number of datapoints
+    mu = 0          # mean
+    
+    ndim, nwalkers = 2, 4
+    nsteps = 100
+    burnin = nsteps/2
+    
+    
+    # Functions
+    def lnlike(m, de, lamb, x, y, sigma):
+        
+        model = odesolve(lamb,m,de)
+        inv_sigma2 = 1.0/(sigma**2)
+        return -0.5*(np.sum((y-model)**2*inv_sigma2 - np.log(inv_sigma2)))    
+     
+    def lnprior(m, de, lamb):
+        if (0 < m < 1 and 0 < de < 1 and 0.0 < lamb < 5):
+            return 0.0
+        return -np.inf
+            
+    def lnprob(theta, x, y, sigma):
+        lp = lnprior(theta)
+        if not np.isfinite(lp):
+            return -np.inf
+        return lp + lnlike(m, de, lamb, x, y, sigma)    
+       
+    
+    
+    # Finding a "good" place to start using alternative method to emcee.
+    nll = lambda *args: -lnlike(*args)
+    result = op.minimize(nll, [m, de, lamb], 
+                         args=(x, y, yerr))
+    m_ml, de_ml, lamb_ml = result["x"]    
+    
+        
+    # Initializing walkers in a Gaussian ball around the max likelihood. 
+    pos = [result["x"] + 1*np.random.randn(ndim) for i in range(nwalkers)]    
+        
+    
+    # Sampler setup
+    times0 = time.time()    # starting emcee timer
+    
+    sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob, args=(x, y, sigma))
+    sampler.run_mcmc(pos, nsteps)
+    
+    times1=time.time()      # stopping emcee timer
+    times=times1 - times0   # time to run emcee
+    timesmin = round((times / 60),1)    # minutes
+    timessec = round((times % 60),1)    # seconds
+    
+    
+    # Corner plot (walkers' walk + histogram).
+    samples = sampler.chain[:, burnin:, :].reshape((-1, ndim))
+    fig = corner.corner(samples, labels=["$a$", "$b$", "$c$", "$d$", "$e$"], 
+                        truths=[m, de, lamb])
+    fig.savefig('nsteps'+str(nsteps)+str(time.strftime("%c"))+
+                'nwalkers'+str(nwalkers)+'.png')
+    
+    
+    # Marginalised distribution (histogram) plot.
+    pl.hist(sampler.flatchain[:,0], 100)
+    pl.show()
+    
+    
+    # Plotting lines of best fit using a 100-strong sample of parameters.
+    xl = np.linspace(0,4,100)
+    #for a, b, c, d, e in samples[np.random.randint(len(samples), size=100)]:
+     #   pl.plot(xl, a * xl**4 + b * xl**2 + c * xl + d +
+      #          e*np.sin(xl), color="k", alpha=0.1)
+    pl.plot(xl, odesolve(lamb,m,de),color="r", lw=2, alpha=0.8)
+    pl.errorbar(x, y, yerr=yerr, fmt=".k")
+    pl.show()
+    
+    
+    # Best line of fit found by emcee.
+    bi = np.argmax(sampler.lnprobability)   # index with highest post prob                                       
+    mbest = sampler.flatchain[bi,0]         # parameters with the highest 
+    debest = sampler.flatchain[bi,1]         # posterior probability
+    lambbest = sampler.flatchain[bi,2]
+    
+    
+    # plot of data with errorbars + model
+    pl.errorbar(x, y, yerr=sigma, fmt='o', alpha=0.3)
+    xt = np.linspace(0,4,100)
+    yt = (odesolve(lamb,m,de))
+    model, = pl.plot(xt,yt,lw='3', c='g')
+    ybest = (odesolve(lambbest,mbest,debest)) # model with best parameters
+    best_fit, = pl.plot(xt,ybest,lw='3', c='r')
+    pl.legend([model, best_fit], ['Model', 'Best Fit'])
+    pl.show
+    
+    
+    timet1=time.time()      # stopping script time
+    timet=timet1-timet0     # total time to run script
+    timetmin = round((timet / 60),1)  # minutes
+    timetsec = round((timet % 60),1)  # seconds
+    
+    
+    # Results getting printed:
+    print('best index is =',str(bi))
+    print('mbest is =',str(mbest))
+    print('debest is =',str(debest))
+    print('lambbest is =',str(lambbest))
+
+    # Mean acceptance fraction. In general, acceptance fraction has an entry 
+    # for each walker so, in this case, it is a 50-dimensional vector.
+    print('Mean acceptance fraction:', np.mean(sampler.acceptance_fraction))
+    print('Number of steps:', str(nsteps))
+    print('Number of walkers:', str(nwalkers))
+    print('Sampler time:',str(int(timesmin))+'min'
+          ,str(int(timessec))+'s')
+    print('Total time:  ',str(int(timetmin))+'min'
+          ,str(int(timetsec))+'s')
+    
+    
+except Exception as e:
+        logging.error('Caught exception:',str(e))
+        print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno))
