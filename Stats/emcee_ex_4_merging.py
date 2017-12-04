@@ -71,9 +71,9 @@ try:
     sigma = 0.5    # standard deviation
     mu = 0          # mean
     
-    ndim, nwalkers = 5, 20
-    nsteps = 1000000
-    burnin = 1000
+    ndim, nwalkers = 5, 12
+    nsteps = 100
+    burnin = 50
     
     
     # Functions

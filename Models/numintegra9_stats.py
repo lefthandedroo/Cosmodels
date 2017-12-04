@@ -80,9 +80,11 @@ make numintegra8 give D_L in parsecs
 put plots and calculation into separate functions
 
 
-lookup how to call a function from a function froa a function to keep them separate
+lookup how to call a function from a function from a function to keep them separate
 but be able to call in one line
 neaten up the code
+
+10 point sample does not generate enough points
 
 
 NOT AN ASSIGNMENT
@@ -101,6 +103,8 @@ import matplotlib.pyplot as pl
 import scipy.optimize as op
 import sys
 import time
+
+timet0 = time.time()    # starting script timer
 
 def firstderivs(v, t, w, lamb):
     """
@@ -164,7 +168,8 @@ def odesolve(lamb,m,de):
     # Last value for a before results are to be considered 
     # invalid due to close proximity to big bang, a_d is set
     # somewhat arbitrarily - sometimes jumps over the result(?).
-    a_d = 10e-6
+    a_d = 10e-2 # 10e-6 gives a closer answer to Big Bang, 
+                # but seemingly too few points with z under 2.
     
     # Value to display redshift up to (and including). 
     ztrim = 6
@@ -188,7 +193,7 @@ def odesolve(lamb,m,de):
     # ODE solver parameters:
     abserr = 1.0e-8
     relerr = 1.0e-6
-    numpoints = 250
+    numpoints = 1000
     
     stoptime = -time # Integrating back in time as time now is t0.
     
@@ -382,30 +387,15 @@ def odesolve(lamb,m,de):
     return dlmpc, z
 
 
-
-def gnoise(mag, p):
-    """
-    adds p% noise to data given
-    """
-    sigma = p/100               # standard deviation
-    mu = 0                      # mean of noise distribution
-    noise = np.random.normal(mu,sigma,n)
-    mag = mag + noise
-    return mag
-
-
-
 def msim(lamb, m, de, n, p):
     """
     Takes in:
-        theta = 
             lamb (= e_lamb(t)/ec(t0) at t=t0),
             m (= e_m(t)/ec(t0) at t=t0),
             de (= e_de(t)/ec(t0) at t=t0),
             n (= dimensionless number of data points to be generated),
             p (= percentage of noise).
-    Returns n apparent magnitudes mag and corresponding redshits z < 2, 
-    offest by gaussian noise from gnoise.
+    Returns n apparent magnitudes mag with corresponding redshits z < 2.
     """
     dlmpc, z = odesolve(lamb,m,de)
     
@@ -416,7 +406,9 @@ def msim(lamb, m, de, n, p):
     if maxindex_i.any():              # Check if instances of z > zmax exist.   
         max_index = maxindex_i[0,0]
     else:
-        print('msim found no z above z = %s'%(zmax))
+        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+        print(' msim found no z above z = %s'%(zmax))
+        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
 
 #    print('dlmpc before is: ',dlmpc)
     dlmpc = dlmpc[1:max_index]  # Avoiding the log(dlmpc=0) problem
@@ -450,17 +442,53 @@ def msim(lamb, m, de, n, p):
 #        print('m from distance modulus = ',mdistmod)
         mag.append(mdistmod) 
 #        print('mag = ',mag[i])
-        
-    mag = gnoise(mag, p)
     z = np.asarray(z)
     return z, mag
 
-    
-# Number of points to be simulated.
-n = 100 # 100, 1000
 
-# Percentage error on apparent magnitudes:
+def gnoise(mag, sigma, mu):
+    """
+    adds p% noise to data given
+    """
+    noise = np.random.normal(mu,sigma,n)
+    mag = mag + noise
+    return mag, noise
+
+
+def lnlike(theta, n, p, mag, sigma):
+    lamb, m, de = theta
+    z, model = msim(lamb, m, de, n, p)
+    inv_sigma2 = 1.0/(sigma**2)
+    return -0.5*(np.sum((mag-model)**2*inv_sigma2 - np.log(inv_sigma2)))    
+ 
+    
+def lnprior(theta):
+    lamb, m, de = theta
+    if (-1 < lamb < 2 and 0 < m < 1.0 and 0.0 < de < 1.0): #  (m+de)==1
+        return 0.0
+    return -np.inf
+        
+
+def lnprob(theta, n, p, mag, sigma):
+    lp = lnprior(theta)
+    if not np.isfinite(lp):
+        return -np.inf
+    return lp + lnlike(theta, n, p, mag, sigma)
+
+    
+# Number of datapoints to be simulated.
+n = 100 #100, 1000
+
+# Statistical parameters:
+# Percentage error on apparent magnitudes.
 p = 10
+sigma = p/100       # standard deviation
+mu = 0              # mean
+
+# emcee parameters:
+ndim, nwalkers = 3, 6
+nsteps = 100
+burnin = 20
 
 # Standard cosmological parameters.
 H0 = 1       # Hubble parameter at t=now
@@ -473,7 +501,7 @@ w_de = -1.0   # cosmological constant (dark energy?)
 # Model specific parameters.  
 # Interaction term, rate at which DE decays into matter.
 lamb = 0
-# t=t0 fraction of matter and dark energy compared to critical density.
+# Fraction of matter and dark energy compared to critical density at t=t0.
 m = 0.3
 de = 0.7
 
@@ -483,73 +511,23 @@ c_over_H0 = 4167 * 10**6    # c/H0 in parsecs
 
 # Generating apparent magnitues mag at redshift z<2 (calculted from
 # luminosity distances given by LambdaCMD with parameters stated above.
-theta = lamb, m, de, n, p
-z, mag = msim(lamb, m, de, n, p)
-    
-
-#z is x
-#mag is y
+theta = lamb, m, de
+z, model = msim(lamb, m, de, n, p)
+mag, noise = gnoise(model, sigma, mu)  
 
 
 
 
-###############################################################################
-###############################################################################
-###############################################################################
-###############################    STATISTICS    ##############################
-###############################################################################
-###############################################################################
-###############################################################################
+
+
+
 
 try:
-    timet0 = time.time()    # starting script timer
-    
-    
-    # Input
-    # "True" parameters are the cosmological ones.
-    
-    N = n        # number of datapoints
-    sigma = p/100    # standard deviation
-    mu = 0          # mean
-    
-    ndim, nwalkers = 3, 6
-    nsteps = 1000
-    burnin = 500
-    
-    
-    # Functions
-    def lnlike(theta, x, y, sigma):
-        lamb, m, de, n, p = theta
-        z, model = msim(lamb, m, de, n, p)
-        inv_sigma2 = 1.0/(sigma**2)
-        return -0.5*(np.sum((y-model)**2*inv_sigma2 - np.log(inv_sigma2)))    
-     
-    def lnprior(theta):
-        a, b, c, d, e = theta
-        if (-5.0 < a < 5 and -5.0 < b < 5.0 and 0.0 < c < 1.0 and 0.0 < d < 20 
-            and -3.0 < e < 30):
-            return 0.0
-        return -np.inf
-            
-    def lnprob(theta, x, y, sigma):
-        lp = lnprior(theta)
-        if not np.isfinite(lp):
-            return -np.inf
-        return lp + lnlike(theta, x, y, sigma)    
-       
-    
-    # Generating noisy data from the model y.
-    x = np.random.rand(N)*4                 # picking random points on x-axis
-    yerr = np.random.normal(mu,sigma,N)     # Gaussian noise
-    y = a_true * x**4 + b_true * x**2 + c_true * x + d_true + e_true*np.sin(x)     
-    y += yerr                               # data, offset in y with noise
-    
-    
     # Finding a "good" place to start using alternative method to emcee.
     nll = lambda *args: -lnlike(*args)
-    result = op.minimize(nll, [a_true, b_true, c_true, d_true, e_true], 
-                         args=(x, y, yerr))
-    a_ml, b_ml, c_ml, d_ml, e_ml = result["x"]    
+    result = op.minimize(nll, [lamb, m, de], 
+                         args=(n, p, mag, noise))
+    lamb_ml, m_ml, de_ml = result["x"]    
     
         
     # Initializing walkers in a Gaussian ball around the max likelihood. 
@@ -559,7 +537,7 @@ try:
     # Sampler setup
     times0 = time.time()    # starting emcee timer
     
-    sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob, args=(x, y, sigma))
+    sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob, args=(n, p, mag, sigma))
     sampler.run_mcmc(pos, nsteps)
     
     times1=time.time()      # stopping emcee timer
@@ -570,8 +548,8 @@ try:
     
     # Corner plot (walkers' walk + histogram).
     samples = sampler.chain[:, burnin:, :].reshape((-1, ndim))
-    fig = corner.corner(samples, labels=["$a$", "$b$", "$c$", "$d$", "$e$"], 
-                        truths=[a_true, b_true, c_true, d_true, e_true])
+    fig = corner.corner(samples, labels=["$lamb$", "$m$", "$de$"], 
+                        truths=[lamb, m, de])
     fig.savefig('nsteps'+str(nsteps)+str(time.strftime("%c"))+
                 'nwalkers'+str(nwalkers)+'.png')
     
@@ -580,53 +558,43 @@ try:
     pl.hist(sampler.flatchain[:,0], 100)
     pl.show()
     
-    
     # Plotting lines of best fit using a 100-strong sample of parameters.
-    xl = np.linspace(0,4,100)
+    zl = z
     #for a, b, c, d, e in samples[np.random.randint(len(samples), size=100)]:
      #   pl.plot(xl, a * xl**4 + b * xl**2 + c * xl + d +
       #          e*np.sin(xl), color="k", alpha=0.1)
-    pl.plot(xl, a_true * xl**4 + b_true * xl**2 + c_true * xl + d_true + 
-            e_true*np.sin(xl),color="r", lw=2, alpha=0.8)
-    pl.errorbar(x, y, yerr=yerr, fmt=".k")
+    figure()
+    pl.scatter(zl, model,color="r", lw=2, alpha=0.8)
+    pl.errorbar(z, model, yerr=sigma, fmt=".k")
     pl.show()
-    
     
     # Best line of fit found by emcee.
     bi = np.argmax(sampler.lnprobability)   # index with highest post prob                                       
-    abest = sampler.flatchain[bi,0]         # parameters with the highest 
-    bbest = sampler.flatchain[bi,1]         # posterior probability
-    cbest = sampler.flatchain[bi,2]
-    dbest = sampler.flatchain[bi,3]
-    ebest = sampler.flatchain[bi,4]
-    
+    lambbest = sampler.flatchain[bi,0]         # parameters with the highest 
+    mbest = sampler.flatchain[bi,1]         # posterior probability
+    debest = sampler.flatchain[bi,2]
     
     # plot of data with errorbars + model
-    pl.errorbar(x, y, yerr=sigma, fmt='o', alpha=0.3)
-    xt = np.linspace(0,4,100)
-    yt = (a_true * xt**4 + b_true * xt**2 + c_true * xt + d_true 
-          + e_true * np.sin(xt))
-    model, = pl.plot(xt,yt,lw='3', c='g')
-    ybest = (abest * xt**4 + bbest * xt**2 + cbest * xt + dbest 
-             + ebest * np.sin(xt))
-    best_fit, = pl.plot(xt,ybest,lw='3', c='r')
+    figure()
+    pl.errorbar(z, mag, yerr=sigma, fmt='o', alpha=0.3)
+    z, modelt = msim(lamb, m, de, n, p)
+    model, = pl.scatter(z, modelt, lw='3', c='g')
+    z, magbest = msim(lambbest, mbest, debest, n, p)
+    best_fit, = pl.scatter(z,magbest,lw='3', c='r')
     pl.legend([model, best_fit], ['Model', 'Best Fit'])
     pl.show
-    
     
     timet1=time.time()      # stopping script time
     timet=timet1-timet0     # total time to run script
     timetmin = round((timet / 60),1)  # minutes
     timetsec = round((timet % 60),1)  # seconds
     
-    
     # Results getting printed:
     print('best index is =',str(bi))
-    print('abest is =',str(abest))
-    print('bbest is =',str(bbest))
-    print('cbest is =',str(cbest))
-    print('dbest is =',str(dbest))
-    print('ebest is =',str(ebest))
+    print('lambbest is =',str(lambbest))
+    print('mbest is =',str(mbest))
+    print('debest is =',str(debest))
+  
     # Mean acceptance fraction. In general, acceptance fraction has an entry 
     # for each walker so, in this case, it is a 50-dimensional vector.
     print('Mean acceptance fraction:', np.mean(sampler.acceptance_fraction))
