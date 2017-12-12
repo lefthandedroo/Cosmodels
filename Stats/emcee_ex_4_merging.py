@@ -68,12 +68,12 @@ try:
     e_true = 12
     
     N = 20        # number of datapoints
-    sigma = 0.5    # standard deviation
+    sigma = 0.75    # standard deviation
     mu = 0          # mean
     
     ndim, nwalkers = 5, 12
-    nsteps = 100
-    burnin = 50
+    nsteps = 1000
+    burnin = 500
     
     
     # Functions
