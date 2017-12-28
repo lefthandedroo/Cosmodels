@@ -61,17 +61,21 @@ but be able to call in one line
 neaten up the code   
 2) Use mcmc to re-fit the data to that sample and work out what parameters 
     (constraints) I get on omegam and omegade
+generate 10^6 points for t (up to z=2)
+pick random points between 0<z<2
+interpolate to find "exact" m for specific z I randomly picked
+need to be happy that the itnerpolation gives an accurate answer 
+(numerical recipy's  book has interpaoplation)
+https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.interp.html
+
+
 
 3) What would happen if error were 1%? or 50%? How does it change my parameters
-
 4) What if I generate a cosmology that has an interaction term? 
-
 5) Choose another cosmology, generate fake data and try the same with omegam,
     omegade and lamb
 (try the standard one with no lambda and see if you get lambda = 0 back)
-
 6) Working towards distributions of omega lambda, omega matter and interaction term.
-
 make numintegra8 give D_L in parsecs
 put plots and calculation into separate functions
 
@@ -79,15 +83,10 @@ put plots and calculation into separate functions
 
 
 10 point sample does not generate enough points
-
-generate 10^6 points for t (up to z=2)
-pick random points between 0<z<2
-interpolate to find "exact" m for specific z I randomly picked
-need to be happy that the itnerpolation gives an accurate answer 
-(numerical recipy's  book has interpaoplation)
-https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.interp.html
 plot results to see if they look right?
 
+
+output vsol and check type
 
 NOT AN ASSIGNMENT
 """
@@ -187,8 +186,9 @@ def odesolve(lamb,m,de):
         v0 = [a0, a_dot0, e_dash0m, e_dash0de, z0, dl0]
         w = [w_m, w_de]
         
-        # Call the ODE solver.
-        vsol = odeint(firstderivs, v0, t, args=(w,lamb,), atol=abserr, rtol=relerr)
+        # Call the ODE solver. maxstep=5000000 added later to try and avoid 
+        # ODEintWarning: Excess work done on this call (perhaps wrong Dfun type).
+        vsol = odeint(firstderivs, v0, t, args=(w,lamb,), atol=abserr, rtol=relerr, mxstep=5000000)
         
         # Remove unwanted results which are too close to big bang from the plot.
         # Separate results into their own arrays:
@@ -215,13 +215,10 @@ def odesolve(lamb,m,de):
         
         # Remove the values after the index of first instance of a < a_d.
         t_cut = np.asarray(t)
-#        print('type(t_cut) is ',type(t_cut))
         
         t_cut = t_cut[:blowup]
         a = a[:blowup]
         a_dot = a_dot[:blowup]
-#        e_dashm = e_dashm[:blowup]
-#        e_dashde = e_dashde[:blowup]
         z = z[:blowup]
         dl = dl[:blowup]
         dlmpc = dlmpc[:blowup]
@@ -311,7 +308,7 @@ def msim(lamb, m, de, n, p, zpicks):
             p (= percentage of noise)
             zpicks (=list of z to match the interpolated dlmpc to).
     Returns:
-        mag (=list of n apparent magnitudes mag with corresponding redshits).
+        mag (=list of n apparent magnitudes mag from corresponding redshits).
     """
     z, dlmpc = odesolve(lamb,m,de)
     dlmpcinterp = np.interp(zpicks, z, dlmpc)
@@ -408,84 +405,84 @@ mag, noise = gnoise(model, sigma, mu)
 
 
 
-try:
-    # Finding a "good" place to start using alternative method to emcee.
-    nll = lambda *args: -lnlike(*args)
-    result = op.minimize(nll, [lamb_true, m_true, de_true], 
-                         args=(n, p, zpicks, mag, noise))
-    lamb_ml, m_ml, de_ml = result["x"]    
-    
-        
-    # Initializing walkers in a Gaussian ball around the max likelihood. 
-    pos = [result["x"] + 1*np.random.randn(ndim) for i in range(nwalkers)]    
-        
-    
-    # Sampler setup
-    times0 = time.time()    # starting emcee timer
-    
-    sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob, args=(n, p, zpicks, mag, sigma))
-    sampler.run_mcmc(pos, nsteps)
-    
-    times1=time.time()      # stopping emcee timer
-    times=times1 - times0   # time to run emcee
-    timesmin = round((times / 60),1)    # minutes
-    timessec = round((times % 60),1)    # seconds
-    
-    
-    # Corner plot (walkers' walk + histogram).
-    samples = sampler.chain[:, burnin:, :].reshape((-1, ndim))
-    fig = corner.corner(samples, labels=["$lamb$", "$m$", "$de$"], 
-                        truths=[lamb_true, m_true, de_true])
-    fig.savefig('nsteps'+str(nsteps)+str(time.strftime("%c"))+
-                'nwalkers'+str(nwalkers)+'.png')
-    
-    
-    # Marginalised distribution (histogram) plot.
-    pl.hist(sampler.flatchain[:,0], 100)
-    pl.show()
-    
-    # Plotting lines of best fit using a 100-strong sample of parameters.
-    zl = zpicks
-    figure()
-    scatter(zl, model,color="r", lw=2, alpha=0.8)
-    pl.errorbar(zpicks, model, yerr=sigma, fmt=".k")
-    pl.show()
-    
-    # Best line of fit found by emcee.
-    bi = np.argmax(sampler.lnprobability)   # index with highest post prob                                       
-    lambbest = sampler.flatchain[bi,0]      # parameters with the highest 
-    mbest = sampler.flatchain[bi,1]         # posterior probability
-    debest = sampler.flatchain[bi,2]
-    
-    # plot of data with errorbars + model
-    figure()
-    pl.errorbar(zpicks, mag, yerr=sigma, fmt='o', alpha=0.3)
-    modelt = msim(lamb_true, m_true, de_true, n, p, zpicks)
-    model, = scatter(zpicks, modelt, lw='3', c='g')
-    magbest = msim(lambbest, mbest, debest, n, p, zpicks)
-    best_fit, = scatter(zpicks,magbest,lw='3', c='r')
-    pl.legend([model, best_fit], ['Model', 'Best Fit'])
-    pl.show
-    
-    
-    # Results getting printed:
-    print('best index is =',str(bi))
-    print('lambbest is =',str(lambbest))
-    print('mbest is =',str(mbest))
-    print('debest is =',str(debest))
-  
-    # Mean acceptance fraction. In general, acceptance fraction has an entry 
-    # for each walker so, in this case, it is a 50-dimensional vector.
-    print('Mean acceptance fraction:', np.mean(sampler.acceptance_fraction))
-    print('Number of steps:', str(nsteps))
-    print('Number of walkers:', str(nwalkers))
-    print('Sampler time:',str(int(timesmin))+'min'
-          ,str(int(timessec))+'s')
-    
-    
-except Exception as e:
-        logging.error('Caught exception:',str(e))
-        print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno))
+#try:
+#    # Finding a "good" place to start using alternative method to emcee.
+#    nll = lambda *args: -lnlike(*args)
+#    result = op.minimize(nll, [lamb_true, m_true, de_true], 
+#                         args=(n, p, zpicks, mag, noise))
+#    lamb_ml, m_ml, de_ml = result["x"]    
+#    
+#        
+#    # Initializing walkers in a Gaussian ball around the max likelihood. 
+#    pos = [result["x"] + 1*np.random.randn(ndim) for i in range(nwalkers)]    
+#        
+#    
+#    # Sampler setup
+#    times0 = time.time()    # starting emcee timer
+#    
+#    sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob, args=(n, p, zpicks, mag, sigma))
+#    sampler.run_mcmc(pos, nsteps)
+#    
+#    times1=time.time()      # stopping emcee timer
+#    times=times1 - times0   # time to run emcee
+#    timesmin = round((times / 60),1)    # minutes
+#    timessec = round((times % 60),1)    # seconds
+#    
+#    
+#    # Corner plot (walkers' walk + histogram).
+#    samples = sampler.chain[:, burnin:, :].reshape((-1, ndim))
+#    fig = corner.corner(samples, labels=["$lamb$", "$m$", "$de$"], 
+#                        truths=[lamb_true, m_true, de_true])
+#    fig.savefig('nsteps'+str(nsteps)+str(time.strftime("%c"))+
+#                'nwalkers'+str(nwalkers)+'.png')
+#    
+#    
+#    # Marginalised distribution (histogram) plot.
+#    pl.hist(sampler.flatchain[:,0], 100)
+#    pl.show()
+#    
+#    # Plotting lines of best fit using a 100-strong sample of parameters.
+#    zl = zpicks
+#    figure()
+#    scatter(zl, model,color="r", lw=2, alpha=0.8)
+#    pl.errorbar(zpicks, model, yerr=sigma, fmt=".k")
+#    pl.show()
+#    
+#    # Best line of fit found by emcee.
+#    bi = np.argmax(sampler.lnprobability)   # index with highest post prob                                       
+#    lambbest = sampler.flatchain[bi,0]      # parameters with the highest 
+#    mbest = sampler.flatchain[bi,1]         # posterior probability
+#    debest = sampler.flatchain[bi,2]
+#    
+#    # plot of data with errorbars + model
+#    figure()
+#    pl.errorbar(zpicks, mag, yerr=sigma, fmt='o', alpha=0.3)
+#    modelt = msim(lamb_true, m_true, de_true, n, p, zpicks)
+#    model, = scatter(zpicks, modelt, lw='3', c='g')
+#    magbest = msim(lambbest, mbest, debest, n, p, zpicks)
+#    best_fit, = scatter(zpicks,magbest,lw='3', c='r')
+#    pl.legend([model, best_fit], ['Model', 'Best Fit'])
+#    pl.show
+#    
+#    
+#    # Results getting printed:
+#    print('best index is =',str(bi))
+#    print('lambbest is =',str(lambbest))
+#    print('mbest is =',str(mbest))
+#    print('debest is =',str(debest))
+#  
+#    # Mean acceptance fraction. In general, acceptance fraction has an entry 
+#    # for each walker so, in this case, it is a 50-dimensional vector.
+#    print('Mean acceptance fraction:', np.mean(sampler.acceptance_fraction))
+#    print('Number of steps:', str(nsteps))
+#    print('Number of walkers:', str(nwalkers))
+#    print('Sampler time:',str(int(timesmin))+'min'
+#          ,str(int(timessec))+'s')
+#    
+#    
+#except Exception as e:
+#        logging.error('Caught exception:',str(e))
+#        print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno))
 
 
 timet1=time.time()      # stopping script time
