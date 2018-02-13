@@ -10,15 +10,18 @@ Created on Thu Sep 21 15:50:29 2017
 #import random
 #from math import log10
 
-
-start = 0
-stop = 2
-step = 0.05
-i = 0
-zlist = [start]
+from pets import Pet
+polly = Pet("Polly", "Parrot")
 
 
-i = 0
+#start = 0
+#stop = 2
+#step = 0.05
+#i = 0
+#zlist = [start]
+#
+#
+#i = 0
 #while True:
 #    print('zlist is: ',zlist)
 #    if zlist[i] > stop:
@@ -27,16 +30,16 @@ i = 0
 #        nextvalue = zlist[i] + step
 #        zlist.append(nextvalue)
 #    i += 1
-
-
-while zlist[i] < stop:
-    nextvalue = zlist[i] + step
-    zlist.append(nextvalue)
-    i += 1
-    continue
-    print('i is ', i)
-    print('zlist[i] is ',zlist[i])
-print('zlist from zlist is: ',zlist)
+#
+#
+#while zlist[i] < stop:
+#    nextvalue = zlist[i] + step
+#    zlist.append(nextvalue)
+#    i += 1
+#    continue
+#    print('i is ', i)
+#    print('zlist[i] is ',zlist[i])
+#print('zlist from zlist is: ',zlist)
 
 #M= -19
 #n = 10

@@ -107,6 +107,27 @@ import time
 
 timet0 = time.time()    # starting script timer
 
+
+def flist(start, stop, step):
+    """
+    Takes in:
+        start, stop, step - integers or floats
+    Returns:
+        zlist - a list start to stop with step as increment
+    """
+    print('@@@@@@@@@@@ flist has been called')
+    i = 0
+    zlist = [start]
+    
+    while zlist[i] < stop:
+        nextvalue = zlist[i] + step
+        zlist.append(nextvalue)
+        i += 1
+        continue
+
+    return zlist
+
+
 def firstderivs(v, t, w, lamb):
     """
     Takes in:
@@ -122,6 +143,7 @@ def firstderivs(v, t, w, lamb):
     ready to be integrated with odeint.
     Uses same lambda for all fluids.
     """
+#    print('@@@@ firstderivs has been called')
     (a, a_dot, e_dashm, e_dashde, z, dl) = v #omegam, omegade, z, dl) = v
     (w_m, w_de) = w
     
@@ -154,7 +176,8 @@ def odesolve(lamb,m,de):
         z = redshift under 2.
     
     """
-    # Last value for a before results are close enough to z = 2.
+    print('@@@@@@@@@@@@@@ odesolve has been called')
+    # Last value for a before results are considered close enough to z = 2.
     a_d = 0.25
     
     # Time (in 1/H0) to integrate until.  If this time isn't long enough for a to 
@@ -189,7 +212,8 @@ def odesolve(lamb,m,de):
         # Call the ODE solver. maxstep=5000000 added later to try and avoid 
         # ODEintWarning: Excess work done on this call (perhaps wrong Dfun type).
         vsol = odeint(firstderivs, v0, t, args=(w,lamb,), atol=abserr, rtol=relerr, mxstep=5000000)
-        
+        # vsol type is:  <class 'numpy.ndarray'>
+                
         # Remove unwanted results which are too close to big bang from the plot.
         # Separate results into their own arrays:
         a = vsol[:,0]
@@ -280,23 +304,6 @@ def odesolve(lamb,m,de):
 
     return z, dlmpc
 
-def flist(start, stop, step):
-    """
-    Takes in:
-        start, stop, step - integers or floats
-    Returns:
-        zlist - a list start to stop with step as increment
-    """
-    i = 0
-    zlist = [start]
-    
-    while zlist[i] < stop:
-        nextvalue = zlist[i] + step
-        zlist.append(nextvalue)
-        i += 1
-        continue
-
-    return zlist
 
 def msim(lamb, m, de, n, p, zpicks):
     """
@@ -310,6 +317,7 @@ def msim(lamb, m, de, n, p, zpicks):
     Returns:
         mag (=list of n apparent magnitudes mag from corresponding redshits).
     """
+    print('@@@@@@@@@ msim has been called')
     z, dlmpc = odesolve(lamb,m,de)
     dlmpcinterp = np.interp(zpicks, z, dlmpc)
 
@@ -324,14 +332,17 @@ def msim(lamb, m, de, n, p, zpicks):
 
 def gnoise(mag, sigma, mu):
     """
-    adds p% noise to data given
+    calculates and adds random p% Gaussian noise to each mag datapoint
     """
+    print('@@@@@ gnoise has been called')
     noise = np.random.normal(mu,sigma,n)
+#    print('noise from inside gnoise is = ', noise)
     mag = mag + noise
     return mag, noise
 
 
 def lnlike(theta, n, p, zpicks, mag, sigma):
+    print('@@@@@@@@@@@@@@@@@@ lnlike has been called')
     lamb, m, de = theta
     model = msim(lamb, m, de, n, p, zpicks)
     inv_sigma2 = 1.0/(sigma**2)
@@ -339,6 +350,7 @@ def lnlike(theta, n, p, zpicks, mag, sigma):
 
     
 def lnprior(theta):
+    print('@@@@@@@@@@@@@ lnprior has been called')
     lamb, m, de = theta
     if (-1 < lamb < 2 and 0 < m < 1.0 and 0.0 < de < 1.0):
         return 0.0
@@ -346,12 +358,13 @@ def lnprior(theta):
         
 
 def lnprob(theta, n, p, zpicks, mag, sigma):
+    print('@@@@@@@@@@@@@@@@@ lnprob has been called')
     lp = lnprior(theta)
     if not np.isfinite(lp):
         return -np.inf
     return lp + lnlike(theta, n, p, zpicks, mag, sigma)
 
-    
+
 # Number of datapoints to be simulated.
 n = 100 #10, 1000
 
@@ -362,7 +375,7 @@ sigma = p/100       # standard deviation
 mu = 0              # mean
 
 # emcee parameters:
-ndim, nwalkers = 3, 10
+ndim, nwalkers = 3, 6
 nsteps = 1000
 burnin = 200
 
@@ -385,9 +398,11 @@ de_true = 0.7
 M = -19                     # Absolute brightness of supernovae.
 c_over_H0 = 4167 * 10**6    # c/H0 in parsecs
 
-# Generating apparent magnitues mag at redshift z<2 (calculted from
-# luminosity distances given by LambdaCMD with parameters stated above.
-#theta = lamb, m, de
+
+
+
+
+# Code:
 
 # Picking redshifts to investigate.
 zmin = 0.001
@@ -397,92 +412,96 @@ z_opts = flist(zmin, zmax, zinterval)
 zpicks = random.sample(z_opts, n)
 zpicks = np.asarray(zpicks)
 
+
+# Generating apparent magnitues mag at redshift z<2 (calculated from
+# luminosity distances given by LambdaCMD with parameters stated above.
+#theta = lamb, m, de
 model = msim(lamb_true, m_true, de_true, n, p, zpicks)
 model = np.asarray(model)
 
 mag, noise = gnoise(model, sigma, mu)
+#print('noise in code body is = ', noise)
 
 
 
-
-#try:
-#    # Finding a "good" place to start using alternative method to emcee.
-#    nll = lambda *args: -lnlike(*args)
-#    result = op.minimize(nll, [lamb_true, m_true, de_true], 
-#                         args=(n, p, zpicks, mag, noise))
-#    lamb_ml, m_ml, de_ml = result["x"]    
-#    
-#        
-#    # Initializing walkers in a Gaussian ball around the max likelihood. 
-#    pos = [result["x"] + 1*np.random.randn(ndim) for i in range(nwalkers)]    
-#        
-#    
-#    # Sampler setup
-#    times0 = time.time()    # starting emcee timer
-#    
-#    sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob, args=(n, p, zpicks, mag, sigma))
-#    sampler.run_mcmc(pos, nsteps)
-#    
-#    times1=time.time()      # stopping emcee timer
-#    times=times1 - times0   # time to run emcee
-#    timesmin = round((times / 60),1)    # minutes
-#    timessec = round((times % 60),1)    # seconds
-#    
-#    
-#    # Corner plot (walkers' walk + histogram).
-#    samples = sampler.chain[:, burnin:, :].reshape((-1, ndim))
-#    fig = corner.corner(samples, labels=["$lamb$", "$m$", "$de$"], 
-#                        truths=[lamb_true, m_true, de_true])
-#    fig.savefig('nsteps'+str(nsteps)+str(time.strftime("%c"))+
-#                'nwalkers'+str(nwalkers)+'.png')
-#    
-#    
-#    # Marginalised distribution (histogram) plot.
-#    pl.hist(sampler.flatchain[:,0], 100)
-#    pl.show()
-#    
-#    # Plotting lines of best fit using a 100-strong sample of parameters.
-#    zl = zpicks
-#    figure()
-#    scatter(zl, model,color="r", lw=2, alpha=0.8)
-#    pl.errorbar(zpicks, model, yerr=sigma, fmt=".k")
-#    pl.show()
-#    
-#    # Best line of fit found by emcee.
-#    bi = np.argmax(sampler.lnprobability)   # index with highest post prob                                       
-#    lambbest = sampler.flatchain[bi,0]      # parameters with the highest 
-#    mbest = sampler.flatchain[bi,1]         # posterior probability
-#    debest = sampler.flatchain[bi,2]
-#    
-#    # plot of data with errorbars + model
-#    figure()
-#    pl.errorbar(zpicks, mag, yerr=sigma, fmt='o', alpha=0.3)
-#    modelt = msim(lamb_true, m_true, de_true, n, p, zpicks)
-#    model, = scatter(zpicks, modelt, lw='3', c='g')
-#    magbest = msim(lambbest, mbest, debest, n, p, zpicks)
-#    best_fit, = scatter(zpicks,magbest,lw='3', c='r')
-#    pl.legend([model, best_fit], ['Model', 'Best Fit'])
-#    pl.show
-#    
-#    
-#    # Results getting printed:
-#    print('best index is =',str(bi))
-#    print('lambbest is =',str(lambbest))
-#    print('mbest is =',str(mbest))
-#    print('debest is =',str(debest))
-#  
-#    # Mean acceptance fraction. In general, acceptance fraction has an entry 
-#    # for each walker so, in this case, it is a 50-dimensional vector.
-#    print('Mean acceptance fraction:', np.mean(sampler.acceptance_fraction))
-#    print('Number of steps:', str(nsteps))
-#    print('Number of walkers:', str(nwalkers))
-#    print('Sampler time:',str(int(timesmin))+'min'
-#          ,str(int(timessec))+'s')
-#    
-#    
-#except Exception as e:
-#        logging.error('Caught exception:',str(e))
-#        print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno))
+try:
+    # Finding a "good" place to start using alternative method to emcee.
+    nll = lambda *args: -lnlike(*args)  # type of nll is: <class 'function'>
+    result = op.minimize(nll, [lamb_true, m_true, de_true], 
+                         args=(n, p, zpicks, mag, noise))
+    lamb_ml, m_ml, de_ml = result["x"]    
+    
+        
+    # Initializing walkers in a Gaussian ball around the max likelihood. 
+    pos = [result["x"] + 1*np.random.randn(ndim) for i in range(nwalkers)]    
+        
+    
+    # Sampler setup
+    times0 = time.time()    # starting emcee timer
+    
+    sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob, args=(n, p, zpicks, mag, sigma))
+    sampler.run_mcmc(pos, nsteps)
+    
+    times1=time.time()      # stopping emcee timer
+    times=times1 - times0   # time to run emcee
+    timesmin = round((times / 60),1)    # minutes
+    timessec = round((times % 60),1)    # seconds
+    
+    
+    # Corner plot (walkers' walk + histogram).
+    samples = sampler.chain[:, burnin:, :].reshape((-1, ndim))
+    fig = corner.corner(samples, labels=["$lamb$", "$m$", "$de$"], 
+                        truths=[lamb_true, m_true, de_true])
+    fig.savefig('nsteps'+str(nsteps)+str(time.strftime("%c"))+
+                'nwalkers'+str(nwalkers)+'.png')
+    
+    
+    # Marginalised distribution (histogram) plot.
+    pl.hist(sampler.flatchain[:,0], 100)
+    pl.show()
+    
+    # Plotting lines of best fit using a 100-strong sample of parameters.
+    zl = zpicks
+    figure()
+    scatter(zl, model,color="r", lw=2, alpha=0.8)
+    pl.errorbar(zpicks, model, yerr=sigma, fmt=".k")
+    pl.show()
+    
+    # Best line of fit found by emcee.
+    bi = np.argmax(sampler.lnprobability)   # index with highest post prob                                       
+    lambbest = sampler.flatchain[bi,0]      # parameters with the highest 
+    mbest = sampler.flatchain[bi,1]         # posterior probability
+    debest = sampler.flatchain[bi,2]
+    
+    # plot of data with errorbars + model
+    figure()
+    pl.errorbar(zpicks, mag, yerr=sigma, fmt='o', alpha=0.3)
+    modelt = msim(lamb_true, m_true, de_true, n, p, zpicks)
+    model, = scatter(zpicks, modelt, lw='3', c='g')
+    magbest = msim(lambbest, mbest, debest, n, p, zpicks)
+    best_fit, = scatter(zpicks,magbest,lw='3', c='r')
+    pl.legend([model, best_fit], ['Model', 'Best Fit'])
+    pl.show
+    
+    
+    # Results getting printed:
+    print('best index is =',str(bi))
+    print('lambbest is =',str(lambbest))
+    print('mbest is =',str(mbest))
+    print('debest is =',str(debest))
+  
+    # Mean acceptance fraction. In general, acceptance fraction has an entry 
+    # for each walker so, in this case, it is a 50-dimensional vector.
+    print('Mean acceptance fraction:', np.mean(sampler.acceptance_fraction))
+    print('Number of steps:', str(nsteps))
+    print('Number of walkers:', str(nwalkers))
+    print('Sampler time:',str(int(timesmin))+'min'
+          ,str(int(timessec))+'s')
+    
+    
+except Exception as e:
+        logging.error('Caught exception:',str(e))
+        print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno))
 
 
 timet1=time.time()      # stopping script time
