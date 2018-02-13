@@ -67,6 +67,7 @@ interpolate to find "exact" m for specific z I randomly picked
 need to be happy that the itnerpolation gives an accurate answer 
 (numerical recipy's  book has interpaoplation)
 https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.interp.html
+output vsol and check type
 
 
 
@@ -86,7 +87,14 @@ put plots and calculation into separate functions
 plot results to see if they look right?
 
 
-output vsol and check type
+
+Make plot of everything vs everything through saving outcomes of variables and plot them after
+change interaction term to gamma instead of labda, mindful of lambda teh cosm constant
+
+Ask Sue Yang re debugging python to check type of error, underflow/overflow
+
+Run msim with slightly different parameters, plot redshift vs dlmpc and see if 
+anything looks super strange (some parameters might be unphysics)
 
 NOT AN ASSIGNMENT
 """
@@ -115,7 +123,7 @@ def flist(start, stop, step):
     Returns:
         zlist - a list start to stop with step as increment
     """
-    print('@@@@@@@@@@@ flist has been called')
+#    print('-flist has been called')
     i = 0
     zlist = [start]
     
@@ -143,7 +151,7 @@ def firstderivs(v, t, w, lamb):
     ready to be integrated with odeint.
     Uses same lambda for all fluids.
     """
-#    print('@@@@ firstderivs has been called')
+#    print('@ firstderivs has been called')
     (a, a_dot, e_dashm, e_dashde, z, dl) = v #omegam, omegade, z, dl) = v
     (w_m, w_de) = w
     
@@ -152,10 +160,14 @@ def firstderivs(v, t, w, lamb):
          a_dot,
          # a_dotdot
          (-a/2) * (e_dashm * (1+3*w_m) + e_dashde * (1+3*w_de)), 
+         
          # e'_dotm (=density(t) / crit density(t0))
-         -3 * (a_dot/a) * e_dashm * (1 + w_m -lamb/3 * a/a_dot * e_dashde/e_dashm ),
+#         -3 * (a_dot/a) * e_dashm * (1 + w_m -lamb/3 * a/a_dot * e_dashde/e_dashm ),
+         -3 * (a_dot/a) * e_dashm + e_dashm * w_m - e_dashm* lamb/3 * e_dashm * a/a_dot * e_dashde,
+
          # e'_dotde
          -3 * (a_dot/a) * e_dashde * (1 + w_de +lamb/3 * a/a_dot),
+
          # z_dot (=redshift)
          -a_dot/a**2,
          # dl_dot (=luminosty distance)
@@ -176,7 +188,7 @@ def odesolve(lamb,m,de):
         z = redshift under 2.
     
     """
-    print('@@@@@@@@@@@@@@ odesolve has been called')
+#    print('@@ odesolve has been called')
     # Last value for a before results are considered close enough to z = 2.
     a_d = 0.25
     
@@ -254,7 +266,7 @@ def odesolve(lamb,m,de):
 
         # Plotting selected results:
         # a and a_dot vs time.
-        while False:
+        while True:
             figure()
             xlabel('time in $H_0^{-1}$')
             grid(True)
@@ -265,7 +277,7 @@ def odesolve(lamb,m,de):
             break
         
         # Luminosity distance dl vs redshift.
-        while False:
+        while True:
             figure()
             xlabel('redshift $z$')
             grid(True)
@@ -274,7 +286,7 @@ def odesolve(lamb,m,de):
                   ' age = %s $H_0^{-1}$'%(w,lamb,age))
             break
         
-        while False:
+        while True:
             # Redshift vs time.
             figure()
             xlabel('time in $H_0^{-1}$')
@@ -289,7 +301,7 @@ def odesolve(lamb,m,de):
             
     
 #    # Complete results with blow up resulting from a approaching big bang.
-    while False:  
+    while True:  
         figure()
         xlabel('time in $H_0^{-1}$')
         grid(True)
@@ -317,7 +329,7 @@ def msim(lamb, m, de, n, p, zpicks):
     Returns:
         mag (=list of n apparent magnitudes mag from corresponding redshits).
     """
-    print('@@@@@@@@@ msim has been called')
+#    print('@@@ msim has been called')
     z, dlmpc = odesolve(lamb,m,de)
     dlmpcinterp = np.interp(zpicks, z, dlmpc)
 
@@ -334,7 +346,7 @@ def gnoise(mag, sigma, mu):
     """
     calculates and adds random p% Gaussian noise to each mag datapoint
     """
-    print('@@@@@ gnoise has been called')
+#    print('-gnoise has been called')
     noise = np.random.normal(mu,sigma,n)
 #    print('noise from inside gnoise is = ', noise)
     mag = mag + noise
@@ -342,7 +354,7 @@ def gnoise(mag, sigma, mu):
 
 
 def lnlike(theta, n, p, zpicks, mag, sigma):
-    print('@@@@@@@@@@@@@@@@@@ lnlike has been called')
+#    print('@@@@ lnlike has been called')
     lamb, m, de = theta
     model = msim(lamb, m, de, n, p, zpicks)
     inv_sigma2 = 1.0/(sigma**2)
@@ -350,15 +362,15 @@ def lnlike(theta, n, p, zpicks, mag, sigma):
 
     
 def lnprior(theta):
-    print('@@@@@@@@@@@@@ lnprior has been called')
+#    print(' lnprior has been called')
     lamb, m, de = theta
-    if (-1 < lamb < 2 and 0 < m < 1.0 and 0.0 < de < 1.0):
+    if (-0.001 < lamb < 0.001 and 0 < m < 1.0 and 0.0 < de < 1.0):
         return 0.0
     return -np.inf
         
 
 def lnprob(theta, n, p, zpicks, mag, sigma):
-    print('@@@@@@@@@@@@@@@@@ lnprob has been called')
+#    print('@@@@@ lnprob has been called')
     lp = lnprior(theta)
     if not np.isfinite(lp):
         return -np.inf
