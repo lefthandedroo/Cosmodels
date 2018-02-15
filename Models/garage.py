@@ -10,8 +10,9 @@ Created on Thu Sep 21 15:50:29 2017
 #import random
 #from math import log10
 
-from pets import Pet
-polly = Pet("Polly", "Parrot")
+import printmefunc
+
+print(printmefunc.printmefunc())
 
 
 #start = 0

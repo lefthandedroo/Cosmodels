@@ -68,6 +68,7 @@ need to be happy that the itnerpolation gives an accurate answer
 (numerical recipy's  book has interpaoplation)
 https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.interp.html
 output vsol and check type
+10 point sample does not generate enough points
 
 
 
@@ -79,12 +80,11 @@ output vsol and check type
 6) Working towards distributions of omega lambda, omega matter and interaction term.
 make numintegra8 give D_L in parsecs
 put plots and calculation into separate functions
+SPLIT INTO MODULES
 
 
 
 
-10 point sample does not generate enough points
-plot results to see if they look right?
 
 
 
@@ -94,17 +94,16 @@ change interaction term to gamma instead of labda, mindful of lambda teh cosm co
 Ask Sue Yang re debugging python to check type of error, underflow/overflow
 
 Run msim with slightly different parameters, plot redshift vs dlmpc and see if 
-anything looks super strange (some parameters might be unphysics)
+anything looks super strange (some parameters might be unphysical)
+
 
 NOT AN ASSIGNMENT
 """
 # cosmo
 import numpy as np
 import random
-from scipy.integrate import odeint
-from math import log10
-from pylab import figure, plot, scatter, xlabel, grid, legend, title
-from matplotlib.font_manager import FontProperties
+from pylab import figure, scatter
+
 import corner
 import emcee
 import logging
@@ -113,269 +112,13 @@ import scipy.optimize as op
 import sys
 import time
 
+import flist
+import gnoise
+import msim
+import lnlike
+import lnprob
+
 timet0 = time.time()    # starting script timer
-
-
-def flist(start, stop, step):
-    """
-    Takes in:
-        start, stop, step - integers or floats
-    Returns:
-        zlist - a list start to stop with step as increment
-    """
-#    print('-flist has been called')
-    i = 0
-    zlist = [start]
-    
-    while zlist[i] < stop:
-        nextvalue = zlist[i] + step
-        zlist.append(nextvalue)
-        i += 1
-        continue
-
-    return zlist
-
-
-def firstderivs(v, t, w, lamb):
-    """
-    Takes in:
-        v = values at t=10;
-        w = omega parameters;
-        lamb = interaction constant.
-                
-    Returns a function with:    a_dot, a_dotdot, 
-                                e'_dotm, e'_dotde, 
-                                omegam_dot, omegade_dot,
-                                z_dot,
-                                dl_dot
-    ready to be integrated with odeint.
-    Uses same lambda for all fluids.
-    """
-#    print('@ firstderivs has been called')
-    (a, a_dot, e_dashm, e_dashde, z, dl) = v #omegam, omegade, z, dl) = v
-    (w_m, w_de) = w
-    
-    # fist derivatives of functions I want to find:
-    f = [# a_dot (=scale factor)
-         a_dot,
-         # a_dotdot
-         (-a/2) * (e_dashm * (1+3*w_m) + e_dashde * (1+3*w_de)), 
-         
-         # e'_dotm (=density(t) / crit density(t0))
-#         -3 * (a_dot/a) * e_dashm * (1 + w_m -lamb/3 * a/a_dot * e_dashde/e_dashm ),
-         -3 * (a_dot/a) * e_dashm + e_dashm * w_m - e_dashm* lamb/3 * e_dashm * a/a_dot * e_dashde,
-
-         # e'_dotde
-         -3 * (a_dot/a) * e_dashde * (1 + w_de +lamb/3 * a/a_dot),
-
-         # z_dot (=redshift)
-         -a_dot/a**2,
-         # dl_dot (=luminosty distance)
-         -1/a]
-        
-    return f
-
-
-
-def odesolve(lamb,m,de):
-    """
-    Takes in:
-        lamb = e_lamb(t)/ec(t0) at t=t0;
-        m = e_m(t)/ec(t0) at t=t0;
-        de = e_de(t)/ec(t0) at t=t0.
-    Returns: 
-        dlmpc = luminosity distance in Mpc;
-        z = redshift under 2.
-    
-    """
-#    print('@@ odesolve has been called')
-    # Last value for a before results are considered close enough to z = 2.
-    a_d = 0.25
-    
-    # Time (in 1/H0) to integrate until.  If this time isn't long enough for a to 
-    # decrease to a_d then stoptime will be extended by time until a_d is reached.
-    # 0.665 matter only, 0.96 standard m+de
-    time = 0.9
-    
-    
-    # Initial conditions at time = t0.
-    a0 = 1.0        # scale factor
-    a_dot0 = 1.0    # speed of expansion
-    e_dash0m = m    # e_m(t)/ec(t0)
-    e_dash0de = de  # e_de(t)/ec(t0)
-    z0 = 0
-    dl0 = 0
-    
-    # ODE solver parameters:
-    abserr = 1.0e-8
-    relerr = 1.0e-6
-    numpoints = 1000000
-    
-    stoptime = -time # Integrating back in time as time now is t0.
-    
-    while True:
-        # Create time samples for the ODE solver.
-        t = [stoptime * tH * float(i) / (numpoints - 1) for i in range(numpoints)]
-#        print('time is : ',t[0])
-        # Pack up the initial conditions and eq of state parameters.
-        v0 = [a0, a_dot0, e_dash0m, e_dash0de, z0, dl0]
-        w = [w_m, w_de]
-        
-        # Call the ODE solver. maxstep=5000000 added later to try and avoid 
-        # ODEintWarning: Excess work done on this call (perhaps wrong Dfun type).
-        vsol = odeint(firstderivs, v0, t, args=(w,lamb,), atol=abserr, rtol=relerr, mxstep=5000000)
-        # vsol type is:  <class 'numpy.ndarray'>
-                
-        # Remove unwanted results which are too close to big bang from the plot.
-        # Separate results into their own arrays:
-        a = vsol[:,0]
-        a_dot = vsol[:,1]
-#        e_dashm = vsol[:,2]
-#        e_dashde = vsol[:,3]
-        z = vsol[:,4]
-        dl = vsol[:,5] * (1+z)
-        dlmpc = dl * c_over_H0    # dl in Mega parsecs (= vsol[dl] * c/H0)
-    
-        
-        # Find where results start to get strange (smaller than a_d):
-        blowups = np.where(a < a_d)    # Tuple with indecies of a so
-                                       # small that other results blow up.                             
-        blowups = np.asarray(blowups)  # Converting to np array.
-    
-        if blowups.any():              # Check if instances of a < a_d exist.   
-            blowup = blowups[0,0]
-        else:                          # If no instance of a < a_d was found
-            stoptime -= time           # then integrate further back in time.
-            continue
-        
-        
-        # Remove the values after the index of first instance of a < a_d.
-        t_cut = np.asarray(t)
-        
-        t_cut = t_cut[:blowup]
-        a = a[:blowup]
-        a_dot = a_dot[:blowup]
-        z = z[:blowup]
-        dl = dl[:blowup]
-        dlmpc = dlmpc[:blowup]
-                
-        
-        # Age of the universe.
-        age = t_cut[np.argmin(t_cut)]
-        age = -round(age, 2)
-
-        # Plotting selected results:
-        # a and a_dot vs time.
-        while True:
-            figure()
-            xlabel('time in $H_0^{-1}$')
-            grid(True)
-            plot(t_cut, a, 'r', t_cut, a_dot, 'b', lw=1)
-            legend((r'$a$', r'$\.a$'), prop=FontProperties(size=16))
-            title('Cut results for $\omega$ = %s, $\lambda$ = %s, age = %s $H_0^{-1}$'
-                  %(w,lamb,age))
-            break
-        
-        # Luminosity distance dl vs redshift.
-        while True:
-            figure()
-            xlabel('redshift $z$')
-            grid(True)
-            plot(z, dl, 'tab:green', lw=1)
-            title('$D_L$ vs redshift for $\omega$ = %s, $\lambda$ = %s,'
-                  ' age = %s $H_0^{-1}$'%(w,lamb,age))
-            break
-        
-        while True:
-            # Redshift vs time.
-            figure()
-            xlabel('time in $H_0^{-1}$')
-            pl.axis([0,-0.1,0,5])
-            grid(True)
-            plot(t_cut, z, 'tab:pink', lw=1)
-            title('Redshift evolution for $\omega$ = %s, $\lambda$ = %s,'
-              ' age = %s $H_0^{-1}$'%(w,lamb,age))
-            break
-            
-        break
-            
-    
-#    # Complete results with blow up resulting from a approaching big bang.
-    while True:  
-        figure()
-        xlabel('time in $H_0^{-1}$')
-        grid(True)
-        
-        # Plotting complete results.
-        plot(t, vsol[:,0], 'r', lw=1)
-        plot(t, vsol[:,1], 'b', lw=1)
-        
-        legend((r'$a$', r'$\.a$', r'$\'\epsilon$'), prop=FontProperties(size=16))
-        title('Complete results for $\omega$ = %s'%(w))
-        break
-
-    return z, dlmpc
-
-
-def msim(lamb, m, de, n, p, zpicks):
-    """
-    Takes in:
-            lamb (= e_lamb(t)/ec(t0) at t=t0),
-            m (= e_m(t)/ec(t0) at t=t0),
-            de (= e_de(t)/ec(t0) at t=t0),
-            n (= dimensionless number of data points to be generated),
-            p (= percentage of noise)
-            zpicks (=list of z to match the interpolated dlmpc to).
-    Returns:
-        mag (=list of n apparent magnitudes mag from corresponding redshits).
-    """
-#    print('@@@ msim has been called')
-    z, dlmpc = odesolve(lamb,m,de)
-    dlmpcinterp = np.interp(zpicks, z, dlmpc)
-
-    # Calculating apparent magnitudes of supernovae at the simulated
-    # luminosity distances using the distance modulus formula.
-    mag = []
-    for i in range(len(dlmpcinterp)):
-        mdistmod = 5 * log10(dlmpcinterp[i]/10) + M
-        mag.append(mdistmod) 
-    return mag
-
-
-def gnoise(mag, sigma, mu):
-    """
-    calculates and adds random p% Gaussian noise to each mag datapoint
-    """
-#    print('-gnoise has been called')
-    noise = np.random.normal(mu,sigma,n)
-#    print('noise from inside gnoise is = ', noise)
-    mag = mag + noise
-    return mag, noise
-
-
-def lnlike(theta, n, p, zpicks, mag, sigma):
-#    print('@@@@ lnlike has been called')
-    lamb, m, de = theta
-    model = msim(lamb, m, de, n, p, zpicks)
-    inv_sigma2 = 1.0/(sigma**2)
-    return -0.5*(np.sum((mag-model)**2*inv_sigma2 - np.log(inv_sigma2)))    
-
-    
-def lnprior(theta):
-#    print(' lnprior has been called')
-    lamb, m, de = theta
-    if (-0.001 < lamb < 0.001 and 0 < m < 1.0 and 0.0 < de < 1.0):
-        return 0.0
-    return -np.inf
-        
-
-def lnprob(theta, n, p, zpicks, mag, sigma):
-#    print('@@@@@ lnprob has been called')
-    lp = lnprior(theta)
-    if not np.isfinite(lp):
-        return -np.inf
-    return lp + lnlike(theta, n, p, zpicks, mag, sigma)
-
 
 # Number of datapoints to be simulated.
 n = 100 #10, 1000
@@ -391,24 +134,13 @@ ndim, nwalkers = 3, 6
 nsteps = 1000
 burnin = 200
 
-# Standard cosmological parameters.
-H0 = 1       # Hubble parameter at t=now
-tH = 1.0/H0  # Hubble time
-# Eq of state parameters for known fluids:
-w_r = 1/3     # radiation
-w_m = 0.0     # matter
-w_de = -1.0   # cosmological constant (dark energy?)  
-
+ 
 # Model specific parameters.  
 # Interaction term, rate at which DE decays into matter.
 lamb_true = 0
 # Fraction of matter and dark energy compared to critical density at t=t0.
 m_true = 0.3
 de_true = 0.7
-
-# Empirical parameters.
-M = -19                     # Absolute brightness of supernovae.
-c_over_H0 = 4167 * 10**6    # c/H0 in parsecs
 
 
 
@@ -420,7 +152,7 @@ c_over_H0 = 4167 * 10**6    # c/H0 in parsecs
 zmin = 0.001
 zmax = 2        # Largest meausured z for a supernovae is 2.
 zinterval = (zmax - zmin) / (n*2)
-z_opts = flist(zmin, zmax, zinterval)
+z_opts = flist.flist(zmin, zmax, zinterval)
 zpicks = random.sample(z_opts, n)
 zpicks = np.asarray(zpicks)
 
@@ -428,17 +160,17 @@ zpicks = np.asarray(zpicks)
 # Generating apparent magnitues mag at redshift z<2 (calculated from
 # luminosity distances given by LambdaCMD with parameters stated above.
 #theta = lamb, m, de
-model = msim(lamb_true, m_true, de_true, n, p, zpicks)
+model = msim.msim(lamb_true, m_true, de_true, n, p, zpicks)
 model = np.asarray(model)
 
-mag, noise = gnoise(model, sigma, mu)
+mag, noise = gnoise.gnoise(model, sigma, mu, n)
 #print('noise in code body is = ', noise)
 
 
 
 try:
     # Finding a "good" place to start using alternative method to emcee.
-    nll = lambda *args: -lnlike(*args)  # type of nll is: <class 'function'>
+    nll = lambda *args: -lnlike.lnlike(*args)  # type of nll is: <class 'function'>
     result = op.minimize(nll, [lamb_true, m_true, de_true], 
                          args=(n, p, zpicks, mag, noise))
     lamb_ml, m_ml, de_ml = result["x"]    
@@ -451,7 +183,7 @@ try:
     # Sampler setup
     times0 = time.time()    # starting emcee timer
     
-    sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob, args=(n, p, zpicks, mag, sigma))
+    sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob.lnprob, args=(n, p, zpicks, mag, sigma))
     sampler.run_mcmc(pos, nsteps)
     
     times1=time.time()      # stopping emcee timer
@@ -488,9 +220,9 @@ try:
     # plot of data with errorbars + model
     figure()
     pl.errorbar(zpicks, mag, yerr=sigma, fmt='o', alpha=0.3)
-    modelt = msim(lamb_true, m_true, de_true, n, p, zpicks)
+    modelt = msim.msim(lamb_true, m_true, de_true, n, p, zpicks)
     model, = scatter(zpicks, modelt, lw='3', c='g')
-    magbest = msim(lambbest, mbest, debest, n, p, zpicks)
+    magbest = msim.msim(lambbest, mbest, debest, n, p, zpicks)
     best_fit, = scatter(zpicks,magbest,lw='3', c='r')
     pl.legend([model, best_fit], ['Model', 'Best Fit'])
     pl.show
