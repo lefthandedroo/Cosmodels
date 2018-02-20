@@ -69,8 +69,7 @@ need to be happy that the itnerpolation gives an accurate answer
 https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.interp.html
 output vsol and check type
 10 point sample does not generate enough points
-
-
+SPLIT INTO MODULES
 
 3) What would happen if error were 1%? or 50%? How does it change my parameters
 4) What if I generate a cosmology that has an interaction term? 
@@ -80,19 +79,13 @@ output vsol and check type
 6) Working towards distributions of omega lambda, omega matter and interaction term.
 make numintegra8 give D_L in parsecs
 put plots and calculation into separate functions
-SPLIT INTO MODULES
 
 
-
-
-
-
+check p use vs sigma, why are errobars on the Model with errorbars plot so small?
 
 Make plot of everything vs everything through saving outcomes of variables and plot them after
 change interaction term to gamma instead of labda, mindful of lambda teh cosm constant
-
 Ask Sue Yang re debugging python to check type of error, underflow/overflow
-
 Run msim with slightly different parameters, plot redshift vs dlmpc and see if 
 anything looks super strange (some parameters might be unphysical)
 
@@ -120,6 +113,13 @@ import lnprob
 
 timet0 = time.time()    # starting script timer
 
+# Model specific parameters.  
+# Interaction term, rate at which DE decays into matter.
+lamb_true = 0
+# Fraction of matter and dark energy compared to critical density at t=t0.
+m_true = 0.3
+de_true = 0.7
+
 # Number of datapoints to be simulated.
 n = 100 #10, 1000
 
@@ -135,14 +135,6 @@ nsteps = 1000
 burnin = 200
 
  
-# Model specific parameters.  
-# Interaction term, rate at which DE decays into matter.
-lamb_true = 0
-# Fraction of matter and dark energy compared to critical density at t=t0.
-m_true = 0.3
-de_true = 0.7
-
-
 
 
 
@@ -156,14 +148,13 @@ z_opts = flist.flist(zmin, zmax, zinterval)
 zpicks = random.sample(z_opts, n)
 zpicks = np.asarray(zpicks)
 
-
 # Generating apparent magnitues mag at redshift z<2 (calculated from
 # luminosity distances given by LambdaCMD with parameters stated above.
 #theta = lamb, m, de
 model = msim.msim(lamb_true, m_true, de_true, n, p, zpicks)
 model = np.asarray(model)
 
-mag, noise = gnoise.gnoise(model, sigma, mu, n)
+mag, noise = gnoise.gnoise(model, mu, sigma, n)
 #print('noise in code body is = ', noise)
 
 
@@ -205,9 +196,9 @@ try:
     pl.show()
     
     # Plotting lines of best fit using a 100-strong sample of parameters.
-    zl = zpicks
     figure()
-    scatter(zl, model,color="r", lw=2, alpha=0.8)
+    pl.title('Model with errorbars')
+    scatter(zpicks, model, color="r", lw=2, alpha=0.8)
     pl.errorbar(zpicks, model, yerr=sigma, fmt=".k")
     pl.show()
     
@@ -219,13 +210,14 @@ try:
     
     # plot of data with errorbars + model
     figure()
+    pl.title('Model and Best Fit')
     pl.errorbar(zpicks, mag, yerr=sigma, fmt='o', alpha=0.3)
     modelt = msim.msim(lamb_true, m_true, de_true, n, p, zpicks)
-    model, = scatter(zpicks, modelt, lw='3', c='g')
+    model_fit = scatter(zpicks, modelt, lw='3', c='g')
     magbest = msim.msim(lambbest, mbest, debest, n, p, zpicks)
-    best_fit, = scatter(zpicks,magbest,lw='3', c='r')
-    pl.legend([model, best_fit], ['Model', 'Best Fit'])
-    pl.show
+    best_fit = scatter(zpicks,magbest,lw='3', c='r')
+    pl.legend([model_fit, best_fit], ['Model', 'Best Fit'])
+    pl.show()
     
     
     # Results getting printed:

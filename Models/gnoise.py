@@ -7,7 +7,7 @@ Created on Thu Feb 15 13:33:56 2018
 """
 import numpy as np
 
-def gnoise(mag, sigma, mu, n):
+def gnoise(mag, mu, sigma, n):
     """
     calculates and adds random p% Gaussian noise to each mag datapoint
     """
