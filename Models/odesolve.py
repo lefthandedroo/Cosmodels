@@ -5,14 +5,15 @@ Created on Thu Feb 15 13:38:48 2018
 
 @author: BallBlueMeercat
 """
-
-import firstderivs
 import numpy as np
 from scipy.integrate import odeint
 
-#import matplotlib.pyplot as pl
-from matplotlib.font_manager import FontProperties
-from pylab import figure, plot, xlabel, ylabel, grid, legend, title, show, axis
+import firstderivs
+import plots
+
+
+#from matplotlib.font_manager import FontProperties
+#from pylab import figure, plot, xlabel, ylabel, grid, legend, title, show, axis
 
 
 # Standard cosmological parameters.
@@ -24,7 +25,6 @@ w_m = 0.0     # matter
 w_de = -1.0   # cosmological constant (dark energy?)
 
 c_over_H0 = 4167 * 10**6    # c/H0 in parsecs
-
 
 def odesolve(gamma,m,de):
     """
@@ -78,7 +78,6 @@ def odesolve(gamma,m,de):
         # Call the ODE solver. maxstep=5000000 added later to try and avoid 
         vsol = odeint(firstderivs.firstderivs, v0, t, args=(w,gamma,), 
                       atol=abserr, rtol=relerr, mxstep=5000000)
-        # vsol type is:  <class 'numpy.ndarray'>
                 
         # Remove unwanted results which are too close to big bang from the plot.
         # Separate results into their own arrays:
@@ -88,8 +87,7 @@ def odesolve(gamma,m,de):
         e_dashde = vsol[:,3]
         z = vsol[:,4]
         dl = vsol[:,5] * (1+z)   # in units of dl*(H0/c)
-        dlpc = dl * c_over_H0    # dl in Mega parsecs (= vsol[dl] * c/H0)
-        dlgpc = dlpc /10**9
+        dlpc = dl * c_over_H0    # dl in parsecs (= vsol[dl] * c/H0)
         
         # Find where results start to get strange (smaller than a_d):
         blowups = np.where(a < a_d)    # Tuple with indecies of a so
@@ -104,23 +102,19 @@ def odesolve(gamma,m,de):
     t_cut = np.asarray(t)
     
     t_cut = t_cut[:blowup]
-    a = a[:blowup]
-    a_dot = a_dot[:blowup]
+    a_cut = a[:blowup]
+    a_dotcut = a_dot[:blowup]
     e_dashm = e_dashm[:blowup]
     e_dashde = e_dashde[:blowup]
     z = z[:blowup]
     dl = dl[:blowup]
-    dlpc = dlpc[:blowup]      
-    dlgpc = dlgpc[:blowup]
+    dlpc = dlpc[:blowup]
     
     # Age of the universe.
     age = t_cut[np.argmin(t_cut)]
     age = -round(age, 2)
 
-
-
-
-
+    plots.plots(gamma, e_dash0m, e_dash0de, z, dl, dlpc, t, a, a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde)
  
 #    while True:
 #        # Create time samples for the ODE solver.
@@ -176,7 +170,6 @@ def odesolve(gamma,m,de):
 #        age = t_cut[np.argmin(t_cut)]
 #        age = -round(age, 2)
 
-    return z, dlpc, a
+    return z, dlpc
 
-
-z, dlpc, a = odesolve(0,0.2,0.3)
+odesolve(0, 0.3, 0.7)
