@@ -37,7 +37,7 @@ def odesolve(gamma,m,de):
         z = numpoints number of redshifts zmin<z<zmax.
     
     """
-    print('@@ odesolve has been called')
+#    print('@@ odesolve has been called')
     # Last value for 'a' before results are considered close enough to z = 2.
     a_d = 0.25
     
@@ -114,62 +114,7 @@ def odesolve(gamma,m,de):
     age = t_cut[np.argmin(t_cut)]
     age = -round(age, 2)
 
-    plots.plots(gamma, e_dash0m, e_dash0de, z, dl, dlpc, t, a, a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde)
- 
-#    while True:
-#        # Create time samples for the ODE solver.
-#        t = [stoptime * tH * float(i) / (numpoints - 1) for i in range(numpoints)]
-##        print('type of t is: ',str(type(t)))
-##        print('time is : ',t[0])
-#        # Pack up the initial conditions and eq of state parameters.
-#        v0 = [a0, a_dot0, e_dash0m, e_dash0de, z0, dl0]
-#        w = [w_m, w_de]
-#        
-#        # Call the ODE solver. maxstep=5000000 added later to try and avoid 
-#        vsol = odeint(firstderivs.firstderivs, v0, t, args=(w,gamma,), 
-#                      atol=abserr, rtol=relerr, mxstep=5000000)
-#        # vsol type is:  <class 'numpy.ndarray'>
-#                
-#        # Remove unwanted results which are too close to big bang from the plot.
-#        # Separate results into their own arrays:
-#        a = vsol[:,0]
-#        a_dot = vsol[:,1]
-#        e_dashm = vsol[:,2]
-#        e_dashde = vsol[:,3]
-#        z = vsol[:,4]
-#        dl = vsol[:,5] * (1+z)   # in units of dl*(H0/c)
-#        dlpc = dl * c_over_H0    # dl in Mega parsecs (= vsol[dl] * c/H0)
-#        dlgpc = dlpc /10**9
-#        
-#        # Find where results start to get strange (smaller than a_d):
-#        blowups = np.where(a < a_d)    # Tuple with indecies of a so
-#                                       # small that other results blow up.                             
-#        blowups = np.asarray(blowups)  # Converting to np array.
-#    
-#        if blowups.any():              # Check if instances of a < a_d exist.   
-#            blowup = blowups[0,0]
-#        else:                          # If no instance of a < a_d was found
-#            stoptime -= time           # then integrate further back in time.
-#            continue
-#        
-#        
-#        # Remove the values after the index of first instance of a < a_d.
-#        t_cut = np.asarray(t)
-#        
-#        t_cut = t_cut[:blowup]
-#        a = a[:blowup]
-#        a_dot = a_dot[:blowup]
-#        e_dashm = e_dashm[:blowup]
-#        e_dashde = e_dashde[:blowup]
-#        z = z[:blowup]
-#        dl = dl[:blowup]
-#        dlpc = dlpc[:blowup]      
-#        dlgpc = dlgpc[:blowup]
-#        
-#        # Age of the universe.
-#        age = t_cut[np.argmin(t_cut)]
-#        age = -round(age, 2)
-
+    # Plotting results.
+#    plots.plots(gamma, e_dash0m, e_dash0de, z, dl, dlpc, t, a, a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde)
+    
     return z, dlpc
-
-odesolve(0, 0.3, 0.7)

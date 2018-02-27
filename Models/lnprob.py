@@ -11,7 +11,7 @@ import lnprior
 import numpy as np
 
 def lnprob(theta, n, zpicks, mag, sigma):
-    print('@@@@@ lnprob has been called')
+#    print('@@@@@ lnprob has been called')
     lp = lnprior.lnprior(theta)
     if not np.isfinite(lp):
         return -np.inf

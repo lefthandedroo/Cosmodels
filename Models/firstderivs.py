@@ -22,7 +22,6 @@ def firstderivs(v, t, w, gamma):
     ready to be integrated with odeint.
     Uses same lambda for all fluids.
     """
-#    print('@ firstderivs has been called')
     (a, a_dot, e_dashm, e_dashde, z, dl) = v #omegam, omegade, z, dl) = v
     (w_m, w_de) = w
     
@@ -34,7 +33,7 @@ def firstderivs(v, t, w, gamma):
          (-a/2) * (e_dashm * (1+3*w_m) + e_dashde * (1+3*w_de)), 
          
          # e'_dotm (=density(t) / crit density(t0))
-#         -3 * (a_dot/a) * e_dashm * (1 + w_m -gamma/3 * a/a_dot * e_dashde/e_dashm ),
+#         -3 * (a_dot/a) * e_dashm * (1 + w_m -gamma/3 * a/a_dot * e_dashde/e_dashm),
          -3 * (a_dot/a) * e_dashm + e_dashm * w_m - e_dashm* gamma/3 * e_dashm * a/a_dot * e_dashde,
 
          # e'_dotde

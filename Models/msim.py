@@ -24,14 +24,14 @@ def msim(gamma, m, de, n, zpicks):
     Returns:
         mag = list of n apparent magnitudes mag from corresponding redshits.
     """
-    print('@@@ msim has been called')
-    z, dlmpc = odesolve.odesolve(gamma, m, de)
-    dlmpcinterp = np.interp(zpicks, z, dlmpc)
+#    print('@@@ msim has been called')
+    z, dlpc = odesolve.odesolve(gamma, m, de)
+    dlpcinterp = np.interp(zpicks, z, dlpc)
 
     # Calculating apparent magnitudes of supernovae at the simulated
     # luminosity distances using the distance modulus formula.
     mag = []
-    for i in range(len(dlmpcinterp)):
-        mdistmod = 5 * log10(dlmpcinterp[i]/10) + M
+    for i in range(len(dlpcinterp)):
+        mdistmod = 5 * log10(dlpcinterp[i]/10) + M
         mag.append(mdistmod) 
     return mag

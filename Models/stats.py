@@ -36,7 +36,7 @@ def stats(gamma_true, m_true, de_true, n, zpicks, mag, noise, sigma):
             sigma = sigma.
     Returns:
     """
-    print('-stats has been called')
+#    print('-stats has been called')
     # Finding a "good" place to start using alternative method to emcee.
     nll = lambda *args: -lnlike.lnlike(*args)  # type of nll is: <class 'function'>
     result = op.minimize(nll, [gamma_true, m_true, de_true],
