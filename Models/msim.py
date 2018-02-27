@@ -13,20 +13,19 @@ import odesolve
 # Empirical parameters.
 M = -19                     # Absolute brightness of supernovae.
 
-def msim(lamb, m, de, n, p, zpicks):
+def msim(gamma, m, de, n, zpicks):
     """
     Takes in:
-            lamb (= e_lamb(t)/ec(t0) at t=t0),
-            m (= e_m(t)/ec(t0) at t=t0),
-            de (= e_de(t)/ec(t0) at t=t0),
-            n (= dimensionless number of data points to be generated),
-            p (= percentage of noise)
-            zpicks (=list of z to match the interpolated dlmpc to).
+            gamma = interaction constant;
+            m = e_m(t)/ec(t0) at t=t0;
+            de = e_de(t)/ec(t0) at t=t0;
+            n = dimensionless number of data points to be generated;
+            zpicks = list of z to match the interpolated dlmpc to.
     Returns:
-        mag (=list of n apparent magnitudes mag from corresponding redshits).
+        mag = list of n apparent magnitudes mag from corresponding redshits.
     """
-#    print('@@@ msim has been called')
-    z, dlmpc = odesolve.odesolve(lamb,m,de)
+    print('@@@ msim has been called')
+    z, dlmpc = odesolve.odesolve(gamma, m, de)
     dlmpcinterp = np.interp(zpicks, z, dlmpc)
 
     # Calculating apparent magnitudes of supernovae at the simulated

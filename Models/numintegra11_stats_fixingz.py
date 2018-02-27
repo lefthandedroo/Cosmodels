@@ -70,6 +70,11 @@ https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.interp.html
 output vsol and check type
 10 point sample does not generate enough points
 SPLIT INTO MODULES
+check p use vs sigma, why are errobars on the Model with errorbars plot so small?
+call the interactin term gamma everywhere, are any lambda - cosm constant? no
+make numintegra8 give D_L in parsecs
+
+
 
 3) What would happen if error were 1%? or 50%? How does it change my parameters
 4) What if I generate a cosmology that has an interaction term? 
@@ -77,169 +82,65 @@ SPLIT INTO MODULES
     omegade and lamb
 (try the standard one with no lambda and see if you get lambda = 0 back)
 6) Working towards distributions of omega lambda, omega matter and interaction term.
-make numintegra8 give D_L in parsecs
-put plots and calculation into separate functions
 
 
-check p use vs sigma, why are errobars on the Model with errorbars plot so small?
+Put constraint that m+de can't be more than 1, ask Geraint if that's reasonable 
 
-Make plot of everything vs everything through saving outcomes of variables and plot them after
-change interaction term to gamma instead of labda, mindful of lambda teh cosm constant
+separate plotting function
+Save outcomes of variables and plot everything vs everything after script finishes
 Ask Sue Yang re debugging python to check type of error, underflow/overflow
-Run msim with slightly different parameters, plot redshift vs dlmpc and see if 
+Run odesolve with slightly different parameters, plot redshift vs dlmpc and see if 
 anything looks super strange (some parameters might be unphysical)
 
 
 NOT AN ASSIGNMENT
 """
-# cosmo
 import numpy as np
-import random
-from pylab import figure, scatter
-
-import corner
-import emcee
-import logging
-import matplotlib.pyplot as pl
-import scipy.optimize as op
-import sys
 import time
 
-import flist
 import gnoise
 import msim
-import lnlike
-import lnprob
+import zpicks
+import stats
 
-timet0 = time.time()    # starting script timer
+# Starting script timer.
+timet0 = time.time()
+
+
+# Parameters:
 
 # Model specific parameters.  
-# Interaction term, rate at which DE decays into matter.
-lamb_true = 0
-# Fraction of matter and dark energy compared to critical density at t=t0.
-m_true = 0.3
-de_true = 0.7
+gamma_true = 0  # Interaction term, rate at which DE decays into matter.
+m_true = 0.3    # (= e_m(t)/e_crit(t0) at t=t0).
+de_true = 0.7   # (de = e_de(t)/e_crit(t0) at t=t0).
 
 # Number of datapoints to be simulated.
 n = 100 #10, 1000
 
 # Statistical parameters:
-# Percentage error on apparent magnitudes.
-p = 10
-sigma = p/100       # standard deviation
-mu = 0              # mean
-
-# emcee parameters:
-ndim, nwalkers = 3, 6
-nsteps = 1000
-burnin = 200
-
- 
+mu = 0          # mean
+sigma = 1       # standard deviation
 
 
 
 # Code:
 
 # Picking redshifts to investigate.
-zmin = 0.001
-zmax = 2        # Largest meausured z for a supernovae is 2.
-zinterval = (zmax - zmin) / (n*2)
-z_opts = flist.flist(zmin, zmax, zinterval)
-zpicks = random.sample(z_opts, n)
-zpicks = np.asarray(zpicks)
+zmin, zmax = 0.001, 2
+zpicks = zpicks.zpicks(zmin, zmax, n)
 
-# Generating apparent magnitues mag at redshift z<2 (calculated from
+# Generating apparent magnitues mag at redshift z < zmax (calculated from
 # luminosity distances given by LambdaCMD with parameters stated above.
-#theta = lamb, m, de
-model = msim.msim(lamb_true, m_true, de_true, n, p, zpicks)
+model = msim.msim(gamma_true, m_true, de_true, n, zpicks)
 model = np.asarray(model)
-
 mag, noise = gnoise.gnoise(model, mu, sigma, n)
 #print('noise in code body is = ', noise)
 
 
-
-try:
-    # Finding a "good" place to start using alternative method to emcee.
-    nll = lambda *args: -lnlike.lnlike(*args)  # type of nll is: <class 'function'>
-    result = op.minimize(nll, [lamb_true, m_true, de_true], 
-                         args=(n, p, zpicks, mag, noise))
-    lamb_ml, m_ml, de_ml = result["x"]    
-    
-        
-    # Initializing walkers in a Gaussian ball around the max likelihood. 
-    pos = [result["x"] + 1*np.random.randn(ndim) for i in range(nwalkers)]    
-        
-    
-    # Sampler setup
-    times0 = time.time()    # starting emcee timer
-    
-    sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob.lnprob, args=(n, p, zpicks, mag, sigma))
-    sampler.run_mcmc(pos, nsteps)
-    
-    times1=time.time()      # stopping emcee timer
-    times=times1 - times0   # time to run emcee
-    timesmin = round((times / 60),1)    # minutes
-    timessec = round((times % 60),1)    # seconds
-    
-    
-    # Corner plot (walkers' walk + histogram).
-    samples = sampler.chain[:, burnin:, :].reshape((-1, ndim))
-    fig = corner.corner(samples, labels=["$lamb$", "$m$", "$de$"], 
-                        truths=[lamb_true, m_true, de_true])
-    fig.savefig('nsteps'+str(nsteps)+str(time.strftime("%c"))+
-                'nwalkers'+str(nwalkers)+'.png')
-    
-    
-    # Marginalised distribution (histogram) plot.
-    pl.hist(sampler.flatchain[:,0], 100)
-    pl.show()
-    
-    # Plotting lines of best fit using a 100-strong sample of parameters.
-    figure()
-    pl.title('Model with errorbars')
-    scatter(zpicks, model, color="r", lw=2, alpha=0.8)
-    pl.errorbar(zpicks, model, yerr=sigma, fmt=".k")
-    pl.show()
-    
-    # Best line of fit found by emcee.
-    bi = np.argmax(sampler.lnprobability)   # index with highest post prob                                       
-    lambbest = sampler.flatchain[bi,0]      # parameters with the highest 
-    mbest = sampler.flatchain[bi,1]         # posterior probability
-    debest = sampler.flatchain[bi,2]
-    
-    # plot of data with errorbars + model
-    figure()
-    pl.title('Model and Best Fit')
-    pl.errorbar(zpicks, mag, yerr=sigma, fmt='o', alpha=0.3)
-    modelt = msim.msim(lamb_true, m_true, de_true, n, p, zpicks)
-    model_fit = scatter(zpicks, modelt, lw='3', c='g')
-    magbest = msim.msim(lambbest, mbest, debest, n, p, zpicks)
-    best_fit = scatter(zpicks,magbest,lw='3', c='r')
-    pl.legend([model_fit, best_fit], ['Model', 'Best Fit'])
-    pl.show()
-    
-    
-    # Results getting printed:
-    print('best index is =',str(bi))
-    print('lambbest is =',str(lambbest))
-    print('mbest is =',str(mbest))
-    print('debest is =',str(debest))
-  
-    # Mean acceptance fraction. In general, acceptance fraction has an entry 
-    # for each walker so, in this case, it is a 50-dimensional vector.
-    print('Mean acceptance fraction:', np.mean(sampler.acceptance_fraction))
-    print('Number of steps:', str(nsteps))
-    print('Number of walkers:', str(nwalkers))
-    print('Sampler time:',str(int(timesmin))+'min'
-          ,str(int(timessec))+'s')
-    
-    
-except Exception as e:
-        logging.error('Caught exception:',str(e))
-        print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno))
+stats.stats(gamma_true, m_true, de_true, n, zpicks, mag, noise, sigma)
 
 
+# Time taken by the script. 
 timet1=time.time()      # stopping script time
 timet=timet1-timet0     # total time to run script
 timetmin = round((timet / 60),1)  # minutes

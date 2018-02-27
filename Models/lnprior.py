@@ -8,7 +8,7 @@ Created on Thu Feb 15 13:54:17 2018
 import numpy as np
 
 def lnprior(theta):
-#    print(' lnprior has been called')
+    print(' lnprior has been called')
     lamb, m, de = theta
     if (-0.001 < lamb < 0.001 and 0.299 < m < 0.301 and 0.699 < de < 0.701):
         return 0.0

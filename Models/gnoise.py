@@ -9,10 +9,13 @@ import numpy as np
 
 def gnoise(mag, mu, sigma, n):
     """
-    calculates and adds random p% Gaussian noise to each mag datapoint
+   Returns:
+       mag = mag, each point offset by unique Gaussian noise;
+       noise = Gaussian noise.
     """
-#    print('-gnoise has been called')
+    print('-gnoise has been called')
     noise = np.random.normal(mu,sigma,n)
+    print(type(noise))
 #    print('noise from inside gnoise is = ', noise)
     mag = mag + noise
     return mag, noise
