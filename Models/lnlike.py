@@ -4,6 +4,8 @@
 Created on Thu Feb 15 13:51:18 2018
 
 @author: BallBlueMeercat
+
+put constraints on the parameters for msim.msim
 """
 
 import msim
