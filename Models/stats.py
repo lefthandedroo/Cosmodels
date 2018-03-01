@@ -38,6 +38,11 @@ def stats(gamma_true, m_true, de_true, zpicks, mag, noise, sigma):
     """
 #    print('-stats has been called')
     # Finding a "good" place to start using alternative method to emcee.
+
+#    print('gamma_true',gamma_true)
+#    print('m_true',m_true)
+#    print('de_true',de_true)
+    
     nll = lambda *args: -lnlike.lnlike(*args)  # type of nll is: <class 'function'>
     result = op.minimize(nll, [gamma_true, m_true, de_true],
                          args=(zpicks, mag, noise))
@@ -74,6 +79,10 @@ def stats(gamma_true, m_true, de_true, zpicks, mag, noise, sigma):
     gammabest = sampler.flatchain[bi,0]         # parameters with the highest 
     mbest = sampler.flatchain[bi,1]             # posterior probability
     debest = sampler.flatchain[bi,2]
+    
+#    if not (-0.1 < gammabest < 0.1 and 0.299 < mbest < 0.301 and 0.699 < debest < 0.701):
+#        print('parameters are outside of prior when they get to magbest')
+#        return
     
     magbest = msim.msim(gammabest, mbest, debest, zpicks)
 

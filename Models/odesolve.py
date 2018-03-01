@@ -9,7 +9,7 @@ import numpy as np
 from scipy.integrate import odeint
 
 import firstderivs
-
+import lnprior
 
 #from matplotlib.font_manager import FontProperties
 #from pylab import figure, plot, xlabel, ylabel, grid, legend, title, show, axis
@@ -38,7 +38,7 @@ def odesolve(gamma,m,de):
     """
 #    print('@@ odesolve has been called')
     # Last value for 'a' before results are considered close enough to z = 2.
-    a_d = 0.25
+#    a_d = 0.25
     
     # Time (in 1/H0) to integrate until.  If this time isn't long 
     # enough for 'a' to decrease to a_d then stoptime will be extended 
@@ -65,13 +65,20 @@ def odesolve(gamma,m,de):
     z = np.array([0])
     i = 0
     
-    while z[np.argmax(z)] < 2:
+    while z[np.argmax(z)] < 2.1:
         stoptime -= time
         
         i+=1
         if i % 10 == 0:
             print('%s integration round, gamma = %s, m = %s, de = %s'
                   %(i, gamma, m, de))
+            
+#             experiment
+        theta = gamma, m, de
+        lp = lnprior.lnprior(theta)
+        if not np.isfinite(lp):
+            time = 500
+#             end of experiement. Checking if I can fix the endless integrations when getting magbest at the end of stats
         
         # Create time samples for the ODE solver.
         t = [stoptime * tH * float(i) / (numpoints - 1) for i in range(numpoints)]
@@ -95,7 +102,7 @@ def odesolve(gamma,m,de):
         dlpc = dl * c_over_H0    # dl in parsecs (= vsol[dl] * c/H0)
         
         # Find where results start to get strange (smaller than a_d):
-        blowups = np.where(a < a_d)    # Tuple with indecies of a so
+        blowups = np.where(z > 2)    # Tuple with indecies of a so
                                        # small that other results blow up.                             
         blowups = np.asarray(blowups)  # Converting to np array.
     
