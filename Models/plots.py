@@ -60,7 +60,7 @@ def plots(mag, zpicks, z, dlpc, dl, gamma, e_dash0m, e_dash0de, t, a, a_dot, t_c
         show()
         break   
 
-    while True:
+    while False:
         figure()
         xlabel('redshift $z$')
         ylabel('pc')

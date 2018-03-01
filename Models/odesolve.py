@@ -62,10 +62,16 @@ def odesolve(gamma,m,de):
     
     stoptime = 0 # Integrating back in time as time now is t0.
     
-    a = np.array([1])
+    z = np.array([0])
+    i = 0
     
-    while a[np.argmin(a)] > a_d:
+    while z[np.argmax(z)] < 2:
         stoptime -= time
+        
+        i+=1
+        if i % 10 == 0:
+            print('%s integration round, gamma = %s, m = %s, de = %s'
+                  %(i, gamma, m, de))
         
         # Create time samples for the ODE solver.
         t = [stoptime * tH * float(i) / (numpoints - 1) for i in range(numpoints)]

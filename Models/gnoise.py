@@ -16,5 +16,6 @@ def gnoise(mag, mu, sigma, n):
 #    print('-gnoise has been called')
     noise = np.random.normal(mu,sigma,n)
 #    print('noise from inside gnoise is = ', noise)
+#    print('mag is: ',mag)
     mag = mag + noise
     return mag, noise

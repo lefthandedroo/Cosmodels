@@ -9,6 +9,7 @@ Created on Thu Feb 15 13:47:44 2018
 from math import log10
 import numpy as np
 import odesolve
+
 import plots
 
 # Empirical parameters.
@@ -39,3 +40,6 @@ def msim(gamma, m, de, zpicks):
 #    plots.plots(mag, zpicks, z, dlpc, dl, gamma, e_dash0m, e_dash0de, t, a, a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde)
     
     return mag
+
+# gamma = 0.7180141123788913, m = -0.9502028028818189, de = 1.6930478435108243
+# msim(0, -0.95, 0.7, zpicks) won't get there

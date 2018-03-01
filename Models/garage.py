@@ -10,9 +10,21 @@ Created on Thu Sep 21 15:50:29 2017
 #import random
 #from math import log10
 
-import printmefunc
+import time
+import timer
 
-print(printmefunc.printmefunc())
+tsamp0 = time.time()    # starting timer
+print(str(tsamp0))
+
+i = 0
+
+while i < 10**8:
+    i += 1
+
+tsamp1=time.time()      # stopping timer
+print(str(tsamp1))
+
+timer.timer('garage', tsamp0, tsamp1)
 
 
 #start = 0

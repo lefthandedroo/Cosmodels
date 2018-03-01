@@ -14,14 +14,15 @@ import scipy.optimize as op
 import numpy as np
 import time
 
+import timer
 import msim
 import lnlike
 import lnprob
 
 # emcee parameters:
-ndim, nwalkers = 3, 192
-nsteps = 10000
-burnin = 2000
+ndim, nwalkers = 3, 200
+nsteps = 100000
+burnin = 30000
 
 def stats(gamma_true, m_true, de_true, zpicks, mag, noise, sigma):
     """
@@ -47,15 +48,12 @@ def stats(gamma_true, m_true, de_true, zpicks, mag, noise, sigma):
         
     
     # Sampler setup
-    times0 = time.time()    # starting emcee timer
+    timee0 = time.time()    # starting emcee timer
     
     sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob.lnprob, args=(zpicks, mag, sigma))
     sampler.run_mcmc(pos, nsteps)
     
-    times1=time.time()      # stopping emcee timer
-    times=times1 - times0   # time to run emcee
-    timesmin = round((times / 60),1)    # minutes
-    timessec = round((times % 60),1)    # seconds
+    timee1=time.time()      # stopping emcee timer
     
     
     # Corner plot (walkers' walk + histogram).
@@ -72,9 +70,9 @@ def stats(gamma_true, m_true, de_true, zpicks, mag, noise, sigma):
 
     
     # Simulating magnitude using best parameters found by emcee.
-    bi = np.argmax(sampler.lnprobability)   # index with highest post prob                                       
-    gammabest = sampler.flatchain[bi,0]      # parameters with the highest 
-    mbest = sampler.flatchain[bi,1]         # posterior probability
+    bi = np.argmax(sampler.lnprobability)       # index with highest post prob                                       
+    gammabest = sampler.flatchain[bi,0]         # parameters with the highest 
+    mbest = sampler.flatchain[bi,1]             # posterior probability
     debest = sampler.flatchain[bi,2]
     
     magbest = msim.msim(gammabest, mbest, debest, zpicks)
@@ -102,9 +100,8 @@ def stats(gamma_true, m_true, de_true, zpicks, mag, noise, sigma):
     print('Mean acceptance fraction:', np.mean(sampler.acceptance_fraction))
     print('Number of steps:', str(nsteps))
     print('Number of walkers:', str(nwalkers))
-    print('Sampler time:',str(int(timesmin))+'min'
-          ,str(int(timessec))+'s')
-    
+    timer.timer('sampler', timee0, timee1)
+
     return
 #except Exception as e:
 #        logging.error('Caught exception:',str(e))
