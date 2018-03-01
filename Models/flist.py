@@ -13,7 +13,7 @@ def flist(start, stop, step):
     Returns:
         zlist - a list start to stop with step as increment
     """
-    print('-flist has been called')
+#    print('-flist has been called')
     i = 0
     zlist = [start]
     

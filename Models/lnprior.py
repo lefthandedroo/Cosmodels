@@ -9,7 +9,7 @@ import numpy as np
 
 def lnprior(theta):
 #    print(' lnprior has been called')
-    lamb, m, de = theta
-    if (-0.1 < lamb < 0.1 and 0.299 < m < 0.301 and 0.699 < de < 0.701):
+    gamma, m, de = theta
+    if (-0.1 < gamma < 0.1 and 0.299 < m < 0.301 and 0.699 < de < 0.701):
         return 0.0
     return -np.inf

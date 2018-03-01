@@ -6,9 +6,9 @@ Created on Tue Feb 27 12:40:48 2018
 @author: BallBlueMeercat
 """
 from matplotlib.font_manager import FontProperties
-from pylab import figure, plot, xlabel, ylabel, grid, legend, title, show
+from pylab import figure, plot, xlabel, ylabel, grid, legend, title, show, scatter
 
-def plots(gamma, e_dash0m, e_dash0de, z, dl, dlpc, t, a, a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde):
+def plots(mag, zpicks, z, dlpc, dl, gamma, e_dash0m, e_dash0de, t, a, a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde):
 
     # Plotting selected results:
     # a and a_dot vs time.
@@ -20,10 +20,10 @@ def plots(gamma, e_dash0m, e_dash0de, z, dl, dlpc, t, a, a_dot, t_cut, a_cut, a_
         legend((r'$a$', r'$\.a$'), prop=FontProperties(size=16))
         title('IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0} \'$ =%s, $\gamma$ = %s [cut]'
               %(e_dash0m, e_dash0de, gamma))
-        show
+        show()
         break
-    
-    
+
+
     # e_dashm and e_dashde vs time.
     while True:
         # e_dashm
@@ -34,8 +34,8 @@ def plots(gamma, e_dash0m, e_dash0de, z, dl, dlpc, t, a, a_dot, t_cut, a_cut, a_
         plot(t_cut, e_dashm, 'g', linewidth=lw)
         title('$\epsilon_m \'$ evolution, IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0} \'$ =%s, $\gamma$ = %s [cut]'
               %(e_dash0m, e_dash0de, gamma))
-        show
-    
+        show()
+
         # e_dashde
         figure()
         xlabel('t in 1/H0')
@@ -44,7 +44,7 @@ def plots(gamma, e_dash0m, e_dash0de, z, dl, dlpc, t, a, a_dot, t_cut, a_cut, a_
         plot(t_cut, e_dashde, 'm', linewidth=lw)
         title('$\epsilon_{DE} \'$ evolution, IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0} \'$ =%s, $\gamma$ = %s [cut]'
               %(e_dash0m, e_dash0de, gamma))
-        show
+        show()
         break
 
 
@@ -57,9 +57,9 @@ def plots(gamma, e_dash0m, e_dash0de, z, dl, dlpc, t, a, a_dot, t_cut, a_cut, a_
         plot(z, dl, 'tab:green', lw=1)
         title('$d_L$, IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0} \'$ =%s, $\gamma$ = %s [cut]'
               %(e_dash0m, e_dash0de, gamma))
-        show
+        show()
         break   
-    
+
     while True:
         figure()
         xlabel('redshift $z$')
@@ -68,8 +68,8 @@ def plots(gamma, e_dash0m, e_dash0de, z, dl, dlpc, t, a, a_dot, t_cut, a_cut, a_
         plot(z, dlpc, 'tab:green', lw=1)
         title('$d_L$, IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0} \'$ =%s, $\gamma$ = %s [cut]'
               %(e_dash0m, e_dash0de, gamma))
-        show
-        break        
+        show()
+        break       
 
     dlgpc = dlpc /10**9
     while False:
@@ -80,10 +80,10 @@ def plots(gamma, e_dash0m, e_dash0de, z, dl, dlpc, t, a, a_dot, t_cut, a_cut, a_
         plot(z, dlgpc, 'tab:green', lw=1)
         title('$d_L$, IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0} \'$ =%s, $\gamma$ = %s [cut]'
               %(e_dash0m, e_dash0de, gamma))
-        show
+        show()
         break
-    
-    
+
+
     while True:
         # Redshift vs time.
         figure()
@@ -94,9 +94,9 @@ def plots(gamma, e_dash0m, e_dash0de, z, dl, dlpc, t, a, a_dot, t_cut, a_cut, a_
         plot(t_cut, z, 'tab:pink', lw=1)
         title('Redshift, IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0} \'$ =%s, $\gamma$ = %s [cut]'
               %(e_dash0m, e_dash0de, gamma))
-        show
+        show()
         break
-        
+
 
     # Complete results with blow up resulting from a approaching big bang.
     while True:  
@@ -108,9 +108,14 @@ def plots(gamma, e_dash0m, e_dash0de, z, dl, dlpc, t, a, a_dot, t_cut, a_cut, a_
         legend((r'$a$', r'$\.a$', r'$\'\epsilon$'), prop=FontProperties(size=16))
         title('IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0} \'$ =%s, $\gamma$ = %s [uncut]'
               %(e_dash0m, e_dash0de, gamma))
-        show
+        show()
         break
-    
+
+    while True:
+        figure()
+        title('Mag simulated with msim parameters')
+        scatter(zpicks, mag, lw='3', c='r')
+        show()
+        break
+
     return
-
-

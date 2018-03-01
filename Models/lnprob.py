@@ -10,9 +10,9 @@ import lnlike
 import lnprior
 import numpy as np
 
-def lnprob(theta, n, zpicks, mag, sigma):
+def lnprob(theta, zpicks, mag, sigma):
 #    print('@@@@@ lnprob has been called')
     lp = lnprior.lnprior(theta)
     if not np.isfinite(lp):
         return -np.inf
-    return lp + lnlike.lnlike(theta, n, zpicks, mag, sigma)
+    return lp + lnlike.lnlike(theta, zpicks, mag, sigma)

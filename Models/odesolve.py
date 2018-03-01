@@ -9,7 +9,6 @@ import numpy as np
 from scipy.integrate import odeint
 
 import firstderivs
-import plots
 
 
 #from matplotlib.font_manager import FontProperties
@@ -113,8 +112,5 @@ def odesolve(gamma,m,de):
     # Age of the universe.
     age = t_cut[np.argmin(t_cut)]
     age = -round(age, 2)
-
-    # Plotting results.
-#    plots.plots(gamma, e_dash0m, e_dash0de, z, dl, dlpc, t, a, a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde)
     
-    return z, dlpc
+    return z, dlpc, dl, e_dash0m, e_dash0de, t, a, a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde

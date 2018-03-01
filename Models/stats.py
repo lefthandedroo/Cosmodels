@@ -19,17 +19,16 @@ import lnlike
 import lnprob
 
 # emcee parameters:
-ndim, nwalkers = 3, 6
-nsteps = 1000
-burnin = 200
+ndim, nwalkers = 3, 192
+nsteps = 10000
+burnin = 2000
 
-def stats(gamma_true, m_true, de_true, n, zpicks, mag, noise, sigma):
+def stats(gamma_true, m_true, de_true, zpicks, mag, noise, sigma):
     """
     Takes in:
             gamma_true = interaction constant;
             m_true = e_m(t)/ec(t0) at t=t0;
             de_true = e_de(t)/ec(t0) at t=t0;
-            n = dimensionless number of data points to be generated;
             zpicks = list of z to match the interpolated dlmpc to;
             mag = list of n apparent magnitudes mag for zpicks redshits;
             noise = ;
@@ -40,7 +39,7 @@ def stats(gamma_true, m_true, de_true, n, zpicks, mag, noise, sigma):
     # Finding a "good" place to start using alternative method to emcee.
     nll = lambda *args: -lnlike.lnlike(*args)  # type of nll is: <class 'function'>
     result = op.minimize(nll, [gamma_true, m_true, de_true],
-                         args=(n, zpicks, mag, noise))
+                         args=(zpicks, mag, noise))
     gamma_ml, m_ml, de_ml = result["x"]    
     
     # Initializing walkers in a Gaussian ball around the max likelihood. 
@@ -50,7 +49,7 @@ def stats(gamma_true, m_true, de_true, n, zpicks, mag, noise, sigma):
     # Sampler setup
     times0 = time.time()    # starting emcee timer
     
-    sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob.lnprob, args=(n, zpicks, mag, sigma))
+    sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob.lnprob, args=(zpicks, mag, sigma))
     sampler.run_mcmc(pos, nsteps)
     
     times1=time.time()      # stopping emcee timer
@@ -63,7 +62,7 @@ def stats(gamma_true, m_true, de_true, n, zpicks, mag, noise, sigma):
     samples = sampler.chain[:, burnin:, :].reshape((-1, ndim))
     fig = corner.corner(samples, labels=["$\gamma$", "$m$", "$de$"], 
                         truths=[gamma_true, m_true, de_true])
-    fig.savefig('nsteps'+str(nsteps)+str(time.strftime("%c"))+
+    fig.savefig('zz_nsteps'+str(nsteps)+str(time.strftime("%c"))+
                 'nwalkers'+str(nwalkers)+'.png')
     
     
@@ -78,7 +77,7 @@ def stats(gamma_true, m_true, de_true, n, zpicks, mag, noise, sigma):
     mbest = sampler.flatchain[bi,1]         # posterior probability
     debest = sampler.flatchain[bi,2]
     
-    magbest = msim.msim(gammabest, mbest, debest, n, zpicks)
+    magbest = msim.msim(gammabest, mbest, debest, zpicks)
 
     twosigma = sigma * 2
     

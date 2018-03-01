@@ -73,7 +73,7 @@ SPLIT INTO MODULES
 check p use vs sigma, why are errobars on the Model with errorbars plot so small?
 call the interactin term gamma everywhere, are any lambda - cosm constant? no
 make numintegra8 give D_L in parsecs
-
+separate plotting function
 
 
 3) What would happen if error were 1%? or 50%? How does it change my parameters
@@ -84,9 +84,11 @@ make numintegra8 give D_L in parsecs
 6) Working towards distributions of omega lambda, omega matter and interaction term.
 
 
-Put constraint that m+de can't be more than 1, ask Geraint if that's reasonable 
+Why are results outside of lnprior constraints?
+What is getting used for Mag simulated with best emcee parameters plot?
+Where do best parameters come from?
+Mean acceptance fraction is 0, cehck emcee website
 
-separate plotting function
 Save outcomes of variables and plot everything vs everything after script finishes
 Ask Sue Yang re debugging python to check type of error, underflow/overflow
 Run odesolve with slightly different parameters, plot redshift vs dlmpc and see if 
@@ -119,7 +121,7 @@ n = 100 #10, 1000
 
 # Statistical parameters:
 mu = 0          # mean
-sigma = 1       # standard deviation
+sigma = 0.1     # standard deviation
 
 
 
@@ -131,13 +133,13 @@ zpicks = zpicks.zpicks(zmin, zmax, n)
 
 # Generating apparent magnitues mag at redshift z < zmax (calculated from
 # luminosity distances given by LambdaCMD with parameters stated above.
-model = msim.msim(gamma_true, m_true, de_true, n, zpicks)
+model = msim.msim(gamma_true, m_true, de_true, zpicks)
 model = np.asarray(model)
 mag, noise = gnoise.gnoise(model, mu, sigma, n)
 #print('noise in code body is = ', noise)
 
 
-stats.stats(gamma_true, m_true, de_true, n, zpicks, mag, noise, sigma)
+stats.stats(gamma_true, m_true, de_true, zpicks, mag, noise, sigma)
 
 
 # Time taken by the script. 
