@@ -77,7 +77,7 @@ def odesolve(gamma,m,de):
         theta = gamma, m, de
         lp = lnprior.lnprior(theta)
         if not np.isfinite(lp):
-            time = 500
+            time += 500
 #             end of experiement. Checking if I can fix the endless integrations when getting magbest at the end of stats
         
         # Create time samples for the ODE solver.
