@@ -10,7 +10,7 @@ put constraints on the parameters for msim.msim
 
 import msim
 import numpy as np
-import lnprior
+#import lnprior
 
 def lnlike(theta, zpicks, mag, sigma):
     gamma, m, de = theta
@@ -19,9 +19,9 @@ def lnlike(theta, zpicks, mag, sigma):
 #        print('theta = ',theta)
 #        return -np.inf
     
-    lp = lnprior.lnprior(theta)
-    if not np.isfinite(lp):
-        return -np.inf
+#    lp = lnprior.lnprior(theta)
+#    if not np.isfinite(lp):
+#        return -np.inf
     
     model = msim.msim(gamma, m, de, zpicks)
     inv_sigma2 = 1.0/(sigma**2)
