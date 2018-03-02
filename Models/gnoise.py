@@ -13,7 +13,7 @@ def gnoise(mag, mu, sigma, n):
        mag = mag, each point offset by unique Gaussian noise;
        noise = Gaussian noise.
     """
-#    print('-gnoise has been called')
+    print('-gnoise has been called')
     noise = np.random.normal(mu,sigma,n)
 #    print('noise from inside gnoise is = ', noise)
 #    print('mag is: ',mag)

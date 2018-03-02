@@ -14,10 +14,11 @@ import numpy as np
 
 def lnlike(theta, zpicks, mag, sigma):
     gamma, m, de = theta
-#    if not (-0.1 < gamma < 0.1 and 0.299 < m < 0.301 and 0.699 < de < 0.701):
-#        print('@@@@ lnlike has been called')
-#        print('theta = ',theta)
-#        return -np.inf
+#    print('@@@@ lnlike has been called')
+
+    if not (-0.1 < gamma < 0.1 and 0.299 < m < 0.301 and 0.699 < de < 0.701):
+        print('bad theta passed to msim')
+        print('theta = ',theta)
     
 #    lp = lnprior.lnprior(theta)
 #    if not np.isfinite(lp):

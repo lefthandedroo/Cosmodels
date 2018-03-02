@@ -69,7 +69,7 @@ def odesolve(gamma,m,de):
         stoptime -= time
         
         i+=1
-        if i % 10 == 0:
+        if (i > 1) and (i % 10 == 0):
             print('%s integration round, gamma = %s, m = %s, de = %s'
                   %(i, gamma, m, de))
             
@@ -79,7 +79,8 @@ def odesolve(gamma,m,de):
         if not np.isfinite(lp):
             time += 500
 #             end of experiement. Checking if I can fix the endless integrations when getting magbest at the end of stats
-        
+        if time > 0.9:
+            print('time in odesolve is: ',time)
         # Create time samples for the ODE solver.
         t = [stoptime * tH * float(i) / (numpoints - 1) for i in range(numpoints)]
 

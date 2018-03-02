@@ -23,7 +23,7 @@ m_true = 0.3    # (= e_m(t)/e_crit(t0) at t=t0).
 de_true = 0.7   # (de = e_de(t)/e_crit(t0) at t=t0).
 
 # Number of datapoints to be simulated.
-n = 100 #10, 1000
+n = 1000 #10, 1000
 
 # Statistical parameters:
 mu = 0          # mean
@@ -38,6 +38,7 @@ zpicks = zpicks.zpicks(zmin, zmax, n)
 
 # Generating apparent magnitues mag at redshift z < zmax (calculated from
 # luminosity distances given by LambdaCMD with parameters stated above.
+print('making model')
 model = msim.msim(gamma_true, m_true, de_true, zpicks)
 model = np.asarray(model)
 #print('model is: ',model)
