@@ -47,7 +47,10 @@ def stats(gamma_true, m_true, de_true, zpicks, mag, noise, sigma):
     nll = lambda *args: -lnprob.lnprob(*args)  # type of nll is: <class 'function'>
     result = op.minimize(nll, [gamma_true, m_true, de_true],
                          args=(zpicks, mag, noise))
-    gamma_ml, m_ml, de_ml = result["x"]    
+    gamma_ml, m_ml, de_ml = result["x"]
+    print('%s, %s, %s = result["X"]'%(gamma_ml,m_ml,de_ml))
+    
+    print('pos about to start')
     
     # Initializing walkers in a Gaussian ball around the max likelihood. 
     pos = [result["x"] + 1*np.random.randn(ndim) for i in range(nwalkers)]    
@@ -58,7 +61,7 @@ def stats(gamma_true, m_true, de_true, zpicks, mag, noise, sigma):
     print('sampler')
     sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob.lnprob, args=(zpicks, mag, sigma))
     sampler.run_mcmc(pos, nsteps)
-    
+    print('sampler end')
     timee1=time.time()      # stopping emcee timer
     
     print('stats corner plot')

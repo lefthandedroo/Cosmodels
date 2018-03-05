@@ -5,8 +5,12 @@ Created on Thu Feb 15 13:23:25 2018
 
 @author: BallBlueMeercat
 """
+# Eq of state parameters for known fluids:
+w_r = 1/3     # radiation
+w_m = 0.0     # matter
+w_de = -1.0   # cosmological constant (dark energy?)
 
-def firstderivs(v, t, w, gamma):
+def firstderivs(v, t, gamma):
     """
     Takes in:
         v = values at t=0;
@@ -23,7 +27,6 @@ def firstderivs(v, t, w, gamma):
     Uses same lambda for all fluids.
     """
     (a, a_dot, e_dashm, e_dashde, z, dl) = v #omegam, omegade, z, dl) = v
-    (w_m, w_de) = w
     
     # fist derivatives of functions I want to find:
     f = [# a_dot (=scale factor)
@@ -33,11 +36,13 @@ def firstderivs(v, t, w, gamma):
          (-a/2) * (e_dashm * (1+3*w_m) + e_dashde * (1+3*w_de)), 
          
          # e'_dotm (=density(t) / crit density(t0))
-#         -3 * (a_dot/a) * e_dashm * (1 + w_m -gamma/3 * a/a_dot * e_dashde/e_dashm),
-         -3 * (a_dot/a) * e_dashm + e_dashm * w_m - e_dashm* gamma/3 * e_dashm * a/a_dot * e_dashde,
-
+#         -3 * (a_dot/a) * e_dashm * (1 + w_m -gamma/3 * a/a_dot * e_dashde/e_dashm), # old version
+#         -3 * (a_dot/a) * (e_dashm + e_dashm * w_m + e_dashm * gamma/3 * e_dashde),
+         gamma -3 * (a_dot/a) * e_dashm,
+         
          # e'_dotde
-         -3 * (a_dot/a) * e_dashde * (1 + w_de +gamma/3 * a/a_dot),
+#        -3 * (a_dot/a) * e_dashde * (1 + w_de +lamb/3 * a/a_dot), # old version
+         -gamma,
 
          # z_dot (=redshift)
          -a_dot/a**2,

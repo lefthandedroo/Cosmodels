@@ -18,11 +18,6 @@ import lnprior
 # Standard cosmological parameters.
 H0 = 1       # Hubble parameter at t=now
 tH = 1.0/H0  # Hubble time
-# Eq of state parameters for known fluids:
-w_r = 1/3     # radiation
-w_m = 0.0     # matter
-w_de = -1.0   # cosmological constant (dark energy?)
-
 c_over_H0 = 4167 * 10**6    # c/H0 in parsecs
 
 def odesolve(gamma,m,de):
@@ -63,15 +58,9 @@ def odesolve(gamma,m,de):
     stoptime = 0 # Integrating back in time as time now is t0.
     
     z = np.array([0])
-    i = 0
     
     while z[np.argmax(z)] < 2.1:
         stoptime -= time
-        
-        i+=1
-        if (i > 1) and (i % 10 == 0):
-            print('%s integration round, gamma = %s, m = %s, de = %s'
-                  %(i, gamma, m, de))
             
 #             experiment
         theta = gamma, m, de
@@ -80,16 +69,16 @@ def odesolve(gamma,m,de):
             time += 500
 #             end of experiement. Checking if I can fix the endless integrations when getting magbest at the end of stats
         if time > 0.9:
-            print('time in odesolve is: ',time)
+            print('time in odesolve is: %s, gamma = %s, m = %s, de = %s'
+                  %(time, gamma, m, de))
         # Create time samples for the ODE solver.
         t = [stoptime * tH * float(i) / (numpoints - 1) for i in range(numpoints)]
 
         # Pack up the initial conditions and eq of state parameters.
         v0 = [a0, a_dot0, e_dash0m, e_dash0de, z0, dl0]
-        w = [w_m, w_de]
         
         # Call the ODE solver. maxstep=5000000 added later to try and avoid 
-        vsol = odeint(firstderivs.firstderivs, v0, t, args=(w,gamma,), 
+        vsol = odeint(firstderivs.firstderivs, v0, t, args=(gamma,), 
                       atol=abserr, rtol=relerr, mxstep=5000000)
                 
         # Remove unwanted results which are too close to big bang from the plot.
@@ -103,15 +92,13 @@ def odesolve(gamma,m,de):
         dlpc = dl * c_over_H0    # dl in parsecs (= vsol[dl] * c/H0)
         
         # Find where results start to get strange (smaller than a_d):
-        blowups = np.where(z > 2)    # Tuple with indecies of a so
-                                       # small that other results blow up.                             
+        blowups = np.where(z > 2)      # Tuple with indecies of z > 2.
         blowups = np.asarray(blowups)  # Converting to np array.
-    
-        if blowups.any():              # Check if instances of a < a_d exist.   
+        
+        if blowups.any():              # Check if instances of a < a_d exist. 
             blowup = blowups[0,0]
-        
-        
-    # Remove the values after the index of first instance of a < a_d.
+
+    # Remove values after the index of first instance of z > 2.
     t_cut = np.asarray(t)
     
     t_cut = t_cut[:blowup]
