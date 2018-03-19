@@ -32,8 +32,6 @@ def odesolve(gamma,m,de):
     
     """
 #    print('@@ odesolve has been called')
-    # Last value for 'a' before results are considered close enough to z = 2.
-#    a_d = 0.25
     
     # Time (in 1/H0) to integrate until.  If this time isn't long 
     # enough for 'a' to decrease to a_d then stoptime will be extended 
@@ -62,12 +60,11 @@ def odesolve(gamma,m,de):
     while z[np.argmax(z)] < 2.1:
         stoptime -= time
             
-#             experiment
         theta = gamma, m, de
         lp = lnprior.lnprior(theta)
         if not np.isfinite(lp):
             time += 500
-#             end of experiement. Checking if I can fix the endless integrations when getting magbest at the end of stats
+
         if time > 0.9:
             print('time in odesolve is: %s, gamma = %s, m = %s, de = %s'
                   %(time, gamma, m, de))

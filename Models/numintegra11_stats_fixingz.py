@@ -38,7 +38,6 @@ zpicks = zpicks.zpicks(zmin, zmax, n)
 
 # Generating apparent magnitues mag at redshift z < zmax (calculated from
 # luminosity distances given by LambdaCMD with parameters stated above.
-print('making model')
 model = msim.msim(gamma_true, m_true, de_true, zpicks)
 model = np.asarray(model)
 #print('model is: ',model)

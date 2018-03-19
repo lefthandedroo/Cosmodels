@@ -10,6 +10,7 @@ from math import log10
 import numpy as np
 import odesolve
 
+import lnprior
 import plots
 
 # Empirical parameters.
@@ -26,6 +27,12 @@ def msim(gamma, m, de, zpicks):
         mag = list of n apparent magnitudes mag from corresponding redshits.
     """
 #    print('@@@ msim has been called')
+    
+    theta = gamma, m, de
+    lp = lnprior.lnprior(theta)
+    if not np.isfinite(lp):
+        print('msim bad theta', theta)
+        
     z, dlpc, dl, e_dash0m, e_dash0de, t, a, a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde = odesolve.odesolve(gamma, m, de)
     dlpcinterp = np.interp(zpicks, z, dlpc)
 

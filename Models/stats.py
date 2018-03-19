@@ -16,7 +16,7 @@ import time
 
 import timer
 import msim
-import lnlike
+#import lnlike
 import lnprob
 
 # emcee parameters:
@@ -36,7 +36,7 @@ def stats(gamma_true, m_true, de_true, zpicks, mag, noise, sigma):
             sigma = sigma.
     Returns:
     """
-    print('-stats has been called')
+#    print('-stats has been called')
     # Finding a "good" place to start using alternative method to emcee.
 
 #    print('gamma_true',gamma_true)
@@ -53,18 +53,19 @@ def stats(gamma_true, m_true, de_true, zpicks, mag, noise, sigma):
     print('pos about to start')
     
     # Initializing walkers in a Gaussian ball around the max likelihood. 
-    pos = [result["x"] + 1*np.random.randn(ndim) for i in range(nwalkers)]    
+    pos = [result["x"] + 1e-4*np.random.randn(ndim) for i in range(nwalkers)]    
         
     
     # Sampler setup
     timee0 = time.time()    # starting emcee timer
-    print('sampler')
-    sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob.lnprob, args=(zpicks, mag, sigma))
+    print('_____ sampler start')
+    sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob.lnprob, args=(zpicks, mag, noise))
     sampler.run_mcmc(pos, nsteps)
-    print('sampler end')
+    print('_____ sampler end')
     timee1=time.time()      # stopping emcee timer
     
-    print('stats corner plot')
+    print('_____ stats corner plot')
+    
     # Corner plot (walkers' walk + histogram).
     samples = sampler.chain[:, burnin:, :].reshape((-1, ndim))
     fig = corner.corner(samples, labels=["$\gamma$", "$m$", "$de$"], 
@@ -73,12 +74,47 @@ def stats(gamma_true, m_true, de_true, zpicks, mag, noise, sigma):
     fig.savefig('zz_nsteps'+str(nsteps)+str(time.strftime("%c"))+
                 'nwalkers'+str(nwalkers)+'.png')
     
-    
     # Marginalised distribution (histogram) plot.
     pl.hist(sampler.flatchain[:,0], 100)
     pl.show()
+    
+    # Chains.
+#    figure()
+#    pl.title('Chains with true gamma in blue')
+#    pl.plot(sampler.chain[:,:,0].T, '-', color='k', alpha=0.3)
+#    pl.axhline(gamma_true, color='blue')
+#    pl.show
+#
+#    figure()
+#    pl.title('Chains with true m in red')
+#    pl.plot(sampler.chain[:,:,1].T, '-', color='k', alpha=0.3)
+#    pl.axhline(m_true, color='red')
+#    pl.show
+#    
+#    figure()
+#    pl.title('Chains with true de in green')
+#    pl.plot(sampler.chain[:,:,2].T, '-', color='k', alpha=0.3)
+#    pl.axhline(de_true, color='green')
+#    pl.show
+    
+#    fig, axes = pl.subplots(3, figsize=(10, 7), sharex=True)
+#    samples = sampler.get_chain()
+#    labels = ['gamma', 'm', 'de']
+#    for i in range(ndim):
+#        ax = axes[i]
+#        ax.plot(samples[:, :, i], "k", alpha=0.3)
+#        ax.set_xlim(0, len(samples))
+#        ax.set_ylabel(labels[i])
+#        ax.yaxis.set_label_coords(-0.1, 0.5)
+#
+#    axes[-1].set_xlabel("step number");
+    
+    
+#    gamma = sampler.flatchain[:,0]
+#    m = sampler.flatchain[:,1]
+#    de = sampler.flatchain[:,2]
 
-    print('magbest calculation')
+    print('_____ magbest calculation')
     # Simulating magnitude using best parameters found by emcee.
     bi = np.argmax(sampler.lnprobability)       # index with highest post prob                                       
     gammabest = sampler.flatchain[bi,0]         # parameters with the highest 
@@ -99,8 +135,9 @@ def stats(gamma_true, m_true, de_true, zpicks, mag, noise, sigma):
     print('Number of walkers:', str(nwalkers))
     
     if not (-0.1 < gammabest < 0.1 and 0.299 < mbest < 0.301 and 0.699 < debest < 0.701):
+        print('')
         print('parameters are outside of prior when they get to magbest')
-    
+        print('')
     # Plot of mag simulted using best emcee parameters.
     magbest = msim.msim(gammabest, mbest, debest, zpicks)
 
@@ -117,7 +154,7 @@ def stats(gamma_true, m_true, de_true, zpicks, mag, noise, sigma):
     
     timer.timer('sampler', timee0, timee1)
 
-    return
+    return #gamma, m, de
 #except Exception as e:
 #        logging.error('Caught exception:',str(e))
 #        print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno))
