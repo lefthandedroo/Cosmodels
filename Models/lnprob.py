@@ -10,6 +10,8 @@ import lnlike
 import lnprior
 import numpy as np
 
+# Using noise instead of sigma breaks it? 
+
 def lnprob(theta, zpicks, mag, noise):
 #    print('@@@@@ lnprob has been called')
     lp = lnprior.lnprior(theta)

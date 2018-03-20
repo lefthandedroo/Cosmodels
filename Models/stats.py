@@ -32,8 +32,8 @@ def stats(gamma_true, m_true, de_true, zpicks, mag, noise, sigma):
             de_true = e_de(t)/ec(t0) at t=t0;
             zpicks = list of z to match the interpolated dlmpc to;
             mag = list of n apparent magnitudes mag for zpicks redshits;
-            noise = ;
-            sigma = sigma.
+            noise = np.ndarray of unique Gaussian noise values for mag;
+            sigma = standard deviation used to generate Gaussian noise.
     Returns:
     """
 #    print('-stats has been called')
@@ -49,11 +49,9 @@ def stats(gamma_true, m_true, de_true, zpicks, mag, noise, sigma):
                          args=(zpicks, mag, noise))
     gamma_ml, m_ml, de_ml = result["x"]
     print('%s, %s, %s = result["X"]'%(gamma_ml,m_ml,de_ml))
-    
-    print('pos about to start')
-    
+        
     # Initializing walkers in a Gaussian ball around the max likelihood. 
-    pos = [result["x"] + 1e-4*np.random.randn(ndim) for i in range(nwalkers)]    
+    pos = [result["x"] + 1*np.random.randn(ndim) for i in range(nwalkers)]    
         
     
     # Sampler setup
@@ -78,24 +76,24 @@ def stats(gamma_true, m_true, de_true, zpicks, mag, noise, sigma):
     pl.hist(sampler.flatchain[:,0], 100)
     pl.show()
     
-    # Chains.
-#    figure()
-#    pl.title('Chains with true gamma in blue')
-#    pl.plot(sampler.chain[:,:,0].T, '-', color='k', alpha=0.3)
-#    pl.axhline(gamma_true, color='blue')
-#    pl.show
-#
-#    figure()
-#    pl.title('Chains with true m in red')
-#    pl.plot(sampler.chain[:,:,1].T, '-', color='k', alpha=0.3)
-#    pl.axhline(m_true, color='red')
-#    pl.show
-#    
-#    figure()
-#    pl.title('Chains with true de in green')
-#    pl.plot(sampler.chain[:,:,2].T, '-', color='k', alpha=0.3)
-#    pl.axhline(de_true, color='green')
-#    pl.show
+    # Chains.    
+    figure()
+    pl.title('flatChains with gamma_true in blue')
+    pl.plot(sampler.flatchain[:,0].T, '-', color='k', alpha=0.3)
+    pl.axhline(gamma_true, color='blue')
+    pl.show
+
+    figure()
+    pl.title('flatChains with m_true in red')
+    pl.plot(sampler.flatchain[:,1].T, '-', color='k', alpha=0.3)
+    pl.axhline(m_true, color='red')
+    pl.show
+    
+    figure()
+    pl.title('flatChains with de_true in green')
+    pl.plot(sampler.flatchain[:,2].T, '-', color='k', alpha=0.3)
+    pl.axhline(de_true, color='green')
+    pl.show
     
 #    fig, axes = pl.subplots(3, figsize=(10, 7), sharex=True)
 #    samples = sampler.get_chain()
@@ -109,10 +107,10 @@ def stats(gamma_true, m_true, de_true, zpicks, mag, noise, sigma):
 #
 #    axes[-1].set_xlabel("step number");
     
-    
-#    gamma = sampler.flatchain[:,0]
-#    m = sampler.flatchain[:,1]
-#    de = sampler.flatchain[:,2]
+    slnprob = sampler.lnprobability[:,:]
+    gamma = sampler.flatchain[:,0]
+    m = sampler.flatchain[:,1]
+    de = sampler.flatchain[:,2]
 
     print('_____ magbest calculation')
     # Simulating magnitude using best parameters found by emcee.
@@ -154,7 +152,7 @@ def stats(gamma_true, m_true, de_true, zpicks, mag, noise, sigma):
     
     timer.timer('sampler', timee0, timee1)
 
-    return #gamma, m, de
+    return gamma, m, de, slnprob
 #except Exception as e:
 #        logging.error('Caught exception:',str(e))
 #        print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno))
