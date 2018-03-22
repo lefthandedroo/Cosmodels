@@ -50,9 +50,10 @@ def stats(gamma_true, m_true, de_true, zpicks, mag, noise, sigma):
     gamma_ml, m_ml, de_ml = result["x"]
     print('%s, %s, %s = result["X"]'%(gamma_ml,m_ml,de_ml))
         
-    # Initializing walkers in a Gaussian ball around the max likelihood. 
+    # Initializing walkers in a Gaussian ball around the max likelihood.
+    # Number in front of the np.random.rand(ndim) is stepsize
     pos = [result["x"] + 1*np.random.randn(ndim) for i in range(nwalkers)]    
-        
+    print('pos = ',pos)    
     
     # Sampler setup
     timee0 = time.time()    # starting emcee timer
@@ -107,14 +108,14 @@ def stats(gamma_true, m_true, de_true, zpicks, mag, noise, sigma):
 #
 #    axes[-1].set_xlabel("step number");
     
-    slnprob = sampler.lnprobability[:,:]
+    slnprob = sampler.flatlnprobability
     gamma = sampler.flatchain[:,0]
     m = sampler.flatchain[:,1]
     de = sampler.flatchain[:,2]
 
     print('_____ magbest calculation')
     # Simulating magnitude using best parameters found by emcee.
-    bi = np.argmax(sampler.lnprobability)       # index with highest post prob                                       
+    bi = np.argmax(sampler.flatlnprobability)   # index with highest post prob                                       
     gammabest = sampler.flatchain[bi,0]         # parameters with the highest 
     mbest = sampler.flatchain[bi,1]             # posterior probability
     debest = sampler.flatchain[bi,2]
