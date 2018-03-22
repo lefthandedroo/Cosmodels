@@ -16,7 +16,6 @@ import time
 
 import timer
 import msim
-#import lnlike
 import lnprob
 
 # emcee parameters:
@@ -52,8 +51,8 @@ def stats(gamma_true, m_true, de_true, zpicks, mag, noise, sigma):
         
     # Initializing walkers in a Gaussian ball around the max likelihood.
     # Number in front of the np.random.rand(ndim) is stepsize
-    pos = [result["x"] + 1*np.random.randn(ndim) for i in range(nwalkers)]    
-    print('pos = ',pos)    
+    pos = [result["x"] + 0.1*np.random.randn(ndim) for i in range(nwalkers)]    
+#    print('pos = ',pos)    
     
     # Sampler setup
     timee0 = time.time()    # starting emcee timer
@@ -108,10 +107,6 @@ def stats(gamma_true, m_true, de_true, zpicks, mag, noise, sigma):
 #
 #    axes[-1].set_xlabel("step number");
     
-    slnprob = sampler.flatlnprobability
-    gamma = sampler.flatchain[:,0]
-    m = sampler.flatchain[:,1]
-    de = sampler.flatchain[:,2]
 
     print('_____ magbest calculation')
     # Simulating magnitude using best parameters found by emcee.
@@ -150,10 +145,17 @@ def stats(gamma_true, m_true, de_true, zpicks, mag, noise, sigma):
     best_fit = scatter(zpicks, magbest, lw='3', c='r')
     pl.legend([best_fit], ['Mag simulated with best emcee parameters'])
     pl.show()
+        
+    slnprob = sampler.flatlnprobability
+    gamma = sampler.flatchain[:,0]
+    m = sampler.flatchain[:,1]
+    de = sampler.flatchain[:,2]
+    
+    import check
+    check.check(gamma, m, de, slnprob)
     
     timer.timer('sampler', timee0, timee1)
-
-    return gamma, m, de, slnprob
+    return gamma, m, de, slnprob, pos
 #except Exception as e:
 #        logging.error('Caught exception:',str(e))
 #        print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno))

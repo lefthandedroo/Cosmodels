@@ -47,7 +47,7 @@ mag, noise = gnoise.gnoise(model, mu, sigma, n)
 # Starting stats timer.
 times0 = time.time()
 
-gamma, m, de, slnprob = stats.stats(gamma_true, m_true, de_true, zpicks, mag, noise, sigma)
+gamma, m, de, slnprob, pos = stats.stats(gamma_true, m_true, de_true, zpicks, mag, noise, sigma)
 
 # Time taken by stats. 
 times1=time.time()      # stopping stats time
