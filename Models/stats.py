@@ -51,8 +51,8 @@ def stats(gamma_true, m_true, de_true, zpicks, mag, noise, sigma):
         
     # Initializing walkers in a Gaussian ball around the max likelihood.
     # Number in front of the np.random.rand(ndim) is stepsize
-    pos = [result["x"] + 0.1*np.random.randn(ndim) for i in range(nwalkers)]    
-#    print('pos = ',pos)    
+    pos = [result["x"] + 1*np.random.randn(ndim) for i in range(nwalkers)]    
+    print('pos = ',pos)    
     
     # Sampler setup
     timee0 = time.time()    # starting emcee timer

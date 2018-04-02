@@ -9,19 +9,15 @@ put constraints on the parameters for msim.msim
 """
 
 import msim
+import lnprior
 import numpy as np
-
-# Using noise instead of sigma breaks it?
 
 def lnlike(theta, zpicks, mag, noise):
     gamma, m, de = theta
 #    print('@@@@ lnlike has been called')
     
-    if not (-0.1 < gamma < 0.1 or 0.299 < m < 0.301 or 0.699 < de < 0.701):
-        print('bad theta passed to msim from lnlike')
-        print('theta = ',theta)
-
-    if not (-0.1 < gamma < 0.1 and 0.299 < m < 0.301 and 0.699 < de < 0.701):
+    lp = lnprior.lnprior(theta)
+    if not np.isfinite(lp):
         print('bad theta passed to msim from lnlike')
         print('theta = ',theta)
 
