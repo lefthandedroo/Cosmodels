@@ -19,9 +19,9 @@ import msim
 import lnprob
 
 # emcee parameters:
-ndim, nwalkers = 3, 200
-nsteps = 100000
-burnin = 30000
+ndim, nwalkers = 3, 8
+nsteps = 100
+burnin = 30
 
 def stats(gamma_true, m_true, de_true, zpicks, mag, noise, sigma):
     """
@@ -41,23 +41,30 @@ def stats(gamma_true, m_true, de_true, zpicks, mag, noise, sigma):
 #    print('gamma_true',gamma_true)
 #    print('m_true',m_true)
 #    print('de_true',de_true)
-    
+        
     print('Finding a "good" place to start')
-    nll = lambda *args: -lnprob.lnprob(*args)  # type of nll is: <class 'function'>
-    result = op.minimize(nll, [gamma_true, m_true, de_true],
-                         args=(zpicks, mag, noise))
-    gamma_ml, m_ml, de_ml = result["x"]
+#    nll = lambda *args: -lnprob.lnprob(*args)  # type of nll is: <class 'function'>
+#    result = op.minimize(nll, [gamma_true, m_true, de_true],
+#                         args=(zpicks, mag, sigma))
+#    gamma_ml, m_ml, de_ml = result["x"]
+    gamma_ml = 0.0
+    m_ml = 0.3
+    de_ml = 0.7
+#    result["x"] = gamma_ml, m_ml, de_ml
+    
+    startpos = np.array([gamma_ml,m_ml,de_ml])
+    
     print('%s, %s, %s = result["X"]'%(gamma_ml,m_ml,de_ml))
         
     # Initializing walkers in a Gaussian ball around the max likelihood.
     # Number in front of the np.random.rand(ndim) is stepsize
-    pos = [result["x"] + 1*np.random.randn(ndim) for i in range(nwalkers)]    
+    pos = [startpos + 0.1*np.random.randn(ndim) for i in range(nwalkers)]    
     print('pos = ',pos)    
     
     # Sampler setup
     timee0 = time.time()    # starting emcee timer
     print('_____ sampler start')
-    sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob.lnprob, args=(zpicks, mag, noise))
+    sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob.lnprob, args=(zpicks, mag, sigma))
     sampler.run_mcmc(pos, nsteps)
     print('_____ sampler end')
     timee1=time.time()      # stopping emcee timer

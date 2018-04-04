@@ -29,7 +29,6 @@ n = 100 #10, 1000
 mu = 0          # mean
 sigma = 0.1     # standard deviation
 
-
 # Code:
 
 # Picking redshifts to investigate.

@@ -11,7 +11,7 @@ import numpy as np
 import odesolve
 
 import lnprior
-import plots
+import rslt
 
 # Empirical parameters.
 M = -19                     # Absolute brightness of supernovae.
@@ -22,7 +22,7 @@ def msim(gamma, m, de, zpicks):
             gamma = interaction constant;
             m = e_m(t)/ec(t0) at t=t0;
             de = e_de(t)/ec(t0) at t=t0;
-            zpicks = list of z to match the interpolated dlmpc to.
+            zpicks = list of z to match the interpolated dlmpc to;
     Returns:
         mag = list of n apparent magnitudes mag from corresponding redshits.
     """
@@ -42,10 +42,10 @@ def msim(gamma, m, de, zpicks):
     for i in range(len(dlpcinterp)):
         mdistmod = 5 * log10(dlpcinterp[i]/10) + M
         mag.append(mdistmod)
-        
-    # Plotting results.
-#    plots.plots(mag, zpicks, z, dlpc, dl, gamma, e_dash0m, e_dash0de, t, a, a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde)
-    
+
+    # Savig results to plot them later.
+#    rslt.rslt(mag, zpicks, z, dlpc, dl, gamma, e_dash0m, e_dash0de, t, a, a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde)
+
     return mag
 
 # gamma = 0.7180141123788913, m = -0.9502028028818189, de = 1.6930478435108243
