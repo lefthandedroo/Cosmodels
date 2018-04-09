@@ -20,15 +20,15 @@ H0 = 1       # Hubble parameter at t=now
 tH = 1.0/H0  # Hubble time
 c_over_H0 = 4167 * 10**6    # c/H0 in parsecs
 
-def odesolve(gamma,m,de):
+def odesolve(gamma,m,de,zpicks):
     """
     Takes in:
         gamma = interaction constant;
         m = e_m(t)/ec(t0) at t=t0;
         de = e_de(t)/ec(t0) at t=t0.
     Returns: 
-        dlpc = luminosity distance in pc;
-        z = numpoints number of redshifts zmin<z<zmax.
+        z = numpoints number of redshifts zmin<z<zmax;
+        dlpc = luminosity distance in pc.
     
     """
 #    print('@@ odesolve has been called')
@@ -51,7 +51,7 @@ def odesolve(gamma,m,de):
     # ODE solver parameters:
     abserr = 1.0e-8
     relerr = 1.0e-6
-    numpoints = 1000000
+    numpoints = 1000
     
     stoptime = 0 # Integrating back in time as time now is t0.
     
@@ -111,4 +111,5 @@ def odesolve(gamma,m,de):
     age = t_cut[np.argmin(t_cut)]
     age = -round(age, 2)
     
-    return z, dlpc, dl, e_dash0m, e_dash0de, t, a, a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde
+    
+    return z, dlpc#, dl, gamma, e_dash0m, e_dash0de, t, a, a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde

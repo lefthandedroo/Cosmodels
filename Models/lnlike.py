@@ -9,19 +9,11 @@ put constraints on the parameters for msim.msim
 """
 
 import msim
-import lnprior
 import numpy as np
 
 def lnlike(theta, zpicks, mag, sigma):
     gamma, m, de = theta
 #    print('@@@@ lnlike has been called')
-    
-#    lp = lnprior.lnprior(theta)
-#    if not np.isfinite(lp):
-#        print('bad theta passed to msim from lnlike')
-#        print('theta = ',theta)
-
     model = msim.msim(gamma, m, de, zpicks)
     inv_sigma2 = 1.0/(sigma**2)
     return -0.5*(np.sum((mag-model)**2*inv_sigma2 - np.log(inv_sigma2)))
-#   return -0.5*(np.sum((y-model)**2*inv_sigma2 - np.log(inv_sigma2)))

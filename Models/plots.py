@@ -5,11 +5,19 @@ Created on Tue Feb 27 12:40:48 2018
 
 @author: BallBlueMeercat
 """
+import pickle
 from matplotlib.font_manager import FontProperties
 from pylab import figure, plot, xlabel, ylabel, grid, legend, title, show, scatter
 
 def plots(mag, zpicks, z, dlpc, dl, gamma, e_dash0m, e_dash0de, t, a, a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde):
 
+#    f = open('results.pckl', 'rb')
+#    obj = pickle.load(f)
+#    f.close()
+#    
+#    mag, zpicks, z, dlpc, dl, gamma, e_dash0m, e_dash0de, t, a, a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde = obj
+    
+    
     # Plotting selected results:
     # a and a_dot vs time.
     while True:

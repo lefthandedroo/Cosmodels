@@ -5,15 +5,32 @@ Created on Tue Apr  3 10:31:30 2018
 
 @author: BallBlueMeercat
 """
-import csv
-#import plots
+import time
+import pickle
+import os
 
-def rslt(mag, zpicks, z, dlpc, dl, gamma, e_dash0m, e_dash0de, t, a, a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde):
+#def rslt(mag, zpicks, z, dlpc, dl, gamma, e_dash0m, e_dash0de, t, a, 
+# a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde):
+
+def rslt(gamma, m, de, slnprob):
     
-    with open('results.csv', 'wb') as csvfile:
-        spamwriter = csv.writer(csvfile, delimiter=' ',
-                                quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        spamwriter.writerow([mag, zpicks, z, dlpc, dl, gamma, e_dash0m, e_dash0de, t, a, a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde])
+    filename = 'resultlist.p' #  testresults
+    
+    if os.path.exists(filename):
+        with open(filename,'rb') as rfp: 
+            results = pickle.load(rfp)
+     
+    runid = len(results)
+    runkey = 'ID:' + str(runid) + ' ' + str(time.strftime("%x %X"))
+
+    rundata = [runkey, gamma, m, de, slnprob]
+    
+    results.append(rundata)
+#    results = []
+    pickle.dump(results, open(filename, 'wb'))
+    
+    fromfileresults = pickle.load(open(filename, 'rb'))
+#    print('fromfileresults is: ',fromfileresults)
 
 
     #    # Saving results for plotting later.
@@ -37,6 +54,9 @@ def rslt(mag, zpicks, z, dlpc, dl, gamma, e_dash0m, e_dash0de, t, a, a_dot, t_cu
     #    f.write(str(e_dashde) + '\n')
     #    f.close()
     
-    # Plotting results.
-    # plots.plots(mag, zpicks, z, dlpc, dl, gamma, e_dash0m, e_dash0de, t, a, a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde)
-    return
+#    obj = mag, zpicks, z, dlpc, dl, gamma, e_dash0m, e_dash0de, t, a, 
+# a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde
+    
+    return fromfileresults
+
+#fromfileresults = rslt(0,0.3,0.7,9999)

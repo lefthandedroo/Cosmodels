@@ -12,7 +12,7 @@ import msim
 import zpicks
 import stats
 
-# Starting script timer.
+# Script timer.
 timet0 = time.time()
 
 # Parameters:
@@ -23,7 +23,7 @@ m_true = 0.3    # (= e_m(t)/e_crit(t0) at t=t0).
 de_true = 0.7   # (de = e_de(t)/e_crit(t0) at t=t0).
 
 # Number of datapoints to be simulated.
-n = 100 #10, 1000
+n = 1000 #10, 1000
 
 # Statistical parameters:
 mu = 0          # mean
@@ -39,19 +39,17 @@ zpicks = zpicks.zpicks(zmin, zmax, n)
 # luminosity distances given by LambdaCMD with parameters stated above.
 model = msim.msim(gamma_true, m_true, de_true, zpicks)
 model = np.asarray(model)
-#print('model is: ',model)
-mag, noise = gnoise.gnoise(model, mu, sigma, n)
-#print('noise in code body is = ', noise)
+mag = gnoise.gnoise(model, mu, sigma, n)
 
-# Starting stats timer.
+# Stats timer.
 times0 = time.time()
 
-gamma, m, de, slnprob, pos = stats.stats(gamma_true, m_true, de_true, zpicks, mag, noise, sigma)
+gamma, m, de, slnprob, pos = stats.stats(gamma_true, m_true, de_true, zpicks, mag, sigma)
 
 # Time taken by stats. 
-times1=time.time()      # stopping stats time
+times1=time.time()
 timer.timer('stats', times0, times1)
 
 # Time taken by the script. 
-timet1=time.time()      # stopping script time
+timet1=time.time()
 timer.timer('script', timet0, timet1)

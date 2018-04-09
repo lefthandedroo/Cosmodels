@@ -8,14 +8,13 @@ Created on Thu Feb 15 13:47:44 2018
 
 from math import log10
 import numpy as np
-import odesolve
+import zodesolve
 
-import lnprior
 
 # Empirical parameters.
 M = -19                     # Absolute brightness of supernovae.
 
-def msim(gamma, m, de, zpicks):
+def zmsim(gamma, m, de, zpicks):
     """
     Takes in:
             gamma = interaction constant;
@@ -26,23 +25,22 @@ def msim(gamma, m, de, zpicks):
         mag = list of n apparent magnitudes mag from corresponding redshits.
     """
 #    print('@@@ msim has been called')
-    
-    theta = gamma, m, de
-    lp = lnprior.lnprior(theta)
-    if not np.isfinite(lp):
-        print('msim got bad theta: ', theta)
         
-    z, dlpc = odesolve.odesolve(gamma, m, de, zpicks)
-    dlpcinterp = np.interp(zpicks, z, dlpc)
+    z, dlpc, dl, gamma, e_dash0m, e_dash0de, t, a, a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde = zodesolve.zodesolve(gamma, m, de, zpicks)
+#    dlpcinterp = np.interp(zpicks, z, dlpc)
     
-#    print('dlpcinterp is:')
-#    print(dlpcinterp)
+    print('dlpc is:')
+    print(dlpc)
 
     # Calculating apparent magnitudes of supernovae at the simulated
     # luminosity distances using the distance modulus formula.
     mag = []
-    for i in range(len(dlpcinterp)):
-        mdistmod = 5 * log10(dlpcinterp[i]/10) + M
+    
+    for i in range(len(dlpc)):
+        mdistmod = 5 * log10(dlpc[i]/10) + M
         mag.append(mdistmod)
+        
+    import plots
+    plots.plots(mag, zpicks, z, dlpc, dl, gamma, e_dash0m, e_dash0de, t, a, a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde)
 
-    return mag
+    return #mag
