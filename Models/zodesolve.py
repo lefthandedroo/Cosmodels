@@ -46,18 +46,17 @@ def zodesolve(gamma,m,de,zpicks):
     numpoints = 100
     
     # Create z samples for the ODE solver.
-    print('zpicks before', len(zpicks))
-    zpicks = np.insert(zpicks, 0, 0)
-    print('zpicks after', len(zpicks))
     
-    import random
-    zpicks = random.sample(range(0, numpoints*8), numpoints)
-    zpicks.sort()
-    denom = numpoints*10
-    zpicks = [time / denom for time in zpicks]
-    zpicks = [0] + zpicks
-    zpicks = [ -x for x in zpicks]
-    print(zpicks)
+#    import random
+#    zpicks = random.sample(range(0, numpoints*8), numpoints-1)
+#    zpicks.sort()
+#    denom = numpoints*10
+#    zpicks = [time / denom for time in zpicks]
+#    zpicks = [0] + zpicks
+#    zpicks = [ -x for x in zpicks]
+#    print('len zpicks after creation', len(zpicks))
+#    print('zpicks:')
+#    print(zpicks)
     
     # Pack up the initial conditions and eq of state parameters.
     v0 = [a0, a_dot0, e_dash0m, e_dash0de, z0, dl0]
@@ -70,35 +69,34 @@ def zodesolve(gamma,m,de,zpicks):
     # Separate results into their own arrays:
     a = vsol[:,0]
     a_dot = vsol[:,1]
+    t = zpicks
+    t_cut = t
+    a_cut = a
+    a_dotcut = a_dot
     e_dashm = vsol[:,2]
     e_dashde = vsol[:,3]
     z = vsol[:,4]
     dl = vsol[:,5] * (1+z)   # in units of dl*(H0/c)
     dlpc = dl * c_over_H0    # dl in parsecs (= vsol[dl] * c/H0)
-    t = zpicks
-    t_cut = t
-    a_cut = a
-    a_dotcut = a_dot
+
+        
+    # Take out values at the first redshift z=0:
+    blowup = 1
+    t_cut = np.asarray(t)
     
-#    # Find where results start to get strange (smaller than a_d):
-#    blowups = np.where(z > 2)      # Tuple with indecies of z > 2.
-#    blowups = np.asarray(blowups)  # Converting to np array.
-#    
-#    if blowups.any():              # Check if instances of a < a_d exist. 
-#        blowup = blowups[0,0]
-#
-#    # Remove values after the index of first instance of z > 2.
-#    t_cut = np.asarray(t)
-#    
-#    t_cut = t_cut[:blowup]
-#    a_cut = a[:blowup]
-#    a_dotcut = a_dot[:blowup]
-#    e_dashm = e_dashm[:blowup]
-#    e_dashde = e_dashde[:blowup]
-#    z = z[:blowup]
-#    dl = dl[:blowup]
-#    dlpc = dlpc[:blowup]
-#    
+    a = a[blowup:]
+    a_dot = a_dot[blowup:]
+    t = t[blowup:]
+    t_cut = t_cut[blowup:]
+    a_cut = a_cut[blowup:]
+    a_dotcut = a_dotcut[blowup:]
+    e_dashm = e_dashm[blowup:]
+    e_dashde = e_dashde[blowup:]
+    z = z[blowup:]
+    dl = dl[blowup:]
+    dlpc = dlpc[blowup:]
+    zpicks = zpicks[blowup:]
+
 #    # Age of the universe.
 #    age = t_cut[np.argmin(t_cut)]
 #    age = -round(age, 2)

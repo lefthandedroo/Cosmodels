@@ -23,7 +23,7 @@ m_true = 0.3    # (= e_m(t)/e_crit(t0) at t=t0).
 de_true = 0.7   # (de = e_de(t)/e_crit(t0) at t=t0).
 
 # Number of datapoints to be simulated.
-n = 1000 #10, 1000
+n = 100 #10, 1000
 
 # Statistical parameters:
 mu = 0          # mean

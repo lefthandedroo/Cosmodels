@@ -32,7 +32,7 @@ def msim(gamma, m, de, zpicks):
     if not np.isfinite(lp):
         print('msim got bad theta: ', theta)
         
-    z, dlpc = odesolve.odesolve(gamma, m, de, zpicks)
+    z, dlpc, dl, gamma, e_dash0m, e_dash0de, t, a, a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde = odesolve.odesolve(gamma, m, de, zpicks)
     dlpcinterp = np.interp(zpicks, z, dlpc)
     
 #    print('dlpcinterp is:')
@@ -44,5 +44,7 @@ def msim(gamma, m, de, zpicks):
     for i in range(len(dlpcinterp)):
         mdistmod = 5 * log10(dlpcinterp[i]/10) + M
         mag.append(mdistmod)
-
+        
+    import plots
+    plots.plots(mag, zpicks, z, dlpc, dl, gamma, e_dash0m, e_dash0de, t, a, a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde)
     return mag

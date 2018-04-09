@@ -112,4 +112,4 @@ def odesolve(gamma,m,de,zpicks):
     age = -round(age, 2)
     
     
-    return z, dlpc#, dl, gamma, e_dash0m, e_dash0de, t, a, a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde
+    return z, dlpc, dl, gamma, e_dash0m, e_dash0de, t, a, a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde

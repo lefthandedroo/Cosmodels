@@ -7,7 +7,6 @@ Created on Thu Feb 15 13:47:44 2018
 """
 
 from math import log10
-import numpy as np
 import zodesolve
 
 
@@ -27,19 +26,31 @@ def zmsim(gamma, m, de, zpicks):
 #    print('@@@ msim has been called')
         
     z, dlpc, dl, gamma, e_dash0m, e_dash0de, t, a, a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde = zodesolve.zodesolve(gamma, m, de, zpicks)
-#    dlpcinterp = np.interp(zpicks, z, dlpc)
     
-    print('dlpc is:')
-    print(dlpc)
-
     # Calculating apparent magnitudes of supernovae at the simulated
     # luminosity distances using the distance modulus formula.
     mag = []
-    
+        
     for i in range(len(dlpc)):
         mdistmod = 5 * log10(dlpc[i]/10) + M
         mag.append(mdistmod)
-        
+    
+    zpicks = zpicks[1:]
+    
+#    print('len z is: ',len(z))
+#    print('len dlpc is: ',len(dlpc))
+#    print('len dl is: ',len(dl))
+#    print('len t is: ',len(t))
+#    print('len a is: ',len(a))
+#    print('len a_dot is: ',len(a_dot))
+#    print('len t_cut is: ',len(t_cut))
+#    print('len a_cut is: ',len(a_cut))
+#    print('len a_dotcut is: ',len(a_dotcut))
+#    print('len e_dashm is: ',len(e_dashm))
+#    print('len e_dashde is: ',len(e_dashde))
+#    print('len mag is: ',len(mag))
+#    print('len zpicks is: ',len(zpicks))
+    
     import plots
     plots.plots(mag, zpicks, z, dlpc, dl, gamma, e_dash0m, e_dash0de, t, a, a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde)
 
