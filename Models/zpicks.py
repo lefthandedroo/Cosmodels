@@ -23,5 +23,6 @@ def zpicks(zmin, zmax, n):
     zinterval = (zmax - zmin) / (n*2)
     z_opts = flist.flist(zmin, zmax, zinterval)
     zpicks = random.sample(z_opts, n)
-    zpicks = np.asarray(zpicks)
+#    print(type(zpicks))
+#    zpicks = np.asarray(zpicks)
     return zpicks

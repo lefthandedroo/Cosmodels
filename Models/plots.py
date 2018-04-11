@@ -107,7 +107,7 @@ def plots(mag, zpicks, z, dlpc, dl, gamma, e_dash0m, e_dash0de, t, a, a_dot, t_c
 
 
     # Complete results with blow up resulting from a approaching big bang.
-    while True:  
+    while False:  
         figure()
         xlabel('time in $H_0^{-1}$')
         grid(True)

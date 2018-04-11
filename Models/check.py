@@ -15,7 +15,7 @@ b = [0.3, 0.3009, -10, 0.2999]
 c = [0.7, -10, 0.6999, 0.7009]
 prob = [0.0, -np.inf, -np.inf, -np.inf]
 
-def check(gamma, m, de, slnprob):
+def thetainf(gamma, m, de, slnprob):
     theta = np.column_stack((gamma, m, de))
     
     badtheta_finite_slnprob = 0
@@ -43,12 +43,17 @@ def check(gamma, m, de, slnprob):
             if np.isfinite(slnprob[i]):     # & has finite slnprob as it should
                 goodtheta_finite_slnprob +=1
 
-    wrong = badtheta_finite_slnprob + goodtheta_inf_slnprob
-    right = badtheta_inf_slnprob + goodtheta_finite_slnprob
+#    wrong = badtheta_finite_slnprob + goodtheta_inf_slnprob
+#    right = badtheta_inf_slnprob + goodtheta_finite_slnprob
 #    print('Bad theta with finite slnprob found: ',badtheta_finite_slnprob)
 #    print('Good theta with inf slnprob found: ',goodtheta_inf_slnprob)
 #    print('Bad theta with inf slnprob found: ',badtheta_inf_slnprob)
     print('Good theta with finite slnprob found: ',goodtheta_finite_slnprob)
 #    print('wrong = %s, right = %s'%(wrong, right))
+    return
+
+def sanity(mag, zpicks, dlpc, dl, gamma, e_dash0m, e_dash0de, a, e_dashm, e_dashde):
     
-#check(a, b, c, prob)
+
+    
+    return

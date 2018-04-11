@@ -23,20 +23,29 @@ def zmsim(gamma, m, de, zpicks):
     Returns:
         mag = list of n apparent magnitudes mag from corresponding redshits.
     """
-#    print('@@@ msim has been called')
-        
-    z, dlpc, dl, gamma, e_dash0m, e_dash0de, t, a, a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde = zodesolve.zodesolve(gamma, m, de, zpicks)
+#    print('@@@ zmsim has been called')
+    
+    if abs(zpicks[0]) > 0:
+        zpicks = [0.0] + zpicks
+        print('0 added at the front')
+    
+    if not isinstance(zpicks, (list,)):
+        zpicks = zpicks.tolist()
+        print('converted to list')
+   
+    if not sorted(zpicks) == zpicks:
+        zpicks.sort()
+        print('sorted to accending')
+    
+#    print('len zpicks in zmsim', len(zpicks))
+#    print('zpicks inside zmsim:', zpicks)
+#    print(type(zpicks))
+    
+    dlpc, dl, gamma, e_dash0m, e_dash0de, a, e_dashm, e_dashde = zodesolve.zodesolve(gamma, m, de, zpicks)
     
     # Calculating apparent magnitudes of supernovae at the simulated
     # luminosity distances using the distance modulus formula.
-    mag = []
-        
-    for i in range(len(dlpc)):
-        mdistmod = 5 * log10(dlpc[i]/10) + M
-        mag.append(mdistmod)
-    
-    zpicks = zpicks[1:]
-    
+
 #    print('len z is: ',len(z))
 #    print('len dlpc is: ',len(dlpc))
 #    print('len dl is: ',len(dl))
@@ -48,10 +57,29 @@ def zmsim(gamma, m, de, zpicks):
 #    print('len a_dotcut is: ',len(a_dotcut))
 #    print('len e_dashm is: ',len(e_dashm))
 #    print('len e_dashde is: ',len(e_dashde))
+#    print('len zpicks is: ',len(zpicks))   
+
+#    print('dlpc is')
+#    print(dlpc)
+    
+    mag = []
+        
+    for i in range(len(dlpc)):
+        if dlpc[i] == 0:
+            i += 1
+        mdistmod = 5 * log10(dlpc[i]/10) + M
+        mag.append(mdistmod)
+    
+#    print('after mdistmod calculation')
+#    print('len dlpc is: ',len(dlpc))
+#    print('len dl is: ',len(dl))
+#    print('len a is: ',len(a))
+#    print('len e_dashm is: ',len(e_dashm))
+#    print('len e_dashde is: ',len(e_dashde))
 #    print('len mag is: ',len(mag))
 #    print('len zpicks is: ',len(zpicks))
     
-    import plots
-    plots.plots(mag, zpicks, z, dlpc, dl, gamma, e_dash0m, e_dash0de, t, a, a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde)
+    import zplots
+    zplots.zplots(mag, zpicks, dlpc, dl, gamma, e_dash0m, e_dash0de, a, e_dashm, e_dashde)
 
     return #mag

@@ -35,7 +35,6 @@ def stats(gamma_true, m_true, de_true, zpicks, mag, sigma):
     """
 #    print('-stats has been called')
         
-    print('Finding a "good" place to start')
     gamma_ml = 0.0
     m_ml = 0.3
     de_ml = 0.7
@@ -59,11 +58,11 @@ def stats(gamma_true, m_true, de_true, zpicks, mag, sigma):
     
     # Corner plot (walkers' walk + histogram).
     samples = sampler.chain[:, burnin:, :].reshape((-1, ndim))
-    corner.corner(samples, labels=["$\gamma$", "$m$", "$de$"], 
+    fig = corner.corner(samples, labels=["$\gamma$", "$m$", "$de$"], 
                         truths=[gamma_true, m_true, de_true])
     pl.show()
-#    fig.savefig('zz_nsteps'+str(nsteps)+str(time.strftime("%c"))+
-#                'nwalkers'+str(nwalkers)+'.png')
+    numpoints = len(zpicks)
+    fig.savefig('zz_Day'+str(time.strftime("%j"))+'_nsteps_'+str(nsteps)+'_'+'nwalkers_'+str(nwalkers)+'numpoints_'+str(numpoints)+str(time.strftime("%c"))+'.png')
     
 #    # Marginalised distribution (histogram) plot.
 #    figure()
@@ -134,8 +133,8 @@ def stats(gamma_true, m_true, de_true, zpicks, mag, sigma):
     m = sampler.flatchain[:,1]
     de = sampler.flatchain[:,2]
         
-#    import check
-#    check.check(gamma, m, de, slnprob)
+    import check
+    check.thetainf(gamma, m, de, slnprob)
     
     import rslt
     rslt.rslt(gamma, m, de, slnprob)

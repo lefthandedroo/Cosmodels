@@ -45,6 +45,6 @@ def msim(gamma, m, de, zpicks):
         mdistmod = 5 * log10(dlpcinterp[i]/10) + M
         mag.append(mdistmod)
         
-    import plots
-    plots.plots(mag, zpicks, z, dlpc, dl, gamma, e_dash0m, e_dash0de, t, a, a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde)
+#    import plots
+#    plots.plots(mag, zpicks, z, dlpc, dl, gamma, e_dash0m, e_dash0de, t, a, a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde)
     return mag

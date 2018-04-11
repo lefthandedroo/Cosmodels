@@ -11,8 +11,6 @@ from scipy.integrate import odeint
 import firstderivs
 import lnprior
 
-#from matplotlib.font_manager import FontProperties
-#from pylab import figure, plot, xlabel, ylabel, grid, legend, title, show, axis
 
 
 # Standard cosmological parameters.
