@@ -70,7 +70,7 @@ def zmsim(gamma, m, de, zpicks):
         mdistmod = 5 * log10(dlpc[i]/10) + M
         mag.append(mdistmod)
     
-#    print('after mdistmod calculation')
+#    print('after zmsim mdistmod calculation')
 #    print('len dlpc is: ',len(dlpc))
 #    print('len dl is: ',len(dl))
 #    print('len a is: ',len(a))
@@ -79,8 +79,8 @@ def zmsim(gamma, m, de, zpicks):
 #    print('len mag is: ',len(mag))
 #    print('len zpicks is: ',len(zpicks))
     
-    import zplots
-    zplots.zplots(mag, zpicks, dlpc, dl, gamma, e_dash0m, e_dash0de, a, e_dashm, e_dashde)
+#    import zplots
+#    zplots.zplots(mag, zpicks, dlpc, dl, gamma, e_dash0m, e_dash0de, a, e_dashm, e_dashde)
     
     ztheta = t, mag, dlpc, dl, a, e_dashm, e_dashde
     

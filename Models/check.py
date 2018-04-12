@@ -7,7 +7,6 @@ Created on Thu Mar 22 16:17:52 2018
 """
 import numpy as np
 import lnprior
-import pylab as pl
 
 # prior:  if -0.1 < gamma < 0.1 and 0.299 < m < 0.301 and 0.699 < de < 0.701:
 
@@ -53,19 +52,71 @@ def thetainf(gamma, m, de, slnprob):
 #    print('wrong = %s, right = %s'%(wrong, right))
     return
 
+
+import pylab as pl
+
 def sanity(t_rslt, z_rzlt, zpicks, gamma, e_dash0m, e_dash0de):
     
     t, mag, dlpc, dl, a, e_dashm, e_dashde = t_rslt
     zt, zmag, zdlpc, zdl, za, ze_dashm, ze_dashde = z_rzlt
 
     
-    print('len mag %s, dlpc %s, dl %s, a %s, e_dashm %s, e_dashde %s'%
-          (len(mag), len(dlpc), len(dl), len(a), len(e_dashm), len(e_dashde)))
-    print('len zmag %s, zdlpc %s, zdl %s, za %s, ze_dashm %s, ze_dashde %s'%
-          (len(zmag), len(zdlpc), len(zdl), len(za), len(ze_dashm), len(ze_dashde)))
+    print('len t %s, len mag %s, dlpc %s, dl %s, a %s, e_dashm %s, e_dashde %s'%
+          (len(t), len(mag), len(dlpc), len(dl), len(a), len(e_dashm), len(e_dashde)))
+    print('lenzt %s, len zmag %s, zdlpc %s, zdl %s, za %s, ze_dashm %s, ze_dashde %s'%
+          (len(zt), len(zmag), len(zdlpc), len(zdl), len(za), len(ze_dashm), len(ze_dashde)))
 
+    pl.figure()
+    pl.title('a wrt time (blue) and a wrt z (red) vs time')
+    pl.xlabel('time')
+    pl.ylabel('magnitude')
+    pl.plot(t, a, 'b')
+    pl.plot(zt, za, 'r')
+    pl.show()
+    
 
-    pl.plot(a, t, za, zt)
+    pl.figure()
+    pl.title('e_dashm wrt time (blue) and e_dashm wrt z (red) vs time')
+    pl.xlabel('time')
+    pl.ylabel('scale factor')
+    pl.plot(t, e_dashm, 'b')
+    pl.plot(zt, ze_dashm, 'r')
+    pl.show()
+
+    pl.figure()
+    pl.title('e_dashde wrt time (blue) and e_dashde wrt z (red) vs time')
+    pl.xlabel('time')
+    pl.ylabel('scale factor')
+    pl.plot(t, e_dashde, 'b')
+    pl.plot(zt, ze_dashde, 'r')
+    pl.show() 
+
+    pl.figure()
+    pl.title('dlpc wrt time (blue) and dlpc wrt z (red) vs time')
+    pl.xlabel('time')
+    pl.ylabel('scale factor')
+    pl.plot(t, dlpc, 'b')
+    pl.plot(zt, zdlpc, 'r')
+    pl.show()    
+    
+    
+    print(type(mag))
+    if not sorted(mag) == mag:
+        mag = mag.sort()
+        print('mag sorted to accending')
+        
+    print('mag')
+    print(mag)
+    
+    pl.figure()
+    pl.title('mag wrt time (blue) and mag wrt z (red) vs time')
+    pl.xlabel('time')
+    pl.ylabel('magnitude')
+    pl.plot(t, mag, 'b')
+    pl.plot(zt, zmag, 'r')
+    pl.show()
+        
+
     # Difference in scale factors a:
 #    plist = []
 #    for i in range(len(zpicks)):

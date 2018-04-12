@@ -10,7 +10,7 @@ from math import log10
 import numpy as np
 import odesolve
 
-import lnprior
+#import lnprior
 
 # Empirical parameters.
 M = -19                     # Absolute brightness of supernovae.
@@ -27,10 +27,10 @@ def msim(gamma, m, de, zpicks):
     """
 #    print('@@@ msim has been called')
     
-    theta = gamma, m, de
-    lp = lnprior.lnprior(theta)
-    if not np.isfinite(lp):
-        print('msim got bad theta: ', theta)
+#    theta = gamma, m, de
+#    lp = lnprior.lnprior(theta)
+#    if not np.isfinite(lp):
+#        print('msim got bad theta: ', theta)
         
     z, dlpc, dl, gamma, e_dash0m, e_dash0de, t, a, a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde = odesolve.odesolve(gamma, m, de, zpicks)
     dlpcinterp = np.interp(zpicks, z, dlpc)
@@ -44,7 +44,17 @@ def msim(gamma, m, de, zpicks):
     for i in range(len(dlpcinterp)):
         mdistmod = 5 * log10(dlpcinterp[i]/10) + M
         mag.append(mdistmod)
-        
+    
+    
+    print('after msim mdistmod calculation')
+    print('len dlpc is: ',len(dlpc))
+    print('len dl is: ',len(dl))
+    print('len a is: ',len(a))
+    print('len e_dashm is: ',len(e_dashm))
+    print('len e_dashde is: ',len(e_dashde))
+    print('len mag is: ',len(mag))
+    print('len zpicks is: ',len(zpicks))
+    
 #    import plots
 #    plots.plots(mag, zpicks, z, dlpc, dl, gamma, e_dash0m, e_dash0de, t, a, a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde)
         
