@@ -49,13 +49,14 @@ def odesolve(gamma,m,de,zpicks):
     # ODE solver parameters:
     abserr = 1.0e-8
     relerr = 1.0e-6
-    numpoints = 100
+    numpoints = 125
     
     stoptime = 0 # Integrating back in time as time now is t0.
     
     z = np.array([0])
     
-    while z[np.argmax(z)] < 2.1:
+#    while z[np.argmax(z)] < 2.1:
+    while len(z) < 100:
         stoptime -= time
             
         theta = gamma, m, de
@@ -87,7 +88,7 @@ def odesolve(gamma,m,de,zpicks):
         dlpc = dl * c_over_H0    # dl in parsecs (= vsol[dl] * c/H0)
         
         # Find where results start to get strange (smaller than a_d):
-        blowups = np.where(z > 2)      # Tuple with indecies of z > 2.
+        blowups = np.where(z > 3)      # Tuple with indecies of z > 2.
         blowups = np.asarray(blowups)  # Converting to np array.
         
         if blowups.any():              # Check if instances of a < a_d exist. 
