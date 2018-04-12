@@ -47,4 +47,6 @@ def msim(gamma, m, de, zpicks):
         
 #    import plots
 #    plots.plots(mag, zpicks, z, dlpc, dl, gamma, e_dash0m, e_dash0de, t, a, a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde)
-    return mag
+        
+    theta = t, mag, dlpc, dl, a, e_dashm, e_dashde
+    return theta #mag

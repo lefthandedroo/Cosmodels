@@ -26,25 +26,28 @@ def zfirstderivs(v, t, gamma):
     ready to be integrated with odeint.
     Uses same lambda for all fluids.
     """
-    (a, e_dashm, e_dashde, z, dl) = v #omegam, omegade, z, dl) = v
+    (t, a, e_dashm, e_dashde, z, dl) = v #omegam, omegade, z, dl) = v
+    
+    Hz = (e_dashm+e_dashde)**(1/2)
+
     
     # fist derivatives of functions I want to find:
-    f = [# d(a)/dz (= f.d. of scale factor)
+    f = [# dt/dz (= time)
+        -1/(1+z)/Hz,
+            
+        # d(a)/dz (= f.d. of scale factor)
          -(1+z)**(-2),
          
-#         # d(da/dz)dz (= s.d. of scale factor)
-#         2*(1+z)**(-3), 
-         
          # d(e'_m)/dz   (= f.d. of density(t) / crit density(t0))
-         0.9*(1+z)**2,
+         3*e_dashm /(1+z) - gamma/(1+z)/Hz,
          
          # d(e'_de)/dz
-         0,
+         gamma/(1+z)/Hz,
          
          # d(z)/dz (= f.d. of redshift)
          1,
          
          # d(dl)/dz (= f.d. of luminosty distance)
-         1] # H + Hdz*(1+z)
+         1/Hz] # H + Hdz*(1+z)
         
     return f

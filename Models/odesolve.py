@@ -49,7 +49,7 @@ def odesolve(gamma,m,de,zpicks):
     # ODE solver parameters:
     abserr = 1.0e-8
     relerr = 1.0e-6
-    numpoints = 1000
+    numpoints = 100
     
     stoptime = 0 # Integrating back in time as time now is t0.
     

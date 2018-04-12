@@ -7,6 +7,7 @@ Created on Thu Mar 22 16:17:52 2018
 """
 import numpy as np
 import lnprior
+import pylab as pl
 
 # prior:  if -0.1 < gamma < 0.1 and 0.299 < m < 0.301 and 0.699 < de < 0.701:
 
@@ -52,8 +53,52 @@ def thetainf(gamma, m, de, slnprob):
 #    print('wrong = %s, right = %s'%(wrong, right))
     return
 
-def sanity(mag, zpicks, dlpc, dl, gamma, e_dash0m, e_dash0de, a, e_dashm, e_dashde):
+def sanity(t_rslt, z_rzlt, zpicks, gamma, e_dash0m, e_dash0de):
     
+    t, mag, dlpc, dl, a, e_dashm, e_dashde = t_rslt
+    zt, zmag, zdlpc, zdl, za, ze_dashm, ze_dashde = z_rzlt
 
     
+    print('len mag %s, dlpc %s, dl %s, a %s, e_dashm %s, e_dashde %s'%
+          (len(mag), len(dlpc), len(dl), len(a), len(e_dashm), len(e_dashde)))
+    print('len zmag %s, zdlpc %s, zdl %s, za %s, ze_dashm %s, ze_dashde %s'%
+          (len(zmag), len(zdlpc), len(zdl), len(za), len(ze_dashm), len(ze_dashde)))
+
+
+    pl.plot(a, t, za, zt)
+    # Difference in scale factors a:
+#    plist = []
+#    for i in range(len(zpicks)):
+#        
+#        difference = a[i] - za[i]
+#        plist.append((zpicks[i],difference))
+#        
+#    plist = sorted(plist,key=lambda x: x[0])
+#    
+#    parray = np.asarray(plist)
+#    zpicks = parray[:,0]
+#    diff = parray[:,1]
+#    pl.plot(zpicks, diff)
+#    pl.xlabel('z')
+#    pl.ylabel('a - za')
+#    pl.title('(a w.r.t. time - a w.r.t. z) vs redshift')
+#    pl.show()
+#    
+#        # Difference in magnitudes m:
+#    plist = []
+#    for i in range(len(zpicks)):
+#        
+#        difference = mag[i] - zmag[i]
+#        plist.append((zpicks[i],difference))
+#        
+#    plist = sorted(plist,key=lambda x: x[0])
+#    
+#    parray = np.asarray(plist)
+#    zpicks = parray[:,0]
+#    diff = parray[:,1]
+#    pl.plot(zpicks, diff)
+#    pl.xlabel('z')
+#    pl.ylabel('mag - zmag')
+#    pl.title('(mag w.r.t. time - mag w.r.t. z) vs redshift')
+#    pl.show()
     return

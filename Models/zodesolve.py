@@ -5,7 +5,6 @@ Created on Thu Feb 15 13:38:48 2018
 
 @author: BallBlueMeercat
 """
-import numpy as np
 from scipy.integrate import odeint
 
 import zfirstderivs
@@ -30,6 +29,7 @@ def zodesolve(gamma,m,de,zpicks):
 #    print('@@ zodesolve has been called')
     
     # Initial conditions at z = 0.
+    t0 = 0
     a0 = 1.0        # scale factor
 #    a_dz0 = 1.0    # speed of expansion
     e_dash0m = m    # e_m(t)/ec(t0)
@@ -42,7 +42,7 @@ def zodesolve(gamma,m,de,zpicks):
     relerr = 1.0e-6
     
     # Pack up the initial conditions and eq of state parameters.
-    v0 = [a0, e_dash0m, e_dash0de, z0, dl0]
+    v0 = [t0, a0, e_dash0m, e_dash0de, z0, dl0]
     
     # Call the ODE solver. maxstep=5000000 added later to try and avoid 
     vsol = odeint(zfirstderivs.zfirstderivs, v0, zpicks, args=(gamma,), 
@@ -50,15 +50,16 @@ def zodesolve(gamma,m,de,zpicks):
             
     # Remove unwanted results which are too close to big bang from the plot.
     # Separate results into their own arrays:
-    a = vsol[:,0]
-    e_dashm = vsol[:,1]
-    e_dashde = vsol[:,2]
-    z = vsol[:,3]    
-    dl = vsol[:,4] * (1+z)   # in units of dl*(H0/c)
+    t = vsol[:,0]
+    a = vsol[:,1]
+    e_dashm = vsol[:,2]
+    e_dashde = vsol[:,3]
+    z = vsol[:,4]    
+    dl = vsol[:,5] * (1+z)   # in units of dl*(H0/c)
     dlpc = dl * c_over_H0    # dl in parsecs (= vsol[dl] * c/H0)
 
         
 #    print('len zpicks after vsol',len(zpicks))
     
     
-    return dlpc, dl, gamma, e_dash0m, e_dash0de, a, e_dashm, e_dashde
+    return t, dlpc, dl, gamma, e_dash0m, e_dash0de, a, e_dashm, e_dashde
