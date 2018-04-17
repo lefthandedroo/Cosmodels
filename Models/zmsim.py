@@ -25,6 +25,7 @@ def zmsim(gamma, m, de, zpicks):
     """
 #    print('@@@ zmsim has been called')
     
+    
     if abs(zpicks[0]) > 0:
         zpicks = [0.0] + zpicks
         print('0 added at the front')
@@ -43,8 +44,6 @@ def zmsim(gamma, m, de, zpicks):
     
     t, dlpc, dl, gamma, e_dash0m, e_dash0de, a, e_dashm, e_dashde = zodesolve.zodesolve(gamma, m, de, zpicks)
     
-    # Calculating apparent magnitudes of supernovae at the simulated
-    # luminosity distances using the distance modulus formula.
 
 #    print('len z is: ',len(z))
 #    print('len dlpc is: ',len(dlpc))
@@ -58,12 +57,14 @@ def zmsim(gamma, m, de, zpicks):
 #    print('len e_dashm is: ',len(e_dashm))
 #    print('len e_dashde is: ',len(e_dashde))
 #    print('len zpicks is: ',len(zpicks))   
-
-#    print('dlpc is')
-#    print(dlpc)
     
-    mag = []
-        
+    # Calculating apparent magnitudes of supernovae at the simulated
+    # luminosity distances using the distance modulus formula.
+    
+    print('dlpc from zmsim')
+    print(dlpc)    
+
+    mag = []   
     for i in range(len(dlpc)):
         if dlpc[i] == 0:
             i += 1
@@ -71,12 +72,13 @@ def zmsim(gamma, m, de, zpicks):
         mag.append(mdistmod)
     
 #    print('after zmsim mdistmod calculation')
+#    print('len t is: ',len(t))  
+#    print('len mag is: ',len(mag))
 #    print('len dlpc is: ',len(dlpc))
 #    print('len dl is: ',len(dl))
 #    print('len a is: ',len(a))
 #    print('len e_dashm is: ',len(e_dashm))
 #    print('len e_dashde is: ',len(e_dashde))
-#    print('len mag is: ',len(mag))
 #    print('len zpicks is: ',len(zpicks))
     
 #    import zplots
@@ -85,3 +87,15 @@ def zmsim(gamma, m, de, zpicks):
     ztheta = t, mag, dlpc, dl, a, e_dashm, e_dashde
     
     return ztheta #mag
+
+
+
+
+
+
+
+
+
+
+
+

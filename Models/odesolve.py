@@ -35,7 +35,7 @@ def odesolve(gamma,m,de,zpicks):
     # enough for 'a' to decrease to a_d then stoptime will be extended 
     # by time until a_d is reached.
     # 0.665 matter only, 0.96 standard m+de
-    time = 0.9
+    time = 0.8
     
     
     # Initial conditions at time = t0.
@@ -49,66 +49,52 @@ def odesolve(gamma,m,de,zpicks):
     # ODE solver parameters:
     abserr = 1.0e-8
     relerr = 1.0e-6
-    numpoints = 125
+    numpoints = 101
     
     stoptime = 0 # Integrating back in time as time now is t0.
     
     z = np.array([0])
     
-#    while z[np.argmax(z)] < 2.1:
-    while len(z) < 100:
-        stoptime -= time
+    stoptime -= time
+        
+    theta = gamma, m, de
+    lp = lnprior.lnprior(theta)
+    if not np.isfinite(lp):
+        time += 500
+
+    if time > 0.9:
+        print('time in odesolve is: %s, gamma = %s, m = %s, de = %s'
+              %(time, gamma, m, de))
+    # Create time samples for the ODE solver.
+    t = [stoptime * tH * float(i) / (numpoints - 1) for i in range(numpoints)]
+
+    # Pack up the initial conditions and eq of state parameters.
+    v0 = [a0, a_dot0, e_dash0m, e_dash0de, z0, dl0]
+    
+    # Call the ODE solver. maxstep=5000000 added later to try and avoid 
+    vsol = odeint(firstderivs.firstderivs, v0, t, args=(gamma,), 
+                  atol=abserr, rtol=relerr, mxstep=5000000)
             
-        theta = gamma, m, de
-        lp = lnprior.lnprior(theta)
-        if not np.isfinite(lp):
-            time += 500
-
-        if time > 0.9:
-            print('time in odesolve is: %s, gamma = %s, m = %s, de = %s'
-                  %(time, gamma, m, de))
-        # Create time samples for the ODE solver.
-        t = [stoptime * tH * float(i) / (numpoints - 1) for i in range(numpoints)]
-
-        # Pack up the initial conditions and eq of state parameters.
-        v0 = [a0, a_dot0, e_dash0m, e_dash0de, z0, dl0]
-        
-        # Call the ODE solver. maxstep=5000000 added later to try and avoid 
-        vsol = odeint(firstderivs.firstderivs, v0, t, args=(gamma,), 
-                      atol=abserr, rtol=relerr, mxstep=5000000)
-                
-        # Remove unwanted results which are too close to big bang from the plot.
-        # Separate results into their own arrays:
-        a = vsol[:,0]
-        a_dot = vsol[:,1]
-        e_dashm = vsol[:,2]
-        e_dashde = vsol[:,3]
-        z = vsol[:,4]
-        dl = vsol[:,5] * (1+z)   # in units of dl*(H0/c)
-        dlpc = dl * c_over_H0    # dl in parsecs (= vsol[dl] * c/H0)
-        
-        # Find where results start to get strange (smaller than a_d):
-        blowups = np.where(z > 3)      # Tuple with indecies of z > 2.
-        blowups = np.asarray(blowups)  # Converting to np array.
-        
-        if blowups.any():              # Check if instances of a < a_d exist. 
-            blowup = blowups[0,0]
+    # Remove unwanted results which are too close to big bang from the plot.
+    # Separate results into their own arrays:
+    a = vsol[:,0]
+    a_dot = vsol[:,1]
+    e_dashm = vsol[:,2]
+    e_dashde = vsol[:,3]
+    z = vsol[:,4]
+    dl = vsol[:,5] * (1+z)   # in units of dl*(H0/c)
+    dlpc = dl * c_over_H0    # dl in parsecs (= vsol[dl] * c/H0)
+    
 
     # Remove values after the index of first instance of z > 2.
     t_cut = np.asarray(t)
     
-    t_cut = t_cut[:blowup]
-    a_cut = a[:blowup]
-    a_dotcut = a_dot[:blowup]
-    e_dashm = e_dashm[:blowup]
-    e_dashde = e_dashde[:blowup]
-    z = z[:blowup]
-    dl = dl[:blowup]
-    dlpc = dlpc[:blowup]
+    a_cut = a
+    a_dotcut = a_dot
     
-    # Age of the universe.
-    age = t_cut[np.argmin(t_cut)]
-    age = -round(age, 2)
+#    # Age of the universe.
+#    age = t_cut[np.argmin(t_cut)]
+#    age = -round(age, 2)
     
     
     return z, dlpc, dl, gamma, e_dash0m, e_dash0de, t, a, a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde

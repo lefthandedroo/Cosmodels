@@ -61,95 +61,90 @@ def sanity(t_rslt, z_rzlt, zpicks, gamma, e_dash0m, e_dash0de):
     zt, zmag, zdlpc, zdl, za, ze_dashm, ze_dashde = z_rzlt
 
     
-    print('len t %s, len mag %s, dlpc %s, dl %s, a %s, e_dashm %s, e_dashde %s'%
-          (len(t), len(mag), len(dlpc), len(dl), len(a), len(e_dashm), len(e_dashde)))
-    print('lenzt %s, len zmag %s, zdlpc %s, zdl %s, za %s, ze_dashm %s, ze_dashde %s'%
-          (len(zt), len(zmag), len(zdlpc), len(zdl), len(za), len(ze_dashm), len(ze_dashde)))
+#    print('len t %s, len mag %s, dlpc %s, dl %s, a %s, e_dashm %s, e_dashde %s'%
+#          (len(t), len(mag), len(dlpc), len(dl), len(a), len(e_dashm), len(e_dashde)))
+#    print('lenzt %s, len zmag %s, zdlpc %s, zdl %s, za %s, ze_dashm %s, ze_dashde %s'%
+#          (len(zt), len(zmag), len(zdlpc), len(zdl), len(za), len(ze_dashm), len(ze_dashde)))
 
-    pl.figure()
-    pl.title('a wrt time (blue) and a wrt z (red) vs time')
-    pl.xlabel('time')
-    pl.ylabel('magnitude')
-    pl.plot(t, a, 'b')
-    pl.plot(zt, za, 'r')
-    pl.show()
-    
+#    pl.figure()
+#    pl.title('a wrt time (blue) and a wrt z (red) vs time')
+#    pl.xlabel('time')
+#    pl.ylabel('scale factpr')
+#    pl.plot(t, a, 'b')
+#    pl.plot(zt, za, 'r')
+#    pl.show()
+#    
+#    pl.figure()
+#    pl.title('e_dashm wrt t (blue) and e_dashm wrt z (red) vs time')
+#    pl.xlabel('time')
+#    pl.ylabel('energy density(t) / ec(t=0)')
+#    pl.plot(t, e_dashm, 'b')
+#    pl.plot(zt, ze_dashm, 'r')
+#    pl.show()
+#
+#    pl.figure()
+#    pl.title('e_dashde wrt t (blue) and e_dashde wrt z (red) vs time')
+#    pl.xlabel('time')
+#    pl.ylabel('energy density(t) / ec(t=0)')
+#    pl.plot(t, e_dashde, 'b')
+#    pl.plot(zt, ze_dashde, 'r')
+#    pl.show() 
+#
+#    pl.figure()
+#    pl.title('dlpc wrt t (blue) and dlpc wrt z (red) vs time')
+#    pl.xlabel('time')
+#    pl.ylabel('Luminosity Distance in pc')
+#    pl.plot(t, dlpc, 'b')
+#    pl.plot(zt, zdlpc, 'r')
+#    pl.show()    
 
+    # dlpc vs time zoomed in
     pl.figure()
-    pl.title('e_dashm wrt time (blue) and e_dashm wrt z (red) vs time')
+    pl.title('dlpc wrt t (blue) and dlpc wrt z (red) vs time')
     pl.xlabel('time')
-    pl.ylabel('scale factor')
-    pl.plot(t, e_dashm, 'b')
-    pl.plot(zt, ze_dashm, 'r')
-    pl.show()
-
-    pl.figure()
-    pl.title('e_dashde wrt time (blue) and e_dashde wrt z (red) vs time')
-    pl.xlabel('time')
-    pl.ylabel('scale factor')
-    pl.plot(t, e_dashde, 'b')
-    pl.plot(zt, ze_dashde, 'r')
-    pl.show() 
-
-    pl.figure()
-    pl.title('dlpc wrt time (blue) and dlpc wrt z (red) vs time')
-    pl.xlabel('time')
-    pl.ylabel('scale factor')
-    pl.plot(t, dlpc, 'b')
-    pl.plot(zt, zdlpc, 'r')
-    pl.show()    
+    pl.ylabel('Luminosity Distance in pc')
+    pl.plot(t, dlpc, 'b.')
+    pl.plot(zt, zdlpc, 'r.')
+#    pl.ylim(0, 0.5)
+    pl.xlim([-0.4, 0.1])
+#    pl.show() 
     
-    
-    print(type(mag))
-    if not sorted(mag) == mag:
-        mag = mag.sort()
-        print('mag sorted to accending')
-        
-    print('mag')
-    print(mag)
-    
+    # mag vs time
     pl.figure()
-    pl.title('mag wrt time (blue) and mag wrt z (red) vs time')
+    pl.title('mag wrt t (blue) and mag wrt z (red) vs time')
     pl.xlabel('time')
     pl.ylabel('magnitude')
     pl.plot(t, mag, 'b')
     pl.plot(zt, zmag, 'r')
     pl.show()
+    
+    # Cross verifying magnitude:
+    def magmaker(dlpc):
+        from math import log10
+        M = -19
         
+        magnitude = []   
+        for i in range(len(dlpc)):
+            if dlpc[i] == 0:
+                i += 1
+            mdistmod = 5 * log10(dlpc[i]/10) + M
+            magnitude.append(mdistmod)
+        return magnitude
+        
+    magnitude = magmaker(dlpc)
+    zmagnitude = magmaker(zdlpc)
 
-    # Difference in scale factors a:
-#    plist = []
-#    for i in range(len(zpicks)):
-#        
-#        difference = a[i] - za[i]
-#        plist.append((zpicks[i],difference))
-#        
-#    plist = sorted(plist,key=lambda x: x[0])
-#    
-#    parray = np.asarray(plist)
-#    zpicks = parray[:,0]
-#    diff = parray[:,1]
-#    pl.plot(zpicks, diff)
-#    pl.xlabel('z')
-#    pl.ylabel('a - za')
-#    pl.title('(a w.r.t. time - a w.r.t. z) vs redshift')
-#    pl.show()
-#    
-#        # Difference in magnitudes m:
-#    plist = []
-#    for i in range(len(zpicks)):
-#        
-#        difference = mag[i] - zmag[i]
-#        plist.append((zpicks[i],difference))
-#        
-#    plist = sorted(plist,key=lambda x: x[0])
-#    
-#    parray = np.asarray(plist)
-#    zpicks = parray[:,0]
-#    diff = parray[:,1]
-#    pl.plot(zpicks, diff)
-#    pl.xlabel('z')
-#    pl.ylabel('mag - zmag')
-#    pl.title('(mag w.r.t. time - mag w.r.t. z) vs redshift')
-#    pl.show()
+    # magnitude calculated from scratch vs time
+    pl.figure()
+    pl.title('magnitude wrt t (blue) and magnitude wrt z (red) vs time')
+    pl.xlabel('time')
+    pl.ylabel('magnitude')
+    pl.plot(t, magnitude, 'b')
+    pl.plot(zt, zmagnitude, 'r')
+    pl.show()
+    
+    if not sorted(mag) == mag:
+        mag = mag.sort()
+        print('mag sorted to accending')
+
     return
