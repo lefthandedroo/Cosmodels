@@ -145,4 +145,4 @@ def stats(gamma_true, m_true, de_true, zpicks, mag, sigma):
     import timer
     timer.timer('sampler', timee0, timee1)
     
-    return gamma, m, de, slnprob, pos
+    return gammabest, mbest, debest
