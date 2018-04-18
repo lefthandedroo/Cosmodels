@@ -17,3 +17,13 @@ Created on Thu Sep 21 15:50:29 2017
 #    print('len zpicks after creation', len(zpicks))
 #    print('zpicks:')
 #    print(zpicks)
+
+def priortest(m, de): 
+    flatness = m + de
+    if flatness == 1:
+        print('flat')
+    else:
+        print('not flat')
+    return
+
+priortest(0.3,-0.7)

@@ -14,22 +14,21 @@ def zfirstderivs(v, t, gamma):
     """
     Takes in:
         v = values at z=0;
-        t = list of times to be integrated over;
-        w = omega parameters;
-        gamma = interaction constant.
+        t = list of redshifts to integrate over;
+        gamma = interaction term.
                 
-    Returns a function with:    a_dot, a_dotdot, 
-                                e'_dotm, e'_dotde, 
-                                omegam_dot, omegade_dot,
-                                z_dot,
-                                dl_dot
-    ready to be integrated with odeint.
-    Uses same lambda for all fluids.
+    Returns a function f =     [dt/dz, d(a)/dz, 
+                                d(e'_m)/dz, d(e'_de)/dz, 
+                                d(z)/dz,
+                                d(dl)/dz]
     """
     (t, a, e_dashm, e_dashde, z, dl) = v #omegam, omegade, z, dl) = v
     
     Hz = (e_dashm+e_dashde)**(1/2)
-
+    
+    import numpy as np
+    if np.isnan(Hz):
+        print("z = %s, Hz = %s, e'_m = %s, e'_de = %s"%(z, Hz, e_dashm, e_dashde))
     
     # fist derivatives of functions I want to find:
     f = [# dt/dz (= f.d wrt z of time)

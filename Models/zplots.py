@@ -8,7 +8,7 @@ Created on Tue Feb 27 12:40:48 2018
 from pylab import figure, plot, xlabel, ylabel, grid, title, show, scatter
 
 
-def zplots(mag, zpicks, dlpc, dl, gamma, e_dash0m, e_dash0de, a, e_dashm, e_dashde):
+def zplots(t, mag, zpicks, dlpc, dl, gamma, e_dash0m, e_dash0de, a, e_dashm, e_dashde):
 
 #    f = open('results.pckl', 'rb')
 #    obj = pickle.load(f)
@@ -90,22 +90,24 @@ def zplots(mag, zpicks, dlpc, dl, gamma, e_dash0m, e_dash0de, a, e_dashm, e_dash
         break
 
 
-#    while True:
-#        # Redshift vs time.
-#        figure()
-#        xlabel('redshift $z$')
-#        ylabel('$z$')
-##        axis([0,-0.8,0,5])
-#        grid(True)
-#        plot(t, z, 'tab:pink', lw=1)
-#        title('Redshift, IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0} \'$ =%s, $\gamma$ = %s'
-#              %(e_dash0m, e_dash0de, gamma))
-#        show()
-#        break
+    while True:
+        # Redshift vs time.
+        figure()
+        xlabel('redshift $z$')
+        ylabel('$z$')
+#        axis([0,-0.8,0,5])
+        grid(True)
+        plot(t, zpicks, 'tab:pink', lw=1)
+        title('Redshift, IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0} \'$ =%s, $\gamma$ = %s'
+              %(e_dash0m, e_dash0de, gamma))
+        show()
+        break
 
 
     while True:
         figure()
+        xlabel('redshift')
+        ylabel('magnitude')
         title('Mag simulated with msim parameters')
         scatter(zpicks, mag, lw='3', c='r')
         show()

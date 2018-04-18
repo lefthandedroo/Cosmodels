@@ -55,9 +55,5 @@ def zodesolve(gamma,m,de,zpicks):
     z = vsol[:,4]    
     dl = vsol[:,5] * (1+z)   # in units of dl*(H0/c)
     dlpc = dl * c_over_H0    # dl in parsecs (= vsol[dl] * c/H0)
-
-        
-#    print('len zpicks after vsol',len(zpicks))
     
-    
-    return t, dlpc, dl, gamma, e_dash0m, e_dash0de, a, e_dashm, e_dashde
+    return t, dlpc, dl, a, e_dashm, e_dashde

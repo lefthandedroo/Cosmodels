@@ -9,9 +9,9 @@ Created on Thu Feb 15 13:20:36 2018
 def flist(start, stop, step):
     """
     Takes in:
-        start, stop, step - integers or floats
+        start, stop, step = integers or floats
     Returns:
-        zlist - a list start to stop with step as increment
+        zlist = list start to stop with step as increment
     """
 #    print('-flist has been called')
     i = 0

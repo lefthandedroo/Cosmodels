@@ -13,7 +13,7 @@ import matplotlib.pyplot as pl
 import numpy as np
 import time
 
-import msim
+import zmsim
 import lnprob
 import lnprior
 
@@ -44,7 +44,7 @@ def stats(gamma_true, m_true, de_true, zpicks, mag, sigma):
     # Initializing walkers in a Gaussian ball around the max likelihood.
     # Number in front of the np.random.rand(ndim) is 'initial footprint'.
     pos = [startpos + 0.1*np.random.randn(ndim) for i in range(nwalkers)]    
-    print('pos = ',pos)    
+#    print('pos = ',pos)    
     
     # Sampler setup
     timee0 = time.time()    # starting emcee timer
@@ -62,7 +62,9 @@ def stats(gamma_true, m_true, de_true, zpicks, mag, sigma):
                         truths=[gamma_true, m_true, de_true])
     pl.show()
     numpoints = len(zpicks)
-    fig.savefig('zz_Day'+str(time.strftime("%j"))+'_nsteps_'+str(nsteps)+'_'+'nwalkers_'+str(nwalkers)+'numpoints_'+str(numpoints)+str(time.strftime("%c"))+'.png')
+    fig.savefig('zz_Day'+str(time.strftime("%j"))+'_nsteps_'+
+                str(nsteps)+'_'+'nwalkers_'+str(nwalkers)+'numpoints_'+
+                str(numpoints)+str(time.strftime("%c"))+'.png')
     
 #    # Marginalised distribution (histogram) plot.
 #    figure()
@@ -117,7 +119,7 @@ def stats(gamma_true, m_true, de_true, zpicks, mag, sigma):
         print('parameters are outside of prior when they get to magbest')
         print('')
     # Plot of mag simulted using best emcee parameters.
-    magbest = msim.msim(gammabest, mbest, debest, zpicks)
+    magbest = zmsim.zmsim(gammabest, mbest, debest, zpicks)
     
     
     # Plot of magnitudes simulated using "true" parameters, overlayed with
@@ -134,8 +136,8 @@ def stats(gamma_true, m_true, de_true, zpicks, mag, sigma):
     m = sampler.flatchain[:,1]
     de = sampler.flatchain[:,2]
         
-    import check
-    check.thetainf(gamma, m, de, slnprob)
+#    import check
+#    check.thetainf(gamma, m, de, slnprob)
     
     import rslt
     rslt.rslt(gamma, m, de, slnprob)
