@@ -9,7 +9,7 @@ import numpy as np
 from scipy.integrate import odeint
 
 import firstderivs
-import lnprior
+#import lnprior
 
 
 
@@ -49,7 +49,7 @@ def odesolve(gamma,m,de,zpicks):
     # ODE solver parameters:
     abserr = 1.0e-8
     relerr = 1.0e-6
-    numpoints = 101
+    numpoints = 100
     
     stoptime = 0 # Integrating back in time as time now is t0.
     
@@ -57,10 +57,10 @@ def odesolve(gamma,m,de,zpicks):
     
     stoptime -= time
         
-    theta = gamma, m, de
-    lp = lnprior.lnprior(theta)
-    if not np.isfinite(lp):
-        time += 500
+#    theta = gamma, m, de
+#    lp = lnprior.lnprior(theta)
+#    if not np.isfinite(lp):
+#        time += 500
 
     if time > 0.9:
         print('time in odesolve is: %s, gamma = %s, m = %s, de = %s'

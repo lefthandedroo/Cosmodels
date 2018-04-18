@@ -34,6 +34,9 @@ sigma = 0.1     # standard deviation
 # Picking redshifts to investigate.
 zmin, zmax = 0.001, 2
 zpicks = zpicks.zpicks(zmin, zmax, n)
+#print('zpicks before',zpicks)
+zpicks = sorted(zpicks)
+#print('zpicks sorted',zpicks)
 
 # Generating apparent magnitues mag at redshift z < zmax (calculated from
 # luminosity distances given by LambdaCMD with parameters stated above.

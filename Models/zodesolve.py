@@ -31,7 +31,6 @@ def zodesolve(gamma,m,de,zpicks):
     # Initial conditions at z = 0.
     t0 = 0
     a0 = 1.0        # scale factor
-#    a_dz0 = 1.0    # speed of expansion
     e_dash0m = m    # e_m(t)/ec(t0)
     e_dash0de = de  # e_de(t)/ec(t0)
     z0 = 0
@@ -48,7 +47,6 @@ def zodesolve(gamma,m,de,zpicks):
     vsol = odeint(zfirstderivs.zfirstderivs, v0, zpicks, args=(gamma,), 
                   atol=abserr, rtol=relerr, mxstep=5000000)
             
-    # Remove unwanted results which are too close to big bang from the plot.
     # Separate results into their own arrays:
     t = vsol[:,0]
     a = vsol[:,1]

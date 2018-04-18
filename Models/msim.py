@@ -45,14 +45,15 @@ def msim(gamma, m, de, zpicks):
 #        mdistmod = 5 * log10(dlpcinterp[i]/10) + M
 #        mag.append(mdistmod)
     
-    print('dlpc from msim')
-    print(dlpc)
+#    print('dlpc from msim')
+#    print(dlpc)
     
     mag = []   
     for i in range(len(dlpc)):
         if dlpc[i] == 0:
-            i += 1
-        mdistmod = 5 * log10(dlpc[i]/10) + M
+            mdistmod = M
+        else:
+            mdistmod = 5 * log10(dlpc[i]/10) + M
         mag.append(mdistmod)
     
 #    print('after msim mdistmod calculation')
@@ -70,7 +71,7 @@ def msim(gamma, m, de, zpicks):
 #    plots.plots(mag, zpicks, z, dlpc, dl, gamma, e_dash0m, e_dash0de, t, a, a_dot, t_cut, a_cut, a_dotcut, e_dashm, e_dashde)
         
     theta = t, mag, dlpc, dl, a, e_dashm, e_dashde
-    return theta #mag
+    return mag#theta #mag
 
 
 

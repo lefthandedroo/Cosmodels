@@ -119,6 +119,7 @@ def stats(gamma_true, m_true, de_true, zpicks, mag, sigma):
     # Plot of mag simulted using best emcee parameters.
     magbest = msim.msim(gammabest, mbest, debest, zpicks)
     
+    
     # Plot of magnitudes simulated using "true" parameters, overlayed with
     # magnitudes simulated using emcee best parameters.
     figure()

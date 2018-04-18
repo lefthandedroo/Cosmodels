@@ -126,9 +126,11 @@ def sanity(t_rslt, z_rzlt, zpicks, gamma, e_dash0m, e_dash0de):
         magnitude = []   
         for i in range(len(dlpc)):
             if dlpc[i] == 0:
-                i += 1
-            mdistmod = 5 * log10(dlpc[i]/10) + M
-            magnitude.append(mdistmod)
+                magn = M
+        # magnitude from the distance modulus formula
+            else:
+                magn = 5 * log10(dlpc[i]/10) + M
+            magnitude.append(magn)
         return magnitude
         
     magnitude = magmaker(dlpc)
@@ -143,8 +145,18 @@ def sanity(t_rslt, z_rzlt, zpicks, gamma, e_dash0m, e_dash0de):
     pl.plot(zt, zmagnitude, 'r')
     pl.show()
     
-    if not sorted(mag) == mag:
-        mag = mag.sort()
-        print('mag sorted to accending')
+    # magnitude calculated from scratch vs time zoomed in
+    pl.figure()
+    pl.title('magnitude wrt t (blue) and magnitude wrt z (red) vs time')
+    pl.xlabel('time')
+    pl.ylabel('magnitude')
+    pl.plot(t, magnitude, 'b.')
+    pl.plot(zt, zmagnitude, 'r.')
+    pl.xlim([-0.1, 0.1])
+    pl.show()
+    
+#    if not sorted(mag) == mag:
+#        mag = mag.sort()
+#        print('mag sorted to accending')
 
     return

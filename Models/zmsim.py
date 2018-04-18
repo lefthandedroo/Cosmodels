@@ -67,9 +67,11 @@ def zmsim(gamma, m, de, zpicks):
     mag = []   
     for i in range(len(dlpc)):
         if dlpc[i] == 0:
-            i += 1
-        mdistmod = 5 * log10(dlpc[i]/10) + M
-        mag.append(mdistmod)
+            magnitude = M
+        else:
+            # magnitude from the distance modulus formula
+            magnitude = 5 * log10(dlpc[i]/10) + M
+        mag.append(magnitude)
     
 #    print('after zmsim mdistmod calculation')
 #    print('len t is: ',len(t))  

@@ -32,22 +32,22 @@ def zfirstderivs(v, t, gamma):
 
     
     # fist derivatives of functions I want to find:
-    f = [# dt/dz (= time)
+    f = [# dt/dz (= f.d wrt z of time)
         -1/(1+z)/Hz,
             
-        # d(a)/dz (= f.d. of scale factor)
+        # d(a)/dz (= f.d wrt z of scale factor)
          -(1+z)**(-2),
          
-         # d(e'_m)/dz   (= f.d. of density(t) / crit density(t0))
+         # d(e'_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
          3*e_dashm /(1+z) - gamma/(1+z)/Hz,
          
-         # d(e'_de)/dz
+         # d(e'_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
          gamma/(1+z)/Hz,
          
-         # d(z)/dz (= f.d. of redshift)
+         # d(z)/dz (= f.d wrt z of redshift)
          1,
          
-         # d(dl)/dz (= f.d. of luminosty distance)
+         # d(dl)/dz (= f.d wrt z of luminosty distance)
          1/Hz] # H + Hdz*(1+z)
         
     return f
