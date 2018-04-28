@@ -15,12 +15,12 @@ H0 = 1
 tH = 1.0/H0  # Hubble time
 c_over_H0 = 4167 * 10**6    # c/H0 in parsecs
 
-def zodesolve(gamma,m,de,zpicks):
+def zodesolve(gamma,m,zpicks):
     """
     Takes in:
         gamma = interaction constant;
         m = e_m(t)/ec(t0) at t=t0;
-        de = e_de(t)/ec(t0) at t=t0.
+#        de = e_de(t)/ec(t0) at t=t0.
     Returns: 
         z = numpoints number of redshifts zmin<z<zmax;
         dlpc = luminosity distance in pc.
@@ -31,29 +31,30 @@ def zodesolve(gamma,m,de,zpicks):
     # Initial conditions at z = 0.
     t0 = 0
     a0 = 1.0        # scale factor
-    e_dash0m = m    # e_m(t)/ec(t0)
-    e_dash0de = de  # e_de(t)/ec(t0)
     z0 = 0
     dl0 = 0
+    rho_c0 = H0**2
+    ombar_m0 = m                            # e_m(z)/ec(z=0)
+    ombar_de0 = rho_c0/rho_c0 - ombar_m0    # e_de(z)/ec(z=0)
     
     # ODE solver parameters:
     abserr = 1.0e-8
     relerr = 1.0e-6
     
     # Pack up the initial conditions and eq of state parameters.
-    v0 = [t0, a0, e_dash0m, e_dash0de, z0, dl0]
+    v0 = [t0, a0, ombar_m0, ombar_de0, z0, dl0]
     
     # Call the ODE solver. maxstep=5000000 added later to try and avoid 
-    vsol = odeint(zfirstderivs.zfirstderivs, v0, zpicks, args=(gamma,), 
+    vsol = odeint(zfirstderivs.zfirstderivs, v0, zpicks, args=(gamma,H0), 
                   atol=abserr, rtol=relerr, mxstep=5000000)
             
     # Separate results into their own arrays:
     t = vsol[:,0]
     a = vsol[:,1]
-    e_dashm = vsol[:,2]
-    e_dashde = vsol[:,3]
+    ombar_m = vsol[:,2]
+    ombar_de = vsol[:,3]
     z = vsol[:,4]    
     dl = vsol[:,5] * (1+z)   # in units of dl*(H0/c)
     dlpc = dl * c_over_H0    # dl in parsecs (= vsol[dl] * c/H0)
     
-    return t, dlpc, dl, a, e_dashm, e_dashde
+    return t, dlpc, dl, a, ombar_m, ombar_de, ombar_de0

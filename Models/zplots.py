@@ -7,8 +7,7 @@ Created on Tue Feb 27 12:40:48 2018
 """
 from pylab import figure, plot, xlabel, ylabel, grid, title, show, scatter
 
-
-def zplots(t, mag, zpicks, dlpc, dl, gamma, e_dash0m, e_dash0de, a, e_dashm, e_dashde):
+def zplots(t, mag, zpicks, dlpc, dl, gamma, ombar_m0, ombar_de0, a, ombar_m, ombar_de):
 
 #    f = open('results.pckl', 'rb')
 #    obj = pickle.load(f)
@@ -26,7 +25,7 @@ def zplots(t, mag, zpicks, dlpc, dl, gamma, e_dash0m, e_dash0de, a, e_dashm, e_d
         grid(True)
         plot(zpicks, a, 'r', lw=1)
         title('IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0} \'$ =%s, $\gamma$ = %s'
-              %(e_dash0m, e_dash0de, gamma))
+              %(ombar_m0, ombar_de0, gamma))
         show()
         break
 
@@ -37,9 +36,9 @@ def zplots(t, mag, zpicks, dlpc, dl, gamma, e_dash0m, e_dash0de, a, e_dashm, e_d
         xlabel('redshift $z$')
         ylabel('$\epsilon_m \'$')
         lw = 1
-        plot(zpicks, e_dashm, 'g', linewidth=lw)
+        plot(zpicks, ombar_m, 'g', linewidth=lw)
         title('$\epsilon_m \'$ evolution, IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0} \'$ =%s, $\gamma$ = %s'
-              %(e_dash0m, e_dash0de, gamma))
+              %(ombar_m0, ombar_de0, gamma))
         show()
 
         # e_dashde
@@ -47,9 +46,9 @@ def zplots(t, mag, zpicks, dlpc, dl, gamma, e_dash0m, e_dash0de, a, e_dashm, e_d
         xlabel('redshift $z$')
         ylabel('$\epsilon_{DE} \'$')
         lw = 1
-        plot(zpicks, e_dashde, 'm', linewidth=lw)
+        plot(zpicks, ombar_m, 'm', linewidth=lw)
         title('$\epsilon_{DE} \'$ evolution, IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0} \'$ =%s, $\gamma$ = %s'
-              %(e_dash0m, e_dash0de, gamma))
+              %(ombar_m0, ombar_de0, gamma))
         show()
         break
 
@@ -62,7 +61,7 @@ def zplots(t, mag, zpicks, dlpc, dl, gamma, e_dash0m, e_dash0de, a, e_dashm, e_d
         grid(True)
         plot(zpicks, dl, 'tab:green', lw=1)
         title('$d_L$, IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0} \'$ =%s, $\gamma$ = %s'
-              %(e_dash0m, e_dash0de, gamma))
+              %(ombar_m0, ombar_de0, gamma))
         show()
         break   
 
@@ -73,7 +72,7 @@ def zplots(t, mag, zpicks, dlpc, dl, gamma, e_dash0m, e_dash0de, a, e_dashm, e_d
         grid(True)
         plot(zpicks, dlpc, 'tab:green', lw=1)
         title('$d_L$, IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0} \'$ =%s, $\gamma$ = %s'
-              %(e_dash0m, e_dash0de, gamma))
+              %(ombar_m0, ombar_de0, gamma))
         show()
         break       
 
@@ -85,7 +84,7 @@ def zplots(t, mag, zpicks, dlpc, dl, gamma, e_dash0m, e_dash0de, a, e_dashm, e_d
         grid(True)
         plot(zpicks, dlgpc, 'tab:green', lw=1)
         title('$d_L$, IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0} \'$ =%s, $\gamma$ = %s'
-              %(e_dash0m, e_dash0de, gamma))
+              %(ombar_m0, ombar_de0, gamma))
         show()
         break
 
@@ -99,7 +98,7 @@ def zplots(t, mag, zpicks, dlpc, dl, gamma, e_dash0m, e_dash0de, a, e_dashm, e_d
         grid(True)
         plot(t, zpicks, 'tab:pink', lw=1)
         title('Redshift, IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0} \'$ =%s, $\gamma$ = %s'
-              %(e_dash0m, e_dash0de, gamma))
+              %(ombar_m0, ombar_de0, gamma))
         show()
         break
 
