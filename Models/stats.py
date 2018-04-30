@@ -16,9 +16,8 @@ import lnprob
 import lnprior
 
 # emcee parameters:
-ndim, nwalkers = 2, 8
-nsteps = 1000
-burnin = 300
+ndim, nwalkers = 2, 4
+nsteps, burnin = 1000, 300
 
 def stats(gamma_true, m_true, zpicks, mag, sigma):
     """
@@ -41,8 +40,20 @@ def stats(gamma_true, m_true, zpicks, mag, sigma):
             
     # Initializing walkers in a Gaussian ball around the max likelihood.
     # Number in front of the np.random.rand(ndim) is 'initial footprint'.
-    pos = [startpos + 0.1*np.random.randn(ndim) for i in range(nwalkers)]    
-#    print('pos = ',pos)    
+    pos = [startpos + 0.05*np.random.randn(ndim) for i in range(nwalkers)]
+#    print('pos = ',pos) 
+
+    i = 0
+    while i < 4:
+        posrow = pos[i]
+        gamma = posrow[0]
+        m = posrow[1]
+        theta = gamma, m
+        lp = lnprior.lnprior(theta)
+        if not np.isfinite(lp):
+            print('theta %s (outside of prior) = %s'%(i, theta))
+        i += 1
+       
     
     # Sampler setup
     timee0 = time.time()    # starting emcee timer
@@ -95,14 +106,14 @@ def stats(gamma_true, m_true, zpicks, mag, sigma):
     bi = np.argmax(sampler.flatlnprobability)   # index with highest post prob                                       
     gammabest = sampler.flatchain[bi,0]         # parameters with the highest 
     mbest = sampler.flatchain[bi,1]             # posterior probability
-#    debest = sampler.flatchain[bi,2]
+    debest = 1 - mbest
     
 
     # Results getting printed:
     print('best index is =',str(bi))
     print('gammabest is =',str(gammabest))
     print('mbest is =',str(mbest))
-#    print('debest is =',str(debest))
+    print('1 - mbest =',str(debest))
   
     # Mean acceptance fraction. In general, acceptance fraction has an entry 
     # for each walker so, in this case, it is a nwalkers-dimensional vector.
@@ -118,21 +129,29 @@ def stats(gamma_true, m_true, zpicks, mag, sigma):
         print('parameters are outside of prior when they get to magbest')
         print('')
     
-#    # Plot of magnitudes simulated using "true" parameters, overlayed with
-#    # magnitudes simulated using emcee best parameters.
-#    import zmsim
-#    magbest = zmsim.zmsim(gammabest, mbest, debest, zpicks)
-#
+    # Plot of magnitudes simulated using "true" parameters, overlayed with
+    # magnitudes simulated using emcee best parameters.
+    import zmsim
+    magbest = zmsim.zmsim(gammabest, mbest, zpicks)
+
+    magerr = mag * sigma
+#    plmagerr = magerr[1:]
 #    figure()
+#    pl.title('plmagerr distribution')
+#    pl.hist(plmagerr, 100)
+#    pl.show()
+
+#    figure()
+#    magerr = mag * sigma
 #    pl.title('True parameters mag and best emcee parameters mag')
-#    pl.errorbar(zpicks, mag, yerr=sigma, fmt='o', alpha=0.3)
-#    best_fit = scatter(zpicks, magbest, lw='3', c='r')
+#    pl.errorbar(zpicks, mag, yerr=magerr, fmt='.', alpha=0.3)
+#    best_fit = scatter(zpicks, magbest, lw='1', c='r')
 #    pl.legend([best_fit], ['Mag simulated with best emcee parameters'])
 #    pl.show()
         
-    slnprob = sampler.flatlnprobability
-    gamma = sampler.flatchain[:,0]
-    m = sampler.flatchain[:,1]
+#    slnprob = sampler.flatlnprobability
+#    gamma = sampler.flatchain[:,0]
+#    m = sampler.flatchain[:,1]
 #    de = sampler.flatchain[:,2]
         
 #    import check
@@ -144,4 +163,4 @@ def stats(gamma_true, m_true, zpicks, mag, sigma):
     import timer
     timer.timer('sampler', timee0, timee1)
     
-    return gammabest, mbest#, debest
+    return gammabest, mbest, debest

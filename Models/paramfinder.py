@@ -49,7 +49,7 @@ def paramfinder(n, gamma_true, m_true, sigma, mu):
     times0 = time.time()
     
 #    gammabest, mbest, debest = stats.stats(gamma_true, m_true, zpicks, mag, sigma)
-    gammabest, mbest = stats.stats(gamma_true, m_true, zpicks, mag, sigma)
+    gammabest, mbest, debest = stats.stats(gamma_true, m_true, zpicks, mag, sigma)
 
     
     # Time taken by stats. 
@@ -60,6 +60,6 @@ def paramfinder(n, gamma_true, m_true, sigma, mu):
     timet1=time.time()
     timer.timer('script', timet0, timet1)
     
-    return gammabest, mbest#, debest
+    return gammabest, mbest, debest
 
 #paramfinder(n, gamma_true, m_true, de_true, sigma, mu)

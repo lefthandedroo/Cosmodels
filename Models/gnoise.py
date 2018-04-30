@@ -17,4 +17,11 @@ def gnoise(mag, mu, sigma):
     n = len(mag)
     noise = np.random.normal(mu,sigma,n)
     mag = mag + noise
+    
+#    import matplotlib.pyplot as pl
+#    from pylab import figure
+#    figure()
+#    pl.title('Noise distribution')
+#    pl.hist(noise, 100)
+#    pl.show()
     return mag

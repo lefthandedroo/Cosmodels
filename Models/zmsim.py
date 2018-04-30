@@ -34,7 +34,6 @@ def zmsim(gamma, m, zpicks):
         print('converted to list in zmsim')
     
     t, dlpc, dl, a, ombar_m, ombar_de, ombar_de0 = zodesolve.zodesolve(gamma, m, zpicks)
-    de = ombar_de0
     
     # Calculating apparent magnitudes of supernovae at the simulated
     # luminosity distances using the distance modulus formula.
@@ -49,6 +48,7 @@ def zmsim(gamma, m, zpicks):
         mag.append(magnitude)
     
 #    import zplots
+#    de = ombar_de0
 #    zplots.zplots(t, mag, zpicks, dlpc, dl, gamma, m, de, a, ombar_m, ombar_de)
     
 #    ztheta = t, mag, dlpc, dl, a, ombar_m, ombar_de
