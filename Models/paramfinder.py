@@ -24,14 +24,14 @@ import stats
 #mu = 0          # mean
 #sigma = 0.1     # standard deviation
 
-def paramfinder(n, gamma_true, m_true, sigma, mu):
+def paramfinder(npoints, nsteps, gamma_true, m_true, sigma, mu):
     # Script timer.
     timet0 = time.time()
     
     # Generating redshifts to simulate data.
     import zpicks
     zmin, zmax = 0.001, 2
-    zpicks = zpicks.zpicks(zmin, zmax, n)
+    zpicks = zpicks.zpicks(zmin, zmax, npoints)
     zpicks = sorted(zpicks)
     # Inserting 0 at the front to allow initial conditions.
     if abs(zpicks[0]) > 0:
@@ -49,7 +49,7 @@ def paramfinder(n, gamma_true, m_true, sigma, mu):
     times0 = time.time()
     
 #    gammabest, mbest, debest = stats.stats(gamma_true, m_true, zpicks, mag, sigma)
-    gammabest, mbest, debest = stats.stats(gamma_true, m_true, zpicks, mag, sigma)
+    gammabest, mbest, debest = stats.stats(gamma_true, m_true, zpicks, mag, sigma, nsteps)
 
     
     # Time taken by stats. 

@@ -17,9 +17,8 @@ import lnprior
 
 # emcee parameters:
 ndim, nwalkers = 2, 4
-nsteps, burnin = 1000, 300
 
-def stats(gamma_true, m_true, zpicks, mag, sigma):
+def stats(gamma_true, m_true, zpicks, mag, sigma, nsteps):
     """
     Takes in:
             gamma_true = interaction constant;
@@ -31,16 +30,17 @@ def stats(gamma_true, m_true, zpicks, mag, sigma):
     Returns:
     """
 #    print('-stats has been called')
-        
-    gamma_ml = gamma_true
-    m_ml = m_true
-#    de_ml = de_true
     
-    startpos = np.array([gamma_ml,m_ml]) #,de_ml])
+    burnin = int(nsteps/10)
+        
+    gamma_start = gamma_true / 2
+    m_start = m_true / 2
+    
+    startpos = np.array([gamma_start,m_start])
             
     # Initializing walkers in a Gaussian ball around the max likelihood.
     # Number in front of the np.random.rand(ndim) is 'initial footprint'.
-    pos = [startpos + 0.05*np.random.randn(ndim) for i in range(nwalkers)]
+    pos = [startpos + 0.01*np.random.randn(ndim) for i in range(nwalkers)]
 #    print('pos = ',pos) 
 
     i = 0
@@ -51,7 +51,7 @@ def stats(gamma_true, m_true, zpicks, mag, sigma):
         theta = gamma, m
         lp = lnprior.lnprior(theta)
         if not np.isfinite(lp):
-            print('theta %s (outside of prior) = %s'%(i, theta))
+            print('~~~~~~~theta %s (outside of prior) = %s ~~~~~~~'%(i, theta))
         i += 1
        
     
@@ -63,25 +63,33 @@ def stats(gamma_true, m_true, zpicks, mag, sigma):
     print('_____ sampler end')
     timee1=time.time()      # stopping emcee timer
     
-#    print('_____ stats corner plot')
-#    
+    print('_____ stats corner plot')
+    
 #    # Corner plot (walkers' walk + histogram).
 #    import corner
 #    samples = sampler.chain[:, burnin:, :].reshape((-1, ndim))
 #    fig = corner.corner(samples, labels=["$\gamma$", "$m$", "$de$"], 
-#                        truths=[gamma_true, m_true, de_true])
+#                        truths=[gamma_true, m_true])
 #    pl.show()
+    
+    # Naming of file
 #    numpoints = len(zpicks)
 #    fig.savefig('zz_Day'+str(time.strftime("%j"))+'_nsteps_'+
 #                str(nsteps)+'_'+'nwalkers_'+str(nwalkers)+'numpoints_'+
 #                str(numpoints)+str(time.strftime("%c"))+'.png')
     
-#    # Marginalised distribution (histogram) plot.
-#    figure()
-#    pl.title('Marginalised distribution')
-#    pl.hist(sampler.flatchain[:,0], 100)
-#    pl.show()
-#    
+    # Marginalised distribution (histogram) plot.
+    figure()
+    pl.title('Marginalised distribution for gamma')
+    pl.hist(sampler.flatchain[:,0], 100)
+    pl.show()
+    
+    # Marginalised distribution (histogram) plot.
+    figure()
+    pl.title('Marginalised distribution for m')
+    pl.hist(sampler.flatchain[:,1], 100)
+    pl.show()
+    
 #    # Chains.    
 #    figure()
 #    pl.title('flatChains with gamma_true in blue')
@@ -107,7 +115,6 @@ def stats(gamma_true, m_true, zpicks, mag, sigma):
     gammabest = sampler.flatchain[bi,0]         # parameters with the highest 
     mbest = sampler.flatchain[bi,1]             # posterior probability
     debest = 1 - mbest
-    
 
     # Results getting printed:
     print('best index is =',str(bi))
@@ -131,10 +138,10 @@ def stats(gamma_true, m_true, zpicks, mag, sigma):
     
     # Plot of magnitudes simulated using "true" parameters, overlayed with
     # magnitudes simulated using emcee best parameters.
-    import zmsim
-    magbest = zmsim.zmsim(gammabest, mbest, zpicks)
+#    import zmsim
+#    magbest = zmsim.zmsim(gammabest, mbest, zpicks)
 
-    magerr = mag * sigma
+#    magerr = mag * sigma
 #    plmagerr = magerr[1:]
 #    figure()
 #    pl.title('plmagerr distribution')
@@ -153,6 +160,37 @@ def stats(gamma_true, m_true, zpicks, mag, sigma):
 #    gamma = sampler.flatchain[:,0]
 #    m = sampler.flatchain[:,1]
 #    de = sampler.flatchain[:,2]
+#    de = 1 - m
+    
+#    print('gamma')
+#    print(len(gamma))
+    
+#    figure()
+#    pl.title('complete ombar_m vs gamma')
+#    pl.xlabel('m')
+#    pl.ylabel('gamma')
+#    scatter(m, gamma, lw='1')
+#    pl.show()
+    
+#    gammacut = gamma[burnin:]
+#    mcut = m[burnin:]
+    
+#    print('gammacut')
+#    print(len(gammacut))
+#    
+#    figure()
+#    pl.title('cut ombar_m vs gamma')
+#    pl.xlabel('m')
+#    pl.ylabel('gamma')
+#    scatter(mcut, gammacut, lw='1')
+#    pl.show()
+    
+#    figure()
+#    pl.title('ombar_m vs ombar_de')
+#    pl.xlabel('m')
+#    pl.ylabel('de')
+#    scatter(m, de, lw='1', c='y')
+#    pl.show()
         
 #    import check
 #    check.thetainf(gamma, m, de, slnprob)
