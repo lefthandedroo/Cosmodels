@@ -10,6 +10,7 @@ import matplotlib.pyplot as pl
 
 
 import paramfinder
+# test
 
 # Model parameteres:  
 m_true = 0.3           # (= e_m(t)/e_crit(t0) at t=t0).
