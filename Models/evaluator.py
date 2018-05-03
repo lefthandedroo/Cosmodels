@@ -35,7 +35,7 @@ def repeatrun():
     
     return
 
-#repeatrun()
+repeatrun()
 
 
 def nevaluator():
@@ -102,7 +102,7 @@ def stepevaluator():
     
     return gamma, m, steps
 
-stepevaluator()
+#stepevaluator()
 
 
 def errevaluator():
