@@ -24,24 +24,16 @@ import stats
 #mu = 0          # mean
 #sigma = 0.1     # standard deviation
 
-def paramfinder(npoints, nsteps, gamma_true, m_true, sigma, mu):
+def paramfinder(npoints, nsteps, sigma, mu, m_true):
     # Script timer.
     timet0 = time.time()
-    
+        
     # Generating redshifts to simulate data.
-    import zpicks
-    zmin, zmax = 0.001, 2
-    zpicks = zpicks.zpicks(zmin, zmax, npoints)
-    zpicks = sorted(zpicks)
-    # Inserting 0 at the front to allow initial conditions.
-    if abs(zpicks[0]) > 0:
-        zpicks = [0.0] + zpicks
-    
-#    print('zpicks')
-#    print(zpicks)
+    import zpicks # DO MOVE ABOVE FUNCTION
+    zpicks = zpicks.zpicks(0.005, 2, npoints)
     
     # Generating apparent magnitues mag at redshifts z=0 to z < zmax.
-    model = zmsim.zmsim(gamma_true, m_true, zpicks)
+    model = zmsim.zmsim(m_true, zpicks)
     model = np.asarray(model)
     mag = gnoise.gnoise(model, mu, sigma)
     
@@ -49,7 +41,7 @@ def paramfinder(npoints, nsteps, gamma_true, m_true, sigma, mu):
     times0 = time.time()
     
 #    gammabest, mbest, debest = stats.stats(gamma_true, m_true, zpicks, mag, sigma)
-    gammabest, mbest, debest = stats.stats(gamma_true, m_true, zpicks, mag, sigma, nsteps)
+    mbest, sampler = stats.stats(m_true, zpicks, mag, sigma, nsteps)
 
     
     # Time taken by stats. 
@@ -60,6 +52,6 @@ def paramfinder(npoints, nsteps, gamma_true, m_true, sigma, mu):
     timet1=time.time()
     timer.timer('script', timet0, timet1)
     
-    return gammabest, mbest, debest
+    return mbest, sampler
 
 #paramfinder(n, gamma_true, m_true, de_true, sigma, mu)

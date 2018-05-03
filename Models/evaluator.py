@@ -12,24 +12,24 @@ import matplotlib.pyplot as pl
 import paramfinder
 
 # Model parameteres:  
-gamma_true = 0.0       # Interaction term, rate at which DE decays into matter.
 m_true = 0.3           # (= e_m(t)/e_crit(t0) at t=t0).
 de_true = 1 - m_true   # (de = e_de(t)/e_crit(t0) at t=t0).
+gamma_true = 0.0       # Interaction term, rate at which DE decays into matter.
+
 
 # Number of datapoints to be simulated.
-npoints = 1000
-
-nsteps = 10000
+npoints, nsteps = 1000, 1000
 
 # Statistical parameteres:
 mu = 0          # mean
 sigma = 0.1     # standard deviation
 
-def repeatrun():
+
+def repeatrun():    
     i = 0
     while i < 1:
         print('_____________________ run number',i)
-        gammabest, mbest, debest = paramfinder.paramfinder(npoints, nsteps, gamma_true, m_true, sigma, mu)
+        mbest, debest, gammabest = paramfinder.paramfinder(npoints, nsteps, sigma, mu, m_true)
         i += 1
     
     return
@@ -48,7 +48,7 @@ def nevaluator():
     while npoints < 30000:
         print('_____________________ run number',run)
         npoints += 1000
-        gammabest, mbest, debest = paramfinder.paramfinder(npoints, nsteps, gamma_true, m_true, sigma, mu)
+        gammabest, mbest, debest = paramfinder.paramfinder(npoints, nsteps, sigma, mu, m_true)
         gamma.append(gammabest)
         m.append(mbest)
         numpoints.append(npoints)
@@ -81,24 +81,15 @@ def stepevaluator():
     m = []
     steps = []
     
-    nsteps = 0
+    nsteps = 1000
     run = 0
-    while nsteps < 100000:
-        run += 1
+    while nsteps < 10000:
         print('_____________________ run number',run)
-        nsteps += 10000
-        gammabest, mbest, debest = paramfinder.paramfinder(npoints, nsteps, gamma_true, m_true, sigma, mu)
-        gamma.append(gammabest)
+        nsteps += 500
+        mbest, sampler = paramfinder.paramfinder(npoints, nsteps, sigma, mu, m_true)
         m.append(mbest)
         steps.append(nsteps)
-    
-    figure()
-    xlabel('emcee steps')
-    ylabel('parameter value')
-    pl.axhline(gamma_true, color='blue')
-    plot(steps, gamma, '.')
-    title('gamma found vs steps taken')
-    show()
+        run += 1
     
     figure()
     xlabel('emcee steps')
@@ -122,13 +113,13 @@ def errevaluator():
     sigma = 0.005
     run = 0
     while sigma < 0.1:
-        run += 1
         print('_____________________ run number',run)
         sigma += 0.003
-        gammabest, mbest, debest = paramfinder.paramfinder(npoints, nsteps, gamma_true, m_true, sigma, mu)
+        gammabest, mbest, debest = paramfinder.paramfinder(npoints, nsteps, sigma, mu, m_true)
         gamma.append(gammabest)
         m.append(mbest)
         error.append(sigma)
+        run += 1
     
     figure()
     xlabel('sigma')

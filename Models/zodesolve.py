@@ -15,7 +15,7 @@ H0 = 1
 tH = 1.0/H0  # Hubble time
 c_over_H0 = 4167 * 10**6    # c/H0 in parsecs
 
-def zodesolve(gamma,m,zpicks):
+def zodesolve(m, zpicks):
     """
     Takes in:
         gamma = interaction constant;
@@ -27,7 +27,10 @@ def zodesolve(gamma,m,zpicks):
     
     """
 #    print('@@ zodesolve has been called')
-    
+
+    # Inserting 0 at the front of redshifts to allow initial conditions.
+    zpicks = [0.0] + zpicks
+        
     # Initial conditions at z = 0.
     t0 = 0
     a0 = 1.0        # scale factor
@@ -36,6 +39,7 @@ def zodesolve(gamma,m,zpicks):
     rho_c0 = H0**2
     ombar_m0 = m                            # e_m(z)/ec(z=0)
     ombar_de0 = rho_c0/rho_c0 - ombar_m0    # e_de(z)/ec(z=0)
+    gamma = 0
     
     # ODE solver parameters:
     abserr = 1.0e-8
@@ -49,12 +53,12 @@ def zodesolve(gamma,m,zpicks):
                   atol=abserr, rtol=relerr, mxstep=5000000)
             
     # Separate results into their own arrays:
-    t = vsol[:,0]
-    a = vsol[:,1]
-    ombar_m = vsol[:,2]
-    ombar_de = vsol[:,3]
-    z = vsol[:,4]    
-    dl = vsol[:,5] * (1+z)   # in units of dl*(H0/c)
+    t = vsol[1:,0]
+    a = vsol[1:,1]
+    ombar_m = vsol[1:,2]
+    ombar_de = vsol[1:,3]
+    z = vsol[1:,4]    
+    dl = vsol[1:,5] * (1+z)   # in units of dl*(H0/c)
     dlpc = dl * c_over_H0    # dl in parsecs (= vsol[dl] * c/H0)
     
     return t, dlpc, dl, a, ombar_m, ombar_de, ombar_de0

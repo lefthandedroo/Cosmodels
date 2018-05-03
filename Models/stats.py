@@ -16,9 +16,9 @@ import lnprob
 import lnprior
 
 # emcee parameters:
-ndim, nwalkers = 2, 4
+ndim, nwalkers = 1, 2
 
-def stats(gamma_true, m_true, zpicks, mag, sigma, nsteps):
+def stats(m_true, zpicks, mag, sigma, nsteps):
     """
     Takes in:
             gamma_true = interaction constant;
@@ -31,24 +31,21 @@ def stats(gamma_true, m_true, zpicks, mag, sigma, nsteps):
     """
 #    print('-stats has been called')
     
-    burnin = int(nsteps/10)
-        
-    gamma_start = gamma_true / 2
-    m_start = m_true / 2
+#    burnin = int(nsteps/10)
     
-    startpos = np.array([gamma_start,m_start])
-            
     # Initializing walkers in a Gaussian ball around the max likelihood.
     # Number in front of the np.random.rand(ndim) is 'initial footprint'.
+    m_start = m_true / 2    
+    startpos = np.array([m_start])
     pos = [startpos + 0.01*np.random.randn(ndim) for i in range(nwalkers)]
-#    print('pos = ',pos) 
 
     i = 0
-    while i < 4:
+    while i < nwalkers:
         posrow = pos[i]
-        gamma = posrow[0]
-        m = posrow[1]
-        theta = gamma, m
+        m = posrow[0]
+#        de = posrow[1]
+#        gamma = posrow[2]
+        theta = m
         lp = lnprior.lnprior(theta)
         if not np.isfinite(lp):
             print('~~~~~~~theta %s (outside of prior) = %s ~~~~~~~'%(i, theta))
@@ -63,64 +60,58 @@ def stats(gamma_true, m_true, zpicks, mag, sigma, nsteps):
     print('_____ sampler end')
     timee1=time.time()      # stopping emcee timer
     
-    print('_____ stats corner plot')
-    
 #    # Corner plot (walkers' walk + histogram).
+#    print('_____ stats corner plot')
 #    import corner
 #    samples = sampler.chain[:, burnin:, :].reshape((-1, ndim))
 #    fig = corner.corner(samples, labels=["$\gamma$", "$m$", "$de$"], 
 #                        truths=[gamma_true, m_true])
 #    pl.show()
     
-    # Naming of file
+    # Saving the corner plot.
 #    numpoints = len(zpicks)
 #    fig.savefig('zz_Day'+str(time.strftime("%j"))+'_nsteps_'+
 #                str(nsteps)+'_'+'nwalkers_'+str(nwalkers)+'numpoints_'+
 #                str(numpoints)+str(time.strftime("%c"))+'.png')
     
-    # Marginalised distribution (histogram) plot.
-    figure()
-    pl.title('Marginalised distribution for gamma')
-    pl.hist(sampler.flatchain[:,0], 100)
-    pl.show()
-    
-    # Marginalised distribution (histogram) plot.
+    # Marginalised distribution histograms.
     figure()
     pl.title('Marginalised distribution for m')
-    pl.hist(sampler.flatchain[:,1], 100)
+    pl.hist(sampler.flatchain[:,0], 150)
     pl.show()
     
 #    # Chains.    
 #    figure()
-#    pl.title('flatChains with gamma_true in blue')
-#    pl.plot(sampler.flatchain[:,0].T, '-', color='k', alpha=0.3)
-#    pl.axhline(gamma_true, color='blue')
-#    pl.show
-#
-#    figure()
 #    pl.title('flatChains with m_true in red')
-#    pl.plot(sampler.flatchain[:,1].T, '-', color='k', alpha=0.3)
+#    pl.plot(sampler.flatchain[:,0].T, '-', color='k', alpha=0.3)
 #    pl.axhline(m_true, color='red')
 #    pl.show
 #    
 #    figure()
 #    pl.title('flatChains with de_true in green')
-#    pl.plot(sampler.flatchain[:,2].T, '-', color='k', alpha=0.3)
+#    pl.plot(sampler.flatchain[:,1].T, '-', color='k', alpha=0.3)
 #    pl.axhline(de_true, color='green')
+#    pl.show
+#    
+#    figure()
+#    pl.title('flatChains with gamma_true in blue')
+#    pl.plot(sampler.flatchain[:,2].T, '-', color='k', alpha=0.3)
+#    pl.axhline(gamma_true, color='blue')
 #    pl.show
     
 
     # Best parameters found by emcee.
     bi = np.argmax(sampler.flatlnprobability)   # index with highest post prob                                       
-    gammabest = sampler.flatchain[bi,0]         # parameters with the highest 
-    mbest = sampler.flatchain[bi,1]             # posterior probability
-    debest = 1 - mbest
+    mbest = sampler.flatchain[bi,0]             # posterior probability
+#    debest = 1 - mbest
+#    gammabest = 0
 
     # Results getting printed:
     print('best index is =',str(bi))
-    print('gammabest is =',str(gammabest))
     print('mbest is =',str(mbest))
-    print('1 - mbest =',str(debest))
+#    print('1 - mbest =',str(debest))
+#    print('gammabest is =',str(gammabest))
+
   
     # Mean acceptance fraction. In general, acceptance fraction has an entry 
     # for each walker so, in this case, it is a nwalkers-dimensional vector.
@@ -129,29 +120,20 @@ def stats(gamma_true, m_true, zpicks, mag, sigma, nsteps):
     print('Number of walkers:', str(nwalkers))
     print('Number of datapoints used:', str(len(zpicks)))
     
-    theta = gammabest, mbest#, debest
+    theta = mbest#, debest, gammabest
     lp = lnprior.lnprior(theta)
     if not np.isfinite(lp):
         print('')
         print('parameters are outside of prior when they get to magbest')
         print('')
     
-    # Plot of magnitudes simulated using "true" parameters, overlayed with
-    # magnitudes simulated using emcee best parameters.
+#    # Plot of magnitudes simulated using "true" parameters, overlayed with
+#    # magnitudes simulated using emcee best parameters.
 #    import zmsim
-#    magbest = zmsim.zmsim(gammabest, mbest, zpicks)
-
-#    magerr = mag * sigma
-#    plmagerr = magerr[1:]
+#    magbest = zmsim.zmsim(mbest, zpicks)
 #    figure()
-#    pl.title('plmagerr distribution')
-#    pl.hist(plmagerr, 100)
-#    pl.show()
-
-#    figure()
-#    magerr = mag * sigma
 #    pl.title('True parameters mag and best emcee parameters mag')
-#    pl.errorbar(zpicks, mag, yerr=magerr, fmt='.', alpha=0.3)
+#    pl.errorbar(zpicks, mag, yerr=sigma, fmt='.', alpha=0.3)
 #    best_fit = scatter(zpicks, magbest, lw='1', c='r')
 #    pl.legend([best_fit], ['Mag simulated with best emcee parameters'])
 #    pl.show()
@@ -201,4 +183,4 @@ def stats(gamma_true, m_true, zpicks, mag, sigma, nsteps):
     import timer
     timer.timer('sampler', timee0, timee1)
     
-    return gammabest, mbest, debest
+    return mbest, sampler

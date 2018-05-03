@@ -13,12 +13,7 @@ import numpy as np
 def lnprob(theta, zpicks, mag, sigma):
 #    print('@@@@@ lnprob has been called')
     lp = lnprior.lnprior(theta)
-    
     if not np.isfinite(lp):
         return -np.inf
-    
-#    ll = lnlike.lnlike(theta, zpicks, mag, sigma)
-#    if np.isnan(ll):
-#        return -np.inf
     
     return lp + lnlike.lnlike(theta, zpicks, mag, sigma)
