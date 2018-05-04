@@ -47,13 +47,11 @@ def zmsim(m, zpicks):
             magnitude = 5 * log10(dlpc[i]/10) + M
         mag.append(magnitude)
     
-#    import zplots
+#    import plots
 #    de = ombar_de0
-#    zplots.zplots(t, mag, zpicks, dlpc, dl, gamma, m, de, a, ombar_m, ombar_de)
-    
-#    ztheta = t, mag, dlpc, dl, a, ombar_m, ombar_de
-    
-    return mag #ztheta
+#    plots.modelcheck(t, mag, zpicks, dlpc, dl, gamma, m, de, a, ombar_m, ombar_de)
+        
+    return mag
 
 
 

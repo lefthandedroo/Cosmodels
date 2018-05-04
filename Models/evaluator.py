@@ -10,37 +10,33 @@ import matplotlib.pyplot as pl
 
 
 import paramfinder
-# test
 
 # Model parameteres:  
 m_true = 0.3           # (= e_m(t)/e_crit(t0) at t=t0).
 de_true = 1 - m_true   # (de = e_de(t)/e_crit(t0) at t=t0).
 gamma_true = 0.0       # Interaction term, rate at which DE decays into matter.
 
-
-# Number of datapoints to be simulated.
+# Number of datapoints to be simulated and number of emcee steps.
 npoints, nsteps = 1000, 1000
 
 # Statistical parameteres:
 mu = 0          # mean
 sigma = 0.1     # standard deviation
 
-
 def repeatrun():    
     i = 0
     while i < 1:
         print('_____________________ run number',i)
-        mbest, debest, gammabest = paramfinder.paramfinder(npoints, nsteps, sigma, mu, m_true)
+        mbest, sampler = paramfinder.paramfinder(npoints, nsteps, sigma, mu, m_true)
         i += 1
     
-    return
+    return sampler
 
-repeatrun()
+#sampler = repeatrun()
 
 
 def nevaluator():
     
-    gamma = []
     m = []
     numpoints = []
     
@@ -49,19 +45,10 @@ def nevaluator():
     while npoints < 30000:
         print('_____________________ run number',run)
         npoints += 1000
-        gammabest, mbest, debest = paramfinder.paramfinder(npoints, nsteps, sigma, mu, m_true)
-        gamma.append(gammabest)
+        mbest, sampler = paramfinder.paramfinder(npoints, nsteps, sigma, mu, m_true)
         m.append(mbest)
         numpoints.append(npoints)
         run += 1
-
-    figure()
-    xlabel('number of datapoints used')
-    ylabel('parameter value')
-    pl.axhline(gamma_true, color='blue')
-    plot(numpoints, gamma, '.')
-    title('gamma found vs dataset size')
-    show()
     
     figure()
     xlabel('number of datapoints used')
@@ -71,14 +58,13 @@ def nevaluator():
     title('m found vs dataset size')
     show()
     
-    return gamma, m, numpoints
+    return m, numpoints
 
 #nevaluator()
 
 
 def stepevaluator():
     
-    gamma = []
     m = []
     steps = []
     
@@ -100,14 +86,13 @@ def stepevaluator():
     title('m found vs steps taken')
     show()
     
-    return gamma, m, steps
+    return m, steps
 
-#stepevaluator()
+stepevaluator()
 
 
 def errevaluator():
     
-    gamma = []
     m = []
     error = []
     
@@ -116,19 +101,10 @@ def errevaluator():
     while sigma < 0.1:
         print('_____________________ run number',run)
         sigma += 0.003
-        gammabest, mbest, debest = paramfinder.paramfinder(npoints, nsteps, sigma, mu, m_true)
-        gamma.append(gammabest)
+        mbest, sampler = paramfinder.paramfinder(npoints, nsteps, sigma, mu, m_true)
         m.append(mbest)
         error.append(sigma)
         run += 1
-    
-    figure()
-    xlabel('sigma')
-    ylabel('parameter value')
-    pl.axhline(gamma_true, color='blue')
-    plot(error, gamma, '.')
-    title('gamma found vs s.d. of noise added')
-    show()
     
     figure()
     xlabel('sigma')
@@ -138,6 +114,6 @@ def errevaluator():
     title('m found vs s.d. of noise added')
     show()
     
-    return gamma, m, error
+    return m, error
 
 #errevaluator()

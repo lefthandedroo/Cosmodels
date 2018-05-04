@@ -21,18 +21,14 @@ ndim, nwalkers = 1, 2
 def stats(m_true, zpicks, mag, sigma, nsteps):
     """
     Takes in:
-            gamma_true = interaction constant;
             m_true = e_m(t)/ec(t0) at t=t0;
-#            de_true = e_de(t)/ec(t0) at t=t0;
             zpicks = list of z to match the interpolated dlmpc to;
             mag = list of n apparent magnitudes mag for zpicks redshits;
             sigma = standard deviation used to generate Gaussian noise.
     Returns:
     """
 #    print('-stats has been called')
-    
-#    burnin = int(nsteps/10)
-    
+        
     # Initializing walkers in a Gaussian ball around the max likelihood.
     # Number in front of the np.random.rand(ndim) is 'initial footprint'.
     m_start = m_true / 2    
@@ -43,143 +39,65 @@ def stats(m_true, zpicks, mag, sigma, nsteps):
     while i < nwalkers:
         posrow = pos[i]
         m = posrow[0]
-#        de = posrow[1]
-#        gamma = posrow[2]
         theta = m
         lp = lnprior.lnprior(theta)
         if not np.isfinite(lp):
             print('~~~~~~~theta %s (outside of prior) = %s ~~~~~~~'%(i, theta))
         i += 1
        
-    
     # Sampler setup
-    timee0 = time.time()    # starting emcee timer
+    timee0 = time.time()    # starting sampler timer
     print('_____ sampler start')
     sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob.lnprob, args=(zpicks, mag, sigma))
     sampler.run_mcmc(pos, nsteps)
     print('_____ sampler end')
-    timee1=time.time()      # stopping emcee timer
+    timee1=time.time()      # stopping sampler timer
     
-#    # Corner plot (walkers' walk + histogram).
-#    print('_____ stats corner plot')
-#    import corner
-#    samples = sampler.chain[:, burnin:, :].reshape((-1, ndim))
-#    fig = corner.corner(samples, labels=["$\gamma$", "$m$", "$de$"], 
-#                        truths=[gamma_true, m_true])
-#    pl.show()
-    
-    # Saving the corner plot.
-#    numpoints = len(zpicks)
-#    fig.savefig('zz_Day'+str(time.strftime("%j"))+'_nsteps_'+
-#                str(nsteps)+'_'+'nwalkers_'+str(nwalkers)+'numpoints_'+
-#                str(numpoints)+str(time.strftime("%c"))+'.png')
-    
-    # Marginalised distribution histograms.
-    figure()
-    pl.title('Marginalised distribution for m')
-    pl.hist(sampler.flatchain[:,0], 150)
-    pl.show()
-    
-#    # Chains.    
-#    figure()
-#    pl.title('flatChains with m_true in red')
-#    pl.plot(sampler.flatchain[:,0].T, '-', color='k', alpha=0.3)
-#    pl.axhline(m_true, color='red')
-#    pl.show
-#    
-#    figure()
-#    pl.title('flatChains with de_true in green')
-#    pl.plot(sampler.flatchain[:,1].T, '-', color='k', alpha=0.3)
-#    pl.axhline(de_true, color='green')
-#    pl.show
-#    
-#    figure()
-#    pl.title('flatChains with gamma_true in blue')
-#    pl.plot(sampler.flatchain[:,2].T, '-', color='k', alpha=0.3)
-#    pl.axhline(gamma_true, color='blue')
-#    pl.show
-    
-
     # Best parameters found by emcee.
-    bi = np.argmax(sampler.flatlnprobability)   # index with highest post prob                                       
-    mbest = sampler.flatchain[bi,0]             # posterior probability
-#    debest = 1 - mbest
-#    gammabest = 0
-
-    # Results getting printed:
-    print('best index is =',str(bi))
-    print('mbest is =',str(mbest))
-#    print('1 - mbest =',str(debest))
-#    print('gammabest is =',str(gammabest))
-
-  
-    # Mean acceptance fraction. In general, acceptance fraction has an entry 
-    # for each walker so, in this case, it is a nwalkers-dimensional vector.
-    print('Mean acceptance fraction:', np.mean(sampler.acceptance_fraction))
-    print('Number of steps:', str(nsteps))
-    print('Number of walkers:', str(nwalkers))
-    print('Number of datapoints used:', str(len(zpicks)))
+    bi = np.argmax(sampler.flatlnprobability) # index with highest posterior prob                                       
+    mbest = sampler.flatchain[bi,0]
     
-    theta = mbest#, debest, gammabest
+    theta = mbest
     lp = lnprior.lnprior(theta)
     if not np.isfinite(lp):
         print('')
         print('parameters are outside of prior when they get to magbest')
         print('')
-    
-#    # Plot of magnitudes simulated using "true" parameters, overlayed with
-#    # magnitudes simulated using emcee best parameters.
-#    import zmsim
-#    magbest = zmsim.zmsim(mbest, zpicks)
-#    figure()
-#    pl.title('True parameters mag and best emcee parameters mag')
-#    pl.errorbar(zpicks, mag, yerr=sigma, fmt='.', alpha=0.3)
-#    best_fit = scatter(zpicks, magbest, lw='1', c='r')
-#    pl.legend([best_fit], ['Mag simulated with best emcee parameters'])
-#    pl.show()
         
-#    slnprob = sampler.flatlnprobability
-#    gamma = sampler.flatchain[:,0]
-#    m = sampler.flatchain[:,1]
-#    de = sampler.flatchain[:,2]
-#    de = 1 - m
-    
-#    print('gamma')
-#    print(len(gamma))
-    
-#    figure()
-#    pl.title('complete ombar_m vs gamma')
-#    pl.xlabel('m')
-#    pl.ylabel('gamma')
-#    scatter(m, gamma, lw='1')
-#    pl.show()
-    
-#    gammacut = gamma[burnin:]
-#    mcut = m[burnin:]
-    
-#    print('gammacut')
-#    print(len(gammacut))
-#    
-#    figure()
-#    pl.title('cut ombar_m vs gamma')
-#    pl.xlabel('m')
-#    pl.ylabel('gamma')
-#    scatter(mcut, gammacut, lw='1')
-#    pl.show()
-    
-#    figure()
-#    pl.title('ombar_m vs ombar_de')
-#    pl.xlabel('m')
-#    pl.ylabel('de')
-#    scatter(m, de, lw='1', c='y')
-#    pl.show()
+    # Plot of mag simulated using "true" parameters, overlayed with
+    # mag simulated using emcee best parameters.
+    import zmsim
+    magbest = zmsim.zmsim(mbest, zpicks)
+    figure()
+    pl.title('True parameters mag and best emcee parameters mag')
+    pl.errorbar(zpicks, mag, yerr=sigma, fmt='.', alpha=0.3)
+    best_fit = scatter(zpicks, magbest, lw='1', c='r')
+    pl.legend([best_fit], ['Mag simulated with best emcee parameters'])
+    pl.show()
+
+    # Marginalised distribution histograms.
+    figure()
+    pl.title('Marginalised distribution for m')
+    pl.hist(sampler.flatchain[:,0], 150)
+    pl.show()
+
+    # Corner plot (walkers' walk + histogram).
+    print('_____ stats corner plot')
+    burnin = int(nsteps/10) # steps to discard
+    import corner
+    samples = sampler.chain[:, burnin:, :].reshape((-1, ndim))
+    corner.corner(samples, labels=["$m$"], 
+                        truths=[m_true])
+    pl.show()
+
+    # Results getting printed:
+    print('best index is =',str(bi))
+    print('mbest is =',str(mbest))
+    print('Mean acceptance fraction:', np.mean(sampler.acceptance_fraction))
+    print('nsteps:', str(nsteps))
+    print('nwalkers:', str(nwalkers))
+    print('npoints:', str(len(zpicks)))
         
-#    import check
-#    check.thetainf(gamma, m, de, slnprob)
-    
-#    import rslt
-#    rslt.rslt(gamma, m, de, slnprob)
-    
     import timer
     timer.timer('sampler', timee0, timee1)
     

@@ -4,16 +4,67 @@
 Created on Tue Feb 27 12:40:48 2018
 
 @author: BallBlueMeercat
-"""
-from pylab import figure, plot, xlabel, ylabel, grid, title, show, scatter
 
-def zplots(t, mag, zpicks, dlpc, dl, gamma, ombar_m0, ombar_de0, a, ombar_m, ombar_de):
 
-#    f = open('results.pckl', 'rb')
-#    obj = pickle.load(f)
-#    f.close()
-#    
+Cheat sheet:
     
+    # Walker steps.
+    m = sampler.flatchain[:,0]
+    slnprob = sampler.flatlnprobability
+    
+    figure()
+    xlabel('parameter value')
+    ylabel('step number')
+    plot(m, slnprob, '.', color='red')
+    title('slnprob for m')
+    show()
+    
+    # Chains.    
+    figure()
+    pl.title('flatChains with m_true in red')
+    pl.plot(sampler.flatchain[:,0].T, '-', color='k', alpha=0.3)
+    pl.axhline(m_true, color='red')
+    pl.show
+"""
+
+import pickle
+import os
+from pylab import figure, plot, xlabel, ylabel, title, show
+
+def walkersteps(filename):
+    
+    if os.path.exists(filename):
+        with open(filename,'rb') as rfp: 
+            results = pickle.load(rfp)
+    
+    ttdd = [item[0] for item in results]
+    print(ttdd)
+    
+    pick = input('Enter ID of entry you want to plot: ')
+    
+    if not pick:
+        m = results[-1][1]
+        slnprob = results[-1][2]
+    else:
+        pick = int(pick)
+        m = results[pick][1]
+        slnprob = results[pick][2]
+    
+    figure()
+    xlabel('parameter value')
+    ylabel('step number')
+    plot(m, slnprob, '.', color='red')
+    title('slnprob for m')
+    show()
+
+    return m, slnprob
+
+walkersteps('resultlist.p')
+
+
+from pylab import grid, scatter
+
+def modelcheck(t, mag, zpicks, dlpc, dl, gamma, ombar_m0, ombar_de0, a, ombar_m, ombar_de):
     
     # Plotting selected results:
     # a and a_dot vs time.

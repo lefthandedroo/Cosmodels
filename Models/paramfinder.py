@@ -11,24 +11,11 @@ import gnoise
 import zmsim
 import stats
 
-
-## Number of datapoints to be simulated.
-#n = 1000
-#
-## Model parameteres:  
-#gamma_true = 0  # Interaction term, rate at which DE decays into matter.
-#m_true = 0.3    # (= e_m(t)/e_crit(t0) at t=t0).
-#de_true = 0.7   # (de = e_de(t)/e_crit(t0) at t=t0).
-#
-## Statistical parameteres:
-#mu = 0          # mean
-#sigma = 0.1     # standard deviation
-
 def paramfinder(npoints, nsteps, sigma, mu, m_true):
     # Script timer.
     timet0 = time.time()
         
-    # Generating redshifts to simulate data.
+    # Generating redshifts to simulate mag.
     import zpicks # DO MOVE ABOVE FUNCTION
     zpicks = zpicks.zpicks(0.005, 2, npoints)
     
@@ -37,21 +24,15 @@ def paramfinder(npoints, nsteps, sigma, mu, m_true):
     model = np.asarray(model)
     mag = gnoise.gnoise(model, mu, sigma)
     
-    # Stats timer.
-    times0 = time.time()
-    
-#    gammabest, mbest, debest = stats.stats(gamma_true, m_true, zpicks, mag, sigma)
+    # emcee parameter search.
     mbest, sampler = stats.stats(m_true, zpicks, mag, sigma, nsteps)
-
     
-    # Time taken by stats. 
-    times1=time.time()
-    timer.timer('stats', times0, times1)
+    # Saving smapler to file.
+    import outputsave
+    outputsave.samplersave(sampler)
     
-    # Time taken by the script. 
+    # Time taken by script. 
     timet1=time.time()
     timer.timer('script', timet0, timet1)
     
     return mbest, sampler
-
-#paramfinder(n, gamma_true, m_true, de_true, sigma, mu)
