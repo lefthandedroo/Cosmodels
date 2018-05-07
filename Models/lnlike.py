@@ -12,7 +12,6 @@ import zmsim
 import numpy as np
 
 def lnlike(theta, zpicks, mag, sigma):
-    m = theta
 #    print('@@@@ lnlike has been called')
     model = zmsim.zmsim(theta, zpicks)
     inv_sigma2 = 1.0/(sigma**2)

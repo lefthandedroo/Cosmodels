@@ -17,7 +17,7 @@ de_true = 1 - m_true   # (de = e_de(t)/e_crit(t0) at t=t0).
 gamma_true = 0.0       # Interaction term, rate at which DE decays into matter.
 
 # Number of datapoints to be simulated and number of emcee steps.
-npoints, nsteps = 1000, 1000
+npoints, nsteps = 3000, 1000
 
 # Statistical parameteres:
 mu = 0          # mean
@@ -27,7 +27,7 @@ def repeatrun():
     i = 0
     while i < 1:
         print('_____________________ run number',i)
-        mbest, sampler = paramfinder.paramfinder(npoints, nsteps, sigma, mu, m_true)
+        propert, sampler = paramfinder.paramfinder(npoints, nsteps, sigma, mu, m_true)
         i += 1
     
     return sampler
@@ -35,85 +35,165 @@ def repeatrun():
 #sampler = repeatrun()
 
 
-def nevaluator():
-    
-    m = []
-    numpoints = []
-    
-    npoints = 0
-    run = 0
-    while npoints < 30000:
-        print('_____________________ run number',run)
-        npoints += 1000
-        mbest, sampler = paramfinder.paramfinder(npoints, nsteps, sigma, mu, m_true)
-        m.append(mbest)
-        numpoints.append(npoints)
-        run += 1
-    
-    figure()
-    xlabel('number of datapoints used')
-    ylabel('parameter value')
-    pl.axhline(m_true, color='red')
-    plot(numpoints, m, '.')
-    title('m found vs dataset size')
-    show()
-    
-    return m, numpoints
-
-#nevaluator()
-
-
 def stepevaluator():
     
-    m = []
     steps = []
+    standev = []
+    meanlist = []
+    cvlist = []
     
-    nsteps = 1000
+    nsteps = 100
     run = 0
-    while nsteps < 10000:
+    while nsteps < 2000:
         print('_____________________ run number',run)
-        nsteps += 500
-        mbest, sampler = paramfinder.paramfinder(npoints, nsteps, sigma, mu, m_true)
-        m.append(mbest)
         steps.append(nsteps)
+        propert, sampler = paramfinder.paramfinder(npoints, nsteps, sigma, mu, m_true)
+        sd, mean = propert
+        standev.append(sd)
+        meanlist.append(mean)
+        cv = sd/mean
+        cvlist.append(cv)
+        
+        cv = sd / mean     # Coefficient of variation.
+        print('cv:',str(cv))
+        if cv < 0.008:
+            print('nsteps', nsteps)
+            break
+        
+        nsteps += 50
         run += 1
     
     figure()
     xlabel('emcee steps')
-    ylabel('parameter value')
-    pl.axhline(m_true, color='red')
-    plot(steps, m, '.')
-    title('m found vs steps taken')
+    ylabel('standard deviation')
+    plot(steps, standev, '.')
+    title('standard deviation of m found vs steps taken')
     show()
     
-    return m, steps
+    return steps, sampler, standev, meanlist
 
-stepevaluator()
+#steps, sampler, standev, meanlist = stepevaluator()
+
+
+def nevaluator():
+    
+    numpoints = []
+    standev = []
+    meanlist = []
+    cvlist = []
+    
+    npoints = 100
+    run = 0
+    while npoints < 35000:    #35000
+        print('_____________________ run number',run)
+        numpoints.append(npoints)
+        propert, sampler = paramfinder.paramfinder(npoints, nsteps, sigma, mu, m_true)
+        sd, mean = propert
+        standev.append(sd)
+        meanlist.append(mean)
+        cv = sd/mean
+        cvlist.append(cv)
+        npoints += 1000
+        run += 1
+
+    
+    figure()
+    xlabel('number of datapoints used')
+    ylabel('standard deviation')
+    plot(numpoints, standev, 'b.', label='standard deviation')
+    plot(numpoints, cvlist, 'r.', label='coefficient of variation')
+    pl.legend()
+    title('sd and cv of m found vs dataset size')
+    show()
+    
+    return numpoints, sampler, standev, meanlist
+
+#numpoints, sampler, standev, meanlist = nevaluator()
 
 
 def errevaluator():
     
-    m = []
     error = []
+    standev = []
+    meanlist = []
+    cvlist = []
     
-    sigma = 0.005
+    sigma = 1e-9
     run = 0
     while sigma < 0.1:
         print('_____________________ run number',run)
-        sigma += 0.003
-        mbest, sampler = paramfinder.paramfinder(npoints, nsteps, sigma, mu, m_true)
-        m.append(mbest)
         error.append(sigma)
+        propert, sampler = paramfinder.paramfinder(npoints, nsteps, sigma, mu, m_true)
+        sd, mean = propert
+        standev.append(sd)
+        meanlist.append(mean)
+        cv = sd/mean
+        cvlist.append(cv)
+        sigma += 0.003
         run += 1
     
     figure()
-    xlabel('sigma')
-    ylabel('parameter value')
-    pl.axhline(m_true, color='red')
-    plot(error, m, '.')
-    title('m found vs s.d. of noise added')
+    xlabel('standard deviation of noise')
+    ylabel('standard deviation of parameter distribution')
+    plot(error, standev, 'b.', label='standard deviation')
+    plot(error, cvlist, 'r.', label='coefficient of variation')
+    pl.legend()
+    title('sd and cv of m found vs sd of noise added')
     show()
     
-    return m, error
+    return error, sampler, standev, meanlist
 
-#errevaluator()
+#error, sampler, standev, meanlist = errevaluator()
+
+
+def errorvsdatasize():
+    error = []
+    numpoints = []
+    standev = []
+    meanlist = []
+    cvlist = []
+    
+    sigma = 0.01
+    run = 0
+    while sigma > 1e-9:
+        npoints = 100
+        while npoints < 35000:    #35000
+            print('_____________________ run number',run)
+            error.append(sigma)
+            numpoints.append(npoints)
+            propert, sampler = paramfinder.paramfinder(npoints, nsteps, sigma, mu, m_true)
+            sd, mean = propert
+            standev.append(sd)
+            meanlist.append(mean)
+            cv = sd/mean
+            cvlist.append(cv)
+            npoints += 1000
+            run += 1
+        
+        sigma -= 0.003
+    
+#    # Create two subplots sharing y axis
+#    fig, (noise, dataset) = pl.subplots(2, sharey=True)
+#    
+#    noise.plot(error, standev, 'b.')
+#    noise.set(title='', ylabel='sd of noise')
+#    
+#    dataset.plot(numpoints, standev, 'r.')
+#    dataset.set(xlabel='standard deviation of parameter distribution', ylabel='size of dataset')
+#    
+#    pl.show()
+        
+    # Create two subplots sharing x axis
+    fig, (noise, dataset) = pl.subplots(2, sharex=True)
+    
+    noise.plot(standev, error, 'b.')
+    noise.set(title='', ylabel='standard deviation of noise')
+    
+    dataset.plot(standev, numpoints, 'r.')
+    dataset.set(xlabel='sd of parameter distribution', ylabel='size of dataset')
+    
+    pl.show()
+    
+    return error, numpoints, sampler, standev, meanlist
+
+error, numpoints, sampler, standev, meanlist = errorvsdatasize()

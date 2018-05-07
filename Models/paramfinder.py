@@ -25,7 +25,7 @@ def paramfinder(npoints, nsteps, sigma, mu, m_true):
     mag = gnoise.gnoise(model, mu, sigma)
     
     # emcee parameter search.
-    mbest, sampler = stats.stats(m_true, zpicks, mag, sigma, nsteps)
+    propert, sampler = stats.stats(m_true, zpicks, mag, sigma, nsteps)
     
     # Saving smapler to file.
     import outputsave
@@ -35,4 +35,4 @@ def paramfinder(npoints, nsteps, sigma, mu, m_true):
     timet1=time.time()
     timer.timer('script', timet0, timet1)
     
-    return mbest, sampler
+    return propert, sampler
