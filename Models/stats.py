@@ -71,22 +71,22 @@ def stats(m_true, zpicks, mag, sigma, nsteps):
         print('best emcee parameters are outside of prior (magbest calcualation)')
         print('')
         
-#    # Plot of mag simulated using "true" parameters, overlayed with
-#    # mag simulated using emcee best parameters.
-#    import zmsim
-#    magbest = zmsim.zmsim(mbest, zpicks)
-#    figure()
-#    pl.title('True parameters mag and best emcee parameters mag')
-#    pl.errorbar(zpicks, mag, yerr=sigma, fmt='.', alpha=0.3)
-#    best_fit = scatter(zpicks, magbest, lw='1', c='r')
-#    pl.legend([best_fit], ['Mag simulated with best emcee parameters'])
-#    pl.show()
+    # Plot of mag simulated using "true" parameters, overlayed with
+    # mag simulated using emcee best parameters.
+    import zmsim
+    magbest = zmsim.zmsim(mbest, zpicks)
+    figure()
+    pl.title('True parameters mag and best emcee parameters mag')
+    pl.errorbar(zpicks, mag, yerr=sigma, fmt='.', alpha=0.3)
+    best_fit = scatter(zpicks, magbest, lw='1', c='r')
+    pl.legend([best_fit], ['Mag simulated with best emcee parameters'])
+    pl.show()
 
-#    # Marginalised distribution histograms.
-#    figure()
-#    pl.title('Marginalised distribution for m')
-#    pl.hist(sampler.flatchain[:,0], 150)
-#    pl.show()
+    # Marginalised distribution histograms.
+    figure()
+    pl.title('Marginalised distribution for m')
+    pl.hist(sampler.flatchain[:,0], 50)
+    pl.show()
 
 #    # Corner plot (walkers' walk + histogram).
 #    print('_____ stats corner plot')

@@ -17,11 +17,11 @@ de_true = 1 - m_true   # (de = e_de(t)/e_crit(t0) at t=t0).
 gamma_true = 0.0       # Interaction term, rate at which DE decays into matter.
 
 # Number of datapoints to be simulated and number of emcee steps.
-npoints, nsteps = 3000, 1000
+npoints, nsteps = 10000, 20000
 
 # Statistical parameteres:
 mu = 0          # mean
-sigma = 0.1     # standard deviation
+sigma = 0.085     # standard deviation
 
 def repeatrun():    
     i = 0
@@ -32,7 +32,7 @@ def repeatrun():
     
     return sampler
 
-#sampler = repeatrun()
+sampler = repeatrun()
 
 
 def stepevaluator():
@@ -55,10 +55,10 @@ def stepevaluator():
         cvlist.append(cv)
         
         cv = sd / mean     # Coefficient of variation.
-        print('cv:',str(cv))
-        if cv < 0.008:
-            print('nsteps', nsteps)
-            break
+#        print('cv:',str(cv))
+#        if cv < 0.008:
+#            print('nsteps', nsteps)
+#            break
         
         nsteps += 50
         run += 1
@@ -148,16 +148,16 @@ def errevaluator():
 
 def errorvsdatasize():
     error = []
-    numpoints = []
-    standev = []
     meanlist = []
     cvlist = []
     
-    sigma = 0.01
+    sigma = 0.1
     run = 0
     while sigma > 1e-9:
-        npoints = 100
-        while npoints < 35000:    #35000
+        numpoints = []
+        standev = []
+        npoints = 4000
+        while npoints < 25000:    #35000
             print('_____________________ run number',run)
             error.append(sigma)
             numpoints.append(npoints)
@@ -167,9 +167,14 @@ def errorvsdatasize():
             meanlist.append(mean)
             cv = sd/mean
             cvlist.append(cv)
-            npoints += 1000
+            npoints += 1500
             run += 1
-        
+        figure()
+        xlabel('size of dataset')
+        ylabel('standard deviation')
+        plot(numpoints, standev, '.')
+        title('sd of m found vs size of dataset used, sd of noise added = %s'%(sigma))
+        show()
         sigma -= 0.003
     
 #    # Create two subplots sharing y axis
@@ -183,17 +188,17 @@ def errorvsdatasize():
 #    
 #    pl.show()
         
-    # Create two subplots sharing x axis
-    fig, (noise, dataset) = pl.subplots(2, sharex=True)
-    
-    noise.plot(standev, error, 'b.')
-    noise.set(title='', ylabel='standard deviation of noise')
-    
-    dataset.plot(standev, numpoints, 'r.')
-    dataset.set(xlabel='sd of parameter distribution', ylabel='size of dataset')
-    
-    pl.show()
+#    # Create two subplots sharing x axis
+#    fig, (noise, dataset) = pl.subplots(2, sharex=True)
+#    
+#    noise.plot(standev, error, 'b.')
+#    noise.set(title='', ylabel='standard deviation of noise')
+#    
+#    dataset.plot(standev, numpoints, 'r.')
+#    dataset.set(xlabel='sd of parameter distribution', ylabel='size of dataset')
+#    
+#    pl.show()
     
     return error, numpoints, sampler, standev, meanlist
 
-error, numpoints, sampler, standev, meanlist = errorvsdatasize()
+#error, numpoints, sampler, standev, meanlist = errorvsdatasize()
