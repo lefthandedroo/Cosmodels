@@ -12,8 +12,7 @@ import emcee
 import numpy as np
 import time
 
-import lnprob
-import lnprior
+import ln
 
 # emcee parameters:
 ndim, nwalkers = 1, 2
@@ -40,7 +39,7 @@ def stats(m_true, zpicks, mag, sigma, nsteps):
     while i < nwalkers:
         posrow = pos[i]
         theta = posrow[0]
-        lp = lnprior.lnprior(theta)
+        lp = ln.lnprior(theta)
         if not np.isfinite(lp):
             print('~~~~~~~theta %s (outside of prior) = %s ~~~~~~~'%(i, theta))
         i += 1
@@ -48,7 +47,7 @@ def stats(m_true, zpicks, mag, sigma, nsteps):
     # Sampler setup
     timee0 = time.time()    # starting sampler timer
     print('_____ sampler start')
-    sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob.lnprob, args=(zpicks, mag, sigma))
+    sampler = emcee.EnsembleSampler(nwalkers, ndim, ln.lnprob, args=(zpicks, mag, sigma))
     
     # burnin
     burnin = int(nsteps/5)     # steps to discard
@@ -65,7 +64,7 @@ def stats(m_true, zpicks, mag, sigma, nsteps):
     mbest = sampler.flatchain[bi,0]
     
     theta = mbest
-    lp = lnprior.lnprior(theta)
+    lp = ln.lnprior(theta)
     if not np.isfinite(lp):
         print('')
         print('best emcee parameters are outside of prior (magbest calcualation)')

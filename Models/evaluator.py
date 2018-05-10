@@ -17,7 +17,7 @@ de_true = 1 - m_true   # (de = e_de(t)/e_crit(t0) at t=t0).
 gamma_true = 0.0       # Interaction term, rate at which DE decays into matter.
 
 # Number of datapoints to be simulated and number of emcee steps.
-npoints, nsteps = 10000, 20000
+npoints, nsteps = 10000, 1000
 
 # Statistical parameteres:
 mu = 0          # mean

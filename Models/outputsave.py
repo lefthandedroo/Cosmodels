@@ -18,6 +18,11 @@ import time
 import pickle
 import os
 
+
+def filesave(directory): 
+
+    return
+
 def rslt(m, de, gamma, slnprob):
     
     filename = 'datawalkers.p' #  testresults
