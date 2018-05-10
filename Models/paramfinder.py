@@ -5,6 +5,7 @@ Main code
 """
 import numpy as np
 import time
+import os
 
 import timer
 import gnoise
@@ -15,10 +16,10 @@ def paramfinder(npoints, nsteps, sigma, mu, m_true):
     # Script timer.
     timet0 = time.time()
     
-#    directory = int(time.time())
-#    
-#    if not os.path.exists(directory):
-#        os.makedirs(directory)
+    directory = str(int(time.time()))
+    
+    if not os.path.exists(directory):
+        os.makedirs(directory)
         
     # Generating redshifts to simulate mag.
     import zpicks # DO MOVE ABOVE FUNCTION
@@ -32,9 +33,8 @@ def paramfinder(npoints, nsteps, sigma, mu, m_true):
     # emcee parameter search.
     propert, sampler = stats.stats(m_true, zpicks, mag, sigma, nsteps)
     
-    print('got here')
     
-#    # Saving smapler to file.
+#    # Saving sampler to file.
 #    import outputsave
 #    outputsave.samplersave(sampler)
     
