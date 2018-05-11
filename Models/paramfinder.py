@@ -6,40 +6,28 @@ Main code
 import numpy as np
 import time
 
-import timer
-import gnoise
-import zmsim
+import tools
+import datasim
 import stats
 
-def paramfinder(npoints, nsteps, sigma, mu, m_true):
+def paramfinder(npoints, nsteps, sigma, mu, m_true, directory):
     # Script timer.
     timet0 = time.time()
-    
-#    directory = int(time.time())
-#    
-#    if not os.path.exists(directory):
-#        os.makedirs(directory)
         
     # Generating redshifts to simulate mag.
     import zpicks # DO MOVE ABOVE FUNCTION
     zpicks = zpicks.zpicks(0.005, 2, npoints)
     
     # Generating apparent magnitues mag at redshifts z=0 to z < zmax.
-    model = zmsim.zmsim(m_true, zpicks)
+    model = datasim.mag(m_true, zpicks)
     model = np.asarray(model)
-    mag = gnoise.gnoise(model, mu, sigma)
+    mag = datasim.gnoise(model, mu, sigma)
     
     # emcee parameter search.
-    propert, sampler = stats.stats(m_true, zpicks, mag, sigma, nsteps)
-    
-    print('got here')
-    
-#    # Saving smapler to file.
-#    import outputsave
-#    outputsave.samplersave(sampler)
+    propert, sampler = stats.stats(m_true, zpicks, mag, sigma, nsteps, directory)
     
     # Time taken by script. 
     timet1=time.time()
-    timer.timer('script', timet0, timet1)
+    tools.timer('script', timet0, timet1)
     
     return propert, sampler

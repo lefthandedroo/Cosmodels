@@ -7,7 +7,8 @@ Created on Wed Apr 18 21:45:40 2018
 """
 from pylab import figure, plot, xlabel, ylabel, title, show
 import matplotlib.pyplot as pl
-
+import time
+import os.path
 
 import paramfinder
 
@@ -17,22 +18,116 @@ de_true = 1 - m_true   # (de = e_de(t)/e_crit(t0) at t=t0).
 gamma_true = 0.0       # Interaction term, rate at which DE decays into matter.
 
 # Number of datapoints to be simulated and number of emcee steps.
-npoints, nsteps = 10000, 1000
+npoints, nsteps = 10000, 10000
 
 # Statistical parameteres:
 mu = 0          # mean
 sigma = 0.085     # standard deviation
 
-def repeatrun():    
+def repeatrun():
+    # Folder for saving output.
+    directory = 'run'+str(int(time.time()))
+    print('run directory:',directory)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+        
     i = 0
     while i < 1:
         print('_____________________ run number',i)
-        propert, sampler = paramfinder.paramfinder(npoints, nsteps, sigma, mu, m_true)
+        propert, sampler = paramfinder.paramfinder(npoints, nsteps, sigma, mu, m_true, directory)
         i += 1
+    
+    # Saving sampler to directory.
+    import save
+    save.output(directory, 'sampler', sampler)
     
     return sampler
 
-sampler = repeatrun()
+#sampler = repeatrun()
+
+
+def errorvsdatasize():
+    # Folder for saving output.
+    directory = str(int(time.time()))
+    print('output directory:',directory)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    
+    error = []
+    
+    sigma = 1e-9
+    run = 0
+    
+    while sigma < 0.006:
+        numpoints = []
+        standev = []
+        meanlist = []
+        cvlist = []
+        samplerlist = []
+        npoints = 4000
+        while npoints < 50000:    #35000
+            print('_____________________ run number',run)
+            error.append(sigma)
+            numpoints.append(npoints)
+            propert, sampler = paramfinder.paramfinder(npoints, nsteps, sigma, mu, m_true, directory)
+            sd, mean = propert
+            standev.append(sd)
+            meanlist.append(mean)
+            cv = sd/mean * 100
+            cvlist.append(cv)
+            samplerlist.append(sampler)
+            
+            npoints += 2000
+            run += 1
+        
+        # Saving plots to run directory.
+        save_path = '/Users/usyd/Documents/Study/MPhil/Geraint/Cosmodels/Models/'+directory
+        
+        figure()
+        xlabel('size of dataset')
+        ylabel('standard deviation')
+        title('sd of m vs size of dataset, sd of noise = %s'%(sigma))
+        pl.scatter(numpoints, standev, c='m')        
+        stamp = str(int(time.time()))
+        filename = str(stamp)+'_sd_of_m_.png'
+        filename = os.path.join(save_path, filename)
+        pl.savefig(filename)
+        pl.show()
+        
+        figure()
+        xlabel('size of dataset')
+        ylabel('mean of marginalised distribution for m')
+        title('mean of m vs size of dataset, sd of noise = %s'%(sigma))
+        pl.scatter(numpoints, meanlist, c='c')        
+        stamp = str(int(time.time()))
+        filename = str(stamp)+'_mean_of_m_.png'
+        filename = os.path.join(save_path, filename)
+        pl.savefig(filename)
+        pl.show()
+        
+        figure()
+        xlabel('size of dataset')
+        ylabel('variance coefficient in %')
+        title('sd/mean of m vs size of dataset, sd of noise added = %s'%(sigma))
+        pl.scatter(numpoints, cvlist, c='coral')        
+        stamp = str(int(time.time()))
+        filename = str(stamp)+'_cv_of_m_.png'
+        filename = os.path.join(save_path, filename)
+        pl.savefig(filename)
+        pl.show()
+        
+        sigma += 0.003
+        
+    # Saving results to directory.
+    import save
+    save.output(directory, 'error', error)
+    save.output(directory, 'numpoints', numpoints)
+    save.output(directory, 'sampler', sampler)
+    save.output(directory, 'standev', standev)
+    save.output(directory, 'meanlist', meanlist)
+    return error, numpoints, sampler, standev, meanlist
+
+error, numpoints, sampler, standev, meanlist = errorvsdatasize()
 
 
 def stepevaluator():
@@ -144,61 +239,3 @@ def errevaluator():
     return error, sampler, standev, meanlist
 
 #error, sampler, standev, meanlist = errevaluator()
-
-
-def errorvsdatasize():
-    error = []
-    meanlist = []
-    cvlist = []
-    
-    sigma = 0.1
-    run = 0
-    while sigma > 1e-9:
-        numpoints = []
-        standev = []
-        npoints = 4000
-        while npoints < 25000:    #35000
-            print('_____________________ run number',run)
-            error.append(sigma)
-            numpoints.append(npoints)
-            propert, sampler = paramfinder.paramfinder(npoints, nsteps, sigma, mu, m_true)
-            sd, mean = propert
-            standev.append(sd)
-            meanlist.append(mean)
-            cv = sd/mean
-            cvlist.append(cv)
-            npoints += 1500
-            run += 1
-        figure()
-        xlabel('size of dataset')
-        ylabel('standard deviation')
-        plot(numpoints, standev, '.')
-        title('sd of m found vs size of dataset used, sd of noise added = %s'%(sigma))
-        show()
-        sigma -= 0.003
-    
-#    # Create two subplots sharing y axis
-#    fig, (noise, dataset) = pl.subplots(2, sharey=True)
-#    
-#    noise.plot(error, standev, 'b.')
-#    noise.set(title='', ylabel='sd of noise')
-#    
-#    dataset.plot(numpoints, standev, 'r.')
-#    dataset.set(xlabel='standard deviation of parameter distribution', ylabel='size of dataset')
-#    
-#    pl.show()
-        
-#    # Create two subplots sharing x axis
-#    fig, (noise, dataset) = pl.subplots(2, sharex=True)
-#    
-#    noise.plot(standev, error, 'b.')
-#    noise.set(title='', ylabel='standard deviation of noise')
-#    
-#    dataset.plot(standev, numpoints, 'r.')
-#    dataset.set(xlabel='sd of parameter distribution', ylabel='size of dataset')
-#    
-#    pl.show()
-    
-    return error, numpoints, sampler, standev, meanlist
-
-#error, numpoints, sampler, standev, meanlist = errorvsdatasize()
