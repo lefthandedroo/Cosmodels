@@ -5,7 +5,7 @@ Created on Wed Apr 18 21:45:40 2018
 
 @author: BallBlueMeercat
 """
-from pylab import figure, plot, xlabel, ylabel, title, show
+from pylab import figure, xlabel, ylabel, title
 import matplotlib.pyplot as pl
 import time
 import os.path
@@ -53,189 +53,83 @@ def errorvsdatasize():
     if not os.path.exists(directory):
         os.makedirs(directory)
     
-    error = []
     
-    sigma = 1e-9
+    sigma = 0.005
     run = 0
     
-    while sigma < 0.006:
-        numpoints = []
-        standev = []
-        meanlist = []
-        cvlist = []
-        samplerlist = []
-        npoints = 4000
-        while npoints < 50000:    #35000
+    sigma_l = []
+    npoints_l = []
+    sd_l = []
+    mean_l = []
+    vc_l = []
+    sampler_l = []
+    
+    while sigma < 0.2:        # 0.2
+
+        npoints = 1000  
+        while npoints < 40000:#6000:   #40000
             print('_____________________ run number',run)
-            error.append(sigma)
-            numpoints.append(npoints)
             propert, sampler = paramfinder.paramfinder(npoints, nsteps, sigma, mu, m_true, directory)
             sd, mean = propert
-            standev.append(sd)
-            meanlist.append(mean)
-            cv = sd/mean * 100
-            cvlist.append(cv)
-            samplerlist.append(sampler)
+            vc = sd/mean * 100
+            vc_l.append(vc)
+            sd_l.append(sd)
+            mean_l.append(mean)
+            sigma_l.append(sigma)
+            npoints_l.append(npoints)
+            sampler_l.append(sampler)
             
             npoints += 2000
             run += 1
         
+        sigma += 0.005
+        
         # Saving plots to run directory.
         save_path = '/Users/usyd/Documents/Study/MPhil/Geraint/Cosmodels/Models/'+directory
         
-        figure()
-        xlabel('size of dataset')
-        ylabel('standard deviation')
-        title('sd of m vs size of dataset, sd of noise = %s'%(sigma))
-        pl.scatter(numpoints, standev, c='m')        
-        stamp = str(int(time.time()))
-        filename = str(stamp)+'_sd_of_m_.png'
-        filename = os.path.join(save_path, filename)
-        pl.savefig(filename)
-        pl.show()
-        
-        figure()
-        xlabel('size of dataset')
-        ylabel('mean of marginalised distribution for m')
-        title('mean of m vs size of dataset, sd of noise = %s'%(sigma))
-        pl.scatter(numpoints, meanlist, c='c')        
-        stamp = str(int(time.time()))
-        filename = str(stamp)+'_mean_of_m_.png'
-        filename = os.path.join(save_path, filename)
-        pl.savefig(filename)
-        pl.show()
-        
-        figure()
-        xlabel('size of dataset')
-        ylabel('variance coefficient in %')
-        title('sd/mean of m vs size of dataset, sd of noise added = %s'%(sigma))
-        pl.scatter(numpoints, cvlist, c='coral')        
-        stamp = str(int(time.time()))
-        filename = str(stamp)+'_cv_of_m_.png'
-        filename = os.path.join(save_path, filename)
-        pl.savefig(filename)
-        pl.show()
-        
-        sigma += 0.003
+    figure()
+    xlabel('size of dataset')
+    ylabel('standard deviation of marginalised m distribution')
+    title('sd of m vs size of dataset, sd of noise = %s'%(sigma))
+    pl.scatter(npoints_l, sd_l, c='m')        
+    stamp = str(int(time.time()))
+    filename = str(stamp)+'_sd_of_m_.png'
+    filename = os.path.join(save_path, filename)
+    pl.savefig(filename)
+    pl.show()
+    
+    figure()
+    xlabel('size of dataset')
+    ylabel('mean of marginalised m distribution')
+    title('mean of m vs size of dataset, sd of noise = %s'%(sigma))
+    pl.scatter(npoints_l, mean_l, c='c')        
+    stamp = str(int(time.time()))
+    filename = str(stamp)+'_mean_of_m_.png'
+    filename = os.path.join(save_path, filename)
+    pl.savefig(filename)
+    pl.show()
+    
+    figure()
+    xlabel('size of dataset')
+    ylabel('variance coefficient in %')
+    title('sd/mean of m vs size of dataset, sd of noise = %s'%(sigma))
+    pl.scatter(npoints_l, vc_l, c='coral')        
+    stamp = str(int(time.time()))
+    filename = str(stamp)+'_cv_of_m_.png'
+    filename = os.path.join(save_path, filename)
+    pl.savefig(filename)
+    pl.show()
+
         
     # Saving results to directory.
-    import save
-    save.output(directory, 'error', error)
-    save.output(directory, 'numpoints', numpoints)
-    save.output(directory, 'sampler', sampler)
-    save.output(directory, 'standev', standev)
-    save.output(directory, 'meanlist', meanlist)
-    return error, numpoints, sampler, standev, meanlist
+    import results
+    results.save(directory, 'vc', vc_l)
+    results.save(directory, 'sd', sd_l)
+    results.save(directory, 'mean', mean_l)
+    results.save(directory, 'sigma', sigma_l)
+    results.save(directory, 'npoints', npoints_l)
+    results.save(directory, 'sampler', sampler_l)
+    
+    return vc_l, sd_l, mean_l, sigma_l, npoints_l, sampler_l,
 
-error, numpoints, sampler, standev, meanlist = errorvsdatasize()
-
-
-def stepevaluator():
-    
-    steps = []
-    standev = []
-    meanlist = []
-    cvlist = []
-    
-    nsteps = 100
-    run = 0
-    while nsteps < 2000:
-        print('_____________________ run number',run)
-        steps.append(nsteps)
-        propert, sampler = paramfinder.paramfinder(npoints, nsteps, sigma, mu, m_true)
-        sd, mean = propert
-        standev.append(sd)
-        meanlist.append(mean)
-        cv = sd/mean
-        cvlist.append(cv)
-        
-        cv = sd / mean     # Coefficient of variation.
-#        print('cv:',str(cv))
-#        if cv < 0.008:
-#            print('nsteps', nsteps)
-#            break
-        
-        nsteps += 50
-        run += 1
-    
-    figure()
-    xlabel('emcee steps')
-    ylabel('standard deviation')
-    plot(steps, standev, '.')
-    title('standard deviation of m found vs steps taken')
-    show()
-    
-    return steps, sampler, standev, meanlist
-
-#steps, sampler, standev, meanlist = stepevaluator()
-
-
-def nevaluator():
-    
-    numpoints = []
-    standev = []
-    meanlist = []
-    cvlist = []
-    
-    npoints = 100
-    run = 0
-    while npoints < 35000:    #35000
-        print('_____________________ run number',run)
-        numpoints.append(npoints)
-        propert, sampler = paramfinder.paramfinder(npoints, nsteps, sigma, mu, m_true)
-        sd, mean = propert
-        standev.append(sd)
-        meanlist.append(mean)
-        cv = sd/mean
-        cvlist.append(cv)
-        npoints += 1000
-        run += 1
-
-    
-    figure()
-    xlabel('number of datapoints used')
-    ylabel('standard deviation')
-    plot(numpoints, standev, 'b.', label='standard deviation')
-    plot(numpoints, cvlist, 'r.', label='coefficient of variation')
-    pl.legend()
-    title('sd and cv of m found vs dataset size')
-    show()
-    
-    return numpoints, sampler, standev, meanlist
-
-#numpoints, sampler, standev, meanlist = nevaluator()
-
-
-def errevaluator():
-    
-    error = []
-    standev = []
-    meanlist = []
-    cvlist = []
-    
-    sigma = 1e-9
-    run = 0
-    while sigma < 0.1:
-        print('_____________________ run number',run)
-        error.append(sigma)
-        propert, sampler = paramfinder.paramfinder(npoints, nsteps, sigma, mu, m_true)
-        sd, mean = propert
-        standev.append(sd)
-        meanlist.append(mean)
-        cv = sd/mean
-        cvlist.append(cv)
-        sigma += 0.003
-        run += 1
-    
-    figure()
-    xlabel('standard deviation of noise')
-    ylabel('standard deviation of parameter distribution')
-    plot(error, standev, 'b.', label='standard deviation')
-    plot(error, cvlist, 'r.', label='coefficient of variation')
-    pl.legend()
-    title('sd and cv of m found vs sd of noise added')
-    show()
-    
-    return error, sampler, standev, meanlist
-
-#error, sampler, standev, meanlist = errevaluator()
+vc, sd, mean, sigma, npoints, sampler = errorvsdatasize()
