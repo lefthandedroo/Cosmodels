@@ -11,6 +11,7 @@ import time
 import os.path
 
 import paramfinder
+import tools
 
 # Model parameteres:  
 m_true = 0.3           # (= e_m(t)/e_crit(t0) at t=t0).
@@ -47,6 +48,9 @@ def repeatrun():
 
 
 def errorvsdatasize():
+    # Script timer.
+    timet0 = time.time()
+    
     # Folder for saving output.
     directory = str(int(time.time()))
     print('output directory:',directory)
@@ -67,7 +71,7 @@ def errorvsdatasize():
     while sigma < 0.2:        # 0.2
 
         npoints = 1000  
-        while npoints < 40000:#6000:   #40000
+        while npoints < 30000:#6000:   #40000
             print('_____________________ run number',run)
             propert, sampler = paramfinder.paramfinder(npoints, nsteps, sigma, mu, m_true, directory)
             sd, mean = propert
@@ -79,10 +83,10 @@ def errorvsdatasize():
             npoints_l.append(npoints)
             sampler_l.append(sampler)
             
-            npoints += 2000
+            npoints *= 5
             run += 1
         
-        sigma += 0.005
+        sigma *= 5
         
         # Saving plots to run directory.
         save_path = '/Users/usyd/Documents/Study/MPhil/Geraint/Cosmodels/Models/'+directory
@@ -129,6 +133,10 @@ def errorvsdatasize():
     results.save(directory, 'sigma', sigma_l)
     results.save(directory, 'npoints', npoints_l)
     results.save(directory, 'sampler', sampler_l)
+    
+    # Time taken by evaluator. 
+    timet1=time.time()
+    tools.timer('evaluator', timet0, timet1)
     
     return vc_l, sd_l, mean_l, sigma_l, npoints_l, sampler_l,
 
