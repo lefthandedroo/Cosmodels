@@ -27,42 +27,67 @@ Cheat sheet:
     pl.show
 """
 
-import pickle
-import os
-from pylab import figure, plot, xlabel, ylabel, title, show
+from pylab import figure, plot, xlabel, ylabel, title, show, grid, scatter
+import numpy as np
 
-def walkersteps(filename):
+from results import load
+
+def onepercent(directory):
+    directory = str(directory)
     
-    if os.path.exists(filename):
-        with open(filename,'rb') as rfp: 
-            results = pickle.load(rfp)
+    results = []
+
+    vc = load(directory, 'vc.p')
+    sd = load(directory, 'sd.p')
+    mean  = load(directory, 'mean.p')
+    sigma = load(directory, 'sigma.p')
+    npoints = load(directory, 'npoints.p')
     
-    ttdd = [item[0] for item in results]
-    print(ttdd)
+#    vc = [0.01, 0, 0.02, 3, 5, 4, 6]
+#    sd = [20, 10, 30, 40, 60, 50, 70]
+#    mean = [0, 1, 2, 3, 4, 5, 6]
+#    sigma = [0, 1, 2, 3, 4, 5, 6] 
+#    npoints = [0, 1, 2, 3, 4, 5, 6]
+
+    results.append(vc)
+    results.append(sd)
+    results.append(mean)
+    results.append(sigma)
+    results.append(npoints)
     
-    pick = input('Enter ID of entry you want to plot: ')
+#    print('vc',len(vc))
+#    print('sd',len(sd))
+#    print('mean',len(mean))
+#    print('sigma',len(sigma))
+#    print('npoints',len(npoints))
     
-    if not pick:
-        m = results[-1][1]
-        slnprob = results[-1][2]
-    else:
-        pick = int(pick)
-        m = results[pick][1]
-        slnprob = results[pick][2]
+    results = np.column_stack(results)
+    results = results[results[:,0].argsort()]
+    
+    vc, sd, mean, sigma, npoints = np.hsplit(results,5)
+#    vc = vc.flatten()
+    
+    print('vc')
+    print(vc)
+    
+    si = np.where(vc < 0.08)
+    print('si')
+    print(si)
+    
+    print('vc[si]')
+    print(vc[si])
     
     figure()
-    xlabel('parameter value')
-    ylabel('step number')
-    plot(m, slnprob, '.', color='red')
-    title('slnprob for m')
+    xlabel('datazet size')
+    ylabel('sigma of noise added to data')
+    title('runs where m was found within 1%')
+    scatter(npoints[si], sigma[si])
     show()
+    
+    return results, vc, sd, mean, sigma, npoints
 
-    return m, slnprob
+results, vc, sd, mean, sigma, npoints = onepercent(1526278827)
 
-walkersteps('resultlist.p')
-
-
-from pylab import grid, scatter
 
 def modelcheck(t, mag, zpicks, dlpc, dl, gamma, ombar_m0, ombar_de0, a, ombar_m, ombar_de):
     

@@ -6,18 +6,20 @@ Created on Fri Feb 23 16:02:10 2018
 @author: BallBlueMeercat
 """
 
-from pylab import figure, scatter
+from pylab import figure, scatter, xlabel, ylabel, title, plot, show
 import matplotlib.pyplot as pl
 import emcee
 import numpy as np
 import time
+import os.path
 
+import tools
 import ln
 
 # emcee parameters:
 ndim, nwalkers = 1, 2
 
-def stats(m_true, zpicks, mag, sigma, nsteps):
+def stats(m_true, zpicks, mag, sigma, nsteps, directory):
     """
     Takes in:
             m_true = e_m(t)/ec(t0) at t=t0;
@@ -69,23 +71,68 @@ def stats(m_true, zpicks, mag, sigma, nsteps):
         print('')
         print('best emcee parameters are outside of prior (magbest calcualation)')
         print('')
-        
+    
+    # Saving plots to run directory.
+    save_path = '/Users/usyd/Documents/Study/MPhil/Geraint/Cosmodels/Models/'+directory
+    
     # Plot of mag simulated using "true" parameters, overlayed with
     # mag simulated using emcee best parameters.
-    import zmsim
-    magbest = zmsim.zmsim(mbest, zpicks)
+    import datasim
+    magbest = datasim.mag(mbest, zpicks)
     figure()
-    pl.title('True parameters mag and best emcee parameters mag')
-    pl.errorbar(zpicks, mag, yerr=sigma, fmt='.', alpha=0.3)
+    title('Evolution of magnitude with redshift \n nsteps: '+str(nsteps)+', noise: '
+          +str(sigma)+', npoints: '+str(len(zpicks)))
+    data = pl.errorbar(zpicks, mag, yerr=sigma, fmt='.', alpha=0.3)
     best_fit = scatter(zpicks, magbest, lw='1', c='r')
-    pl.legend([best_fit], ['Mag simulated with best emcee parameters'])
-    pl.show()
+    ylabel('magnitude')
+    xlabel('z')
+    pl.legend([data, best_fit], ['mag simulated with true parameters', 'mag recreated with emcee parameters'])
+    stamp = str(int(time.time()))
+    filename = str(stamp)+'__magVz_nsteps_'+str(nsteps)+'_nwalkers_'+str(nwalkers)+'_noise'+str(sigma)+'numpoints_'+str(len(zpicks))+'.png'
+    filename = os.path.join(save_path, filename)
+    pl.savefig(filename)
+    show()
+    show()
 
     # Marginalised distribution histograms.
     figure()
-    pl.title('Marginalised distribution for m')
+    xlabel(r'$\Omega_m(z=0)$')
+    title('Marginalised distribution of m \n nsteps: '+str(nsteps)+', noise: '
+          +str(sigma)+', npoints: '+str(len(zpicks)))
     pl.hist(sampler.flatchain[:,0], 50)
-    pl.show()
+    stamp = str(int(time.time()))
+    filename = str(stamp)+'__mhist_nsteps_'+str(nsteps)+'_nwalkers_'+str(nwalkers)+'_noise'+str(sigma)+'numpoints_'+str(len(zpicks))+'.png'
+    filename = os.path.join(save_path, filename)
+    pl.savefig(filename)
+    show()
+    
+    # Walker steps.
+    m = sampler.flatchain[:,0]
+    slnprob = sampler.flatlnprobability
+    
+    figure()
+    title('slnprob for m \n nsteps: '+str(nsteps)+', noise: '
+          +str(sigma)+', npoints: '+str(len(zpicks)))
+    plot(m, slnprob, '.', color='red')
+    stamp = str(int(time.time()))
+    filename = str(stamp)+'__steps_nsteps_'+str(nsteps)+'_nwalkers_'+str(nwalkers)+'_noise'+str(sigma)+'numpoints_'+str(len(zpicks))+'.png'
+    filename = os.path.join(save_path, filename)
+    pl.savefig(filename)
+    show()
+    
+    # Chains.    
+    figure()
+    xlabel('step number')
+    ylabel(r'$\Omega_m(z=0)$')
+    title('flatChains with m_true in red \n nsteps: '+str(nsteps)+', noise: '
+          +str(sigma)+', npoints: '+str(len(zpicks)))
+    plot(sampler.flatchain[:,0].T, '-', color='k', alpha=0.3)
+    pl.axhline(m_true, color='red')
+    stamp = str(int(time.time()))
+    filename = str(stamp)+'__chain_nsteps_'+str(nsteps)+'_nwalkers_'+str(nwalkers)+'_noise'+str(sigma)+'numpoints_'+str(len(zpicks))+'.png'
+    filename = os.path.join(save_path, filename)
+    pl.savefig(filename)
+    show()
 
 #    # Corner plot (walkers' walk + histogram).
 #    print('_____ stats corner plot')
@@ -109,12 +156,10 @@ def stats(m_true, zpicks, mag, sigma, nsteps):
     mall = sampler.flatchain[:,0]
     sd = np.std(mall)
     mean = np.mean(mall)
-    print('sd:',str(sd))
     
     # Property being investigated
     propert = sd, mean
         
-    import timer
-    timer.timer('sampler', timee0, timee1)
+    tools.timer('sampler', timee0, timee1)
     
     return propert, sampler

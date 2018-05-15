@@ -7,11 +7,11 @@ Created on Thu Feb 15 13:52:36 2018
 """
 
 import numpy as np
-import zmsim
+import datasim
 
 def lnlike(theta, zpicks, mag, sigma):
 #    print('@@@@ lnlike has been called')
-    model = zmsim.zmsim(theta, zpicks)
+    model = datasim.mag(theta, zpicks)
     inv_sigma2 = 1.0/(sigma**2)
     return -0.5*(np.sum((mag-model)**2*inv_sigma2 - np.log(inv_sigma2)))
 

@@ -6,8 +6,7 @@ Created on Fri Feb 23 16:10:05 2018
 @author: BallBlueMeercat
 """
 import random
-
-import flist
+import tools
 
 def zpicks(zmin, zmax, n):
     """
@@ -20,7 +19,7 @@ def zpicks(zmin, zmax, n):
     """
 #    print('-zpicks has been called')
     zinterval = (zmax - zmin) / (n*2)
-    z_opts = flist.flist(zmin, zmax, zinterval)
+    z_opts = tools.flist(zmin, zmax, zinterval)
     zpicks = random.sample(z_opts, n)
     zpicks = sorted(zpicks)
     return zpicks
