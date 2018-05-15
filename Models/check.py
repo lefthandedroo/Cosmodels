@@ -61,10 +61,6 @@ def sanity(t_rslt, z_rzlt, zpicks, gamma, e_dash0m, e_dash0de):
     zt, zmag, zdlpc, zdl, za, ze_dashm, ze_dashde = z_rzlt
 
     
-#    print('len t %s, len mag %s, dlpc %s, dl %s, a %s, e_dashm %s, e_dashde %s'%
-#          (len(t), len(mag), len(dlpc), len(dl), len(a), len(e_dashm), len(e_dashde)))
-#    print('lenzt %s, len zmag %s, zdlpc %s, zdl %s, za %s, ze_dashm %s, ze_dashde %s'%
-#          (len(zt), len(zmag), len(zdlpc), len(zdl), len(za), len(ze_dashm), len(ze_dashde)))
 
 #    pl.figure()
 #    pl.title('a wrt time (blue) and a wrt z (red) vs time')

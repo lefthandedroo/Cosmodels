@@ -30,7 +30,8 @@ def zfirstderivs(v, t, gamma, H0):
         
     import numpy as np
     if np.isnan(Hz):
-        print("z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s"%(z, Hz, gamma, ombar_m, ombar_de))
+        print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
+              %(z, Hz, gamma, ombar_m, ombar_de))
 
     # fist derivatives of functions I want to find:
     f = [# dt/dz (= f.d wrt z of time)

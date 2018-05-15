@@ -10,10 +10,8 @@ Created on Tue Apr  3 10:31:30 2018
 import pickle
 import os.path
 
-def save(directory, output_name, output): 
+def save(save_path, output_name, output): 
     # Saving results to run directory.
-    save_path = '/Users/usyd/Documents/Study/MPhil/Geraint/Cosmodels/Models/'+directory
-
     filename = output_name+'.p'
     filename = os.path.join(save_path, filename)
     
@@ -22,11 +20,11 @@ def save(directory, output_name, output):
     return
 
 
-def load(directory, filename):
+def load(save_path, filename):
     
-    load_path = '/Users/usyd/Documents/Study/MPhil/Geraint/Cosmodels/Models/'
+    load_path = os.path.join(save_path, filename)
     
-    with open(load_path+directory+'/'+filename,'rb') as rfp: 
+    with open(load_path,'rb') as rfp: 
         content = pickle.load(rfp)
     
     return content

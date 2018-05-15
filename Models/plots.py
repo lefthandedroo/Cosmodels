@@ -67,15 +67,15 @@ def onepercent(directory):
     vc, sd, mean, sigma, npoints = np.hsplit(results,5)
 #    vc = vc.flatten()
     
-    print('vc')
-    print(vc)
+#    print('vc')
+#    print(vc)
     
-    si = np.where(vc < 0.08)
-    print('si')
-    print(si)
-    
-    print('vc[si]')
-    print(vc[si])
+    si = np.where(vc < 1)
+#    print('si')
+#    print(si)
+#    
+#    print('vc[si]')
+#    print(vc[si])
     
     figure()
     xlabel('datazet size')
@@ -84,12 +84,20 @@ def onepercent(directory):
     scatter(npoints[si], sigma[si])
     show()
     
+    figure()
+    xlabel('datazet size')
+    ylabel('sigma of noise added to data')
+    title('all runs')
+    scatter(npoints, sigma)
+    show()
+    
     return results, vc, sd, mean, sigma, npoints
 
-results, vc, sd, mean, sigma, npoints = onepercent(1526341352)
+results, vc, sd, mean, sigma, npoints = onepercent(1526346576)
 
 
-def modelcheck(t, mag, zpicks, dlpc, dl, gamma, ombar_m0, ombar_de0, a, ombar_m, ombar_de):
+def modelcheck(t, mag, zpicks, dlpc, dl, 
+               gamma, ombar_m0, ombar_de0, a, ombar_m, ombar_de):
     
     # Plotting selected results:
     # a and a_dot vs time.
@@ -113,7 +121,8 @@ def modelcheck(t, mag, zpicks, dlpc, dl, gamma, ombar_m0, ombar_de0, a, ombar_m,
         ylabel('$\epsilon_m \'$')
         lw = 1
         plot(zpicks, ombar_m, 'g', linewidth=lw)
-        title('$\epsilon_m \'$ evolution, IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0} \'$ =%s, $\gamma$ = %s'
+        title('$\epsilon_m \'$ evolution, IC: $\epsilon_{m0}',
+              ' ,\'$ = %s, $\epsilon_{DE0} \'$ =%s, $\gamma$ = %s'
               %(ombar_m0, ombar_de0, gamma))
         show()
 
@@ -123,7 +132,8 @@ def modelcheck(t, mag, zpicks, dlpc, dl, gamma, ombar_m0, ombar_de0, a, ombar_m,
         ylabel('$\epsilon_{DE} \'$')
         lw = 1
         plot(zpicks, ombar_m, 'm', linewidth=lw)
-        title('$\epsilon_{DE} \'$ evolution, IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0} \'$ =%s, $\gamma$ = %s'
+        title('$\epsilon_{DE} \'$ evolution, IC: $\epsilon_{m0}',
+              ' \'$ = %s, $\epsilon_{DE0} \'$ =%s, $\gamma$ = %s'
               %(ombar_m0, ombar_de0, gamma))
         show()
         break
@@ -136,7 +146,8 @@ def modelcheck(t, mag, zpicks, dlpc, dl, gamma, ombar_m0, ombar_de0, a, ombar_m,
         ylabel('$d_L$*($H_0$/c)')
         grid(True)
         plot(zpicks, dl, 'tab:green', lw=1)
-        title('$d_L$, IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0} \'$ =%s, $\gamma$ = %s'
+        title('$d_L$, IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0}',
+              ' \'$ =%s, $\gamma$ = %s'
               %(ombar_m0, ombar_de0, gamma))
         show()
         break   
@@ -147,7 +158,8 @@ def modelcheck(t, mag, zpicks, dlpc, dl, gamma, ombar_m0, ombar_de0, a, ombar_m,
         ylabel('pc')
         grid(True)
         plot(zpicks, dlpc, 'tab:green', lw=1)
-        title('$d_L$, IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0} \'$ =%s, $\gamma$ = %s'
+        title('$d_L$, IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0}',
+              ' \'$ =%s, $\gamma$ = %s'
               %(ombar_m0, ombar_de0, gamma))
         show()
         break       
@@ -159,7 +171,8 @@ def modelcheck(t, mag, zpicks, dlpc, dl, gamma, ombar_m0, ombar_de0, a, ombar_m,
         ylabel('Gpc')
         grid(True)
         plot(zpicks, dlgpc, 'tab:green', lw=1)
-        title('$d_L$, IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0} \'$ =%s, $\gamma$ = %s'
+        title('$d_L$, IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0}',
+              ' \'$ =%s, $\gamma$ = %s'
               %(ombar_m0, ombar_de0, gamma))
         show()
         break
@@ -173,7 +186,8 @@ def modelcheck(t, mag, zpicks, dlpc, dl, gamma, ombar_m0, ombar_de0, a, ombar_m,
 #        axis([0,-0.8,0,5])
         grid(True)
         plot(t, zpicks, 'tab:pink', lw=1)
-        title('Redshift, IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0} \'$ =%s, $\gamma$ = %s'
+        title('Redshift, IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0}',
+              ' \'$ =%s, $\gamma$ = %s'
               %(ombar_m0, ombar_de0, gamma))
         show()
         break
