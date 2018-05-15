@@ -86,7 +86,7 @@ def onepercent(directory):
     
     return results, vc, sd, mean, sigma, npoints
 
-results, vc, sd, mean, sigma, npoints = onepercent(1526278827)
+results, vc, sd, mean, sigma, npoints = onepercent(1526341352)
 
 
 def modelcheck(t, mag, zpicks, dlpc, dl, gamma, ombar_m0, ombar_de0, a, ombar_m, ombar_de):
