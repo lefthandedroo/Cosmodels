@@ -34,54 +34,64 @@ from results import load
 
 def onepercent(directory):
     directory = str(directory)
-    
-    results = []
 
     vc = load(directory, 'vc.p')
-    sd = load(directory, 'sd.p')
-    mean  = load(directory, 'mean.p')
     sigma = load(directory, 'sigma.p')
     npoints = load(directory, 'npoints.p')
     
 #    vc = [0.01, 0, 0.02, 3, 5, 4, 6]
-#    sd = [20, 10, 30, 40, 60, 50, 70]
-#    mean = [0, 1, 2, 3, 4, 5, 6]
 #    sigma = [0, 1, 2, 3, 4, 5, 6] 
 #    npoints = [0, 1, 2, 3, 4, 5, 6]
-
-    results.append(vc)
-    results.append(sd)
-    results.append(mean)
-    results.append(sigma)
-    results.append(npoints)
     
-#    print('vc',len(vc))
-#    print('sd',len(sd))
-#    print('mean',len(mean))
-#    print('sigma',len(sigma))
-#    print('npoints',len(npoints))
+    r = []
+    r.append(vc)
+    r.append(sigma)
+    r.append(npoints)
     
-    results = np.column_stack(results)
-    results = results[results[:,0].argsort()]
+    r = np.column_stack(r)
+#    r = r[r[:,0].argsort()]
     
-    vc, sd, mean, sigma, npoints = np.hsplit(results,5)
+    vc, sigma, npoints = np.hsplit(r,3)
 #    vc = vc.flatten()
+      
+    pi = np.where(vc < 1)   # Indicies of rows with vc < 1%.
+    pinpoints = npoints[pi]
+    pisigma = sigma[pi]
+    print('pinpoints',pinpoints,'type',type(pinpoints))
+    print('pisigma',pisigma,'type',type(pisigma))
     
-#    print('vc')
-#    print(vc)
     
-    si = np.where(vc < 1)
-#    print('si')
-#    print(si)
-#    
-#    print('vc[si]')
-#    print(vc[si])
+    sinpoints = []  # Single results, removing doubles of nsteps.
+    sisigma = []
+    
+    print('range(len(pinpoints))',range(len(pinpoints)))
+    for i in range(len(pinpoints)):
+        print('i =',i)
+        print('pinpoints[i]',pinpoints[i])
+    
+        if pinpoints[i] in sinpoints:
+           index = np.where(sinpoints == pinpoints[i])
+           index = int(index[0])
+           print('index =',index,'type',type(index))
+           if pisigma[i] > sisigma[index]:
+              sisigma[index] = pisigma[i]
+              print('sinpoints',sinpoints)
+              print('sisigma',sisigma)
+        else:
+            sinpoints.append(pinpoints[i])
+            sisigma.append(pisigma[i])
+            print('updated sinpoints',sinpoints)
+            print('updated sisigma',sisigma)
+            
+    print('final sinpoints',sinpoints)
+    print('final sisigma',sisigma)
+
     
     figure()
     xlabel('datazet size')
     ylabel('sigma of noise added to data')
     title('runs where m was found within 1%')
-    scatter(npoints[si], sigma[si])
+    scatter(sinpoints, sisigma)
     show()
     
     figure()
@@ -91,9 +101,9 @@ def onepercent(directory):
     scatter(npoints, sigma)
     show()
     
-    return results, vc, sd, mean, sigma, npoints
+    return r, vc, sigma, npoints
 
-results, vc, sd, mean, sigma, npoints = onepercent(1526346576)
+r, vc, sigma, npoints = onepercent(1526346576)
 
 
 def modelcheck(t, mag, zpicks, dlpc, dl, 
@@ -108,8 +118,8 @@ def modelcheck(t, mag, zpicks, dlpc, dl,
         ylabel('a')
         grid(True)
         plot(zpicks, a, 'r', lw=1)
-        title('IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0} \'$ =%s, $\gamma$ = %s'
-              %(ombar_m0, ombar_de0, gamma))
+        title('IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0} \'$ =%s,',
+              ' $\gamma$ = %s'%(ombar_m0, ombar_de0, gamma))
         show()
         break
 

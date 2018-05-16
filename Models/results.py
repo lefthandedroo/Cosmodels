@@ -29,4 +29,3 @@ def load(save_path, filename):
     
     return content
 
-#noise = load('1526030522', 'error.p')
