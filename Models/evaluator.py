@@ -19,7 +19,7 @@ de_true = 1 - m_true   # (de = e_de(t)/e_crit(t0) at t=t0).
 gamma_true = 0.0       # Interaction term, rate at which DE decays into matter.
 
 # Number of datapoints to be simulated and number of emcee steps.
-npoints, nsteps = 10000, 1000
+npoints, nsteps = 10000, 10000
 
 # Statistical parameteres:
 mu = 0          # mean
@@ -30,7 +30,8 @@ def repeatrun():
     directory = 'run'+str(int(time.time()))
     if not os.path.exists(directory):
         os.makedirs(directory)
-        
+    save_path = './'+directory    
+    
     i = 0
     while i < 1:
         print('_____________________ run number',i)
@@ -39,8 +40,6 @@ def repeatrun():
         i += 1
         sd, mean = propert
         
-    save_path = './'+directory
-
     figure()
     title('test of directory options')
     scatter(sd, mean, c='m')        
@@ -57,7 +56,7 @@ def repeatrun():
 
     return sampler
 
-sampler = repeatrun()
+#sampler = repeatrun()
 
 
 def errorvsdatasize():
@@ -65,13 +64,13 @@ def errorvsdatasize():
     timet0 = time.time()
     
     # Folder for saving output.
-    directory = str(int(time.time()))
+    directory = 'results/'+str(int(time.time()))
     if not os.path.exists(directory):
         os.makedirs(directory)
     # Relative path of output folder.
     save_path = './'+directory
     
-    sigma = 0.08
+    sigma = 0.01
     run = 0
     
     sigma_l = []
@@ -83,7 +82,7 @@ def errorvsdatasize():
     
     while sigma < 0.2:
 
-        npoints = 1000 
+        npoints = 3000 
         while npoints < 20000:  #40000
             print('_____________________ run number',run)
             propert, sampler = paramfinder.paramfinder(
@@ -97,7 +96,7 @@ def errorvsdatasize():
             npoints_l.append(npoints)
             sampler_l.append(sampler)
             
-            npoints *= 3
+            npoints *= 5
             run += 1
         
         sigma += 0.04
@@ -153,4 +152,4 @@ def errorvsdatasize():
     
     return vc_l, sd_l, mean_l, sigma_l, npoints_l, sampler_l,
 
-#vc, sd, mean, sigma, npoints, sampler = errorvsdatasize()
+vc, sd, mean, sigma, npoints, sampler = errorvsdatasize()

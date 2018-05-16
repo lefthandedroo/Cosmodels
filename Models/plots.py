@@ -29,76 +29,61 @@ Cheat sheet:
 
 from pylab import figure, plot, xlabel, ylabel, title, show, grid, scatter
 import numpy as np
+import os
 
 from results import load
 
-def onepercent(directory):
-    directory = str(directory)
+def onepercent(filename):
+    
+    direclist = []
+    for x in os.walk('./results/'):
+        direclist.append(x[0])
+    direclist.pop(0)
+    
+    vc = []
+    sigma =[]
+    npoints = []
+    for directory in direclist:
+            vc += load(directory, 'vc.p')
+            sigma += load(directory, 'sigma.p')
+            npoints += load(directory, 'npoints.p')
 
-    vc = load(directory, 'vc.p')
-    sigma = load(directory, 'sigma.p')
-    npoints = load(directory, 'npoints.p')
-    
-#    vc = [0.01, 0, 0.02, 3, 5, 4, 6]
-#    sigma = [0, 1, 2, 3, 4, 5, 6] 
-#    npoints = [0, 1, 2, 3, 4, 5, 6]
-    
-    r = []
-    r.append(vc)
-    r.append(sigma)
-    r.append(npoints)
-    
-    r = np.column_stack(r)
-#    r = r[r[:,0].argsort()]
-    
-    vc, sigma, npoints = np.hsplit(r,3)
-#    vc = vc.flatten()
+    vc = np.asarray(vc)
+    sigma = np.asarray(sigma)
+    npoints = np.asarray(npoints)
       
     pi = np.where(vc < 1)   # Indicies of rows with vc < 1%.
     pinpoints = npoints[pi]
     pisigma = sigma[pi]
-    print('pinpoints',pinpoints,'type',type(pinpoints))
-    print('pisigma',pisigma,'type',type(pisigma))
-    
     
     sinpoints = []  # Single results, removing doubles of nsteps.
     sisigma = []
     
-    print('range(len(pinpoints))',range(len(pinpoints)))
     for i in range(len(pinpoints)):
-        print('i =',i)
-        print('pinpoints[i]',pinpoints[i])
     
         if pinpoints[i] in sinpoints:
            index = np.where(sinpoints == pinpoints[i])
            index = int(index[0])
-           print('index =',index,'type',type(index))
            if pisigma[i] > sisigma[index]:
               sisigma[index] = pisigma[i]
-              print('sinpoints',sinpoints)
-              print('sisigma',sisigma)
+
         else:
             sinpoints.append(pinpoints[i])
             sisigma.append(pisigma[i])
-            print('updated sinpoints',sinpoints)
-            print('updated sisigma',sisigma)
-            
-    print('final sinpoints',sinpoints)
-    print('final sisigma',sisigma)
 
     
     figure()
     xlabel('datazet size')
     ylabel('sigma of noise added to data')
-    title('runs where m was found within 1%')
-    scatter(sinpoints, sisigma)
+    title('noisiest runs where m was found within 1%')
+    scatter(sinpoints, sisigma, c='m')
     show()
     
     figure()
     xlabel('datazet size')
     ylabel('sigma of noise added to data')
     title('all runs')
-    scatter(npoints, sigma)
+    scatter(npoints, sigma, c='c')
     show()
     
     return r, vc, sigma, npoints
