@@ -28,16 +28,17 @@ Cheat sheet:
 """
 
 from pylab import figure, plot, xlabel, ylabel, title, show, grid, scatter
+import matplotlib.pyplot as plt
 import numpy as np
 import os
 
 from results import load
 
-def onepercent(filename):
+def onepercent():
     
     direclist = []
-    for x in os.walk('./results/'):
-        direclist.append(x[0])
+    for d in os.walk('./results/'):
+        direclist.append(d[0])
     direclist.pop(0)
     
     vc = []
@@ -72,23 +73,35 @@ def onepercent(filename):
             sisigma.append(pisigma[i])
 
     
+#    ind = np.ones((10,), bool)
+#    ind[n] = False
+#    A1 = A[ind,:]
     figure()
     xlabel('datazet size')
     ylabel('sigma of noise added to data')
-    title('noisiest runs where m was found within 1%')
-    scatter(sinpoints, sisigma, c='m')
-    show()
+    title('noisiest runs where m was found within 1%')       
+    plt.scatter(sinpoints, sisigma, c='m', label='1% sd on m')
+    plt.scatter(npoints, sigma, c='c', marker='x', label='all runs')
+    plt.legend()
+    plt.show()
     
-    figure()
-    xlabel('datazet size')
-    ylabel('sigma of noise added to data')
-    title('all runs')
-    scatter(npoints, sigma, c='c')
-    show()
+#    figure()
+#    xlabel('datazet size')
+#    ylabel('sigma of noise added to data')
+#    title('noisiest runs where m was found within 1%')
+#    scatter(sinpoints, sisigma, c='m')
+#    show()
+#    
+#    figure()
+#    xlabel('datazet size')
+#    ylabel('sigma of noise added to data')
+#    title('all runs')
+#    scatter(npoints, sigma, c='c')
+#    show()
     
-    return r, vc, sigma, npoints
+    return vc, sigma, npoints
 
-r, vc, sigma, npoints = onepercent(1526346576)
+vc, sigma, npoints = onepercent()
 
 
 def modelcheck(t, mag, zpicks, dlpc, dl, 

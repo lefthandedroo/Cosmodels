@@ -64,13 +64,13 @@ def errorvsdatasize():
     timet0 = time.time()
     
     # Folder for saving output.
-    directory = 'results/'+str(int(time.time()))
-    if not os.path.exists(directory):
-        os.makedirs(directory)
+    folder_name = str(int(time.time()))
     # Relative path of output folder.
-    save_path = './'+directory
+    save_path = './results/'+folder_name
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
     
-    sigma = 0.01
+    sigma = 0.15
     run = 0
     
     sigma_l = []
@@ -82,8 +82,8 @@ def errorvsdatasize():
     
     while sigma < 0.2:
 
-        npoints = 3000 
-        while npoints < 20000:  #40000
+        npoints = 4500 
+        while npoints < 10000:
             print('_____________________ run number',run)
             propert, sampler = paramfinder.paramfinder(
                     npoints, nsteps, sigma, mu, m_true, save_path)
@@ -96,10 +96,10 @@ def errorvsdatasize():
             npoints_l.append(npoints)
             sampler_l.append(sampler)
             
-            npoints *= 5
+            npoints += 3000
             run += 1
         
-        sigma += 0.04
+        sigma += 0.03
         
         # Saving plots to run directory.
     figure()
@@ -137,14 +137,14 @@ def errorvsdatasize():
 
         
     # Saving results to directory.
-    save(directory, 'vc', vc_l)
-    save(directory, 'sd', sd_l)
-    save(directory, 'mean', mean_l)
-    save(directory, 'sigma', sigma_l)
-    save(directory, 'npoints', npoints_l)
-    save(directory, 'sampler', sampler_l)
+    save(save_path, 'vc', vc_l)
+    save(save_path, 'sd', sd_l)
+    save(save_path, 'mean', mean_l)
+    save(save_path, 'sigma', sigma_l)
+    save(save_path, 'npoints', npoints_l)
+    save(save_path, 'sampler', sampler_l)
     
-    print('output directory:',directory)
+    print('output directory:',folder_name)
     
     # Time taken by evaluator. 
     timet1=time.time()

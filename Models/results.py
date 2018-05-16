@@ -24,8 +24,13 @@ def load(save_path, filename):
     
     load_path = os.path.join(save_path, filename)
     
-    with open(load_path,'rb') as rfp: 
-        content = pickle.load(rfp)
+    content = []
     
+    try:
+        with open(load_path,'rb') as rfp:
+            content = pickle.load(rfp)        
+    except:
+        print("didnt't open",load_path)
+        
     return content
 
