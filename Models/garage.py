@@ -18,6 +18,23 @@ Created on Thu Sep 21 15:50:29 2017
 #    print('zpicks:')
 #    print(zpicks)
 
+#weirdfile = [1,1,1,1,1]
+#import os
+#
+#folder_name = 'aweirdfoldername'
+#
+#save_path = './results/'+folder_name
+#if not os.path.exists(save_path):
+#    os.makedirs(save_path)
+#    
+#from results import save
+#save(save_path, 'weirdfile', weirdfile)
+
+
+
+
+
+
 def priortest(m, de): 
     flatness = m + de
     if flatness == 1:
@@ -26,7 +43,7 @@ def priortest(m, de):
         print('not flat')
     return
 
-priortest(0.3,-0.7)
+#priortest(0.3,-0.7)
 
 from pylab import figure, plot, xlabel, ylabel, title, show
 import matplotlib.pyplot as pl
