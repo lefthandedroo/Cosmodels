@@ -12,10 +12,9 @@ import zfirstderivs
 
 # Standard cosmological parameters.
 H0 = 1
-tH = 1.0/H0  # Hubble time
 c_over_H0 = 4167 * 10**6    # c/H0 in parsecs
 
-def zodesolve(m, zpicks):
+def zodesolve(params, zpicks):
     """
     Takes in:
         gamma = interaction constant;
@@ -30,16 +29,18 @@ def zodesolve(m, zpicks):
 
     # Inserting 0 at the front of redshifts to allow initial conditions.
     zpicks = [0.0] + zpicks
-        
-    # Initial conditions at z = 0.
-    t0 = 0
-    a0 = 1.0        # scale factor
-    z0 = 0
-    dl0 = 0
-    rho_c0 = H0**2
-    ombar_m0 = m                            # e_m(z)/ec(z=0)
-    ombar_de0 = rho_c0/rho_c0 - ombar_m0    # e_de(z)/ec(z=0)
-    gamma = 0
+    
+    print('zodesolve, type of params',type(params))
+    
+    # Initial conditions at z = 0 (now).
+    t0 = 0              # time
+    a0 = 1.0            # scale factor
+    z0 = 0              # redshift
+    dl0 = 0             # luminosity distance
+    rho_c0 = H0**2      # critical density
+    ombar_m0 = params.get('m_true', 0)                        # e_m(z)/ec(z=0)
+    ombar_de0 = params.get('de_true', rho_c0/rho_c0 -ombar_m0)# e_de(z)/ec(z=0)
+    gamma = params.get('gamma_true',0)
     
     # ODE solver parameters:
     abserr = 1.0e-8

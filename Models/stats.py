@@ -16,10 +16,7 @@ import os.path
 import tools
 import ln
 
-# emcee parameters:
-ndim, nwalkers = 1, 2
-
-def stats(m_true, zpicks, mag, sigma, nsteps, save_path):
+def stats(params, zpicks, mag, sigma, nsteps, save_path):
     """
     Takes in:
             m_true = e_m(t)/ec(t0) at t=t0;
@@ -29,11 +26,23 @@ def stats(m_true, zpicks, mag, sigma, nsteps, save_path):
     Returns:
     """
 #    print('-stats has been called')
-        
+    m_true = params.get('m_true', 0)                        # e_m(z)/ec(z=0)
+#    H0 = 1
+#    rho_c0 = H0**2      # critical density
+#    de_true = params.get('de_true', rho_c0/rho_c0 - m)      # e_de(z)/ec(z=0)
+#    gamma_true = params.get('gamma_true',0)
+    
+    # emcee parameters:
+    ndim = len(params)
+    nwalkers = int(ndim * 2)
+
     # Initializing walkers in a Gaussian ball around the max likelihood.
     # Number in front of the np.random.rand(ndim) is 'initial footprint'.
-    m_start = m_true / 2    
-    startpos = np.array([m_start])
+    poslist = list(params.values())
+    pos = []
+    for i in poslist:
+        pos.append(i / 2)
+    startpos = np.array([pos])
     pos = [startpos + 0.01*np.random.randn(ndim) for i in range(nwalkers)]
 
     # Are walkers starting outside of prior?
@@ -63,10 +72,21 @@ def stats(m_true, zpicks, mag, sigma, nsteps, save_path):
     timee1=time.time()      # stopping sampler timer
     
     # Best parameters found by emcee.
-    bi = np.argmax(sampler.flatlnprobability) # index with highest post prob                                       
-    mbest = sampler.flatchain[bi,0]
+    bi = np.argmax(sampler.flatlnprobability) # index with highest post prob  
+    parambest = {}
     
-    theta = mbest
+    for i in range(len(params)):
+        if i == 1:                       
+            mbest = sampler.flatchain[bi,i]
+            parambest['mbest'] = mbest
+        elif i == 2:
+            debest = sampler.flatchain[bi,i]
+            parambest['debest'] = debest
+        elif i == 3:
+            gammabest = sampler.flatchain[bi,i]
+            parambest['gammabest'] = gammabest
+            
+    theta = params.values()
     lp = ln.lnprior(theta)
     if not np.isfinite(lp):
         print('')
@@ -74,11 +94,11 @@ def stats(m_true, zpicks, mag, sigma, nsteps, save_path):
         print('')
     
     # Saving plots to run directory.
-    
+
     # Plot of mag simulated using "true" parameters, overlayed with
     # mag simulated using emcee best parameters.
     import datasim
-    magbest = datasim.mag(mbest, zpicks)
+    magbest = datasim.mag(parambest, zpicks)
     figure()
     title('Evolution of magnitude with redshift \n nsteps: '
           +str(nsteps)+', noise: '+str(sigma)+', npoints: '+str(len(zpicks)))

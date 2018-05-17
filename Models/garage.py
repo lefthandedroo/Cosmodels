@@ -6,44 +6,22 @@ Created on Thu Sep 21 15:50:29 2017
 @author: BallBlueMeercat
 """
 
-    # Create z samples for the ODE solver.
-#    import random
-#    numpoints = 100
-#    zpicks = random.sample(range(0, numpoints*8), numpoints-1)
-#    zpicks.sort()
-#    denom = numpoints*10
-#    zpicks = [time / denom for time in zpicks]
-#    zpicks = [0] + zpicks
-#    print('len zpicks after creation', len(zpicks))
-#    print('zpicks:')
-#    print(zpicks)
+# Model parameteres:  
+m_true = 0.3           # (= e_m(t)/e_crit(t0) at t=t0).
+de_true = 1 - m_true   # (de = e_de(t)/e_crit(t0) at t=t0).
+gamma_true = 0.0       # Interaction term, rate at which DE decays into matter.
 
-#weirdfile = [1,1,1,1,1]
-#import os
-#
-#folder_name = 'aweirdfoldername'
-#
-#save_path = './results/'+folder_name
-#if not os.path.exists(save_path):
-#    os.makedirs(save_path)
-#    
-#from results import save
-#save(save_path, 'weirdfile', weirdfile)
+params = {'m_true':m_true, 'gamma_true':gamma_true}
+
+ombar_m0 = params.get('m_true', 'not found')
+rho_c0 = 1
+de = rho_c0/rho_c0 - ombar_m0
+print('ombar_de0 should be',de)
+ombar_de0 = params.get('de_true', rho_c0/rho_c0 - ombar_m0)
+print('ombar_m0',ombar_m0)
+print('de',ombar_de0)
 
 
-
-
-
-
-def priortest(m, de): 
-    flatness = m + de
-    if flatness == 1:
-        print('flat')
-    else:
-        print('not flat')
-    return
-
-#priortest(0.3,-0.7)
 
 from pylab import figure, plot, xlabel, ylabel, title, show
 import matplotlib.pyplot as pl

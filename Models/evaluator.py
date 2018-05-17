@@ -18,6 +18,8 @@ m_true = 0.3           # (= e_m(t)/e_crit(t0) at t=t0).
 de_true = 1 - m_true   # (de = e_de(t)/e_crit(t0) at t=t0).
 gamma_true = 0.0       # Interaction term, rate at which DE decays into matter.
 
+params = {'m_true':m_true}#, 'de_true':de_true, 'gamma_true':gamma_true}
+
 # Number of datapoints to be simulated and number of emcee steps.
 npoints, nsteps = 10000, 10000
 
@@ -26,17 +28,20 @@ mu = 0          # mean
 sigma = 0.085     # standard deviation
 
 def repeatrun():
+    nsteps = 1000
     # Folder for saving output.
     directory = 'run'+str(int(time.time()))
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-    save_path = './'+directory    
+    # Relative path of output folder.
+    save_path = './'+directory 
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+   
     
     i = 0
     while i < 1:
         print('_____________________ run number',i)
         propert, sampler = paramfinder.paramfinder(
-                npoints, nsteps, sigma, mu, m_true, directory)
+                npoints, nsteps, sigma, mu, params, save_path)
         i += 1
         sd, mean = propert
         
@@ -50,13 +55,13 @@ def repeatrun():
     show()
     
     # Saving sampler to directory.
-    save(directory, 'sampler', sampler)
+    save(save_path, 'sampler', sampler)
     
     print('run directory:',directory)
 
     return sampler
 
-#sampler = repeatrun()
+sampler = repeatrun()
 
 
 def errorvsdatasize():
@@ -64,9 +69,9 @@ def errorvsdatasize():
     timet0 = time.time()
     
     # Folder for saving output.
-    folder_name = str(int(time.time()))
+    directory = str(int(time.time()))
     # Relative path of output folder.
-    save_path = './results/'+folder_name
+    save_path = './results/'+directory
     if not os.path.exists(save_path):
         os.makedirs(save_path)
     
@@ -144,7 +149,7 @@ def errorvsdatasize():
     save(save_path, 'npoints', npoints_l)
     save(save_path, 'sampler', sampler_l)
     
-    print('output directory:',folder_name)
+    print('output directory:',directory)
     
     # Time taken by evaluator. 
     timet1=time.time()
@@ -152,4 +157,4 @@ def errorvsdatasize():
     
     return vc_l, sd_l, mean_l, sigma_l, npoints_l, sampler_l,
 
-vc, sd, mean, sigma, npoints, sampler = errorvsdatasize()
+#vc, sd, mean, sigma, npoints, sampler = errorvsdatasize()
