@@ -30,8 +30,6 @@ def zodesolve(params, zpicks):
     # Inserting 0 at the front of redshifts to allow initial conditions.
     zpicks = [0.0] + zpicks
     
-    print('zodesolve, type of params',type(params))
-    
     # Initial conditions at z = 0 (now).
     t0 = 0              # time
     a0 = 1.0            # scale factor

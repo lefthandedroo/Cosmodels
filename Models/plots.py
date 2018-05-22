@@ -116,8 +116,8 @@ def modelcheck(t, mag, zpicks, dlpc, dl,
         ylabel('a')
         grid(True)
         plot(zpicks, a, 'r', lw=1)
-        title('IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0} \'$ =%s,',
-              ' $\gamma$ = %s'%(ombar_m0, ombar_de0, gamma))
+        title('IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0}',
+              ' \'$ =%s, $\gamma$ = %s'%(ombar_m0, ombar_de0, gamma))
         show()
         break
 

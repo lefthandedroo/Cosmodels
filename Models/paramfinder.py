@@ -18,7 +18,6 @@ def paramfinder(npoints, nsteps, sigma, mu, params, save_path):
     import zpicks # DO MOVE ABOVE FUNCTION
     zpicks = zpicks.zpicks(0.005, 2, npoints)
     
-    
     # Generating apparent magnitues mag at redshifts z=0 to z < zmax.
     model = datasim.mag(params, zpicks)
     model = np.asarray(model)

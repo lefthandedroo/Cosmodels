@@ -18,17 +18,16 @@ m_true = 0.3           # (= e_m(t)/e_crit(t0) at t=t0).
 de_true = 1 - m_true   # (de = e_de(t)/e_crit(t0) at t=t0).
 gamma_true = 0.0       # Interaction term, rate at which DE decays into matter.
 
-params = {'m_true':m_true}#, 'de_true':de_true, 'gamma_true':gamma_true}
+params = {'m_true':m_true, 'gamma_true':gamma_true}#, 'gamma_true':gamma_true, 'de_true':de_true,}
 
 # Number of datapoints to be simulated and number of emcee steps.
 npoints, nsteps = 10000, 10000
 
-# Statistical parameteres:
-mu = 0          # mean
-sigma = 0.085     # standard deviation
+# Statistical parameteres of noise:
+mu = 0            # mean
+sigma = 0.01      # standard deviation
 
 def repeatrun():
-    nsteps = 1000
     # Folder for saving output.
     directory = 'run'+str(int(time.time()))
     # Relative path of output folder.
@@ -45,19 +44,19 @@ def repeatrun():
         i += 1
         sd, mean = propert
         
-    figure()
-    title('test of directory options')
-    scatter(sd, mean, c='m')        
-    stamp = str(int(time.time()))
-    filename = str(stamp)+'_sd_of_m_.png'
-    filename = os.path.join(save_path, filename)
-    savefig(filename)
-    show()
+#    figure()
+#    title('test of directory options')
+#    scatter(sd, mean, c='m')        
+#    stamp = str(int(time.time()))
+#    filename = str(stamp)+'_sd_of_m_.png'
+#    filename = os.path.join(save_path, filename)
+#    savefig(filename)
+#    show()
     
     # Saving sampler to directory.
     save(save_path, 'sampler', sampler)
     
-    print('run directory:',directory)
+    print('directory:',directory)
 
     return sampler
 
