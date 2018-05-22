@@ -15,6 +15,7 @@ import os.path
 
 import tools
 import ln
+from plots import stat
 
 def stats(params, zpicks, mag, sigma, nsteps, save_path):
     """
@@ -44,9 +45,6 @@ def stats(params, zpicks, mag, sigma, nsteps, save_path):
     i = 0
     while i < nwalkers:
         theta = pos[i]
-#        print('stats -- theta:',theta)
-#        print('stats -- type(theta):',type(theta))
-#        print('stats -- len(theta)', len(theta))
         lp = ln.lnprior(theta)
         if not np.isfinite(lp):
             print('~~~~~~~pos[%s] (outside of prior) = %s ~~~~~~~'%(i, theta))
@@ -70,49 +68,67 @@ def stats(params, zpicks, mag, sigma, nsteps, save_path):
     print('_____ sampler end')
     timee1=time.time()      # stopping sampler timer
     
+    # Walker steps.
+    slnprob = sampler.flatlnprobability
+    
     # Index of best parameters found by emcee.
     bi = np.argmax(sampler.flatlnprobability) # index with highest post prob 
     
     # Extracting results:
+    thetabest = np.zeros(ndim)
     parambest = {}
-    for i in range(len(params)):
+    true = []
+    for i in range(ndim):
         if i == 0:                       
             mbest = sampler.flatchain[bi,i]
-            thetabest = mbest
-            parambest['mbest'] = mbest
+            thetabest[i] = mbest
+            parambest['m'] = mbest
             # Input m = e_m(z)/ec(z=0).
-            m_true = params.get('m_true', 0)
+            m_true = params.get('m', 0)
+            true.append(m_true)
             # Output m.
-            m = sampler.flatchain[:,0]
+            m = sampler.flatchain[:,i]
             # Standard deviation and mean of the m distribution
-            mall = sampler.flatchain[:,0]
-            m_sd = np.std(mall)
-            m_mean = np.mean(mall)
+            m_sd = np.std(m)
+            m_mean = np.mean(m)
+            
+            stat('coral', m, m_true, 'Matter', slnprob, zpicks, 
+                 mag, sigma, nsteps, nwalkers, save_path)
+            
         elif i == 1:
             gammabest = sampler.flatchain[bi,i]
-            thetabest = mbest, gammabest
-            parambest['gammabest'] = gammabest
+            thetabest[i] = gammabest
+            parambest['gamma'] = gammabest
             # Input interaction term.
-            gamma_true = params.get('gamma_true',0)
+            g_true = params.get('gamma',0)
+            true.append(g_true)
             # Output gamma.
-            gamma = sampler.flatchain[:,1]
+            gamma = sampler.flatchain[:,i]
+            
+            stat('aquamarine', gamma, g_true, 'Gamma', slnprob, zpicks, 
+                 mag, sigma, nsteps, nwalkers, save_path)
+                    
         elif i == 2:
             debest = sampler.flatchain[bi,i]
-            thetabest = mbest, gammabest, debest
-            parambest['debest'] = debest
+            thetabest[i] = debest
+            parambest['de'] = debest
             H0 = 1
             rho_c0 = H0**2 # critical density
             # Input de = e_de(z)/ec(z=0).
-            de_true = params.get('de_true', rho_c0/rho_c0 - m_true)
+            de_true = params.get('de', rho_c0/rho_c0 - m_true)
+            true.append(de_true)
+            # Output de.
+            de = sampler.flatchain[:,i]
+            
+            stat('orchid', de, de_true, 'DE', slnprob, zpicks, 
+                 mag, sigma, nsteps, nwalkers, save_path)
             
     # Checking if best found parameters are within prior.
     lp = ln.lnprior(thetabest)
     if not np.isfinite(lp):
         print('')
-        print('best emcee parameters outside of prior (magbest calcualation)')
+        print('best emcee parameters outside of prior (magbest calculation)')
         print('')
-    
-    # Saving plots to run directory.
 
     # Plot of mag simulated using "true" parameters, overlayed with
     # mag simulated using emcee best parameters.
@@ -127,91 +143,23 @@ def stats(params, zpicks, mag, sigma, nsteps, save_path):
     xlabel('z')
     legend([data, best_fit], ['true parameter mag', 'emcee parameter mag'])
     stamp = str(int(time.time()))
-    filename = str(stamp)+'__magz__nsteps_'+str(nsteps)+'_nwalkers_' \
-    +str(nwalkers)+'_noise_'+str(sigma)+'_numpoints_'+str(len(zpicks))+'.png'
-    filename = os.path.join(save_path, filename)
-    savefig(filename)
-    show()
-
-    # Marginalised distribution histograms.
-    figure()
-    xlabel(r'$\Omega_m(z=0)$')
-    title('Marginalised distribution of m \n nsteps: '+str(nsteps)+', noise: '
-          +str(sigma)+', npoints: '+str(len(zpicks)))
-    hist(sampler.flatchain[:,0], 50)
-    stamp = str(int(time.time()))
-    filename = str(stamp)+'__mhist__nsteps_'+str(nsteps)+'_nwalkers_' \
-    +str(nwalkers)+'_noise_'+str(sigma)+'_numpoints_'+str(len(zpicks))+'.png'
-    filename = os.path.join(save_path, filename)
-    savefig(filename)
-    show()
-    
-    # Walker steps.
-    slnprob = sampler.flatlnprobability
-    
-    figure()
-    title('slnprob for m \n nsteps: '+str(nsteps)+', noise: '
-          +str(sigma)+', npoints: '+str(len(zpicks)))
-    plot(m, slnprob, '.', color='red')
-    stamp = str(int(time.time()))
-    filename = str(stamp)+'_m__steps__nsteps_'+str(nsteps)+'_nwalkers_' \
-    +str(nwalkers)+'_noise_'+str(sigma)+'_numpoints_'+str(len(zpicks))+'.png'
-    filename = os.path.join(save_path, filename)
-    savefig(filename)
-    show()
-    
-    figure()
-    title('slnprob for gamma \n nsteps: '+str(nsteps)+', noise: '
-          +str(sigma)+', npoints: '+str(len(zpicks)))
-    plot(gamma, slnprob, '.', color='green')
-    stamp = str(int(time.time()))
-    filename = str(stamp)+'_g__steps__nsteps_'+str(nsteps)+'_nwalkers_' \
-    +str(nwalkers)+'_noise_'+str(sigma)+'_numpoints_'+str(len(zpicks))+'.png'
-    filename = os.path.join(save_path, filename)
-    savefig(filename)
-    show()
-    
-    # Chains.    
-    figure()
-    xlabel('step number')
-    ylabel(r'$\Omega_m(z=0)$')
-    title('flatChains with m_true in red \n nsteps: '+str(nsteps)+', noise: '
-          +str(sigma)+', npoints: '+str(len(zpicks)))
-    plot(sampler.flatchain[:,0].T, '-', color='k', alpha=0.3)
-    axhline(m_true, color='red')
-    stamp = str(int(time.time()))
-    filename = str(stamp)+'_m__chain__nsteps_'+str(nsteps)+'_nwalkers_' \
-    +str(nwalkers)+'_noise_'+str(sigma)+'_numpoints_'+str(len(zpicks))+'.png'
-    filename = os.path.join(save_path, filename)
-    savefig(filename)
-    show()
-    
-    figure()
-    xlabel('step number')
-    ylabel(r'$\Gamma$')
-    title('flatChains with gamma_true in green \n nsteps: '+str(nsteps)+', noise: '
-          +str(sigma)+', npoints: '+str(len(zpicks)))
-    plot(sampler.flatchain[:,1].T, '-', color='k', alpha=0.3)
-    axhline(gamma_true, color='green')
-    stamp = str(int(time.time()))
-    filename = str(stamp)+'_g__chain__nsteps_'+str(nsteps)+'_nwalkers_' \
+    filename = str(stamp)+'____magz__nsteps_'+str(nsteps)+'_nwalkers_' \
     +str(nwalkers)+'_noise_'+str(sigma)+'_numpoints_'+str(len(zpicks))+'.png'
     filename = os.path.join(save_path, filename)
     savefig(filename)
     show()
 
 #    # Corner plot (walkers' walk + histogram).
-#    print('_____ stats corner plot')
 #    import corner
-#    samples = sampler.chain[:, burnin:, :].reshape((-1, ndim))
+##    samples = sampler.chain[:, burnin:, :].reshape((-1, ndim))
+#    samples = sampler.chain[:, :, :].reshape((-1, ndim))
 #    corner.corner(samples, labels=["$m$"], 
-#                        truths=[m_true])
+#                        truths=true)
 #    show()
 
     # Results getting printed:
     print('best index =',str(bi))
-    print('mbest =',str(mbest))
-    print('gammabest =',str(gammabest))
+    print('best parameters =',str(parambest.values()))
     print('m.a.f.:', np.mean(sampler.acceptance_fraction))
     print('nsteps:', str(nsteps))
     print('sigma:', str(sigma))

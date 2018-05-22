@@ -5,43 +5,66 @@ Created on Thu Sep 21 15:50:29 2017
 
 @author: BallBlueMeercat
 """
-
 import numpy as np
+def lnprior(theta):
+#    print(' lnprior has been called')   
+#    print('lnprior speaking: theta = ',theta)
+#    print('lnprior -- theta', theta)
+    
+    # Checking if theta is an array or a scalar.
+    if len(theta) == 1:
+        m = theta
+        if 0 < m < 1 or m == 1:
+            return 0.0
+    elif len(theta) == 2:
+        m, gamma = theta
+        if (0 < m < 1 or m == 1) and abs(gamma) < 0.1:
+            return 0.0
+    elif len(theta) == 3:
+        m, gamma, de = theta
+        if (0 < m < 1 or m == 1) and abs(gamma) < 0.1 and (0 < de < 1):
+            return 0.0
+        
+    return -np.inf
 
-# Choose the "true" parameters.
-m_true = -0.9594
-b_true = 4.294
-f_true = 0.534
+lnprior(0.3)
 
-# Generate some synthetic data from the model.
-N = 50
-x = np.sort(10*np.random.rand(N))
-yerr = 0.1+0.5*np.random.rand(N)
-y = m_true*x+b_true
-y += np.abs(f_true*y) * np.random.randn(N)
-y += yerr * np.random.randn(N)
-
-A = np.vstack((np.ones_like(x), x)).T
-C = np.diag(yerr * yerr)
-cov = np.linalg.inv(np.dot(A.T, np.linalg.solve(C, A)))
-b_ls, m_ls = np.dot(cov, np.dot(A.T, np.linalg.solve(C, y)))
-
-
-def lnlike(theta, x, y, yerr):
-    m, b, lnf = theta
-    model = m * x + b
-    inv_sigma2 = 1.0/(yerr**2 + model**2*np.exp(2*lnf))
-    return -0.5*(np.sum((y-model)**2*inv_sigma2 - np.log(inv_sigma2)))
-
-import scipy.optimize as op
-nll = lambda *args: -lnlike(*args)
-result = op.minimize(nll, [m_true, b_true, np.log(f_true)], args=(x, y, yerr))
-m_ml, b_ml, lnf_ml = result["x"]
-
-ndim, nwalkers = 3, 6
-pos = [result["x"] + 1e-4*np.random.randn(ndim) for i in range(nwalkers)]
-
-print('pos',pos)
+#import numpy as np
+#
+## Choose the "true" parameters.
+#m_true = -0.9594
+#b_true = 4.294
+#f_true = 0.534
+#
+## Generate some synthetic data from the model.
+#N = 50
+#x = np.sort(10*np.random.rand(N))
+#yerr = 0.1+0.5*np.random.rand(N)
+#y = m_true*x+b_true
+#y += np.abs(f_true*y) * np.random.randn(N)
+#y += yerr * np.random.randn(N)
+#
+#A = np.vstack((np.ones_like(x), x)).T
+#C = np.diag(yerr * yerr)
+#cov = np.linalg.inv(np.dot(A.T, np.linalg.solve(C, A)))
+#b_ls, m_ls = np.dot(cov, np.dot(A.T, np.linalg.solve(C, y)))
+#
+#
+#def lnlike(theta, x, y, yerr):
+#    m, b, lnf = theta
+#    model = m * x + b
+#    inv_sigma2 = 1.0/(yerr**2 + model**2*np.exp(2*lnf))
+#    return -0.5*(np.sum((y-model)**2*inv_sigma2 - np.log(inv_sigma2)))
+#
+#import scipy.optimize as op
+#nll = lambda *args: -lnlike(*args)
+#result = op.minimize(nll, [m_true, b_true, np.log(f_true)], args=(x, y, yerr))
+#m_ml, b_ml, lnf_ml = result["x"]
+#
+#ndim, nwalkers = 3, 6
+#pos = [result["x"] + 1e-4*np.random.randn(ndim) for i in range(nwalkers)]
+#
+#print('pos',pos)
 
 
 

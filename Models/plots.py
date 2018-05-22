@@ -28,11 +28,69 @@ Cheat sheet:
 """
 
 from pylab import figure, plot, xlabel, ylabel, title, show, grid, scatter
+from pylab import hist, savefig, axhline
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import time
 
 from results import load
+
+
+def stat(hue, var, var_true, var_name, slnprob, zpicks, 
+          mag, sigma, nsteps, nwalkers, save_path):
+    name_l = var_name.lower()
+    initial = name_l[:1]
+    name_true = initial + '_true'
+    hue_name = hue
+    hue = 'xkcd:'+hue
+    
+    # Marginalised distribution histogram.
+    figure()
+#    xlabel(r'$\{}$'.format(var_name))
+    xlabel(var_name)
+    title('Marginalised distribution for '+var_name+' \n nsteps: '+str(nsteps)+
+          ', noise: '+str(sigma)+', npoints: '+str(len(zpicks)))
+    hist(var, 50)
+    stamp = str(int(time.time()))
+    filename = str(stamp)+'_'+initial+'_mhist__nsteps_'+str(nsteps) \
+    +'_nwalkers_'+str(nwalkers)+'_noise_'+str(sigma) \
+    +'_numpoints_'+str(len(zpicks))+'.png'
+    filename = os.path.join(save_path, filename)
+    savefig(filename)
+    show()
+    
+    # Walker steps.
+    figure()
+    title('slnprob for '+var_name+' \n nsteps: '+str(nsteps)+', noise: '
+          +str(sigma)+', npoints: '+str(len(zpicks)))
+    plot(var, slnprob, '.', color=hue)
+    stamp = str(int(time.time()))
+    filename = str(stamp)+'_'+initial+'_steps__nsteps_'+str(nsteps) \
+    +'_nwalkers_'+str(nwalkers)+'_noise_'+str(sigma) \
+    +'_numpoints_'+str(len(zpicks))+'.png'
+    filename = os.path.join(save_path, filename)
+    savefig(filename)
+    show()
+    
+    # Chains.
+    figure()
+    xlabel('step number')
+#    ylabel(r'$\{}$'.format(var_name))
+    ylabel(var_name)
+    title('flatChains with '+name_true+' in '+hue_name+' \n nsteps: '
+          +str(nsteps)+', noise: '+str(sigma)+', npoints: '+str(len(zpicks)))
+    plot(var.T, '-', color='k', alpha=0.3)
+    axhline(var_true, color=hue)
+    stamp = str(int(time.time()))
+    filename = str(stamp)+'_'+initial+'_chain__nsteps_'+str(nsteps) \
+    +'_nwalkers_'+str(nwalkers)+'_noise_'+str(sigma) \
+    +'_numpoints_'+str(len(zpicks))+'.png'
+    filename = os.path.join(save_path, filename)
+    savefig(filename)
+    show()
+    
+    return
 
 def onepercent():
     
@@ -101,8 +159,7 @@ def onepercent():
     
     return vc, sigma, npoints
 
-vc, sigma, npoints = onepercent()
-
+#vc, sigma, npoints = onepercent()
 
 def modelcheck(t, mag, zpicks, dlpc, dl, 
                gamma, ombar_m0, ombar_de0, a, ombar_m, ombar_de):

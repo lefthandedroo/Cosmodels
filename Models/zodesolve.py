@@ -6,13 +6,7 @@ Created on Thu Feb 15 13:38:48 2018
 @author: BallBlueMeercat
 """
 from scipy.integrate import odeint
-
 import zfirstderivs
-
-
-# Standard cosmological parameters.
-H0 = 1
-c_over_H0 = 4167 * 10**6    # c/H0 in parsecs
 
 def zodesolve(params, zpicks):
     """
@@ -30,15 +24,19 @@ def zodesolve(params, zpicks):
     # Inserting 0 at the front of redshifts to allow initial conditions.
     zpicks = [0.0] + zpicks
     
+    # Standard cosmological parameters.
+    H0 = 1
+    c_over_H0 = 4167 * 10**6    # c/H0 in parsecs
+    
     # Initial conditions at z = 0 (now).
     t0 = 0              # time
     a0 = 1.0            # scale factor
     z0 = 0              # redshift
     dl0 = 0             # luminosity distance
     rho_c0 = H0**2      # critical density
-    ombar_m0 = params.get('m_true', 0)                        # e_m(z)/ec(z=0)
-    ombar_de0 = params.get('de_true', rho_c0/rho_c0 -ombar_m0)# e_de(z)/ec(z=0)
-    gamma = params.get('gamma_true',0)
+    ombar_m0 = params.get('m', 0)                        # e_m(z)/ec(z=0)
+    gamma = params.get('gamma',0)
+    ombar_de0 = params.get('de', rho_c0/rho_c0 -ombar_m0)# e_de(z)/ec(z=0)
     
     # ODE solver parameters:
     abserr = 1.0e-8

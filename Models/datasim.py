@@ -25,7 +25,7 @@ def mag(params, zpicks):
         mag = list of n apparent magnitudes mag corresponding to given redshits.
     """
 #    print('@@@ zmsim has been called')
-        
+    
     if not sorted(zpicks) == zpicks:
         zpicks.sort()
         print('sorted to accending in zmsim')    

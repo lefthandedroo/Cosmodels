@@ -19,11 +19,11 @@ def lnlike(theta, zpicks, mag, sigma):
     params = {}
     for i in range(len(theta)):
         if i == 0:
-            params['m_true'] = theta[i]
+            params['m'] = theta[i]
         elif i == 1:
-            params['gamma_true'] = theta[i]
+            params['gamma'] = theta[i]
         elif i == 2:
-            params['de_true'] = theta[i]
+            params['de'] = theta[i]
     
     model = datasim.mag(params, zpicks)
     inv_sigma2 = 1.0/(sigma**2)
@@ -32,7 +32,7 @@ def lnlike(theta, zpicks, mag, sigma):
 def lnprior(theta):
 #    print(' lnprior has been called')   
 #    print('lnprior speaking: theta = ',theta)
-#    print('lnprior -- theta', theta)
+#    print('lnprior -- type(theta)', type(theta))
     
     # Checking if theta is an array or a scalar.
     if len(theta) == 1:

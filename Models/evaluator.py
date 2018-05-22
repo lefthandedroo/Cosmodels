@@ -16,9 +16,11 @@ import tools
 # Model parameteres:  
 m_true = 0.3           # (= e_m(t)/e_crit(t0) at t=t0).
 de_true = 1 - m_true   # (de = e_de(t)/e_crit(t0) at t=t0).
-gamma_true = 0.0       # Interaction term, rate at which DE decays into matter.
+g_true = 0.01       # Interaction term, rate at which DE decays into matter.
 
-params = {'m_true':m_true, 'gamma_true':gamma_true}#, 'gamma_true':gamma_true, 'de_true':de_true,}
+params = {'m':m_true}
+params = {'m':m_true, 'gamma':g_true}
+params = {'m':m_true, 'gamma':g_true, 'de':de_true}
 
 # Number of datapoints to be simulated and number of emcee steps.
 npoints, nsteps = 10000, 10000
@@ -90,7 +92,7 @@ def errorvsdatasize():
         while npoints < 10000:
             print('_____________________ run number',run)
             propert, sampler = paramfinder.paramfinder(
-                    npoints, nsteps, sigma, mu, m_true, save_path)
+                    npoints, nsteps, sigma, mu, params, save_path)
             sd, mean = propert
             vc = sd/mean * 100
             vc_l.append(vc)
