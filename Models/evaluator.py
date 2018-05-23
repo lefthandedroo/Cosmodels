@@ -20,7 +20,7 @@ g_true = 0.01       # Interaction term, rate at which DE decays into matter.
 
 params = {'m':m_true}
 params = {'m':m_true, 'gamma':g_true}
-params = {'m':m_true, 'gamma':g_true, 'de':de_true}
+#params = {'m':m_true, 'gamma':g_true, 'de':de_true}
 
 # Number of datapoints to be simulated and number of emcee steps.
 npoints, nsteps = 10000, 10000
@@ -150,7 +150,7 @@ def errorvsdatasize():
     save(save_path, 'npoints', npoints_l)
     save(save_path, 'sampler', sampler_l)
     
-    print('output directory:',directory)
+    print('directory:',directory)
     
     # Time taken by evaluator. 
     timet1=time.time()

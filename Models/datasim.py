@@ -34,11 +34,10 @@ def mag(params, zpicks):
         zpicks = zpicks.tolist()
         print('converted to list in zmsim')
     
-    t, dlpc, dl, a, ombar_m, ombar_de, ombar_de0 = zodesolve.zodesolve(params, zpicks)
+    dlpc, plot_var = zodesolve.zodesolve(params, zpicks)
     
     # Calculating apparent magnitudes of supernovae at the simulated
     # luminosity distances using the distance modulus formula.
-
     mag = []   
     for i in range(len(dlpc)):
         if dlpc[i] == 0:
@@ -48,11 +47,12 @@ def mag(params, zpicks):
             magnitude = 5 * log10(dlpc[i]/10) + M
         mag.append(magnitude)
     
+#    # Checking evolution of the model.
 #    import plots
-#    de = ombar_de0
-#    plots.modelcheck(t, mag, zpicks, dlpc, dl, gamma, m, de, a, ombar_m, ombar_de)
+#    plots.modelcheck(mag, zpicks, plot_var)
         
     return mag
+
 
 def gnoise(mag, mu, sigma):
     """

@@ -58,4 +58,7 @@ def zodesolve(params, zpicks):
     dl = vsol[1:,5] * (1+z)   # in units of dl*(H0/c)
     dlpc = dl * c_over_H0    # dl in parsecs (= vsol[dl] * c/H0)
     
-    return t, dlpc, dl, a, ombar_m, ombar_de, ombar_de0
+    
+    plot_var = t, dlpc, dl, a, ombar_m, gamma, ombar_de, ombar_m0, ombar_de0
+    
+    return dlpc, plot_var

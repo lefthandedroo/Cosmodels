@@ -6,25 +6,6 @@ Created on Tue Feb 27 12:40:48 2018
 @author: BallBlueMeercat
 
 
-Cheat sheet:
-    
-    # Walker steps.
-    m = sampler.flatchain[:,0]
-    slnprob = sampler.flatlnprobability
-    
-    figure()
-    xlabel('parameter value')
-    ylabel('step number')
-    plot(m, slnprob, '.', color='red')
-    title('slnprob for m')
-    show()
-    
-    # Chains.    
-    figure()
-    pl.title('flatChains with m_true in red')
-    pl.plot(sampler.flatchain[:,0].T, '-', color='k', alpha=0.3)
-    pl.axhline(m_true, color='red')
-    pl.show
 """
 
 from pylab import figure, plot, xlabel, ylabel, title, show, grid, scatter
@@ -39,6 +20,7 @@ from results import load
 
 def stat(hue, var, var_true, var_name, slnprob, zpicks, 
           mag, sigma, nsteps, nwalkers, save_path):
+    
     name_l = var_name.lower()
     initial = name_l[:1]
     name_true = initial + '_true'
@@ -161,110 +143,86 @@ def onepercent():
 
 #vc, sigma, npoints = onepercent()
 
-def modelcheck(t, mag, zpicks, dlpc, dl, 
-               gamma, ombar_m0, ombar_de0, a, ombar_m, ombar_de):
+def modelcheck(mag, zpicks, plot_var):
     
-    # Plotting selected results:
-    # a and a_dot vs time.
+    t, dlpc, dl, a, ombar_m, gamma, ombar_de, ombar_m0, ombar_de0 = plot_var
+    
+    # Scale factor vs redshift.
+    figure()
+    xlabel('redshift $z$')
+    ylabel('a')
+    grid(True)
+    plot(zpicks, a, 'xkcd:crimson', lw=1)
+    title(r'Scale factor evolution, IC: $\Omega_{m0}$ = %s, $\Omega_{DE0}$ =%s, $\gamma$ = %s'
+          %(ombar_m0, ombar_de0, gamma))
+    show()
 
-    while True:
-        figure()
-        xlabel('redshift $z$')
-        ylabel('a')
-        grid(True)
-        plot(zpicks, a, 'r', lw=1)
-        title('IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0}',
-              ' \'$ =%s, $\gamma$ = %s'%(ombar_m0, ombar_de0, gamma))
-        show()
-        break
+    # ombar_m vs redshift.
+    figure()
+    xlabel('redshift $z$')
+    ylabel('$\Omega_{m0}$')
+    grid(True)
+    plot(zpicks, ombar_m, 'xkcd:coral', lw=1)
+    title('$\Omega_{m}$ evolution, IC: $\Omega_{m0}$ = %s, $\Omega_{DE0}$ =%s, $\gamma$ = %s'
+          %(ombar_m0, ombar_de0, gamma))
+    show()
 
-    # e_dashm and e_dashde vs time.
-    while True:
-        # e_dashm
-        figure()
-        xlabel('redshift $z$')
-        ylabel('$\epsilon_m \'$')
-        lw = 1
-        plot(zpicks, ombar_m, 'g', linewidth=lw)
-        title('$\epsilon_m \'$ evolution, IC: $\epsilon_{m0}',
-              ' ,\'$ = %s, $\epsilon_{DE0} \'$ =%s, $\gamma$ = %s'
-              %(ombar_m0, ombar_de0, gamma))
-        show()
-
-        # e_dashde
-        figure()
-        xlabel('redshift $z$')
-        ylabel('$\epsilon_{DE} \'$')
-        lw = 1
-        plot(zpicks, ombar_m, 'm', linewidth=lw)
-        title('$\epsilon_{DE} \'$ evolution, IC: $\epsilon_{m0}',
-              ' \'$ = %s, $\epsilon_{DE0} \'$ =%s, $\gamma$ = %s'
-              %(ombar_m0, ombar_de0, gamma))
-        show()
-        break
-
+    # ombar_de vs redshift.
+    figure()
+    xlabel('redshift $z$')
+    ylabel('$\Omega_{DE}$')
+    grid(True)
+    plot(zpicks, ombar_de, 'xkcd:aquamarine', lw=1)
+    title('$\Omega_{DE}$ evolution, IC: $\Omega_{m0}$ = %s, $\Omega_{DE0}$ =%s, $\gamma$ = %s'
+          %(ombar_m0, ombar_de0, gamma))
+    show()
 
     # Luminosity distance vs redshift.
-    while True:
-        figure()
-        xlabel('redshift $z$')
-        ylabel('$d_L$*($H_0$/c)')
-        grid(True)
-        plot(zpicks, dl, 'tab:green', lw=1)
-        title('$d_L$, IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0}',
-              ' \'$ =%s, $\gamma$ = %s'
-              %(ombar_m0, ombar_de0, gamma))
-        show()
-        break   
+    figure()
+    xlabel('redshift $z$')
+    ylabel('$d_L$*($H_0$/c)')
+    grid(True)
+    plot(zpicks, dl, 'xkcd:lightgreen', lw=1)
+    title('$d_L$ evolution, IC: $\Omega_{m0}$ = %s, $\Omega_{DE0}$ =%s, $\gamma$ = %s'
+          %(ombar_m0, ombar_de0, gamma))
+    show()
 
-    while False:
-        figure()
-        xlabel('redshift $z$')
-        ylabel('pc')
-        grid(True)
-        plot(zpicks, dlpc, 'tab:green', lw=1)
-        title('$d_L$, IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0}',
-              ' \'$ =%s, $\gamma$ = %s'
-              %(ombar_m0, ombar_de0, gamma))
-        show()
-        break       
+#    figure()
+#    xlabel('redshift $z$')
+#    ylabel('pc')
+#    grid(True)
+#    plot(zpicks, dlpc, 'xkcd:green', lw=1)
+#    title('$d_L$ evolution, IC: $\Omega_{m0}$ = %s, $\Omega_{DE0}$ =%s, $\gamma$ = %s'
+#          %(ombar_m0, ombar_de0, gamma))
+#    show()
+#
+#    dlgpc = dlpc /10**9
+#    figure()
+#    xlabel('redshift $z$')
+#    ylabel('Gpc')
+#    grid(True)
+#    plot(zpicks, dlgpc, 'xkcd:darkgreen', lw=1)
+#    title('$d_L$ evolution, IC: $\Omega_{m0}$ = %s, $\Omega_{DE0}$ =%s, $\gamma$ = %s'
+#          %(ombar_m0, ombar_de0, gamma))
+#    show()
 
-    dlgpc = dlpc /10**9
-    while False:
-        figure()
-        xlabel('redshift $z$')
-        ylabel('Gpc')
-        grid(True)
-        plot(zpicks, dlgpc, 'tab:green', lw=1)
-        title('$d_L$, IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0}',
-              ' \'$ =%s, $\gamma$ = %s'
-              %(ombar_m0, ombar_de0, gamma))
-        show()
-        break
-
-
-    while True:
-        # Redshift vs time.
-        figure()
-        xlabel('redshift $z$')
-        ylabel('$z$')
+    # Redshift vs time.
+    figure()
+    xlabel('time')
+    ylabel('redshift $z$')
 #        axis([0,-0.8,0,5])
-        grid(True)
-        plot(t, zpicks, 'tab:pink', lw=1)
-        title('Redshift, IC: $\epsilon_{m0} \'$ = %s, $\epsilon_{DE0}',
-              ' \'$ =%s, $\gamma$ = %s'
-              %(ombar_m0, ombar_de0, gamma))
-        show()
-        break
+    grid(True)
+    plot(t, zpicks, 'm', lw=1)
+    title('Redshift evolution, IC: $\Omega_{m0}$ = %s, $\Omega_{DE0}$ =%s, $\gamma$ = %s'
+          %(ombar_m0, ombar_de0, gamma))
+    show()
 
-
-    while True:
-        figure()
-        xlabel('redshift')
-        ylabel('magnitude')
-        title('Mag simulated with msim parameters')
-        scatter(zpicks, mag, lw='3', c='r')
-        show()
-        break
+    # Magnitude vs redshift.
+    figure()
+    xlabel('redshift $z$')
+    ylabel('magnitude')
+    title('Magnitude evolution')
+    scatter(zpicks, mag, marker='.', lw='1', c='xkcd:tomato')
+    show()
 
     return

@@ -32,9 +32,7 @@ def lnlike(theta, zpicks, mag, sigma):
 def lnprior(theta):
 #    print(' lnprior has been called')   
 #    print('lnprior speaking: theta = ',theta)
-#    print('lnprior -- type(theta)', type(theta))
     
-    # Checking if theta is an array or a scalar.
     if len(theta) == 1:
         m = theta
         if 0 < m < 1 or m == 1:

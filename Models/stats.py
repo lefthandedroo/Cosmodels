@@ -51,14 +51,16 @@ def stats(params, zpicks, mag, sigma, nsteps, save_path):
         i += 1
         
     # Sampler setup.
-    timee0 = time.time()    # starting sampler timer
+    times0 = time.time()    # starting sampler timer
     sampler = emcee.EnsembleSampler(nwalkers, ndim, ln.lnprob, 
                                     args=(zpicks, mag, sigma))
     
     # Burnin.
-    burnin = int(nsteps/4)     # steps to discard
+    burnin = int(nsteps/4)  # steps to discard
     print('_____ burnin start')
+    timeb0 = time.time()    # starting burnin timer
     pos, prob, state = sampler.run_mcmc(pos, burnin)
+    timeb1=time.time()      # stopping burnin timer
     print('_____ burnin end')
     sampler.reset()
     
@@ -66,7 +68,7 @@ def stats(params, zpicks, mag, sigma, nsteps, save_path):
     print('_____ sampler start')
     sampler.run_mcmc(pos, nsteps)
     print('_____ sampler end')
-    timee1=time.time()      # stopping sampler timer
+    times1=time.time()      # stopping sampler timer
     
     # Walker steps.
     slnprob = sampler.flatlnprobability
@@ -138,7 +140,7 @@ def stats(params, zpicks, mag, sigma, nsteps, save_path):
     title('Evolution of magnitude with redshift \n nsteps: '
           +str(nsteps)+', noise: '+str(sigma)+', npoints: '+str(len(zpicks)))
     data = errorbar(zpicks, mag, yerr=sigma, fmt='.', alpha=0.3)
-    best_fit = scatter(zpicks, magbest, lw='1', c='r')
+    best_fit = scatter(zpicks, magbest, lw='1', c='xkcd:tomato')
     ylabel('magnitude')
     xlabel('z')
     legend([data, best_fit], ['true parameter mag', 'emcee parameter mag'])
@@ -168,7 +170,8 @@ def stats(params, zpicks, mag, sigma, nsteps, save_path):
     
     # Property being investigated
     propert = m_sd, m_mean
-        
-    tools.timer('sampler', timee0, timee1)
+    
+    tools.timer('burnin', timeb0, timeb1)
+    tools.timer('sampler', times0, times1)
     
     return propert, sampler
