@@ -6,8 +6,8 @@ Created on Fri Feb 23 16:02:10 2018
 @author: BallBlueMeercat
 """
 
-from pylab import figure, scatter, xlabel, ylabel, title, plot, show, savefig
-from pylab import legend, hist, axhline, errorbar
+from pylab import figure, scatter, xlabel, ylabel, title, show, savefig
+from pylab import legend, errorbar
 import emcee
 import numpy as np
 import time
@@ -80,6 +80,7 @@ def stats(params, zpicks, mag, sigma, nsteps, save_path):
     thetabest = np.zeros(ndim)
     parambest = {}
     true = []
+    propert = {}
     for i in range(ndim):
         if i == 0:                       
             mbest = sampler.flatchain[bi,i]
@@ -90,9 +91,11 @@ def stats(params, zpicks, mag, sigma, nsteps, save_path):
             true.append(m_true)
             # Output m.
             m = sampler.flatchain[:,i]
-            # Standard deviation and mean of the m distribution
+            # Standard deviation and mean of the m distribution.
             m_sd = np.std(m)
             m_mean = np.mean(m)
+            propert['m_sd'] = m_sd
+            propert['m_mean'] = m_mean
             
             stat('coral', m, m_true, 'Matter', slnprob, zpicks, 
                  mag, sigma, nsteps, nwalkers, save_path)
@@ -106,6 +109,11 @@ def stats(params, zpicks, mag, sigma, nsteps, save_path):
             true.append(g_true)
             # Output gamma.
             gamma = sampler.flatchain[:,i]
+            # Standard deviation and mean of the gamme distribution.
+            gamma_sd = np.std(gamma)
+            gamma_mean = np.mean(gamma)
+            propert['gamma_sd'] = gamma_sd
+            propert['gamma_mean'] = gamma_mean
             
             stat('aquamarine', gamma, g_true, 'Gamma', slnprob, zpicks, 
                  mag, sigma, nsteps, nwalkers, save_path)
@@ -121,6 +129,11 @@ def stats(params, zpicks, mag, sigma, nsteps, save_path):
             true.append(de_true)
             # Output de.
             de = sampler.flatchain[:,i]
+            # Standard deviation and mean of the de distribution
+            de_sd = np.std(de)
+            de_mean = np.mean(de)
+            propert['de_sd'] = de_sd
+            propert['de_mean'] = de_mean
             
             stat('orchid', de, de_true, 'DE', slnprob, zpicks, 
                  mag, sigma, nsteps, nwalkers, save_path)
@@ -160,16 +173,13 @@ def stats(params, zpicks, mag, sigma, nsteps, save_path):
 #    show()
 
     # Results getting printed:
-    print('best index =',str(bi))
+    if bi == 0: 
+        print('best index =',str(bi))
     print('best parameters =',str(parambest.values()))
     print('m.a.f.:', np.mean(sampler.acceptance_fraction))
     print('nsteps:', str(nsteps))
     print('sigma:', str(sigma))
     print('npoints:', str(len(zpicks)))
-
-    
-    # Property being investigated
-    propert = m_sd, m_mean
     
     tools.timer('burnin', timeb0, timeb1)
     tools.timer('sampler', times0, times1)

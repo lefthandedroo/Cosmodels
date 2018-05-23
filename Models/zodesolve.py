@@ -6,7 +6,7 @@ Created on Thu Feb 15 13:38:48 2018
 @author: BallBlueMeercat
 """
 from scipy.integrate import odeint
-import zfirstderivs
+import firstderivs
 
 def zodesolve(params, zpicks):
     """
@@ -46,7 +46,7 @@ def zodesolve(params, zpicks):
     v0 = [t0, a0, ombar_m0, ombar_de0, z0, dl0]
     
     # Call the ODE solver. maxstep=5000000 added later to try and avoid 
-    vsol = odeint(zfirstderivs.zfirstderivs, v0, zpicks, args=(gamma,H0), 
+    vsol = odeint(firstderivs.rdecay, v0, zpicks, args=(gamma,H0), 
                   atol=abserr, rtol=relerr, mxstep=5000000)
             
     # Separate results into their own arrays:

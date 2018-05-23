@@ -10,6 +10,11 @@ Created on Tue Apr  3 10:31:30 2018
 import pickle
 import os.path
 
+def process(propert):
+    
+    
+    return
+
 def save(save_path, output_name, output): 
     # Saving results to run directory.
     filename = output_name+'.p'

@@ -17,6 +17,9 @@ import time
 
 from results import load
 
+def setsizevspread():
+    
+    return
 
 def stat(hue, var, var_true, var_name, slnprob, zpicks, 
           mag, sigma, nsteps, nwalkers, save_path):
@@ -157,35 +160,48 @@ def modelcheck(mag, zpicks, plot_var):
           %(ombar_m0, ombar_de0, gamma))
     show()
 
-    # ombar_m vs redshift.
+    # ombar_m, ombar_de vs redshift.
     figure()
     xlabel('redshift $z$')
     ylabel('$\Omega_{m0}$')
     grid(True)
     plot(zpicks, ombar_m, 'xkcd:coral', lw=1)
-    title('$\Omega_{m}$ evolution, IC: $\Omega_{m0}$ = %s, $\Omega_{DE0}$ =%s, $\gamma$ = %s'
+    plot(zpicks, ombar_de, 'xkcd:aquamarine', lw=1)
+    title('$\Omega_{m}$, $\Omega_{DE0}$ evolution, IC: $\Omega_{m0}$ = %s, $\Omega_{DE0}$ =%s, $\gamma$ = %s'
           %(ombar_m0, ombar_de0, gamma))
     show()
 
-    # ombar_de vs redshift.
-    figure()
-    xlabel('redshift $z$')
-    ylabel('$\Omega_{DE}$')
-    grid(True)
-    plot(zpicks, ombar_de, 'xkcd:aquamarine', lw=1)
-    title('$\Omega_{DE}$ evolution, IC: $\Omega_{m0}$ = %s, $\Omega_{DE0}$ =%s, $\gamma$ = %s'
-          %(ombar_m0, ombar_de0, gamma))
-    show()
+#    # ombar_m vs redshift.
+#    figure()
+#    xlabel('redshift $z$')
+#    ylabel('$\Omega_{m0}$')
+#    grid(True)
+#    plot(zpicks, ombar_m, 'xkcd:coral', lw=1)
+#    title('$\Omega_{m}$ evolution, IC: $\Omega_{m0}$ = %s, $\Omega_{DE0}$ =%s, $\gamma$ = %s'
+#          %(ombar_m0, ombar_de0, gamma))
+#    show()
+#
+#    # ombar_de vs redshift.
+#    figure()
+#    xlabel('redshift $z$')
+#    ylabel('$\Omega_{DE}$')
+#    grid(True)
+#    plot(zpicks, ombar_de, 'xkcd:aquamarine', lw=1)
+#    title('$\Omega_{DE}$ evolution, IC: $\Omega_{m0}$ = %s, $\Omega_{DE0}$ =%s, $\gamma$ = %s'
+#          %(ombar_m0, ombar_de0, gamma))
+#    show()
 
     # Luminosity distance vs redshift.
-    figure()
-    xlabel('redshift $z$')
-    ylabel('$d_L$*($H_0$/c)')
-    grid(True)
-    plot(zpicks, dl, 'xkcd:lightgreen', lw=1)
-    title('$d_L$ evolution, IC: $\Omega_{m0}$ = %s, $\Omega_{DE0}$ =%s, $\gamma$ = %s'
-          %(ombar_m0, ombar_de0, gamma))
-    show()
+    while True:
+        figure()
+        xlabel('redshift $z$')
+        ylabel('$d_L$*($H_0$/c)')
+        grid(True)
+        plot(zpicks, dl, 'xkcd:lightgreen', lw=1)
+        title('$d_L$ evolution, IC: $\Omega_{m0}$ = %s, $\Omega_{DE0}$ =%s, $\gamma$ = %s'
+              %(ombar_m0, ombar_de0, gamma))
+        show()
+        break
 
 #    figure()
 #    xlabel('redshift $z$')

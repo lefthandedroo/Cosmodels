@@ -46,7 +46,7 @@ def lnprior(theta):
         if (0 < m < 1 or m == 1) and abs(gamma) < 0.1 and (0 < de < 1):
             return 0.0
         
-    return -np.inf
+    return 0.0#-np.inf
 
 def lnprob(theta, zpicks, mag, sigma):
 #    print('@@@@@ lnprob has been called')
