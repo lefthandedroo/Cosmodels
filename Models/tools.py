@@ -39,3 +39,21 @@ def timer(string,i,f):
 #    sec = round((sec % 60),2)   # seconds
     print(str(string),'time:  ',str(int(mins))+'min',str(int(sec))+'s')
     return
+
+
+def runcount(sigma, sigma_max, sigma_step,
+              npoints_min, npoints_max, npoints_step):
+    """
+    Returns number of interations that evaluator will run.
+    """
+    run = 0
+    
+    while sigma < sigma_max:
+        npoints = npoints_min
+        while npoints < npoints_max:
+            npoints += npoints_step
+            run += 1
+        sigma += sigma_step
+
+    print('Iterations to come:',run)
+    return

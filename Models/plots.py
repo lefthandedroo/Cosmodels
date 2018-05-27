@@ -84,46 +84,64 @@ def onepercent():
         direclist.append(d[0])
     direclist.pop(0)
     
-    vc = []
+    m_vc = []
+    g_vc = []
     sigma =[]
     npoints = []
     for directory in direclist:
-            vc += load(directory, 'vc.p')
+            m_vc += load(directory, 'm_vc.p')
+            g_vc += load(directory, 'g_vc.p')
             sigma += load(directory, 'sigma.p')
             npoints += load(directory, 'npoints.p')
 
-    vc = np.asarray(vc)
+    m_vc = np.asarray(m_vc)
+    g_vc = np.asarray(g_vc)
     sigma = np.asarray(sigma)
     npoints = np.asarray(npoints)
       
-    pi = np.where(vc < 1)   # Indicies of rows with vc < 1%.
-    pinpoints = npoints[pi]
-    pisigma = sigma[pi]
+    m_pi = np.where(m_vc < 1)   # Indicies of rows with m_vc < 1%.
+    m_pinpoints = npoints[m_pi]
+    m_pisigma = sigma[m_pi]
+
+    g_pi = np.where(g_vc < 1)   # Indicies of rows with g_vc < 1%.
+    g_pinpoints = npoints[g_pi]
+    g_pisigma = sigma[g_pi]
     
-    sinpoints = []  # Single results, removing doubles of nsteps.
-    sisigma = []
+    m_sinpoints = []  # Single results, removing doubles of nsteps.
+    m_sisigma = []
     
-    for i in range(len(pinpoints)):
+    g_sinpoints = []  # Single results, removing doubles of nsteps.
+    g_sisigma = []
     
-        if pinpoints[i] in sinpoints:
-           index = np.where(sinpoints == pinpoints[i])
+    for i in range(len(m_pinpoints)):
+        if m_pinpoints[i] in m_sinpoints:
+           index = np.where(m_sinpoints == m_pinpoints[i])
            index = int(index[0])
-           if pisigma[i] > sisigma[index]:
-              sisigma[index] = pisigma[i]
+           if m_pisigma[i] > m_sisigma[index]:
+              m_sisigma[index] = m_pisigma[i]
+        else:
+            m_sinpoints.append(m_pinpoints[i])
+            m_sisigma.append(m_pisigma[i])
+
+    for i in range(len(g_pinpoints)):
+        if g_pinpoints[i] in g_sinpoints:
+           index = np.where(g_sinpoints == g_pinpoints[i])
+           index = int(index[0])
+           if g_pisigma[i] > g_sisigma[index]:
+              g_sisigma[index] = g_pisigma[i]
 
         else:
-            sinpoints.append(pinpoints[i])
-            sisigma.append(pisigma[i])
-
+            g_sinpoints.append(g_pinpoints[i])
+            g_sisigma.append(g_pisigma[i])
     
 #    ind = np.ones((10,), bool)
 #    ind[n] = False
 #    A1 = A[ind,:]
     figure()
-    xlabel('datazet size')
+    xlabel('dataset size')
     ylabel('sigma of noise added to data')
     title('noisiest runs where m was found within 1%')       
-    plt.scatter(sinpoints, sisigma, c='m', label='1% sd on m')
+    plt.scatter(m_sinpoints, m_sisigma, c='m', label='1% sd on m')
     plt.scatter(npoints, sigma, c='c', marker='x', label='all runs')
     plt.legend()
     plt.show()
@@ -142,9 +160,18 @@ def onepercent():
 #    scatter(npoints, sigma, c='c')
 #    show()
     
-    return vc, sigma, npoints
+    figure()
+    xlabel('dataset size')
+    ylabel('sigma of noise added to data')
+    title('noisiest runs where sd < 1 on gamma found')       
+    plt.scatter(g_sinpoints, g_sisigma, c='g', label='sd on gamma')
+    plt.scatter(npoints, sigma, c='c', marker='x', label='all runs')
+    plt.legend()
+    plt.show()
+    
+    return m_vc, g_vc, sigma, npoints
 
-#vc, sigma, npoints = onepercent()
+m_vc, g_vc, sigma, npoints = onepercent()
 
 def modelcheck(mag, zpicks, plot_var):
     

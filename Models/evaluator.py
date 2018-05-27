@@ -11,12 +11,12 @@ import os.path
 
 from results import save
 import paramfinder
-import tools
+from tools import runcount, timer
 
 # Model parameteres:  
 m_true = 0.3           # (= e_m(t)/e_crit(t0) at t=t0).
 de_true = 1 - m_true   # (de = e_de(t)/e_crit(t0) at t=t0).
-g_true = 0.5       # Interaction term, rate at which DE decays into matter.
+g_true = 0.1       # Interaction term, rate at which DE decays into matter.
 
 params = {'m':m_true}
 params = {'m':m_true, 'gamma':g_true}
@@ -51,12 +51,29 @@ def repeatrun():
 
     return sampler
 
-sampler = repeatrun()
+#sampler = repeatrun()
 
 
 def errorvsdatasize():
     # Script timer.
     timet0 = time.time()
+    
+    sigma = 0.2
+    sigma_max = 0.25
+    sigma_step = 0.05
+    npoints_min = 10000
+    npoints_max = 25000
+    npoints_step = 3000
+    
+    # How many iterations have I signed up for?
+    runcount(sigma, sigma_max, sigma_step,
+              npoints_min, npoints_max, npoints_step)
+    
+    decision = input('Happy with the number of iterations? (enter=yes) ')
+    if not decision:
+        pass
+    else:
+        return
     
     # Folder for saving output.
     directory = str(int(time.time()))
@@ -65,7 +82,6 @@ def errorvsdatasize():
     if not os.path.exists(save_path):
         os.makedirs(save_path)
     
-    sigma = 0.15
     run = 0
     
     m_sd_l = []
@@ -80,13 +96,14 @@ def errorvsdatasize():
     npoints_l = []
     sampler_l = []
     
-    while sigma < 0.2:
+    while sigma < sigma_max:
 
-        npoints = 4500 
-        while npoints < 10000:
+        npoints = npoints_min 
+        while npoints < npoints_max:
             print('_____________________ run number',run)
             propert, sampler = paramfinder.paramfinder(
                     npoints, nsteps, sigma, mu, params, save_path)
+            
             m_sd = propert.get('m_sd',0)
             m_mean = propert.get('m_mean', 0)
             m_vc = m_sd/m_mean * 100
@@ -94,9 +111,9 @@ def errorvsdatasize():
             m_sd_l.append(m_sd)
             m_mean_l.append(m_mean)
             
-            g_sd = propert.get('g_sd', 0)
-            g_mean = propert.get('g_mean', 0)
-            g_vc = m_sd/g_mean * 100
+            g_sd = propert.get('gamma_sd', 0)
+            g_mean = propert.get('gamma_mean', 0)
+            g_vc = g_sd/g_mean * 100
             g_vc_l.append(g_vc)
             g_sd_l.append(g_sd)
             g_mean_l.append(g_mean)                        
@@ -105,12 +122,13 @@ def errorvsdatasize():
             npoints_l.append(npoints)
             sampler_l.append(sampler)
             
-            npoints += 3000
+            npoints += npoints_step
             run += 1
         
-        sigma += 0.03
+        sigma += sigma_step
         
     # Saving plots to run directory.
+    # m
     figure()
     xlabel('size of dataset')
     ylabel('standard deviation of marginalised m distribution')
@@ -144,11 +162,48 @@ def errorvsdatasize():
     savefig(filename)
     show()
 
+    # gamma
+    figure()
+    xlabel('size of dataset')
+    ylabel('standard deviation of marginalised gamma distribution')
+    title('sd of gamma vs size of dataset, sd of noise = %s'%(sigma))
+    scatter(npoints_l, g_sd_l, c='m')        
+    stamp = str(int(time.time()))
+    filename = str(stamp)+'_sd_of_g_.png'
+    filename = os.path.join(save_path, filename)
+    savefig(filename)
+    show()
+    
+    figure()
+    xlabel('size of dataset')
+    ylabel('mean of marginalised gamma distribution')
+    title('mean of gamma vs size of dataset, sd of noise = %s'%(sigma))
+    scatter(npoints_l, g_mean_l, c='c')        
+    stamp = str(int(time.time()))
+    filename = str(stamp)+'_mean_of_g_.png'
+    filename = os.path.join(save_path, filename)
+    savefig(filename)
+    show()
+    
+#    figure()
+#    xlabel('size of dataset')
+#    ylabel('variance coefficient in %')
+#    title('sd/mean of gamma vs size of dataset, sd of noise = %s'%(sigma))
+#    scatter(npoints_l, g_vc_l, c='coral')        
+#    stamp = str(int(time.time()))
+#    filename = str(stamp)+'_cv_of_g_.png'
+#    filename = os.path.join(save_path, filename)
+#    savefig(filename)
+#    show()
         
     # Saving results to directory.
     save(save_path, 'm_vc', m_vc_l)
     save(save_path, 'm_sd', m_sd_l)
     save(save_path, 'm_mean', m_mean_l)
+
+    save(save_path, 'g_vc', g_vc_l)
+    save(save_path, 'g_sd', g_sd_l)
+    save(save_path, 'g_mean', g_mean_l)
     
     save(save_path, 'sigma', sigma_l)
     save(save_path, 'npoints', npoints_l)
@@ -158,8 +213,9 @@ def errorvsdatasize():
     
     # Time taken by evaluator. 
     timet1=time.time()
-    tools.timer('evaluator', timet0, timet1)
+    timer('evaluator', timet0, timet1)
     
-    return sigma_l, npoints_l, sampler_l
+    return #sigma_l, npoints_l, sampler_l
 
 #sigma_l, npoints_l, sampler_l = errorvsdatasize()
+errorvsdatasize()
