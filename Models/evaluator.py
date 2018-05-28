@@ -16,7 +16,7 @@ from tools import runcount, timer
 # Model parameteres:  
 m_true = 0.3           # (= e_m(t)/e_crit(t0) at t=t0).
 de_true = 1 - m_true   # (de = e_de(t)/e_crit(t0) at t=t0).
-g_true = 0.1       # Interaction term, rate at which DE decays into matter.
+g_true = 0.5       # Interaction term, rate at which DE decays into matter.
 
 params = {'m':m_true}
 params = {'m':m_true, 'gamma':g_true}
@@ -58,10 +58,10 @@ def errorvsdatasize():
     # Script timer.
     timet0 = time.time()
     
-    sigma = 0.2
-    sigma_max = 0.25
+    sigma = 0.02
+    sigma_max = 0.03
     sigma_step = 0.05
-    npoints_min = 10000
+    npoints_min = 1000
     npoints_max = 25000
     npoints_step = 3000
     

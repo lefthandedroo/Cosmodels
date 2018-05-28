@@ -26,9 +26,8 @@ def save(save_path, output_name, output):
 
 
 def load(save_path, filename):
-    
-    load_path = os.path.join(save_path, filename)
-    
+    # Opening files with name=filename from given directory=save_path    
+    load_path = os.path.join(save_path, filename)    
     content = []
     
     try:

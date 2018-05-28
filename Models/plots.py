@@ -146,24 +146,10 @@ def onepercent():
     plt.legend()
     plt.show()
     
-#    figure()
-#    xlabel('datazet size')
-#    ylabel('sigma of noise added to data')
-#    title('noisiest runs where m was found within 1%')
-#    scatter(sinpoints, sisigma, c='m')
-#    show()
-#    
-#    figure()
-#    xlabel('datazet size')
-#    ylabel('sigma of noise added to data')
-#    title('all runs')
-#    scatter(npoints, sigma, c='c')
-#    show()
-    
     figure()
     xlabel('dataset size')
     ylabel('sigma of noise added to data')
-    title('noisiest runs where sd < 1 on gamma found')       
+    title('noisiest runs where gamma was found within 1%')       
     plt.scatter(g_sinpoints, g_sisigma, c='g', label='sd on gamma')
     plt.scatter(npoints, sigma, c='c', marker='x', label='all runs')
     plt.legend()
@@ -171,7 +157,7 @@ def onepercent():
     
     return m_vc, g_vc, sigma, npoints
 
-m_vc, g_vc, sigma, npoints = onepercent()
+#m_vc, g_vc, sigma, npoints = onepercent()
 
 def modelcheck(mag, zpicks, plot_var):
     
