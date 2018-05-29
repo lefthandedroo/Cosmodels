@@ -103,7 +103,7 @@ def onepercent():
     m_pinpoints = npoints[m_pi]
     m_pisigma = sigma[m_pi]
 
-    g_pi = np.where(g_vc < 1)   # Indicies of rows with g_vc < 1%.
+    g_pi = np.where(g_vc < 1.5)   # Indicies of rows with g_vc < 1%.
     g_pinpoints = npoints[g_pi]
     g_pisigma = sigma[g_pi]
     
@@ -149,7 +149,7 @@ def onepercent():
     figure()
     xlabel('dataset size')
     ylabel('sigma of noise added to data')
-    title('noisiest runs where gamma was found within 1%')       
+    title('noisiest runs where gamma was found within 1.5%')       
     plt.scatter(g_sinpoints, g_sisigma, c='g', label='sd on gamma')
     plt.scatter(npoints, sigma, c='c', marker='x', label='all runs')
     plt.legend()
@@ -157,7 +157,7 @@ def onepercent():
     
     return m_vc, g_vc, sigma, npoints
 
-#m_vc, g_vc, sigma, npoints = onepercent()
+m_vc, g_vc, sigma, npoints = onepercent()
 
 def modelcheck(mag, zpicks, plot_var):
     
