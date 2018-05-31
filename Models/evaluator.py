@@ -51,7 +51,7 @@ def repeatrun():
 
     return sampler
 
-#sampler = repeatrun()
+sampler = repeatrun()
 
 
 def errorvsdatasize():
@@ -218,4 +218,4 @@ def errorvsdatasize():
     return #sigma_l, npoints_l, sampler_l
 
 #sigma_l, npoints_l, sampler_l = errorvsdatasize()
-errorvsdatasize()
+#errorvsdatasize()

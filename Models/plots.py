@@ -157,7 +157,7 @@ def onepercent():
     
     return m_vc, g_vc, sigma, npoints
 
-m_vc, g_vc, sigma, npoints = onepercent()
+#m_vc, g_vc, sigma, npoints = onepercent()
 
 def modelcheck(mag, zpicks, plot_var):
     
