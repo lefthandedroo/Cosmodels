@@ -10,7 +10,8 @@ import tools
 import datasim
 import stats
 
-def paramfinder(npoints, nsteps, sigma, mu, params, save_path, firstderivs_key):
+def paramfinder(npoints, nsteps, sigma, mu, params, save_path, 
+                firstderivs_key, model_firstderivs_key):
     # Script timer.
     timet0 = time.time()
         
@@ -19,7 +20,7 @@ def paramfinder(npoints, nsteps, sigma, mu, params, save_path, firstderivs_key):
     zpicks = zpicks.zpicks(0.005, 2, npoints)
     
     # Generating apparent magnitues mag at redshifts z=0 to z < zmax.
-    model = datasim.mag(params, zpicks, 'LCDM')
+    model = datasim.mag(params, zpicks, model_firstderivs_key)
     model = np.asarray(model)
     mag = datasim.gnoise(model, mu, sigma)
     

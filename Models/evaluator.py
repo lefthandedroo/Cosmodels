@@ -23,14 +23,16 @@ params = {'m':m_true, 'gamma':g_true}
 #params = {'m':m_true, 'gamma':g_true, 'de':de_true}
 
 # Number of datapoints to be simulated and number of emcee steps.
-npoints, nsteps = 10000, 10000
+npoints, nsteps = 1000, 10000
 
 # Statistical parameteres of noise:
 mu = 0            # mean
 sigma = 0.01      # standard deviation
 
 # Type of interaction in the model being fitted to data
-firstderivs_key = 'LCDM'
+# 'Hdecay', 'rdecay', 'rdecay_de', 'rdecay_m', 'interacting', 'LCDM':LCDM
+data_firstderivs_key = 'rdecay'
+model_firstderivs_key = data_firstderivs_key #'LCDM'
 
 def repeatrun():
     # Folder for saving output.
@@ -44,7 +46,8 @@ def repeatrun():
     while i < 1:
         print('_____________________ run number',i)
         propert, sampler = paramfinder.paramfinder(
-                npoints, nsteps, sigma, mu, params, save_path, firstderivs_key)
+                npoints, nsteps, sigma, mu, params, 
+                save_path, model_firstderivs_key, model_firstderivs_key)
         i += 1
     
     # Saving sampler to directory.
@@ -52,8 +55,8 @@ def repeatrun():
     maxlnprob = propert['maxlnprob']
     print('maxlnprob',maxlnprob)
     print('Type of interaction in the model being fitted to data:', 
-          firstderivs_key)
-    print('Data is simulated using LCDM')
+          model_firstderivs_key)
+    print('Data is simulated using',model_firstderivs_key)
     print()
     print('directory:',directory)
 

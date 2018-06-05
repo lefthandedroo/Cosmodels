@@ -6,6 +6,167 @@ Created on Thu Sep 21 15:50:29 2017
 @author: BallBlueMeercat
 """
 import numpy as np
+
+
+from scipy import stats
+from emcee import PTSampler, EnsembleSampler
+try:
+    import matplotlib.pyplot as plt
+except:
+    plt = None
+
+
+def lnlike_geom(p, y):
+    """
+    The probability distribution of the number of failures before the first
+    success, supported on the set { 0, 1, 2, 3, ... }.
+    See http://en.wikipedia.org/wiki/Geometric_distribution
+    """
+    return (y * np.log(1. - p) + np.log(p)).sum()
+
+
+# Beta(0.1, 5) prior on geometrical distribution ``p`` parameter
+# - VERY informative (but i am trying to replicate ``pymc`` result).
+def lnprior_geom(p):
+    return stats.beta.logpdf(p, 0.1, 5.)
+
+
+def lnpost_geom(p, y):
+    lnpr = lnprior_geom(p)
+    if np.isinf(lnpr):
+        return -np.inf
+    else:
+        return lnlike_geom(p, y) + lnpr
+
+
+def lnlike_pois(lambda_, y):
+    return stats.poisson.logpmf(y, lambda_).sum()
+
+
+# Uniform(0, 1000) prior on Poisson distribution ``lambda`` parameter
+def lnprior_pois(lambda_):
+    return stats.uniform.logpdf(lambda_, 0., 1000.)
+
+
+def lnpost_pois(lambda_, y):
+    lnpr = lnprior_pois(lambda_)
+    if np.isinf(lnpr):
+        return -np.inf
+    else:
+        return lnlike_pois(lambda_, y) + lnpr
+
+
+if __name__ == '__main__':
+    y = np.array([0, 1, 2, 3, 8])
+    ntemps = 20
+    nwalkers = 50
+    ndim = 1
+
+    print ("Check prob. functions using EnsembleSampler")
+    print ("Checking geometrical model...")
+    sampler = EnsembleSampler(nwalkers, ndim, lnpost_geom, args=(y,))
+    p0 = np.random.uniform(low=0, high=1.0, size=(nwalkers, ndim))
+    for p, lnprob, lnlike in sampler.sample(p0, iterations=200):
+        pass
+    sampler.reset()
+    for p, lnprob, lnlike in sampler.sample(p, iterations=2000, thin=10):
+        pass
+
+    if plt:
+        plt.hist(sampler.flatchain[::10, :], bins=30, normed=True)
+        plt.xlabel(r'p for geometrical model')
+        plt.ylabel(r'p(p | data)')
+        plt.show()
+
+    print ("Checking Poisson model...")
+    sampler = EnsembleSampler(nwalkers, ndim, lnpost_pois, args=(y,))
+    p0 = stats.gamma.rvs(3., 2., size=nwalkers * ndim).reshape((nwalkers, ndim))
+    for p, lnprob, lnlike in sampler.sample(p0, iterations=200):
+        pass
+    sampler.reset()
+    for p, lnprob, lnlike in sampler.sample(p, iterations=2000, thin=10):
+        pass
+
+    if plt:
+        plt.close()
+        plt.hist(sampler.flatchain[::10, :], bins=30, normed=True)
+        plt.xlabel(r'$\lambda$ for Poisson model')
+        plt.ylabel(r'p($\lambda$ | data)')
+        plt.show()
+
+    print ("Estimating evidence for geometrical model using PTSampler")
+    sampler = PTSampler(ntemps, nwalkers, ndim, lnlike_geom, lnprior_geom,
+                        loglargs=(y,))
+    p0 = np.random.uniform(low=0, high=1.0, size=(ntemps, nwalkers, ndim))
+    for p, lnprob, lnlike in sampler.sample(p0, iterations=200):
+        pass
+    sampler.reset()
+    for p, lnprob, lnlike in sampler.sample(p, lnprob0=lnprob,
+                                            lnlike0=lnlike,
+                                            iterations=2000, thin=10):
+        pass
+
+    # Check perfomance of Tl  (this code is from @farr)
+    print ("Temperature swap acceptance rates are ")
+    for b, rate in zip(sampler.betas, sampler.tswap_acceptance_fraction):
+        print ('T = ', 1.0/b, ' accept = ', rate)
+    print
+
+    if plt is not None:
+        plt.close()
+        # Print a plot of the TI integrand:
+        mean_logls = np.mean(sampler.lnlikelihood.reshape((ntemps, -1)), axis=1)
+        betas = sampler.betas
+        plt.plot(betas, betas*mean_logls) # \int d\beta <logl> = \int d\ln\beta \beta <logl>
+        plt.xscale('log')
+        plt.xlabel(r'$\beta$')
+        plt.ylabel(r'$\beta \left\langle \ln L \right\rangle_\beta$')
+        plt.title('Thermodynamic Integration Integrand')
+        plt.show()
+
+    logZ_geom, uncertainty = sampler.thermodynamic_integration_log_evidence()
+    print ("Estimated log evidence for geometrical model = ", logZ_geom, "+/-", uncertainty)
+
+    print ("Estimating evidence for Poisson model using PT")
+    sampler = PTSampler(ntemps, nwalkers, ndim, lnlike_pois, lnprior_pois,
+                        loglargs=(y,))
+    p0 = stats.gamma.rvs(3., 2., size=nwalkers * ndim * ntemps).reshape((ntemps,
+                                                                         nwalkers,
+                                                                         ndim))
+    for p, lnprob, lnlike in sampler.sample(p0, iterations=200):
+        pass
+    sampler.reset()
+    for p, lnprob, lnlike in sampler.sample(p, lnprob0=lnprob,
+                                            lnlike0=lnlike,
+                                            iterations=2000, thin=10):
+        pass
+
+    # Check perfomance of Tl (this code is from @farr)
+    print ("Temperature swap acceptance rates are ")
+    for b, rate in zip(sampler.betas, sampler.tswap_acceptance_fraction):
+        print ('T = ', 1.0/b, ' accept = ', rate)
+    print
+
+    if plt is not None:
+        # Print a plot of the TI integrand:
+        plt.close()
+        mean_logls = np.mean(sampler.lnlikelihood.reshape((ntemps, -1)), axis=1)
+        betas = sampler.betas
+        plt.plot(betas, betas*mean_logls) # \int d\beta <logl> = \int d\ln\beta \beta <logl>
+        plt.xscale('log')
+        plt.xlabel(r'$\beta$')
+        plt.ylabel(r'$\beta \left\langle \ln L \right\rangle_\beta$')
+        plt.title('Thermodynamic Integration Integrand')
+        plt.show()
+
+    logZ_pois, uncertainty = sampler.thermodynamic_integration_log_evidence()
+    print ("Estimated log evidence for Poisson model = ", logZ_pois, "+/-", uncertainty)
+
+    print ("Bayes factor of geometrical to Poison model = ", np.exp(logZ_geom -
+                                                                   logZ_pois))
+
+###############################################################################
+
 def lnprior(theta):
 #    print(' lnprior has been called')   
 #    print('lnprior speaking: theta = ',theta)
@@ -27,7 +188,7 @@ def lnprior(theta):
         
     return -np.inf
 
-lnprior(0.3)
+
 
 #import numpy as np
 #
@@ -65,14 +226,6 @@ lnprior(0.3)
 #pos = [result["x"] + 1e-4*np.random.randn(ndim) for i in range(nwalkers)]
 #
 #print('pos',pos)
-
-
-
-
-
-
-
-
 
 
 

@@ -8,12 +8,12 @@ Created on Fri Feb 23 16:02:10 2018
 
 from pylab import figure, scatter, xlabel, ylabel, title, show, savefig
 from pylab import legend, errorbar
-import emcee
+from emcee import EnsembleSampler
 import numpy as np
 import time
 import os.path
 
-import tools
+from tools import timer
 import ln
 from plots import stat
 
@@ -52,7 +52,7 @@ def stats(params, zpicks, mag, sigma, nsteps, save_path, firstderivs_key):
         
     # Sampler setup.
     times0 = time.time()    # starting sampler timer
-    sampler = emcee.EnsembleSampler(nwalkers, ndim, ln.lnprob, 
+    sampler = EnsembleSampler(nwalkers, ndim, ln.lnprob, 
                                     args=(zpicks, mag, sigma, firstderivs_key))
     
     # Burnin.
@@ -182,7 +182,7 @@ def stats(params, zpicks, mag, sigma, nsteps, save_path, firstderivs_key):
     print('sigma:', str(sigma))
     print('npoints:', str(len(zpicks)))
     
-    tools.timer('burnin', timeb0, timeb1)
-    tools.timer('sampler', times0, times1)
+    timer('burnin', timeb0, timeb1)
+    timer('sampler', times0, times1)
     
     return propert, sampler
