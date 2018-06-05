@@ -159,9 +159,11 @@ def onepercent():
 
 #m_vc, g_vc, sigma, npoints = onepercent()
 
-def modelcheck(mag, zpicks, plot_var):
+def modelcheck(mag, zpicks, plot_var, firstderivs_key):
     
     t, dlpc, dl, a, ombar_m, gamma, ombar_de, ombar_m0, ombar_de0 = plot_var
+    
+    print('Type of interaction in the model being fitted to data:', firstderivs_key)
     
     # Scale factor vs redshift.
     figure()

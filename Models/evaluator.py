@@ -16,7 +16,7 @@ from tools import runcount, timer
 # Model parameteres:  
 m_true = 0.3           # (= e_m(t)/e_crit(t0) at t=t0).
 de_true = 1 - m_true   # (de = e_de(t)/e_crit(t0) at t=t0).
-g_true = 0.5       # Interaction term, rate at which DE decays into matter.
+g_true = 0       # Interaction term, rate at which DE decays into matter.
 
 params = {'m':m_true}
 params = {'m':m_true, 'gamma':g_true}
@@ -28,6 +28,9 @@ npoints, nsteps = 10000, 10000
 # Statistical parameteres of noise:
 mu = 0            # mean
 sigma = 0.01      # standard deviation
+
+# Type of interaction in the model being fitted to data
+firstderivs_key = 'LCDM'
 
 def repeatrun():
     # Folder for saving output.
@@ -41,17 +44,22 @@ def repeatrun():
     while i < 1:
         print('_____________________ run number',i)
         propert, sampler = paramfinder.paramfinder(
-                npoints, nsteps, sigma, mu, params, save_path)
+                npoints, nsteps, sigma, mu, params, save_path, firstderivs_key)
         i += 1
     
     # Saving sampler to directory.
     save(save_path, 'sampler', sampler)
-    
+    maxlnprob = propert['maxlnprob']
+    print('maxlnprob',maxlnprob)
+    print('Type of interaction in the model being fitted to data:', 
+          firstderivs_key)
+    print('Data is simulated using LCDM')
+    print()
     print('directory:',directory)
 
-    return sampler
+    return maxlnprob
 
-sampler = repeatrun()
+maxlnprob = repeatrun()
 
 
 def errorvsdatasize():

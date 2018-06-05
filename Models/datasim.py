@@ -14,7 +14,7 @@ import zodesolve
 # Empirical parameters.
 M = -19                     # Absolute brightness of supernovae.
 
-def mag(params, zpicks):
+def mag(params, zpicks, firstderivs_key):
     """
     Takes in:
             gamma = interaction constant;
@@ -34,7 +34,7 @@ def mag(params, zpicks):
         zpicks = zpicks.tolist()
         print('converted to list in zmsim')
     
-    dlpc, plot_var = zodesolve.zodesolve(params, zpicks)
+    dlpc, plot_var = zodesolve.zodesolve(params, zpicks, firstderivs_key)
     
     # Calculating apparent magnitudes of supernovae at the simulated
     # luminosity distances using the distance modulus formula.
@@ -47,9 +47,9 @@ def mag(params, zpicks):
             magnitude = 5 * log10(dlpc[i]/10) + M
         mag.append(magnitude)
     
-    # Checking evolution of the model.
-    import plots
-    plots.modelcheck(mag, zpicks, plot_var)
+#    # Checking evolution of the model.
+#    import plots
+#    plots.modelcheck(mag, zpicks, plot_var, firstderivs_key)
         
     return mag
 

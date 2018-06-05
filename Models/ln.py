@@ -9,7 +9,7 @@ Created on Thu Feb 15 13:52:36 2018
 import numpy as np
 import datasim
 
-def lnlike(theta, zpicks, mag, sigma):
+def lnlike(theta, zpicks, mag, sigma, firstderivs_key):
 #    print('@@@@ lnlike has been called')
 #    
 #    print('lnline -- theta', theta)
@@ -25,7 +25,7 @@ def lnlike(theta, zpicks, mag, sigma):
         elif i == 2:
             params['de'] = theta[i]
     
-    model = datasim.mag(params, zpicks)
+    model = datasim.mag(params, zpicks, firstderivs_key)
     inv_sigma2 = 1.0/(sigma**2)
     return -0.5*(np.sum((mag-model)**2*inv_sigma2 - np.log(inv_sigma2)))
 
@@ -48,10 +48,10 @@ def lnprior(theta):
         
     return 0.0#-np.inf
 
-def lnprob(theta, zpicks, mag, sigma):
+def lnprob(theta, zpicks, mag, sigma, firstderivs_key):
 #    print('@@@@@ lnprob has been called')
     lp = lnprior(theta)
     if not np.isfinite(lp):
         return -np.inf
     
-    return lp + lnlike(theta, zpicks, mag, sigma)
+    return lp + lnlike(theta, zpicks, mag, sigma, firstderivs_key)

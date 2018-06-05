@@ -17,7 +17,7 @@ import tools
 import ln
 from plots import stat
 
-def stats(params, zpicks, mag, sigma, nsteps, save_path):
+def stats(params, zpicks, mag, sigma, nsteps, save_path, firstderivs_key):
     """
     Takes in:
             m_true = e_m(t)/ec(t0) at t=t0;
@@ -53,7 +53,7 @@ def stats(params, zpicks, mag, sigma, nsteps, save_path):
     # Sampler setup.
     times0 = time.time()    # starting sampler timer
     sampler = emcee.EnsembleSampler(nwalkers, ndim, ln.lnprob, 
-                                    args=(zpicks, mag, sigma))
+                                    args=(zpicks, mag, sigma, firstderivs_key))
     
     # Burnin.
     burnin = int(nsteps/4)  # steps to discard
@@ -71,16 +71,17 @@ def stats(params, zpicks, mag, sigma, nsteps, save_path):
     times1=time.time()      # stopping sampler timer
     
     # Walker steps.
-    slnprob = sampler.flatlnprobability
-    
+    lnprob = sampler.flatlnprobability
     # Index of best parameters found by emcee.
     bi = np.argmax(sampler.flatlnprobability) # index with highest post prob 
+    max_lnprob = lnprob[bi]
     
     # Extracting results:
     thetabest = np.zeros(ndim)
     parambest = {}
     true = []
     propert = {}
+    propert['maxlnprob'] = max_lnprob
     for i in range(ndim):
         if i == 0:                       
             mbest = sampler.flatchain[bi,i]
@@ -97,7 +98,7 @@ def stats(params, zpicks, mag, sigma, nsteps, save_path):
             propert['m_sd'] = m_sd
             propert['m_mean'] = m_mean
             
-            stat('coral', m, m_true, 'Matter', slnprob, zpicks, 
+            stat('coral', m, m_true, 'Matter', lnprob, zpicks, 
                  mag, sigma, nsteps, nwalkers, save_path)
             
         elif i == 1:
@@ -115,7 +116,7 @@ def stats(params, zpicks, mag, sigma, nsteps, save_path):
             propert['gamma_sd'] = gamma_sd
             propert['gamma_mean'] = gamma_mean
             
-            stat('aquamarine', gamma, g_true, 'Gamma', slnprob, zpicks, 
+            stat('aquamarine', gamma, g_true, 'Gamma', lnprob, zpicks, 
                  mag, sigma, nsteps, nwalkers, save_path)
                     
         elif i == 2:
@@ -135,7 +136,7 @@ def stats(params, zpicks, mag, sigma, nsteps, save_path):
             propert['de_sd'] = de_sd
             propert['de_mean'] = de_mean
             
-            stat('orchid', de, de_true, 'DE', slnprob, zpicks, 
+            stat('orchid', de, de_true, 'DE', lnprob, zpicks, 
                  mag, sigma, nsteps, nwalkers, save_path)
             
     # Checking if best found parameters are within prior.
@@ -148,7 +149,7 @@ def stats(params, zpicks, mag, sigma, nsteps, save_path):
     # Plot of mag simulated using "true" parameters, overlayed with
     # mag simulated using emcee best parameters.
     import datasim
-    magbest = datasim.mag(parambest, zpicks)
+    magbest = datasim.mag(parambest, zpicks, firstderivs_key)
     figure()
     title('Evolution of magnitude with redshift \n nsteps: '
           +str(nsteps)+', noise: '+str(sigma)+', npoints: '+str(len(zpicks)))

@@ -6,9 +6,17 @@ Created on Thu Feb 15 13:38:48 2018
 @author: BallBlueMeercat
 """
 from scipy.integrate import odeint
-import firstderivs
+from firstderivs import edecay, Hdecay, rdecay, rdecay_de, rdecay_m, interacting, LCDM
 
-def zodesolve(params, zpicks):
+firstderivs_functions = {'edecay':edecay,
+                         'Hdecay':Hdecay,
+                         'rdecay':rdecay,
+                         'rdecay_de':rdecay_de,
+                         'rdecay_m':rdecay_m,
+                         'interacting':interacting,
+                         'LCDM':LCDM}
+
+def zodesolve(params, zpicks, firstderivs_key):
     """
     Takes in:
         gamma = interaction constant;
@@ -45,8 +53,13 @@ def zodesolve(params, zpicks):
     # Pack up the initial conditions and eq of state parameters.
     v0 = [t0, a0, ombar_m0, ombar_de0, z0, dl0]
     
+    # Extracting the parsed mode of interaction.
+    firstderivs_function = firstderivs_functions.get(firstderivs_key,0)
+    if firstderivs_function == 0:
+        print("firstderivs_functions dict didn't have the key zodeosolve asked for")
+    
     # Call the ODE solver. maxstep=5000000 added later to try and avoid 
-    vsol = odeint(firstderivs.rdecay, v0, zpicks, args=(gamma,H0), 
+    vsol = odeint(firstderivs_function, v0, zpicks, args=(gamma,H0), 
                   atol=abserr, rtol=relerr, mxstep=5000000)
             
     # Separate results into their own arrays:
