@@ -58,8 +58,12 @@ def zodesolve(params, zpicks, firstderivs_key):
     if firstderivs_function == 0:
         print("firstderivs_functions dict didn't have the key zodeosolve asked for")
     
-    # Call the ODE solver. maxstep=5000000 added later to try and avoid 
-    vsol = odeint(firstderivs_function, v0, zpicks, args=(gamma,H0), 
+    # Call the ODE solver. maxstep=5000000 added later to try and avoid
+    if firstderivs_key == 'LCDM':
+        vsol = odeint(firstderivs_function, v0, zpicks, args=(H0,), 
+                  atol=abserr, rtol=relerr, mxstep=5000000)  
+    else:
+        vsol = odeint(firstderivs_function, v0, zpicks, args=(gamma,H0), 
                   atol=abserr, rtol=relerr, mxstep=5000000)
             
     # Separate results into their own arrays:
@@ -68,7 +72,7 @@ def zodesolve(params, zpicks, firstderivs_key):
     ombar_m = vsol[1:,2]
     ombar_de = vsol[1:,3]
     z = vsol[1:,4]    
-    dl = vsol[1:,5] * (1+z)   # in units of dl*(H0/c)
+    dl = vsol[1:,5] * (1+z)  # in units of dl*(H0/c)
     dlpc = dl * c_over_H0    # dl in parsecs (= vsol[dl] * c/H0)
     
     

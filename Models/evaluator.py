@@ -13,17 +13,13 @@ from results import save
 import paramfinder
 from tools import runcount, timer
 
-# Model parameteres:  
+# Data simulating model parameteres:  
 m_true = 0.3           # (= e_m(t)/e_crit(t0) at t=t0).
 de_true = 1 - m_true   # (de = e_de(t)/e_crit(t0) at t=t0).
-g_true = 0       # Interaction term, rate at which DE decays into matter.
-
-params = {'m':m_true}
-params = {'m':m_true, 'gamma':g_true}
-#params = {'m':m_true, 'gamma':g_true, 'de':de_true}
+g_true = 0             # Interaction term, rate at which DE decays into matter.
 
 # Number of datapoints to be simulated and number of emcee steps.
-npoints, nsteps = 1000, 10000
+npoints, nsteps = 10000, 10000
 
 # Statistical parameteres of noise:
 mu = 0            # mean
@@ -31,8 +27,15 @@ sigma = 0.01      # standard deviation
 
 # Type of interaction in the model being fitted to data
 # 'Hdecay', 'rdecay', 'rdecay_de', 'rdecay_m', 'interacting', 'LCDM':LCDM
-data_firstderivs_key = 'rdecay'
-model_firstderivs_key = data_firstderivs_key #'LCDM'
+data_firstderivs_key = 'LCDM'
+test_firstderivs_key = data_firstderivs_key#'rdecay'
+
+# Length of parameters has to correspond to the model being tested.
+if test_firstderivs_key == 'LCDM':
+    params = {'m':m_true}
+else:
+    params = {'m':m_true, 'gamma':g_true}
+    #params = {'m':m_true, 'gamma':g_true, 'de':de_true}
 
 def repeatrun():
     # Folder for saving output.
@@ -47,7 +50,7 @@ def repeatrun():
         print('_____________________ run number',i)
         propert, sampler = paramfinder.paramfinder(
                 npoints, nsteps, sigma, mu, params, 
-                save_path, model_firstderivs_key, model_firstderivs_key)
+                save_path, data_firstderivs_key, test_firstderivs_key)
         i += 1
     
     # Saving sampler to directory.
@@ -55,8 +58,8 @@ def repeatrun():
     maxlnprob = propert['maxlnprob']
     print('maxlnprob',maxlnprob)
     print('Type of interaction in the model being fitted to data:', 
-          model_firstderivs_key)
-    print('Data is simulated using',model_firstderivs_key)
+          test_firstderivs_key)
+    print('Data is simulated using',data_firstderivs_key)
     print()
     print('directory:',directory)
 
