@@ -8,10 +8,12 @@ Created on Wed Apr 18 21:45:40 2018
 from pylab import figure, xlabel, ylabel, title, scatter, show, savefig
 import time
 import os.path
+import numpy as np
 
 from results import save
 import paramfinder
 from tools import runcount, timer
+from datasim import data
 
 # Data simulating model parameteres:  
 m_true = 0.3           # (= e_m(t)/e_crit(t0) at t=t0).
@@ -28,6 +30,7 @@ sigma = 0.01      # standard deviation
 # Type of interaction in the model being fitted to data
 # 'Hdecay', 'rdecay', 'rdecay_de', 'rdecay_m', 'interacting', 'LCDM':LCDM
 data_firstderivs_key = 'LCDM'
+data_params = {'m':m_true}
 test_firstderivs_key = data_firstderivs_key#'rdecay'
 
 # Length of parameters has to correspond to the model being tested.
@@ -48,24 +51,52 @@ def repeatrun():
     i = 0
     while i < 1:
         print('_____________________ run number',i)
+        
+        mag = data(mu, sigma, npoints, data_params, data_firstderivs_key)
+        
         propert, sampler = paramfinder.paramfinder(
                 npoints, nsteps, sigma, mu, params, 
-                save_path, data_firstderivs_key, test_firstderivs_key)
+                save_path, mag, test_firstderivs_key)
         i += 1
     
     # Saving sampler to directory.
     save(save_path, 'sampler', sampler)
-    maxlnprob = propert['maxlnprob']
-    print('maxlnprob',maxlnprob)
     print('Type of interaction in the model being fitted to data:', 
           test_firstderivs_key)
     print('Data is simulated using',data_firstderivs_key)
     print()
     print('directory:',directory)
 
-    return maxlnprob
+    return
 
-maxlnprob = repeatrun()
+repeatrun()
+
+def modeltest(mag, test_firstderivs_key, save_path):
+    
+    propert, sampler = paramfinder.paramfinder(
+            npoints, nsteps, sigma, mu, params,
+            save_path, mag, test_firstderivs_key)
+    
+    trace = propert.get('trace', 'no_trace')
+    if trace == 'no_trace':
+        print('modeltest found no trace in propert from paramfinder')
+    
+    return trace
+
+def Bfactor():
+    
+    import zpicks # DO NOT MOVE THIS LINE UP
+    zpicks = zpicks.zpicks(0.005, 2, npoints)
+    
+    import datasim
+    model = datasim.mag(params, zpicks, 'LCDM')
+    model = np.asarray(model)
+    mag = datasim.gnoise(model, mu, sigma)
+
+    trace_1D = modeltest(mag, 'LCDM')
+    trace_2D = modeltest(mag, 'rdecay')
+    
+    return
 
 
 def errorvsdatasize():
