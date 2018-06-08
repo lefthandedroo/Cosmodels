@@ -98,7 +98,7 @@ def stats(params, zpicks, mag, sigma, nsteps, save_path, firstderivs_key):
             m_mean = np.mean(m)
             propert['m_sd'] = m_sd
             propert['m_mean'] = m_mean
-            
+            propert['m'] = mbest
             stat('coral', m, m_true, 'Matter', lnprob, zpicks, 
                  mag, sigma, nsteps, nwalkers, save_path)
             
@@ -116,7 +116,7 @@ def stats(params, zpicks, mag, sigma, nsteps, save_path, firstderivs_key):
             gamma_mean = np.mean(gamma)
             propert['gamma_sd'] = gamma_sd
             propert['gamma_mean'] = gamma_mean
-            
+            propert['gamma'] = gammabest
             stat('aquamarine', gamma, g_true, 'Gamma', lnprob, zpicks, 
                  mag, sigma, nsteps, nwalkers, save_path)
                     
@@ -136,7 +136,7 @@ def stats(params, zpicks, mag, sigma, nsteps, save_path, firstderivs_key):
             de_mean = np.mean(de)
             propert['de_sd'] = de_sd
             propert['de_mean'] = de_mean
-            
+            propert['de'] = debest
             stat('orchid', de, de_true, 'DE', lnprob, zpicks, 
                  mag, sigma, nsteps, nwalkers, save_path)
             

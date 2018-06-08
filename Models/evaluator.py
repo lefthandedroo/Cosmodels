@@ -24,7 +24,7 @@ de_true = 1 - m_true   # (de = e_de(t)/e_crit(t0) at t=t0).
 g_true = 0             # Interaction term, rate at which DE decays into matter.
 
 # Number of datapoints to be simulated and number of emcee steps.
-npoints, nsteps = 10000, 10000
+npoints, nsteps = 1000, 1000
 
 # Statistical parameteres of noise:
 mu = 0            # mean
@@ -38,7 +38,6 @@ if data_key == 'LCDM':
     data_params = {'m':m_true}
 else:
     data_params = {'m':m_true, 'gamma':g_true}
-
 
 test_key = 'rdecay'
 
@@ -76,17 +75,21 @@ def repeatrun():
 
 #repeatrun()
 
-#def integrate_posterior_1D(lnprob, xlim, zpicks, mag):
-#    func = lambda theta: np.exp(lnprob(theta, zpicks, mag, sigma, 
-#                                       test_firstderivs_key))
-#    return integrate.dblquad(func, xlim[0], xlim[1], lambda x: ylim[0], 
-#                             lambda x: ylim[1])
-#
-#def integrate_posterior_2D(lnprob, xlim, ylim, zpicks, mag):
-#    func = lambda theta1, theta0: np.exp(lnprob(theta, zpicks, mag, sigma, 
-#                                       test_firstderivs_key))
-#    return integrate.dblquad(func, xlim[0], xlim[1],
-#                             lambda x: ylim[0], lambda x: ylim[1])
+
+def integrate_posterior_1D(lnprob, xlim, theta, zpicks, 
+                           mag, sigma, test_key):
+    func = lambda theta: np.exp(lnprob(theta, zpicks, mag, sigma, 
+                                       test_key))
+    return integrate.dblquad(func, xlim[0], xlim[1])
+
+
+def integrate_posterior_2D(lnprob, xlim, ylim, theta, zpicks, 
+                           mag, sigma, test_key):
+    func = lambda theta1, theta0: np.exp(lnprob([theta0, theta1], 
+                                                zpicks, mag, sigma, test_key))
+    return integrate.dblquad(func, xlim[0], xlim[1],
+                             lambda x: ylim[0], lambda x: ylim[1])
+
 
 def modeltest(npoints, nsteps, sigma, mu, 
               zpicks, mag, test_key, save_path):
@@ -105,11 +108,15 @@ def modeltest(npoints, nsteps, sigma, mu,
     trace = propert.get('trace',)    
 #    if not trace:
 #        print ('modeltest got no trace for %s from paramfinder'%(test_key))
+    
+    theta = []
+    for key in params:
+        theta.append(propert.get(key,))
         
-    return trace
+    return trace, theta
 
 
-def Bfactor(npoints, nsteps, sigma, mu, data_params, data_key, M0_key, M1_key):
+def Bfactor(npoints, nsteps, sigma, mu, data_params, data_key, M1_key, M2_key):
     # Changing directory to dedicated folder for saving output.
     save_path, directory = path()
     
@@ -117,23 +124,26 @@ def Bfactor(npoints, nsteps, sigma, mu, data_params, data_key, M0_key, M1_key):
     mag, zpicks = data(mu, sigma, npoints, data_params, data_key)
 
     
-    trace_1D = modeltest(npoints, nsteps, sigma, mu,
-                         zpicks, mag, M0_key, save_path)
-    trace_2D = modeltest(npoints, nsteps, sigma, mu,
+    trace_1D, theta_1D = modeltest(npoints, nsteps, sigma, mu,
                          zpicks, mag, M1_key, save_path)
+    print('theta_1D:',theta_1D)
+    trace_2D, theta_2D = modeltest(npoints, nsteps, sigma, mu,
+                         zpicks, mag, M2_key, save_path)
+    print('theta_2D:',theta_2D)
     
-#    xlim, ylim = zip(trace_2D.min(0), trace_2D.max(0))
-#    Z1, err_Z1 = integrate_posterior_2D(log_posterior, xlim, ylim)
+#    xlim = zip(trace_1D.min(0), trace_1D.max(0))
+#    Z1, err_Z1 = integrate_posterior_1D(lnprob, xlim, theta_1D, 
+#                                        zpicks, mag, sigma, M1_key)
 #    print("Z1 =", Z1, "+/-", err_Z1)
-#    
-#    xlim, ylim, zlim = zip(trace_3D.min(0), trace_3D.max(0))
-#    Z2, err_Z2 = integrate_posterior_3D(log_posterior, xlim, ylim, zlim)
-#    print("Z2 =", Z2, "+/-", err_Z2)
-#                  
+    
+    xlim, ylim = zip(trace_2D.min(0), trace_2D.max(0))
+    Z2, err_Z2 = integrate_posterior_2D(lnprob, xlim, ylim, theta_2D, 
+                                        zpicks, mag, sigma, M2_key)
+    print("Z2 =", Z2, "+/-", err_Z2)
+                  
 #    print("Bayes factor:", Z2 / Z1)
     
     print('Data is simulated using',data_key)
-    print('Model being tested:', test_key)
     print()
     print('directory:',directory)
     
@@ -141,7 +151,8 @@ def Bfactor(npoints, nsteps, sigma, mu, data_params, data_key, M0_key, M1_key):
 
 Bfactor(npoints, nsteps, sigma, mu, data_params, data_key, data_key, test_key)
 
-def errorvsdatasize():
+
+def errorvsdatasize(params):
     # Script timer.
     timet0 = time.time()
     
