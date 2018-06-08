@@ -5,7 +5,14 @@ Created on Thu Sep 21 15:50:29 2017
 
 @author: BallBlueMeercat
 """
+
+
+Data:
 import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns; sns.set() # set default plot styles
+from scipy import stats, optimize, integrate
+
 data = np.array([[ 0.42,  0.72,  0.  ,  0.3 ,  0.15,
                    0.09,  0.19,  0.35,  0.4 ,  0.54,
                    0.42,  0.69,  0.2 ,  0.88,  0.03,
@@ -19,21 +26,12 @@ data = np.array([[ 0.42,  0.72,  0.  ,  0.3 ,  0.15,
                    0.1 ,  0.1 ,  0.1 ,  0.1 ,  0.1 ,
                    0.1 ,  0.1 ,  0.1 ,  0.1 ,  0.1  ]])
 
-
-import matplotlib.pyplot as plt
-import seaborn as sns; sns.set() # set default plot styles
-
 x, y, sigma_y = data
-fig, ax = plt.subplots()
-ax.errorbar(x, y, sigma_y, fmt='ok', ecolor='gray')
-ax.set(xlabel='x', ylabel='y', title='input data');
+
 
 def polynomial_fit(theta, x):
     """Polynomial model of degree (len(theta) - 1)"""
     return sum(t * x ** n for (n, t) in enumerate(theta))
-
-
-from scipy import stats
 
 def logL(theta, model=polynomial_fit, data=data):
     """Gaussian log-likelihood of the model at theta"""
@@ -42,8 +40,7 @@ def logL(theta, model=polynomial_fit, data=data):
     return sum(stats.norm.logpdf(*args)
                for args in zip(y, y_fit, sigma_y))
 
-from scipy import optimize
-
+# Finding parameters (theta) with max likelihood.
 def best_theta(degree, model=polynomial_fit, data=data):
     theta_0 = (degree + 1) * [0]
     neg_logL = lambda theta: -logL(theta, model, data)
@@ -52,6 +49,7 @@ def best_theta(degree, model=polynomial_fit, data=data):
 theta1 = best_theta(1)
 theta2 = best_theta(2)
 
+# Best linear and best quadratic fits.
 xfit = np.linspace(0, 1, 1000)
 fig, ax = plt.subplots()
 ax.errorbar(x, y, sigma_y, fmt='ok', ecolor='gray')
@@ -59,22 +57,6 @@ ax.plot(xfit, polynomial_fit(theta1, xfit), label='best linear model')
 ax.plot(xfit, polynomial_fit(theta2, xfit), label='best quadratic model')
 ax.legend(loc='best', fontsize=14)
 ax.set(xlabel='x', ylabel='y', title='data');
-
-degrees = np.arange(1, 10)
-thetas = [best_theta(d) for d in degrees]
-logL_max = [logL(theta) for theta in thetas]
-
-fig, ax = plt.subplots(1, 2, figsize=(14, 5))
-ax[0].plot(degrees, logL_max)
-ax[0].set(xlabel='degree', ylabel='log(Lmax)')
-ax[1].errorbar(x, y, sigma_y, fmt='ok', ecolor='gray')
-ylim = ax[1].get_ylim()
-for (degree, theta) in zip(degrees, thetas):
-    if degree not in [1, 2, 9]: continue
-    ax[1].plot(xfit, polynomial_fit(theta, xfit),
-               label='degree={0}'.format(degree))
-ax[1].set(ylim=ylim, xlabel='x', ylabel='y')
-ax[1].legend(fontsize=14, loc='best');
 
 
 def log_prior(theta):
@@ -111,25 +93,24 @@ def compute_mcmc(degree, data=data,
 trace_2D = compute_mcmc(1)
 trace_3D = compute_mcmc(2)
 
-import pandas as pd
-columns = [r'$\theta_{0}$'.format(i) for i in range(3)]
-df_2D = pd.DataFrame(trace_2D, columns=columns[:2])
-
-with sns.axes_style('ticks'):
-    jointplot = sns.jointplot(r'$\theta_0$', r'$\theta_1$',
-                              data=df_2D, kind="hex");
-                              
-df_3D = pd.DataFrame(trace_3D, columns=columns[:3])
-
-# get the colormap from the joint plot above
-cmap = jointplot.ax_joint.collections[0].get_cmap()
-
-with sns.axes_style('ticks'):
-    grid = sns.PairGrid(df_3D)
-    grid.map_diag(plt.hist, bins=30, alpha=0.5)
-    grid.map_offdiag(plt.hexbin, gridsize=50, linewidths=0, cmap=cmap)
+#import pandas as pd
+#columns = [r'$\theta_{0}$'.format(i) for i in range(3)]
+#df_2D = pd.DataFrame(trace_2D, columns=columns[:2])
+#
+#with sns.axes_style('ticks'):
+#    jointplot = sns.jointplot(r'$\theta_0$', r'$\theta_1$',
+#                              data=df_2D, kind="hex");
+#                              
+#df_3D = pd.DataFrame(trace_3D, columns=columns[:3])
+#
+## get the colormap from the joint plot above
+#cmap = jointplot.ax_joint.collections[0].get_cmap()
+#
+#with sns.axes_style('ticks'):
+#    grid = sns.PairGrid(df_3D)
+#    grid.map_diag(plt.hist, bins=30, alpha=0.5)
+#    grid.map_offdiag(plt.hexbin, gridsize=50, linewidths=0, cmap=cmap)
     
-from scipy import integrate
 
 def integrate_posterior_2D(log_posterior, xlim, ylim, data=data):
     func = lambda theta1, theta0: np.exp(log_posterior([theta0, theta1], data))
