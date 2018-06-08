@@ -6,6 +6,9 @@ Created on Thu Mar  1 17:06:45 2018
 @author: BallBlueMeercat
 """
 
+import time
+import os.path
+
 def flist(start, stop, step):
     """
     Takes in:
@@ -57,3 +60,13 @@ def runcount(sigma, sigma_max, sigma_step,
 
     print('Iterations to come:',run)
     return
+
+def path():
+    # Folder for saving output.
+    directory = 'run'+str(int(time.time()))
+    # Relative path of output folder.
+    save_path = './'+directory 
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+            
+    return save_path, directory

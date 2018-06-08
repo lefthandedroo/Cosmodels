@@ -7,7 +7,7 @@ Created on Thu Feb 15 13:52:36 2018
 """
 
 import numpy as np
-import datasim
+from datasim import magn
 
 def lnlike(theta, zpicks, mag, sigma, firstderivs_key):
 #    print('@@@@ lnlike has been called')
@@ -25,7 +25,7 @@ def lnlike(theta, zpicks, mag, sigma, firstderivs_key):
         elif i == 2:
             params['de'] = theta[i]
     
-    model = datasim.mag(params, zpicks, firstderivs_key)
+    model = magn(params, zpicks, firstderivs_key)
     inv_sigma2 = 1.0/(sigma**2)
     return -0.5*(np.sum((mag-model)**2*inv_sigma2 - np.log(inv_sigma2)))
 
@@ -46,7 +46,7 @@ def lnprior(theta):
         if (0 < m < 1 or m == 1) and abs(gamma) < 0.1 and (0 < de < 1):
             return 0.0
         
-    return 0.0#-np.inf
+    return -np.inf
 
 def lnprob(theta, zpicks, mag, sigma, firstderivs_key):
 #    print('@@@@@ lnprob has been called')

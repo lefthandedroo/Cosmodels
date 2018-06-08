@@ -5,16 +5,30 @@ Created on Thu Feb 15 13:47:44 2018
 
 @author: BallBlueMeercat
 """
-
+import random
 from math import log10
 import numpy as np
 import zodesolve
+import tools
+
+def redshift_picks(zmin, zmax, n):
+    """
+    Takes in:
+        zmin = integer lowest redshift;
+        zmax = integer highest redshift;
+        n = integer number of redshifts to be generated.
+    Returns:
+        zpicks = list of randomly selected redshifts between zmin and zmax.
+    """
+#    print('-zpicks has been called')
+    zinterval = (zmax - zmin) / (n*2)
+    z_opts = tools.flist(zmin, zmax, zinterval)
+    zpicks = random.sample(z_opts, n)
+    zpicks = sorted(zpicks)
+    return zpicks
 
 
-# Empirical parameters.
-M = -19                     # Absolute brightness of supernovae.
-
-def mag(params, zpicks, firstderivs_key):
+def magn(params, zpicks, firstderivs_key):
     """
     Takes in:
             gamma = interaction constant;
@@ -25,6 +39,9 @@ def mag(params, zpicks, firstderivs_key):
         mag = list of n apparent magnitudes mag corresponding to given redshits.
     """
 #    print('@@@ zmsim has been called')
+    
+    # Absolute brightness of supernovae.
+    M = -19
     
     if not sorted(zpicks) == zpicks:
         zpicks.sort()
@@ -74,7 +91,15 @@ def gnoise(mag, mu, sigma):
     return mag
 
 
-
+def data(mu, sigma, npoints, params, firstderivs_key):
+    
+    zpicks = redshift_picks(0.005, 2, npoints)
+    
+    model = magn(params, zpicks, firstderivs_key)
+    model = np.asarray(model)
+    mag = gnoise(model, mu, sigma)
+    
+    return mag, zpicks
 
 
 

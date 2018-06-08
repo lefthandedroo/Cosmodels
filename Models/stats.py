@@ -74,14 +74,15 @@ def stats(params, zpicks, mag, sigma, nsteps, save_path, firstderivs_key):
     lnprob = sampler.flatlnprobability
     # Index of best parameters found by emcee.
     bi = np.argmax(sampler.flatlnprobability) # index with highest post prob 
-    max_lnprob = lnprob[bi]
+    
+    trace = sampler.chain[:, burnin:, :].reshape(-1, ndim)
     
     # Extracting results:
     thetabest = np.zeros(ndim)
     parambest = {}
     true = []
     propert = {}
-    propert['maxlnprob'] = max_lnprob
+    propert['trace'] = trace
     for i in range(ndim):
         if i == 0:                       
             mbest = sampler.flatchain[bi,i]
@@ -149,7 +150,7 @@ def stats(params, zpicks, mag, sigma, nsteps, save_path, firstderivs_key):
     # Plot of mag simulated using "true" parameters, overlayed with
     # mag simulated using emcee best parameters.
     import datasim
-    magbest = datasim.mag(parambest, zpicks, firstderivs_key)
+    magbest = datasim.magn(parambest, zpicks, firstderivs_key)
     figure()
     title('Evolution of magnitude with redshift \n nsteps: '
           +str(nsteps)+', noise: '+str(sigma)+', npoints: '+str(len(zpicks)))
