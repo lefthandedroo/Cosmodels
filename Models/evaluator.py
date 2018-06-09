@@ -9,13 +9,6 @@ from pylab import figure, xlabel, ylabel, title, scatter, show, savefig
 import time
 import os.path
 import numpy as np
-<<<<<<< HEAD
-
-from results import save
-import paramfinder
-from tools import runcount, timer
-from datasim import data
-=======
 from scipy import integrate
 from ln import lnprob
 from results import save
@@ -24,7 +17,6 @@ from tools import runcount, timer, path
 from datasim import data
 
 
->>>>>>> 43dbdc3f8d07c0144cad572808e36f870b5e87aa
 
 # Parameters used to simulate data:  
 m_true = 0.3           # (= e_m(t)/e_crit(t0) at t=t0).
@@ -40,13 +32,6 @@ sigma = 0.01      # standard deviation
 
 # Key for the dictionary of interaction modes in firstderivs
 # 'Hdecay', 'rdecay', 'rdecay_de', 'rdecay_m', 'interacting', 'LCDM':LCDM
-<<<<<<< HEAD
-data_firstderivs_key = 'LCDM'
-data_params = {'m':m_true}
-test_firstderivs_key = data_firstderivs_key#'rdecay'
-
-=======
->>>>>>> 43dbdc3f8d07c0144cad572808e36f870b5e87aa
 # Length of parameters has to correspond to the model being tested.
 data_key = 'LCDM'
 if data_key == 'LCDM':
@@ -71,68 +56,23 @@ def repeatrun():
     while i < 1:
         print('_____________________ run number',i)
         
-<<<<<<< HEAD
-        mag = data(mu, sigma, npoints, data_params, data_firstderivs_key)
-        
-        propert, sampler = paramfinder.paramfinder(
-                npoints, nsteps, sigma, mu, params, 
-                save_path, mag, test_firstderivs_key)
-=======
         mag, zpicks = data(mu, sigma, npoints, data_params, data_key)
         
         propert, sampler = paramfinder.paramfinder(
                 npoints, nsteps, sigma, mu, params, zpicks, 
                 mag, test_key, save_path)
->>>>>>> 43dbdc3f8d07c0144cad572808e36f870b5e87aa
         i += 1
     
     # Saving sampler to directory.
     save(save_path, 'sampler', sampler)
-<<<<<<< HEAD
-    print('Type of interaction in the model being fitted to data:', 
-          test_firstderivs_key)
-    print('Data is simulated using',data_firstderivs_key)
-    print()
-=======
 
     print('Type of interaction in the model being tested:', 
           test_key)
     print('Data is simulated using',data_key)
->>>>>>> 43dbdc3f8d07c0144cad572808e36f870b5e87aa
     print('directory:',directory)
 
     return
 
-<<<<<<< HEAD
-repeatrun()
-
-def modeltest(mag, test_firstderivs_key, save_path):
-    
-    propert, sampler = paramfinder.paramfinder(
-            npoints, nsteps, sigma, mu, params,
-            save_path, mag, test_firstderivs_key)
-    
-    trace = propert.get('trace', 'no_trace')
-    if trace == 'no_trace':
-        print('modeltest found no trace in propert from paramfinder')
-    
-    return trace
-
-def Bfactor():
-    
-    import zpicks # DO NOT MOVE THIS LINE UP
-    zpicks = zpicks.zpicks(0.005, 2, npoints)
-    
-    import datasim
-    model = datasim.mag(params, zpicks, 'LCDM')
-    model = np.asarray(model)
-    mag = datasim.gnoise(model, mu, sigma)
-
-    trace_1D = modeltest(mag, 'LCDM')
-    trace_2D = modeltest(mag, 'rdecay')
-    
-    return
-=======
 #repeatrun()
 
 
@@ -210,7 +150,6 @@ def Bfactor(npoints, nsteps, sigma, mu, data_params, data_key, M1_key, M2_key):
     return trace_1D, trace_2D
 
 Bfactor(npoints, nsteps, sigma, mu, data_params, data_key, data_key, test_key)
->>>>>>> 43dbdc3f8d07c0144cad572808e36f870b5e87aa
 
 
 def errorvsdatasize(params):
