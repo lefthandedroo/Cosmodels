@@ -47,8 +47,8 @@ def stat(hue, var, var_true, var_name, slnprob, zpicks,
     
     # Walker steps.
     figure()
-    title('slnprob for '+var_name+' \n nsteps: '+str(nsteps)+', noise: '
-          +str(sigma)+', npoints: '+str(len(zpicks)))
+    title('flatlnprobability for '+var_name+' \n nsteps: '
+          +str(nsteps)+', noise: '+str(sigma)+', npoints: '+str(len(zpicks)))
     plot(var, slnprob, '.', color=hue)
     stamp = str(int(time.time()))
     filename = str(stamp)+'_'+initial+'_steps__nsteps_'+str(nsteps) \

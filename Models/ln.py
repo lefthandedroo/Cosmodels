@@ -9,7 +9,7 @@ Created on Thu Feb 15 13:52:36 2018
 import numpy as np
 from datasim import magn
 
-def lnlike(theta, zpicks, mag, sigma, firstderivs_key):
+def lnlike(theta, zpicks, mag, sigma, firstderivs_key, ndim):
 #    print('@@@@ lnlike has been called')
 #    
 #    print('lnline -- theta', theta)
@@ -17,41 +17,41 @@ def lnlike(theta, zpicks, mag, sigma, firstderivs_key):
 #    print('theta.ndim', theta.ndim)
     
     params = {}
-    for i in range(len(theta)):
-        if i == 0:
-            params['m'] = theta[i]
-        elif i == 1:
-            params['gamma'] = theta[i]
-        elif i == 2:
-            params['de'] = theta[i]
+    if ndim == 1:
+        params = {'m':theta}
+    elif ndim == 2:
+        params = {'m':theta[0],'gamma':theta[1]}
+    elif ndim == 3:
+        params= {'m':theta[0],'gamma':theta[1],'de':theta[2]}
     
     model = magn(params, zpicks, firstderivs_key)
     inv_sigma2 = 1.0/(sigma**2)
     return -0.5*(np.sum((mag-model)**2*inv_sigma2 - np.log(inv_sigma2)))
 
-def lnprior(theta):
+def lnprior(theta, ndim):
 #    print(' lnprior has been called')   
 #    print('lnprior speaking: theta = ',theta)
+#    print('type(theta)',str(type(theta)))
     
-    if len(theta) == 1:
+    if ndim == 1:
         m = theta
         if 0 < m < 1 or m == 1:
             return 0.0
-    elif len(theta) == 2:
+    elif ndim == 2:
         m, gamma = theta
-        if (0 < m < 1 or m == 1) and abs(gamma) < 0.1:
+        if (0 < m < 1 or m == 1) and abs(gamma) < 10:
             return 0.0
-    elif len(theta) == 3:
+    elif ndim == 3:
         m, gamma, de = theta
-        if (0 < m < 1 or m == 1) and abs(gamma) < 0.1 and (0 < de < 1):
+        if (0 < m < 1 or m == 1) and abs(gamma) < 10 and (0 < de < 1):
             return 0.0
         
     return -np.inf
 
-def lnprob(theta, zpicks, mag, sigma, firstderivs_key):
+def lnprob(theta, zpicks, mag, sigma, firstderivs_key, ndim):
 #    print('@@@@@ lnprob has been called')
-    lp = lnprior(theta)
+    lp = lnprior(theta, ndim)
     if not np.isfinite(lp):
         return -np.inf
     
-    return lp + lnlike(theta, zpicks, mag, sigma, firstderivs_key)
+    return lp + lnlike(theta, zpicks, mag, sigma, firstderivs_key, ndim)

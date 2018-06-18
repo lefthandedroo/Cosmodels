@@ -102,6 +102,47 @@ def data(mu, sigma, npoints, params, firstderivs_key):
     return mag, zpicks
 
 
+def makensavemagnz(m_true, g_true, mu, sigma, npoints, data_key, filename):
+    '''
+    Takes in:
+    
+        Parameters used to simulate magnitude:  
+    m_true                  = e_m(t)/e_crit(t0) at t=t0;
+    de_true = 1 - m_true    = e_de(t)/e_crit(t0) at t=t0;
+    g_true = interaction term, rate at which DE decays into matter.
+    
+        Statistical parameteres of gaussian noise added to data:
+    mu =  mean;
+    sigma = standard deviation;
+    
+    npoints = how many mag and z to generate.
+    
+        Model type:
+    data_key = string, key for dictionary of interaction modes in firstderivs
+    Options: 'Hdecay', 'rdecay', 'rdecay_de', 'rdecay_m', 'interacting', 'LCDM'
+    Length of parameters has to correspond to the model being tested.
+    
+    filename = string, name of file data is saved to.
+    
+    Returns:
+        Nothing. Generates redshifts and corresponding magnitudes (according 
+        to the model specified by data_key) offset by Gaussian noise, 
+        saves them into a binary file called filename in the working directory.
+    '''
+    
+    if data_key == 'LCDM':
+        data_params = {'m':m_true}
+    else:
+        data_params = {'m':m_true, 'gamma':g_true}
+    
+    mag, zpicks = data(mu, sigma, npoints, data_params, data_key)
+    
+    output = mag, zpicks
+        
+    import pickle
+    pickle.dump(output, open(filename, 'wb'))
+    
+    return
 
 
 

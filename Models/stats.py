@@ -45,7 +45,7 @@ def stats(params, zpicks, mag, sigma, nsteps, save_path, firstderivs_key):
     i = 0
     while i < nwalkers:
         theta = pos[i]
-        lp = ln.lnprior(theta)
+        lp = ln.lnprior(theta, ndim)
         if not np.isfinite(lp):
             print('~~~~~~~pos[%s] (outside of prior) = %s ~~~~~~~'%(i, theta))
         i += 1
@@ -53,7 +53,7 @@ def stats(params, zpicks, mag, sigma, nsteps, save_path, firstderivs_key):
     # Sampler setup.
     times0 = time.time()    # starting sampler timer
     sampler = EnsembleSampler(nwalkers, ndim, ln.lnprob, 
-                                    args=(zpicks, mag, sigma, firstderivs_key))
+                                    args=(zpicks, mag, sigma, firstderivs_key, ndim))
     
     # Burnin.
     burnin = int(nsteps/4)  # steps to discard
@@ -141,7 +141,7 @@ def stats(params, zpicks, mag, sigma, nsteps, save_path, firstderivs_key):
                  mag, sigma, nsteps, nwalkers, save_path)
             
     # Checking if best found parameters are within prior.
-    lp = ln.lnprior(thetabest)
+    lp = ln.lnprior(thetabest, ndim)
     if not np.isfinite(lp):
         print('')
         print('best emcee parameters outside of prior (magbest calculation)')
