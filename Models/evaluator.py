@@ -56,12 +56,9 @@ def repeatrun():
     while i < 1:
         print('_____________________ run number',i)
         
-        mag, zpicks = data(mu, sigma, npoints, data_params, data_key)
-#        mag, zpicks = load('./data', 'mag_z_LCDM_1000')
-        print(len(mag))
-        print(mag)
-        print(len(zpicks))
-        print(zpicks)
+#        mag, zpicks = data(mu, sigma, npoints, data_params, data_key)
+        from results import load
+        mag, zpicks = load('./data', 'mag_z_LCDM_1000_sigma_0.01')
         
         propert, sampler = paramfinder.paramfinder(
                 npoints, nsteps, sigma, mu, params, zpicks, 

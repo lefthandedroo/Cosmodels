@@ -100,7 +100,8 @@ def rdecay(v, t, gamma, H0):
     Takes in:
         v = values at z=0;
         t = list of redshifts to integrate over;
-        gamma = interaction term.
+        gamma = interaction term;
+        H0 = Hubble constant ar z=0.
                 
     Returns a function f =     [dt/dz, d(a)/dz, 
                                 d(e'_m)/dz, d(e'_de)/dz, 

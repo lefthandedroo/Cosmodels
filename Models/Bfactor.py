@@ -5,24 +5,23 @@ Created on Tue Jun 12 20:20:03 2018
 
 @author: BallBlueMeercat
 """
-
+import time
 import dnest4
 import numpy as np
 import numpy.random as rng
-import datasim
-from ln import lnprior
+from datasim import magn
+from results import load
+from tools import timer
 #from scipy.special import erf
 
-
-# limits of priors
-m_min = 0
-m_max = 1
-
-g_min = -10
-g_max = 10
+firstderivs_key = 'rdecay'
+sigma = 0.01
 
 # Load the data
-mag, zpicks = load('./data', 'mag_z_LCDM_10000')
+mag, zpicks = load('./data', 'mag_z_LCDM_1000_sigma_0.01')
+
+g_max = 0.1
+
 
 
 class Model(object):
@@ -40,15 +39,7 @@ class Model(object):
         Unlike in C++, this must *return* a numpy array of parameters.
         """
         m = rng.rand()
-        g = rng.uniform(-10, 10)
-        
-        theta = [m, g]
-        
-        len(theta) = ndim
-        
-        lp = lnprior(theta, ndim)
-        if not np.isfinite(lp):
-            return -np.inf
+        g = rng.uniform(-g_max, g_max)
         
         return np.array([m, g])
 
@@ -59,24 +50,23 @@ class Model(object):
         """
         logH = 0.0
         which = rng.randint(2)
-
+        
+#        print(params[which])
         if which == 0:
-            logH -= -0.5*(params[which]/1E3)**2
-            params[which] += 1E3*dnest4.randh()
-            logH += -0.5*(params[which]/1E3)**2   
+            log_m = np.log(params[which])
+            log_m += dnest4.randh()
+            # Note the difference between dnest4.wrap in Python and
+            # DNest4::wrap in C++. The former *returns* the wrapped value.
+            log_m = dnest4.wrap(log_m, 0, 1)
+            params[which] = np.exp(log_m)
             
-#        elif which == 1:
-#            m += 1E3 * rng.randh()
-            
-#            sigma += 20.0 * rng.randh();
-#            DNest4::wrap(sigma, -10.0, 10.0);
-#        else:
-#            log_sigma = np.log(params[2])
-#            log_sigma += 20*dnest4.randh()
-#            # Note the difference between dnest4.wrap in Python and
-#            # DNest4::wrap in C++. The former *returns* the wrapped value.
-#            log_sigma = dnest4.wrap(log_sigma, -10.0, 10.0)
-#            params[2] = np.exp(log_sigma)
+        elif which == 1:
+            g = params[which]
+            g += dnest4.randh()
+            # Note the difference between dnest4.wrap in Python and
+            # DNest4::wrap in C++. The former *returns* the wrapped value.
+            g = dnest4.wrap(g, -g_max, g_max)
+            params[which] = g
 
         return logH
 
@@ -85,9 +75,13 @@ class Model(object):
         Gaussian sampling distribution.
         """
         m, g = params
+
+        theta = {'m':m,'gamma':g}
+        
+        model = magn(theta, zpicks, firstderivs_key)
+        
         var = sigma**2
-        return -0.5*data.shape[0]*np.log(2*np.pi*var)\
-                - 0.5*np.sum((data[:,1] - (m*data[:,0] + b))**2)/var
+        return - 0.5*np.sum((mag-model)**2 /var + 0.5*np.log(2*np.pi*var))
 
 # Create a model object and a sampler
 model = Model()
@@ -96,13 +90,27 @@ sampler = dnest4.DNest4Sampler(model,
                                                                   sep=" "))
 
 # Set up the sampler. The first argument is max_num_levels
-gen = sampler.sample(max_num_levels=30, num_steps=1000, new_level_interval=10000,
-                      num_per_step=10000, thread_steps=100,
+#gen = sampler.sample(max_num_levels=30, num_steps=1000, new_level_interval=10000,
+#                      num_per_step=10000, thread_steps=100,
+#                      num_particles=5, lam=10, beta=100, seed=1234)
+
+gen = sampler.sample(max_num_levels=30, num_steps=1000, new_level_interval=1000,
+                      num_per_step=1000, thread_steps=100,
                       num_particles=5, lam=10, beta=100, seed=1234)
 
+ti = time.time()
 # Do the sampling (one iteration here = one particle save)
 for i, sample in enumerate(gen):
     print("# Saved {k} particles.".format(k=(i+1)))
+tf = time.time()
 
 # Run the postprocessing
 dnest4.postprocess()
+
+timer('Sampling', ti, tf)
+
+# LCDM
+#log(Z) = -1622866.8534441872
+#Information = 14.078678027261049 nats.
+#Effective sample size = 129.22232212112772
+#time 297min 50s

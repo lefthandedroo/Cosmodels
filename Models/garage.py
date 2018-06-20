@@ -5,37 +5,32 @@ Created on Thu Sep 21 15:50:29 2017
 
 @author: BallBlueMeercat
 """
-from datasim import data
+var = 2
+import time
+i = 0
+imax = 100000000
 
-# Parameters used to simulate data:  
-m_true = 0.3           # (= e_m(t)/e_crit(t0) at t=t0).
-de_true = 1 - m_true   # (de = e_de(t)/e_crit(t0) at t=t0).
-g_true = 0             # Interaction term, rate at which DE decays into matter.
+timeb0 = time.time()
+while i < imax:
+    a = var**(-1)
+    i += 1
 
-# Statistical parameteres of noise:
-mu = 0            # mean
-sigma = 0.01      # standard deviation
+timeb1=time.time()
 
-npoints = 1000
+t = timeb1-timeb0
+print('power', t)
 
-# Key for the dictionary of interaction modes in firstderivs
-# 'Hdecay', 'rdecay', 'rdecay_de', 'rdecay_m', 'interacting', 'LCDM':LCDM
-# Length of parameters has to correspond to the model being tested.
-data_key = 'LCDM'
+i = 0
 
-data_params = {'m':m_true}
+timeb0 = time.time()
+while i < imax:
+    a = 1/var
+    i += 1
 
-mag, zpicks = data(mu, sigma, npoints, data_params, data_key)
-data = mag
+timeb1=time.time()
 
-data = mag, zpicks
-print(type(mag), len(mag))
-print(type(zpicks), len(zpicks))
-
-filename = 'mag_z_LCDM_100'
-
-import pickle
-pickle.dump(data, open(filename, 'wb'))
+t = timeb1-timeb0
+print('divis', t)
 
 
 #m_true = 0.3
