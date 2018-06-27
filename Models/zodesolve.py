@@ -74,10 +74,10 @@ def zodesolve(params, zpicks, firstderivs_key):
     dl = vsol[1:,5] * (1+z)  # in units of dl*(H0/c)
     dlpc = dl * c_over_H0    # dl in parsecs (= vsol[dl] * c/H0)
     
-    print('ombar_m max = ',max(ombar_m))
-    print('ombar_m min = ', min(ombar_m))
-    print('ombar_de max = ',max(ombar_de))
-    print('ombar_de min = ', min(ombar_de))
+#    print('ombar_m max = ',max(ombar_m))
+#    print('ombar_m min = ', min(ombar_m))
+#    print('ombar_de max = ',max(ombar_de))
+#    print('ombar_de min = ', min(ombar_de))
     
     plot_var = t, dlpc, dl, a, ombar_m, gamma, ombar_de, ombar_m0, ombar_de0
     

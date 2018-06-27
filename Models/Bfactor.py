@@ -14,13 +14,13 @@ from results import load
 from tools import timer
 #from scipy.special import erf
 
-firstderivs_key = 'LCDM'
+firstderivs_key = 'rdecay'
 sigma = 0.01
 
 # Load the data
 mag, zpicks = load('./data', 'mag_z_LCDM_1000_sigma_0.01')
 
-g_max = 0.1
+g_max = 100
 
 
 
@@ -102,7 +102,8 @@ gen = sampler.sample(max_num_levels=30, num_steps=1000, new_level_interval=1000,
 ti = time.time()
 # Do the sampling (one iteration here = one particle save)
 for i, sample in enumerate(gen):
-    print("# Saved {k} particles.".format(k=(i+1)))
+#    print("# Saved {k} particles.".format(k=(i+1)))
+    pass
 tf = time.time()
 
 timer('Sampling', ti, tf)

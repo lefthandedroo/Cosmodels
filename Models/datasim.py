@@ -64,9 +64,9 @@ def magn(params, zpicks, firstderivs_key):
             magnitude = 5 * log10(dlpc[i]/10) + M
         mag.append(magnitude)
     
-    # Checking evolution of the model.
-    import plots
-    plots.modelcheck(mag, zpicks, plot_var, firstderivs_key)
+#    # Checking evolution of the model.
+#    import plots
+#    plots.modelcheck(mag, zpicks, plot_var, firstderivs_key)
         
     return mag
 

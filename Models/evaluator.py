@@ -17,7 +17,7 @@ import datasim
 # Parameters used to simulate data:  
 m_true = 0.3           # (= e_m(t)/e_crit(t0) at t=t0).
 de_true = 1 - m_true   # (de = e_de(t)/e_crit(t0) at t=t0).
-g_true = -0.50           # Interaction term, rate at which DE decays into matter.
+g_true = 0#-0.50           # Interaction term, rate at which DE decays into matter.
 
 # Number of datapoints to be simulated and number of emcee steps.
 npoints, nsteps = 10000, 10000
@@ -31,7 +31,7 @@ zmax = 2
 # 'Hdecay', 'rdecay', 'rdecay_de', 'rdecay_m', 'interacting', 'LCDM':LCDM
 # Length of parameters has to correspond to the model being tested.
 data_key = 'rdecay'
-test_key = 'LCDM'
+test_key = 'rdecay'
 
 if data_key == 'LCDM':
     data_params = {'m':m_true}
@@ -51,10 +51,10 @@ def modelcheck():
     
     return
 
-modelcheck()
+#modelcheck()
 
 
-def repeatrun():
+def quickemcee():
     # Changing directory to dedicated folder for saving output.
     save_path, directory = tools.path()
 
@@ -62,13 +62,14 @@ def repeatrun():
         params = {'m':m_true}
     else:
         params = {'m':m_true, 'gamma':g_true}
+    
     i = 0
     while i < 1:
-        print('_____________________ run number',i)
+        if i > 0:
+            print('_____________________ run number',i)
         
-        mag, zpicks = datasim.data(mu, sigma, npoints, data_params, data_key)
-        from results import load
-        mag, zpicks = load('./data', 'mag_z_LCDM_1000_sigma_0.01')
+#        mag, zpicks = datasim.data(mu, sigma, npoints, data_params, data_key)
+        mag, zpicks = results.load('./data', 'mag_z_LCDM_1000_sigma_0.01')
         
         propert, sampler = paramfinder.paramfinder(
                 npoints, nsteps, sigma, mu, params, zpicks, 
@@ -85,7 +86,7 @@ def repeatrun():
 
     return
 
-#repeatrun()
+quickemcee()
 
 
 def errorvsdatasize(params):
