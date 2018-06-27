@@ -64,9 +64,9 @@ def magn(params, zpicks, firstderivs_key):
             magnitude = 5 * log10(dlpc[i]/10) + M
         mag.append(magnitude)
     
-#    # Checking evolution of the model.
-#    import plots
-#    plots.modelcheck(mag, zpicks, plot_var, firstderivs_key)
+    # Checking evolution of the model.
+    import plots
+    plots.modelcheck(mag, zpicks, plot_var, firstderivs_key)
         
     return mag
 
@@ -91,9 +91,9 @@ def gnoise(mag, mu, sigma):
     return mag
 
 
-def data(mu, sigma, npoints, params, firstderivs_key):
+def data(zmax, mu, sigma, npoints, params, firstderivs_key):
     
-    zpicks = redshift_picks(0.005, 2, npoints)
+    zpicks = redshift_picks(0.005, zmax, npoints)
     
     model = magn(params, zpicks, firstderivs_key)
     model = np.asarray(model)

@@ -8,8 +8,6 @@ Created on Tue Feb 27 12:40:48 2018
 
 """
 
-from pylab import figure, plot, xlabel, ylabel, title, show, grid, scatter
-from pylab import hist, savefig, axhline
 import matplotlib.pyplot as plt
 import numpy as np
 import os
@@ -31,49 +29,49 @@ def stat(hue, var, var_true, var_name, slnprob, zpicks,
     hue = 'xkcd:'+hue
     
     # Marginalised distribution histogram.
-    figure()
-#    xlabel(r'$\{}$'.format(var_name))
-    xlabel(var_name)
-    title('Marginalised distribution for '+var_name+' \n nsteps: '+str(nsteps)+
+    plt.figure()
+#    plt.xlabel(r'$\{}$'.format(var_name))
+    plt.xlabel(var_name)
+    plt.title('Marginalised distribution for '+var_name+' \n nsteps: '+str(nsteps)+
           ', noise: '+str(sigma)+', npoints: '+str(len(zpicks)))
-    hist(var, 50)
+    plt.hist(var, 50)
     stamp = str(int(time.time()))
     filename = str(stamp)+'_'+initial+'_mhist__nsteps_'+str(nsteps) \
     +'_nwalkers_'+str(nwalkers)+'_noise_'+str(sigma) \
     +'_numpoints_'+str(len(zpicks))+'.png'
     filename = os.path.join(save_path, filename)
-    savefig(filename)
-    show()
+    plt.savefig(filename)
+    plt.show()
     
     # Walker steps.
-    figure()
-    title('flatlnprobability for '+var_name+' \n nsteps: '
+    plt.figure()
+    plt.title('flatlnprobability for '+var_name+' \n nsteps: '
           +str(nsteps)+', noise: '+str(sigma)+', npoints: '+str(len(zpicks)))
-    plot(var, slnprob, '.', color=hue)
+    plt.plot(var, slnprob, '.', color=hue)
     stamp = str(int(time.time()))
     filename = str(stamp)+'_'+initial+'_steps__nsteps_'+str(nsteps) \
     +'_nwalkers_'+str(nwalkers)+'_noise_'+str(sigma) \
     +'_numpoints_'+str(len(zpicks))+'.png'
     filename = os.path.join(save_path, filename)
-    savefig(filename)
-    show()
+    plt.savefig(filename)
+    plt.show()
     
     # Chains.
-    figure()
-    xlabel('step number')
-#    ylabel(r'$\{}$'.format(var_name))
-    ylabel(var_name)
-    title('flatChains with '+name_true+' in '+hue_name+' \n nsteps: '
+    plt.figure()
+    plt.xlabel('step number')
+#    plt.ylabel(r'$\{}$'.format(var_name))
+    plt.ylabel(var_name)
+    plt.title('flatChains with '+name_true+' in '+hue_name+' \n nsteps: '
           +str(nsteps)+', noise: '+str(sigma)+', npoints: '+str(len(zpicks)))
-    plot(var.T, '-', color='k', alpha=0.3)
-    axhline(var_true, color=hue)
+    plt.plot(var.T, '-', color='k', alpha=0.3)
+    plt.axhline(var_true, color=hue)
     stamp = str(int(time.time()))
     filename = str(stamp)+'_'+initial+'_chain__nsteps_'+str(nsteps) \
     +'_nwalkers_'+str(nwalkers)+'_noise_'+str(sigma) \
     +'_numpoints_'+str(len(zpicks))+'.png'
     filename = os.path.join(save_path, filename)
-    savefig(filename)
-    show()
+    plt.savefig(filename)
+    plt.show()
     
     return
 
@@ -137,19 +135,19 @@ def onepercent():
 #    ind = np.ones((10,), bool)
 #    ind[n] = False
 #    A1 = A[ind,:]
-    figure()
-    xlabel('dataset size')
-    ylabel('sigma of noise added to data')
-    title('noisiest runs where m was found within 1%')       
+    plt.figure()
+    plt.xlabel('dataset size')
+    plt.ylabel('sigma of noise added to data')
+    plt.title('noisiest runs where m was found within 1%')       
     plt.scatter(m_sinpoints, m_sisigma, c='m', label='1% sd on m')
     plt.scatter(npoints, sigma, c='c', marker='x', label='all runs')
     plt.legend()
     plt.show()
     
-    figure()
-    xlabel('dataset size')
-    ylabel('sigma of noise added to data')
-    title('noisiest runs where gamma was found within 1.5%')       
+    plt.figure()
+    plt.xlabel('dataset size')
+    plt.ylabel('sigma of noise added to data')
+    plt.title('noisiest runs where gamma was found within 1.5%')       
     plt.scatter(g_sinpoints, g_sisigma, c='g', label='sd on gamma')
     plt.scatter(npoints, sigma, c='c', marker='x', label='all runs')
     plt.legend()
@@ -163,97 +161,123 @@ def modelcheck(mag, zpicks, plot_var, firstderivs_key):
     
     t, dlpc, dl, a, ombar_m, gamma, ombar_de, ombar_m0, ombar_de0 = plot_var
     
-    print('plots.modelcheck: Type of interaction',firstderivs_key)
+    print('plots.modelcheck:',firstderivs_key)
+    
+#    a = list(reversed(a))
+#    zpicks = list(reversed(zpicks))
+#    ombar_de = list(reversed(ombar_de))
+#    ombar_m = list(reversed(ombar_m))
+    
+    print()
+    print('DE goes from ',ombar_de[-1], 'to ',ombar_de[0])
+    print('m goes from ',ombar_m[-1], 'to ',ombar_m[0])
+    print('z goes from ',zpicks[-1], 'to ',zpicks[0])
+
     
     # Scale factor vs redshift.
-    figure()
-    xlabel('redshift $z$')
-    ylabel('a')
-    grid(True)
-    plot(zpicks, a, 'xkcd:crimson', lw=1)
-    title(r'Scale factor evolution, IC: $\Omega_{m0}$ = %s, $\Omega_{DE0}$ =%s, $\gamma$ = %s'
+    plt.figure()
+    plt.xlabel('redshift $z$')
+    plt.ylabel('a')
+    plt.grid(True)
+    plt.plot(zpicks, a, 'xkcd:crimson', lw=1)
+    plt.title(r'Scale factor evolution, IC: $\bar \Omega_{m0}$ = %s, $\bar \Omega_{DE0}$ =%s, $\gamma$ = %s'
           %(ombar_m0, ombar_de0, gamma))
-    show()
+    plt.show()
 
     # ombar_m, ombar_de vs redshift.
-    figure()
-    xlabel('redshift $z$')
-    ylabel('$\Omega_{m0}$')
-    grid(True)
-    plot(zpicks, ombar_m, 'xkcd:coral', lw=1)
-    plot(zpicks, ombar_de, 'xkcd:aquamarine', lw=1)
-    title('$\Omega_{m}$, $\Omega_{DE0}$ evolution, IC: $\Omega_{m0}$ = %s, $\Omega_{DE0}$ =%s, $\gamma$ = %s'
+    plt.figure()
+    plt.xlabel('redshift $z$')
+    plt.ylabel(r'$\bar \Omega $')
+    plt.grid(True)
+    plt.plot(zpicks, ombar_m, label=r'$\bar \Omega_{m}$', color='xkcd:coral', linestyle=':')
+    plt.plot(zpicks, ombar_de, label=r'$\bar \Omega_{DE}$', color='xkcd:aquamarine')
+    plt.legend()
+    plt.title(r'$\bar \Omega_{m}$, $\bar \Omega_{DE}$ evolution, IC: $\bar \Omega_{m0}$ = %s, $\bar \Omega_{DE0}$ =%s, $\gamma$ = %s'
           %(ombar_m0, ombar_de0, gamma))
-    show()
+    plt.show()
+    
+    # ombar_m, ombar_de vs redshift log x axis.
+    plt.figure()
+    plt.xlabel('redshift $z$')
+    plt.ylabel(r'$\bar \Omega $')
+    plt.grid(True)
+    plt.semilogx(zpicks, ombar_m, label=r'$\bar \Omega_{m}$', color='xkcd:coral', linestyle=':')
+    plt.semilogx(zpicks, ombar_de, label=r'$\bar \Omega_{DE}$', color='xkcd:aquamarine')
+    plt.legend()
+    plt.title(r'$\bar \Omega_{m}$, $\bar \Omega_{DE}$ evolution, IC: $\bar \Omega_{m0}$ = %s, $\bar \Omega_{DE0}$ =%s, $\gamma$ = %s'
+          %(ombar_m0, ombar_de0, gamma))
+    plt.show()
 
 #    # ombar_m vs redshift.
-#    figure()
-#    xlabel('redshift $z$')
-#    ylabel('$\Omega_{m0}$')
-#    grid(True)
-#    plot(zpicks, ombar_m, 'xkcd:coral', lw=1)
-#    title('$\Omega_{m}$ evolution, IC: $\Omega_{m0}$ = %s, $\Omega_{DE0}$ =%s, $\gamma$ = %s'
+#    plt.figure()
+#    plt.xlabel('redshift $z$')
+#    plt.ylabel('$\Omega_{m0}$')
+#    plt.grid(True)
+#    plt.plot(zpicks, ombar_m, 'xkcd:coral', lw=1)
+#    plt.title('$\Omega_{m}$ evolution, IC: $\Omega_{m0}$ = %s, $\Omega_{DE0}$ =%s, $\gamma$ = %s'
 #          %(ombar_m0, ombar_de0, gamma))
-#    show()
+#    plt.show()
 #
 #    # ombar_de vs redshift.
-#    figure()
-#    xlabel('redshift $z$')
-#    ylabel('$\Omega_{DE}$')
-#    grid(True)
-#    plot(zpicks, ombar_de, 'xkcd:aquamarine', lw=1)
-#    title('$\Omega_{DE}$ evolution, IC: $\Omega_{m0}$ = %s, $\Omega_{DE0}$ =%s, $\gamma$ = %s'
+#    plt.figure()
+#    plt.xlabel('redshift $z$')
+#    plt.ylabel('$\Omega_{DE}$')
+#    plt.grid(True)
+#    plt.plot(zpicks, ombar_de, 'xkcd:aquamarine', lw=1)
+#    plt.title('$\Omega_{DE}$ evolution, IC: $\Omega_{m0}$ = %s, $\Omega_{DE0}$ =%s, $\gamma$ = %s'
 #          %(ombar_m0, ombar_de0, gamma))
-#    show()
+#    plt.show()
 
     # Luminosity distance vs redshift.
-    while True:
-        figure()
-        xlabel('redshift $z$')
-        ylabel('$d_L$*($H_0$/c)')
-        grid(True)
-        plot(zpicks, dl, 'xkcd:lightgreen', lw=1)
-        title('$d_L$ evolution, IC: $\Omega_{m0}$ = %s, $\Omega_{DE0}$ =%s, $\gamma$ = %s'
+    while False:
+        plt.figure()
+        plt.xlabel('redshift $z$')
+        plt.ylabel('$d_L$*($H_0$/c)')
+        plt.grid(True)
+        plt.plot(zpicks, dl, 'xkcd:lightgreen', lw=1)
+        plt.title('$d_L$ evolution, IC: $\Omega_{m0}$ = %s, $\Omega_{DE0}$ =%s, $\gamma$ = %s'
               %(ombar_m0, ombar_de0, gamma))
-        show()
+        plt.show()
         break
 
-#    figure()
-#    xlabel('redshift $z$')
-#    ylabel('pc')
-#    grid(True)
-#    plot(zpicks, dlpc, 'xkcd:green', lw=1)
-#    title('$d_L$ evolution, IC: $\Omega_{m0}$ = %s, $\Omega_{DE0}$ =%s, $\gamma$ = %s'
+#    plt.figure()
+#    plt.xlabel('redshift $z$')
+#    plt.ylabel('pc')
+#    plt.grid(True)
+#    plt.plot(zpicks, dlpc, 'xkcd:green', lw=1)
+#    plt.title('$d_L$ evolution, IC: $\Omega_{m0}$ = %s, $\Omega_{DE0}$ =%s, $\gamma$ = %s'
 #          %(ombar_m0, ombar_de0, gamma))
-#    show()
+#    plt.show()
 #
 #    dlgpc = dlpc /10**9
-#    figure()
-#    xlabel('redshift $z$')
-#    ylabel('Gpc')
-#    grid(True)
-#    plot(zpicks, dlgpc, 'xkcd:darkgreen', lw=1)
-#    title('$d_L$ evolution, IC: $\Omega_{m0}$ = %s, $\Omega_{DE0}$ =%s, $\gamma$ = %s'
+#    plt.figure()
+#    plt.xlabel('redshift $z$')
+#    plt.ylabel('Gpc')
+#    plt.grid(True)
+#    plt.plot(zpicks, dlgpc, 'xkcd:darkgreen', lw=1)
+#    plt.title('$d_L$ evolution, IC: $\Omega_{m0}$ = %s, $\Omega_{DE0}$ =%s, $\gamma$ = %s'
 #          %(ombar_m0, ombar_de0, gamma))
-#    show()
+#    plt.show()
 
-    # Redshift vs time.
-    figure()
-    xlabel('time')
-    ylabel('redshift $z$')
-#        axis([0,-0.8,0,5])
-    grid(True)
-    plot(t, zpicks, 'm', lw=1)
-    title('Redshift evolution, IC: $\Omega_{m0}$ = %s, $\Omega_{DE0}$ =%s, $\gamma$ = %s'
-          %(ombar_m0, ombar_de0, gamma))
-    show()
-
-    # Magnitude vs redshift.
-    figure()
-    xlabel('redshift $z$')
-    ylabel('magnitude')
-    title('Magnitude evolution')
-    scatter(zpicks, mag, marker='.', lw='1', c='xkcd:tomato')
-    show()
+    while False:
+        # Redshift vs time.
+        plt.figure()
+        plt.xlabel('time')
+        plt.ylabel('redshift $z$')
+    #        plt.axis([0,-0.8,0,5])
+        plt.grid(True)
+        plt.plot(t, zpicks, 'm', lw=1)
+        plt.title('Redshift evolution, IC: $\Omega_{m0}$ = %s, $\Omega_{DE0}$ =%s, $\gamma$ = %s'
+              %(ombar_m0, ombar_de0, gamma))
+        plt.show()
+    
+        # Magnitude vs redshift.
+        plt.figure()
+        plt.xlabel('redshift $z$')
+        plt.ylabel('magnitude')
+        plt.title('Magnitude evolution')
+        plt.scatter(zpicks, mag, marker='.', lw='1', c='xkcd:tomato')
+        plt.show()
+        break
 
     return

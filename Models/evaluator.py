@@ -5,19 +5,19 @@ Created on Wed Apr 18 21:45:40 2018
 
 @author: BallBlueMeercat
 """
-from pylab import figure, xlabel, ylabel, title, scatter, show, savefig
+import matplotlib.pyplot as plt
 import time
 import os.path
-from results import save
+import results
 import paramfinder
-from tools import runcount, timer, path
-from datasim import data
+import tools
+import datasim
 
 
 # Parameters used to simulate data:  
 m_true = 0.3           # (= e_m(t)/e_crit(t0) at t=t0).
 de_true = 1 - m_true   # (de = e_de(t)/e_crit(t0) at t=t0).
-g_true = 0             # Interaction term, rate at which DE decays into matter.
+g_true = -0.50           # Interaction term, rate at which DE decays into matter.
 
 # Number of datapoints to be simulated and number of emcee steps.
 npoints, nsteps = 10000, 10000
@@ -26,11 +26,12 @@ npoints, nsteps = 10000, 10000
 mu = 0            # mean
 sigma = 0.01      # standard deviation
 
+zmax = 2
 # Key for the dictionary of interaction modes in firstderivs
 # 'Hdecay', 'rdecay', 'rdecay_de', 'rdecay_m', 'interacting', 'LCDM':LCDM
 # Length of parameters has to correspond to the model being tested.
-data_key = 'LCDM'
-test_key = 'rdecay'
+data_key = 'rdecay'
+test_key = 'LCDM'
 
 if data_key == 'LCDM':
     data_params = {'m':m_true}
@@ -44,9 +45,18 @@ else:
 
 
 
+def modelcheck():
+    
+    mag, zpicks = datasim.data(zmax, mu, sigma, npoints, data_params, data_key)
+    
+    return
+
+modelcheck()
+
+
 def repeatrun():
     # Changing directory to dedicated folder for saving output.
-    save_path, directory = path()
+    save_path, directory = tools.path()
 
     if test_key == 'LCDM':
         params = {'m':m_true}
@@ -56,7 +66,7 @@ def repeatrun():
     while i < 1:
         print('_____________________ run number',i)
         
-#        mag, zpicks = data(mu, sigma, npoints, data_params, data_key)
+        mag, zpicks = datasim.data(mu, sigma, npoints, data_params, data_key)
         from results import load
         mag, zpicks = load('./data', 'mag_z_LCDM_1000_sigma_0.01')
         
@@ -66,7 +76,7 @@ def repeatrun():
         i += 1
     
     # Saving sampler to directory.
-    save(save_path, 'sampler', sampler)
+    results.save(save_path, 'sampler', sampler)
 
     print('Type of interaction in the model being tested:', 
           test_key)
@@ -75,7 +85,7 @@ def repeatrun():
 
     return
 
-repeatrun()
+#repeatrun()
 
 
 def errorvsdatasize(params):
@@ -90,7 +100,7 @@ def errorvsdatasize(params):
     npoints_step = 3000
     
     # How many iterations have I signed up for?
-    runcount(sigma, sigma_max, sigma_step,
+    tools.runcount(sigma, sigma_max, sigma_step,
               npoints_min, npoints_max, npoints_step)
     
     decision = input('Happy with the number of iterations? (enter=yes) ')
@@ -125,7 +135,7 @@ def errorvsdatasize(params):
         npoints = npoints_min 
         
         # Data to be used:
-        mag, zpicks = data(mu, sigma, npoints, data_params, data_key)
+        mag, zpicks = datasim.data(mu, sigma, npoints, data_params, data_key)
         
         while npoints < npoints_max:
             print('_____________________ run number',run)
@@ -158,91 +168,91 @@ def errorvsdatasize(params):
         
     # Saving plots to run directory.
     # m
-    figure()
-    xlabel('size of dataset')
-    ylabel('standard deviation of marginalised m distribution')
-    title('sd of m vs size of dataset, sd of noise = %s'%(sigma))
-    scatter(npoints_l, m_sd_l, c='m')        
+    plt.figure()
+    plt.xlabel('size of dataset')
+    plt.ylabel('standard deviation of marginalised m distribution')
+    plt.title('sd of m vs size of dataset, sd of noise = %s'%(sigma))
+    plt.scatter(npoints_l, m_sd_l, c='m')        
     stamp = str(int(time.time()))
     filename = str(stamp)+'_sd_of_m_.png'
     filename = os.path.join(save_path, filename)
-    savefig(filename)
-    show()
+    plt.savefig(filename)
+    plt.show()
     
-    figure()
-    xlabel('size of dataset')
-    ylabel('mean of marginalised m distribution')
-    title('mean of m vs size of dataset, sd of noise = %s'%(sigma))
-    scatter(npoints_l, m_mean_l, c='c')        
+    plt.figure()
+    plt.xlabel('size of dataset')
+    plt.ylabel('mean of marginalised m distribution')
+    plt.title('mean of m vs size of dataset, sd of noise = %s'%(sigma))
+    plt.scatter(npoints_l, m_mean_l, c='c')        
     stamp = str(int(time.time()))
     filename = str(stamp)+'_mean_of_m_.png'
     filename = os.path.join(save_path, filename)
-    savefig(filename)
-    show()
+    plt.savefig(filename)
+    plt.show()
     
-    figure()
-    xlabel('size of dataset')
-    ylabel('variance coefficient in %')
-    title('sd/mean of m vs size of dataset, sd of noise = %s'%(sigma))
-    scatter(npoints_l, m_vc_l, c='coral')        
+    plt.figure()
+    plt.xlabel('size of dataset')
+    plt.ylabel('variance coefficient in %')
+    plt.title('sd/mean of m vs size of dataset, sd of noise = %s'%(sigma))
+    plt.scatter(npoints_l, m_vc_l, c='coral')        
     stamp = str(int(time.time()))
     filename = str(stamp)+'_cv_of_m_.png'
     filename = os.path.join(save_path, filename)
-    savefig(filename)
-    show()
+    plt.savefig(filename)
+    plt.show()
 
     # gamma
-    figure()
-    xlabel('size of dataset')
-    ylabel('standard deviation of marginalised gamma distribution')
-    title('sd of gamma vs size of dataset, sd of noise = %s'%(sigma))
-    scatter(npoints_l, g_sd_l, c='m')        
+    plt.figure()
+    plt.xlabel('size of dataset')
+    plt.ylabel('standard deviation of marginalised gamma distribution')
+    plt.title('sd of gamma vs size of dataset, sd of noise = %s'%(sigma))
+    plt.scatter(npoints_l, g_sd_l, c='m')        
     stamp = str(int(time.time()))
     filename = str(stamp)+'_sd_of_g_.png'
     filename = os.path.join(save_path, filename)
-    savefig(filename)
-    show()
+    plt.savefig(filename)
+    plt.show()
     
-    figure()
-    xlabel('size of dataset')
-    ylabel('mean of marginalised gamma distribution')
-    title('mean of gamma vs size of dataset, sd of noise = %s'%(sigma))
-    scatter(npoints_l, g_mean_l, c='c')        
+    plt.figure()
+    plt.xlabel('size of dataset')
+    plt.ylabel('mean of marginalised gamma distribution')
+    plt.title('mean of gamma vs size of dataset, sd of noise = %s'%(sigma))
+    plt.scatter(npoints_l, g_mean_l, c='c')        
     stamp = str(int(time.time()))
     filename = str(stamp)+'_mean_of_g_.png'
     filename = os.path.join(save_path, filename)
-    savefig(filename)
-    show()
+    plt.savefig(filename)
+    plt.show()
     
-#    figure()
-#    xlabel('size of dataset')
-#    ylabel('variance coefficient in %')
-#    title('sd/mean of gamma vs size of dataset, sd of noise = %s'%(sigma))
-#    scatter(npoints_l, g_vc_l, c='coral')        
-#    stamp = str(int(time.time()))
-#    filename = str(stamp)+'_cv_of_g_.png'
-#    filename = os.path.join(save_path, filename)
-#    savefig(filename)
-#    show()
+#    plt.figure()
+#    plt.xlabel('size of dataset')
+#    plt.ylabel('variance coefficient in %')
+#    plt.title('sd/mean of gamma vs size of dataset, sd of noise = %s'%(sigma))
+#    plt.scatter(npoints_l, g_vc_l, c='coral')        
+#    plt.stamp = str(int(time.time()))
+#    plt.filename = str(stamp)+'_cv_of_g_.png'
+#    plt.filename = os.path.join(save_path, filename)
+#    plt.savefig(filename)
+#    plt.show()
         
     # Saving results to directory.
-    save(save_path, 'm_vc', m_vc_l)
-    save(save_path, 'm_sd', m_sd_l)
-    save(save_path, 'm_mean', m_mean_l)
+    results.save(save_path, 'm_vc', m_vc_l)
+    results.save(save_path, 'm_sd', m_sd_l)
+    results.save(save_path, 'm_mean', m_mean_l)
 
-    save(save_path, 'g_vc', g_vc_l)
-    save(save_path, 'g_sd', g_sd_l)
-    save(save_path, 'g_mean', g_mean_l)
+    results.save(save_path, 'g_vc', g_vc_l)
+    results.save(save_path, 'g_sd', g_sd_l)
+    results.save(save_path, 'g_mean', g_mean_l)
     
-    save(save_path, 'sigma', sigma_l)
-    save(save_path, 'npoints', npoints_l)
-    save(save_path, 'sampler', sampler_l)
+    results.save(save_path, 'sigma', sigma_l)
+    results.save(save_path, 'npoints', npoints_l)
+    results.save(save_path, 'sampler', sampler_l)
     
     print('directory:',directory)
     
     # Time taken by evaluator. 
     timet1=time.time()
-    timer('evaluator', timet0, timet1)
+    tools.timer('evaluator', timet0, timet1)
     
     return
 
