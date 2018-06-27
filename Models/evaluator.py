@@ -14,7 +14,6 @@ from tools import runcount, timer, path
 from datasim import data
 
 
-
 # Parameters used to simulate data:  
 m_true = 0.3           # (= e_m(t)/e_crit(t0) at t=t0).
 de_true = 1 - m_true   # (de = e_de(t)/e_crit(t0) at t=t0).
@@ -31,12 +30,13 @@ sigma = 0.01      # standard deviation
 # 'Hdecay', 'rdecay', 'rdecay_de', 'rdecay_m', 'interacting', 'LCDM':LCDM
 # Length of parameters has to correspond to the model being tested.
 data_key = 'LCDM'
+test_key = 'rdecay'
+
 if data_key == 'LCDM':
     data_params = {'m':m_true}
 else:
     data_params = {'m':m_true, 'gamma':g_true}
 
-test_key = 'rdecay'
 if test_key == 'LCDM':
     params = {'m':m_true}
 else:

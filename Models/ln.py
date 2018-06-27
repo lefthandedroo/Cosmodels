@@ -25,10 +25,10 @@ def lnlike(theta, zpicks, mag, sigma, firstderivs_key, ndim):
         params= {'m':theta[0],'gamma':theta[1],'de':theta[2]}
     
     model = magn(params, zpicks, firstderivs_key)
-#    inv_sigma2 = 1.0/(sigma**2)
     var = sigma**2
-    return - 0.5*np.sum((mag-model)**2 /var + 0.5*np.log(2*np.pi*var))
-#    return -0.5*(np.sum((mag-model)**2*inv_sigma2 - np.log(inv_sigma2)))
+    return -0.5*np.sum((mag-model)**2 /var +0.5*np.log(2*np.pi*var))
+#    inv_var = 1.0/(sigma**2)
+#    return -0.5*(np.sum((mag-model)**2*inv_var - np.log(inv_var)))
 
 def lnprior(theta, ndim):
 #    print(' lnprior has been called')   

@@ -14,7 +14,7 @@ from results import load
 from tools import timer
 #from scipy.special import erf
 
-firstderivs_key = 'rdecay'
+firstderivs_key = 'LCDM'
 sigma = 0.01
 
 # Load the data
@@ -81,7 +81,7 @@ class Model(object):
         model = magn(theta, zpicks, firstderivs_key)
         
         var = sigma**2
-        return - 0.5*np.sum((mag-model)**2 /var + 0.5*np.log(2*np.pi*var))
+        return -0.5*np.sum((mag-model)**2 /var +0.5*np.log(2*np.pi*var))
 
 # Create a model object and a sampler
 model = Model()
@@ -94,6 +94,7 @@ sampler = dnest4.DNest4Sampler(model,
 #                      num_per_step=10000, thread_steps=100,
 #                      num_particles=5, lam=10, beta=100, seed=1234)
 
+# num_per_step can be down to a few thousand
 gen = sampler.sample(max_num_levels=30, num_steps=1000, new_level_interval=1000,
                       num_per_step=1000, thread_steps=100,
                       num_particles=5, lam=10, beta=100, seed=1234)
@@ -104,13 +105,24 @@ for i, sample in enumerate(gen):
     print("# Saved {k} particles.".format(k=(i+1)))
 tf = time.time()
 
+timer('Sampling', ti, tf)
+
 # Run the postprocessing
 dnest4.postprocess()
-
-timer('Sampling', ti, tf)
 
 # LCDM
 #log(Z) = -1622866.8534441872
 #Information = 14.078678027261049 nats.
 #Effective sample size = 129.22232212112772
 #time 297min 50s
+
+#log(Z) = -1622866.790641218
+#Information = 13.905435690656304 nats.
+#Effective sample size = 167.73507536834273
+#time 34 min
+
+#rdecay
+#log(Z) = -1622866.8177826053
+#Information = 13.970533838961273 nats.
+#Effective sample size = 85.54638980461822
+#Sampling time:   37min 5s
