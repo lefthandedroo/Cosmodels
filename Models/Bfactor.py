@@ -14,14 +14,17 @@ from results import load
 from tools import timer
 #from scipy.special import erf
 
-firstderivs_key = 'rdecay'
+
+# Key for the dictionary of interaction modes in firstderivs
+# 'Hdecay', edecay, 'rdecay_de', 'rdecay_m', 'interacting', 'LCDM':LCDM
+firstderivs_key = 'LCDM'
 sigma = 0.01
 
 # Load the data
 mag, zpicks = load('./data', 'mag_z_LCDM_1000_sigma_0.01')
 
-g_max = 100
-
+g_max = 10
+g_min = -10
 
 
 class Model(object):
@@ -39,7 +42,7 @@ class Model(object):
         Unlike in C++, this must *return* a numpy array of parameters.
         """
         m = rng.rand()
-        g = rng.uniform(-g_max, g_max)
+        g = rng.uniform(g_min, g_max)
         
         return np.array([m, g])
 
@@ -65,7 +68,7 @@ class Model(object):
             g += dnest4.randh()
             # Note the difference between dnest4.wrap in Python and
             # DNest4::wrap in C++. The former *returns* the wrapped value.
-            g = dnest4.wrap(g, -g_max, g_max)
+            g = dnest4.wrap(g, g_min, g_max)
             params[which] = g
 
         return logH
@@ -111,6 +114,28 @@ timer('Sampling', ti, tf)
 # Run the postprocessing
 dnest4.postprocess()
 
+#import six
+#import sys
+## Run the postprocessing to get marginal likelihood and generate posterior samples
+#logZdnest4, infogaindnest4, _ = dnest4.postprocess(plot=False);
+#
+#postsamples = np.loadtxt('posterior_sample.txt')
+#
+#print(six.u('Marginalised evidence is {}'.format(logZdnest4)))
+#
+#print('Number of posterior samples is {}'.format(postsamples.shape[0]))
+#
+## plot posterior samples (if corner.py is installed)
+#try:
+#    import matplotlib as mpl
+#    mpl.use("Agg") # force Matplotlib backend to Agg
+#    import corner # import corner.py
+#except ImportError:
+#    sys.exit(1)
+#
+#fig = corner.corner(postsamples, labels=[r"$m$", r"$c$"], truths=[m, g])
+#fig.savefig('DNest4.png')
+
 # LCDM
 #log(Z) = -1622866.8534441872
 #Information = 14.078678027261049 nats.
@@ -127,3 +152,22 @@ dnest4.postprocess()
 #Information = 13.970533838961273 nats.
 #Effective sample size = 85.54638980461822
 #Sampling time:   37min 5s
+
+############
+#Hdecay
+#Sampling time:   38min 57s
+#log(Z) = -1158842.6212481956
+#Information = 26.434626991627738 nats.
+#Effective sample size = 116.96489141639181
+
+#edecay
+#Sampling time:   45min 57s
+#log(Z) = -49925.259544267705
+#Information = 19.683044903278642 nats.
+#Effective sample size = 162.7283801030449
+
+#LCDM
+#Sampling time:   31min 52s
+#log(Z) = -1622866.7230921672
+#Information = 13.870062695583329 nats.
+#Effective sample size = 178.67158154325102

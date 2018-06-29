@@ -161,7 +161,7 @@ def modelcheck(mag, zpicks, plot_var, firstderivs_key):
     
     t, dlpc, dl, a, ombar_m, gamma, ombar_de, ombar_m0, ombar_de0 = plot_var
     
-    print('plots.modelcheck:',firstderivs_key)
+    print('plots.modelcheck:',firstderivs_key, 'with gamma:',str(gamma))
     
 #    a = list(reversed(a))
 #    zpicks = list(reversed(zpicks))
@@ -169,17 +169,42 @@ def modelcheck(mag, zpicks, plot_var, firstderivs_key):
 #    ombar_m = list(reversed(ombar_m))
     
     print()
+    print('a goes from ',a[-1], 'to ',a[0])
     print('DE goes from ',ombar_de[-1], 'to ',ombar_de[0])
     print('m goes from ',ombar_m[-1], 'to ',ombar_m[0])
     print('z goes from ',zpicks[-1], 'to ',zpicks[0])
-
     
-    # Scale factor vs redshift.
+    if min(ombar_m) < 0:
+        print('unphysical ombar_m', str(min(ombar_m)))
+    elif min(ombar_de) < 0:
+        print('unphysical ombar_de', str(min(ombar_de)))
+    
+#    # Scale factor vs redshift.
+#    plt.figure()
+#    plt.xlabel('redshift $z$')
+#    plt.ylabel('a')
+#    plt.grid(True)
+#    plt.plot(zpicks, a, 'xkcd:crimson', lw=1)
+#    plt.title(r'Scale factor evolution, IC: $\bar \Omega_{m0}$ = %s, $\bar \Omega_{DE0}$ =%s, $\gamma$ = %s'
+#          %(ombar_m0, ombar_de0, gamma))
+#    plt.show()
+    
+    Hz = []
+    for i in range(len(ombar_m)):
+        H = (ombar_m[i] + ombar_de[i])**(1/2)
+        if np.isnan(H):
+            print('plots.modelcheck got NaN value for H')
+        Hz.append(H)
+    print('Hz goes from ',Hz[-1], 'to ',Hz[0])
+
+    # Scale factor vs redshift and expansion rate H vs redshift.
     plt.figure()
     plt.xlabel('redshift $z$')
     plt.ylabel('a')
     plt.grid(True)
-    plt.plot(zpicks, a, 'xkcd:crimson', lw=1)
+    plt.plot(zpicks, a, color='xkcd:crimson', lw=1, label='a = scale factor')
+    plt.plot(zpicks, Hz, color='xkcd:blue', lw=1, label='H = expansion rate')
+    plt.legend()
     plt.title(r'Scale factor evolution, IC: $\bar \Omega_{m0}$ = %s, $\bar \Omega_{DE0}$ =%s, $\gamma$ = %s'
           %(ombar_m0, ombar_de0, gamma))
     plt.show()
@@ -259,7 +284,7 @@ def modelcheck(mag, zpicks, plot_var, firstderivs_key):
 #          %(ombar_m0, ombar_de0, gamma))
 #    plt.show()
 
-    while False:
+    while True:
         # Redshift vs time.
         plt.figure()
         plt.xlabel('time')
@@ -270,14 +295,26 @@ def modelcheck(mag, zpicks, plot_var, firstderivs_key):
         plt.title('Redshift evolution, IC: $\Omega_{m0}$ = %s, $\Omega_{DE0}$ =%s, $\gamma$ = %s'
               %(ombar_m0, ombar_de0, gamma))
         plt.show()
-    
-        # Magnitude vs redshift.
+        
+        # Scale factor, H vs time.
         plt.figure()
-        plt.xlabel('redshift $z$')
-        plt.ylabel('magnitude')
-        plt.title('Magnitude evolution')
-        plt.scatter(zpicks, mag, marker='.', lw='1', c='xkcd:tomato')
+        plt.xlabel('time')
+        plt.ylabel('a')
+        plt.grid(True)
+        plt.plot(t, a, color='xkcd:crimson', lw=1, label='a = scale factor')
+        plt.plot(t, Hz, color='xkcd:blue', lw=1, label='H = expansion rate')
+        plt.legend()
+        plt.title(r'Scale factor evolution, IC: $\bar \Omega_{m0}$ = %s, $\bar \Omega_{DE0}$ =%s, $\gamma$ = %s'
+              %(ombar_m0, ombar_de0, gamma))
         plt.show()
+    
+#        # Magnitude vs redshift.
+#        plt.figure()
+#        plt.xlabel('redshift $z$')
+#        plt.ylabel('magnitude')
+#        plt.title('Magnitude evolution')
+#        plt.scatter(zpicks, mag, marker='.', lw='1', c='xkcd:tomato')
+#        plt.show()
         break
 
     return

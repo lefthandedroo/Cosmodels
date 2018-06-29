@@ -68,6 +68,7 @@ def magn(params, zpicks, firstderivs_key):
 #    import plots
 #    plots.modelcheck(mag, zpicks, plot_var, firstderivs_key)
         
+        
     return mag
 
 
