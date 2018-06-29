@@ -6,11 +6,12 @@ Created on Thu Feb 15 13:38:48 2018
 @author: BallBlueMeercat
 """
 from scipy.integrate import odeint
-from firstderivs import edecay, Hdecay, rdecay_m, rdecay_de, interacting, LCDM
+from firstderivs import edecay, rdecay, Hdecay, rdecay_m, rdecay_de, interacting, LCDM
 import numpy as np
 
 firstderivs_functions = {'edecay':edecay,
                          'Hdecay':Hdecay,
+                         'rdecay':rdecay,
                          'rdecay_m':rdecay_m,
                          'rdecay_de':rdecay_de,
                          'interacting':interacting,

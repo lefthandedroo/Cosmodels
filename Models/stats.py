@@ -147,8 +147,8 @@ def stats(params, zpicks, mag, sigma, nsteps, save_path, firstderivs_key):
         print('best emcee parameters outside of prior (magbest calculation)')
         print('')
 
-    # Plot of mag simulated using "true" parameters, overlayed with
-    # mag simulated using emcee best parameters.
+    # Plot of data mag and redshifts, overlayed with
+    # mag simulated using emcee best parameters and data redshifts.
     import datasim
     magbest = datasim.magn(parambest, zpicks, firstderivs_key)
     figure()
@@ -158,7 +158,7 @@ def stats(params, zpicks, mag, sigma, nsteps, save_path, firstderivs_key):
     best_fit = scatter(zpicks, magbest, lw='1', c='xkcd:tomato')
     ylabel('magnitude')
     xlabel('z')
-    legend([data, best_fit], ['true parameter mag', 'emcee parameter mag'])
+    legend([data, best_fit], ['LCDM', firstderivs_key])
     stamp = str(int(time.time()))
     filename = str(stamp)+'____magz__nsteps_'+str(nsteps)+'_nwalkers_' \
     +str(nwalkers)+'_noise_'+str(sigma)+'_numpoints_'+str(len(zpicks))+'.png'

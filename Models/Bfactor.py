@@ -9,23 +9,24 @@ import time
 import dnest4
 import numpy as np
 import numpy.random as rng
-from datasim import magn
-from results import load
-from tools import timer
+import os
+import datasim
+import results
+import tools
 #from scipy.special import erf
 
 
 # Key for the dictionary of interaction modes in firstderivs
-# 'Hdecay', edecay, 'rdecay_de', 'rdecay_m', 'interacting', 'LCDM':LCDM
-firstderivs_key = 'LCDM'
+# 'edecay', 'Hdecay', 'rdecay_m', 'rdecay_de', 'interacting', 'LCDM'
+firstderivs_key = 'rdecay'
 sigma = 0.01
 
 # Load the data
-mag, zpicks = load('./data', 'mag_z_LCDM_1000_sigma_0.01')
+mag, zpicks = results.load('./data', 'mag_z_LCDM_1000_sigma_0.01')
 
 g_max = 10
 g_min = -10
-
+    
 
 class Model(object):
     """
@@ -81,7 +82,7 @@ class Model(object):
 
         theta = {'m':m,'gamma':g}
         
-        model = magn(theta, zpicks, firstderivs_key)
+        model = datasim.magn(theta, zpicks, firstderivs_key)
         
         var = sigma**2
         return -0.5*np.sum((mag-model)**2 /var +0.5*np.log(2*np.pi*var))
@@ -92,15 +93,20 @@ sampler = dnest4.DNest4Sampler(model,
                                backend=dnest4.backends.CSVBackend(".",
                                                                   sep=" "))
 
-# Set up the sampler. The first argument is max_num_levels
+## LONG Set up the sampler. The first argument is max_num_levels
 #gen = sampler.sample(max_num_levels=30, num_steps=1000, new_level_interval=10000,
 #                      num_per_step=10000, thread_steps=100,
 #                      num_particles=5, lam=10, beta=100, seed=1234)
 
-# num_per_step can be down to a few thousand
+# MEDIUM num_per_step can be down to a few thousand 
 gen = sampler.sample(max_num_levels=30, num_steps=1000, new_level_interval=1000,
                       num_per_step=1000, thread_steps=100,
                       num_particles=5, lam=10, beta=100, seed=1234)
+
+## SHORT
+#gen = sampler.sample(max_num_levels=30, num_steps=100, new_level_interval=100,
+#                      num_per_step=100, thread_steps=10,
+#                      num_particles=5, lam=10, beta=100, seed=1234)
 
 ti = time.time()
 # Do the sampling (one iteration here = one particle save)
@@ -109,15 +115,23 @@ for i, sample in enumerate(gen):
     pass
 tf = time.time()
 
-timer('Sampling', ti, tf)
+tools.timer('Sampling', ti, tf)
 
+# Folder for saving output.
+directory = str(int(time.time()))+'_model_'+firstderivs_key
+# Relative path of output folder.
+save_path = './results_Bfactor/'+directory 
+if not os.path.exists(save_path):
+    os.makedirs(save_path)
+    
 # Run the postprocessing
 dnest4.postprocess()
+
 
 #import six
 #import sys
 ## Run the postprocessing to get marginal likelihood and generate posterior samples
-#logZdnest4, infogaindnest4, _ = dnest4.postprocess(plot=False);
+#logZdnest4, infogaindnest4, plot = dnest4.postprocess()
 #
 #postsamples = np.loadtxt('posterior_sample.txt')
 #
@@ -133,6 +147,8 @@ dnest4.postprocess()
 #except ImportError:
 #    sys.exit(1)
 #
+#m = 0.3
+#g=0
 #fig = corner.corner(postsamples, labels=[r"$m$", r"$c$"], truths=[m, g])
 #fig.savefig('DNest4.png')
 

@@ -17,7 +17,7 @@ import datasim
 # Parameters used to simulate data:  
 m_true = 0.3           # (= e_m(t)/e_crit(t0) at t=t0).
 de_true = 1 - m_true   # (de = e_de(t)/e_crit(t0) at t=t0).
-g_true = -15#-0.50           # Interaction term, rate at which DE decays into matter.
+g_true = 0#-0.50           # Interaction term, rate at which DE decays into matter.
 
 # Number of datapoints to be simulated and number of emcee steps.
 npoints, nsteps = 10000, 10000
@@ -28,11 +28,11 @@ sigma = 0.01      # standard deviation
 
 zmax = 2
 # Key for the dictionary of interaction modes in firstderivs
-# 'Hdecay', 'rdecay', 'rdecay_de', 'rdecay_m', 'interacting', 'LCDM':LCDM
+# 'Hdecay', 'edecay', 'rdecay_de', 'rdecay_m', 'interacting', 'LCDM'
 # Length of parameters has to correspond to the model being tested.
-data_key = 'Hdecay'
+data_key = 'LCDM'
 
-test_key = 'rdecay_m'
+test_key = 'rdecay_de'
 
 if data_key == 'LCDM':
     data_params = {'m':m_true}
@@ -50,9 +50,11 @@ def modelcheck():
     
     mag, zpicks = datasim.data(zmax, mu, sigma, npoints, data_params, data_key)
     
+#    mag, zpicks = results.load('./data', 'mag_z_LCDM_1000_sigma_0.01')
+    
     return
 
-modelcheck()
+#modelcheck()
 
 
 def quickemcee():
@@ -87,7 +89,7 @@ def quickemcee():
 
     return
 
-#quickemcee()
+quickemcee()
 
 
 def errorvsdatasize(params):
@@ -114,7 +116,7 @@ def errorvsdatasize(params):
     # Folder for saving output.
     directory = str(int(time.time()))
     # Relative path of output folder.
-    save_path = './results/'+directory
+    save_path = './emcee_results/'+directory
     if not os.path.exists(save_path):
         os.makedirs(save_path)
     
