@@ -161,7 +161,7 @@ def modelcheck(mag, zpicks, plot_var, firstderivs_key):
     
     t, dlpc, dl, a, ombar_m, gamma, ombar_de, ombar_m0, ombar_de0 = plot_var
     
-    print('plots.modelcheck:',firstderivs_key, 'with gamma:',str(gamma))
+    print('plots.modelcheck:',firstderivs_key, ', gamma =',str(gamma))
     
 #    a = list(reversed(a))
 #    zpicks = list(reversed(zpicks))
@@ -170,15 +170,46 @@ def modelcheck(mag, zpicks, plot_var, firstderivs_key):
     
     print()
     print('a goes from ',a[-1], 'to ',a[0])
-    print('DE goes from ',ombar_de[-1], 'to ',ombar_de[0])
-    print('m goes from ',ombar_m[-1], 'to ',ombar_m[0])
+    print('ombar_de goes from ',ombar_de[-1], 'to ',ombar_de[0])
+    print('ombar_m goes from ',ombar_m[-1], 'to ',ombar_m[0])
     print('z goes from ',zpicks[-1], 'to ',zpicks[0])
     
     if min(ombar_m) < 0:
         print('unphysical ombar_m', str(min(ombar_m)))
+        print(ombar_m)
+        plt.figure()
+        plt.title('ombar_m')
+        plt.plot(ombar_m)
+        plt.show()
+        index = np.argmin(ombar_m)
+        print('ombar_m close to -ve',ombar_m[index-1], ombar_m[index], ombar_m[index+1])
+        
     elif min(ombar_de) < 0:
         print('unphysical ombar_de', str(min(ombar_de)))
-    
+        print(type(ombar_de))
+        
+        pos_signal = ombar_de.copy()
+        neg_signal = ombar_de.copy()
+        
+        pos_signal[pos_signal <= 0] = np.nan
+        neg_signal[neg_signal > 0] = np.nan
+        
+        #plotting
+        plt.figure()
+        plt.title('ombar_de')
+        plt.plot(pos_signal, color='r')
+        plt.plot(neg_signal, color='b')
+        plt.show()
+        
+#        plt.figure()
+#        plt.title('ombar_de')
+#        plt.plot(ombar_de)
+#        plt.show()
+#        negatives = ombar_de[ombar_de < 0]
+#        print(negatives)
+#        print(len(negatives))
+#        index = np.argmin(ombar_de)
+        
 #    # Scale factor vs redshift.
 #    plt.figure()
 #    plt.xlabel('redshift $z$')
@@ -192,8 +223,8 @@ def modelcheck(mag, zpicks, plot_var, firstderivs_key):
     Hz = []
     for i in range(len(ombar_m)):
         H = (ombar_m[i] + ombar_de[i])**(1/2)
-        if np.isnan(H):
-            print('plots.modelcheck got NaN value for H')
+#        if np.isnan(H):
+#            print('plots.modelcheck got NaN value for H')
         Hz.append(H)
     print('Hz goes from ',Hz[-1], 'to ',Hz[0])
 
@@ -203,7 +234,7 @@ def modelcheck(mag, zpicks, plot_var, firstderivs_key):
     plt.ylabel('a')
     plt.grid(True)
     plt.plot(zpicks, a, color='xkcd:crimson', lw=1, label='a = scale factor')
-    plt.plot(zpicks, Hz, color='xkcd:blue', lw=1, label='H = expansion rate')
+    plt.plot(zpicks, Hz, color='xkcd:blue', lw=1, label='H(z)')
     plt.legend()
     plt.title(r'Scale factor evolution, IC: $\bar \Omega_{m0}$ = %s, $\bar \Omega_{DE0}$ =%s, $\gamma$ = %s'
           %(ombar_m0, ombar_de0, gamma))
@@ -302,7 +333,7 @@ def modelcheck(mag, zpicks, plot_var, firstderivs_key):
         plt.ylabel('a')
         plt.grid(True)
         plt.plot(t, a, color='xkcd:crimson', lw=1, label='a = scale factor')
-        plt.plot(t, Hz, color='xkcd:blue', lw=1, label='H = expansion rate')
+        plt.plot(t, Hz, color='xkcd:blue', lw=1, label='H(t)')
         plt.legend()
         plt.title(r'Scale factor evolution, IC: $\bar \Omega_{m0}$ = %s, $\bar \Omega_{DE0}$ =%s, $\gamma$ = %s'
               %(ombar_m0, ombar_de0, gamma))

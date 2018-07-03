@@ -103,7 +103,7 @@ def data(zmax, mu, sigma, npoints, params, firstderivs_key):
     return mag, zpicks
 
 
-def makensavemagnz(m_true, g_true, mu, sigma, npoints, data_key, filename):
+def makensavemagnz(m_true, g_true, mu, sigma, npoints, z_max, data_key, filename):
     '''
     Takes in:
     
@@ -136,7 +136,7 @@ def makensavemagnz(m_true, g_true, mu, sigma, npoints, data_key, filename):
     else:
         data_params = {'m':m_true, 'gamma':g_true}
     
-    mag, zpicks = data(mu, sigma, npoints, data_params, data_key)
+    mag, zpicks = data(z_max, mu, sigma, npoints, data_params, data_key)
     
     output = mag, zpicks
         

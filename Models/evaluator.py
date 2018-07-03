@@ -17,7 +17,7 @@ import datasim
 # Parameters used to simulate data:  
 m_true = 0.3           # (= e_m(t)/e_crit(t0) at t=t0).
 de_true = 1 - m_true   # (de = e_de(t)/e_crit(t0) at t=t0).
-g_true = 0#-0.50           # Interaction term, rate at which DE decays into matter.
+g_true = -45.7#-0.50           # Interaction term, rate at which DE decays into matter.
 
 # Number of datapoints to be simulated and number of emcee steps.
 npoints, nsteps = 10000, 10000
@@ -30,7 +30,7 @@ zmax = 2
 # Key for the dictionary of interaction modes in firstderivs
 # 'Hdecay', 'edecay', 'rdecay_de', 'rdecay_m', 'interacting', 'LCDM'
 # Length of parameters has to correspond to the model being tested.
-data_key = 'LCDM'
+data_key = 'rdecay'
 
 test_key = 'rdecay_de'
 
@@ -45,7 +45,6 @@ else:
     params = {'m':m_true, 'gamma':g_true}
 
 
-
 def modelcheck():
     
     mag, zpicks = datasim.data(zmax, mu, sigma, npoints, data_params, data_key)
@@ -54,7 +53,7 @@ def modelcheck():
     
     return
 
-#modelcheck()
+modelcheck()
 
 
 def quickemcee():
@@ -89,7 +88,7 @@ def quickemcee():
 
     return
 
-quickemcee()
+#quickemcee()
 
 
 def errorvsdatasize(params):

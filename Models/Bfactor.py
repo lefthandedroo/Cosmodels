@@ -18,13 +18,14 @@ import tools
 
 # Key for the dictionary of interaction modes in firstderivs
 # 'edecay', 'Hdecay', 'rdecay_m', 'rdecay_de', 'interacting', 'LCDM'
-firstderivs_key = 'rdecay'
-sigma = 0.01
+firstderivs_key = 'edecay'
+sigma = 0.1
 
+dataname = 'mag_z_LCDM_1000_sigma_0.1'
 # Load the data
-mag, zpicks = results.load('./data', 'mag_z_LCDM_1000_sigma_0.01')
+mag, zpicks = results.load('./data', dataname)
 
-g_max = 10
+g_max = 0
 g_min = -10
     
 
@@ -123,7 +124,10 @@ directory = str(int(time.time()))+'_model_'+firstderivs_key
 save_path = './results_Bfactor/'+directory 
 if not os.path.exists(save_path):
     os.makedirs(save_path)
-    
+
+print('data =', dataname)
+print('sigma =', sigma)
+   
 # Run the postprocessing
 dnest4.postprocess()
 
@@ -169,7 +173,7 @@ dnest4.postprocess()
 #Effective sample size = 85.54638980461822
 #Sampling time:   37min 5s
 
-############
+############ 0.01 sigma data
 #Hdecay
 #Sampling time:   38min 57s
 #log(Z) = -1158842.6212481956
@@ -187,3 +191,29 @@ dnest4.postprocess()
 #log(Z) = -1622866.7230921672
 #Information = 13.870062695583329 nats.
 #Effective sample size = 178.67158154325102
+
+############ 0.1 sigma data
+
+#Hdecay
+#Sampling time:   26min 26s
+#data = mag_z_LCDM_1000_sigma_0.1
+#sigma = 0.1
+#log(Z) = -11392.938034458695
+#Information = 16.85219457607309 nats.
+#Effective sample size = 216.9365844057018
+
+#rdecay
+#Sampling time:   25min 4s
+#data = mag_z_LCDM_1000_sigma_0.1
+#sigma = 0.1
+#log(Z) = -16069.573635539238
+#Information = 8.730470507740392 nats.
+#Effective sample size = 172.4071834775586
+
+#LCDM
+#Sampling time:   23min 45s
+#data = mag_z_LCDM_1000_sigma_0.1
+#sigma = 0.1
+#log(Z) = -16070.356294581907
+#Information = 9.449718869756907 nats.
+#Effective sample size = 142.47418654118337
