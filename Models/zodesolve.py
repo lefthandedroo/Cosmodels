@@ -11,9 +11,9 @@ import numpy as np
 
 firstderivs_functions = {'edecay':edecay,
                          'Hdecay':Hdecay,
-                         'rdecay':rdecay,
                          'rdecay_m':rdecay_m,
                          'rdecay_de':rdecay_de,
+                         'rdecay':rdecay,                         
                          'interacting':interacting,
                          'LCDM':LCDM}
 

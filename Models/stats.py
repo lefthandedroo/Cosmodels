@@ -45,7 +45,7 @@ def stats(params, zpicks, mag, sigma, nsteps, save_path, firstderivs_key):
     i = 0
     while i < nwalkers:
         theta = pos[i]
-        lp = ln.lnprior(theta, ndim)
+        lp = ln.lnprior(theta, firstderivs_key)
         if not np.isfinite(lp):
             print('~~~~~~~pos[%s] (outside of prior) = %s ~~~~~~~'%(i, theta))
         i += 1
@@ -141,7 +141,7 @@ def stats(params, zpicks, mag, sigma, nsteps, save_path, firstderivs_key):
                  mag, sigma, nsteps, nwalkers, save_path)
             
     # Checking if best found parameters are within prior.
-    lp = ln.lnprior(thetabest, ndim)
+    lp = ln.lnprior(thetabest, firstderivs_key)
     if not np.isfinite(lp):
         print('')
         print('best emcee parameters outside of prior (magbest calculation)')

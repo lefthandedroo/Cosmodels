@@ -139,9 +139,12 @@ def makensavemagnz(m_true, g_true, mu, sigma, npoints, z_max, data_key, filename
     mag, zpicks = data(z_max, mu, sigma, npoints, data_params, data_key)
     
     output = mag, zpicks
+    
+    # Relative path of output folder.
+    save_path = './data/'+filename
         
     import pickle
-    pickle.dump(output, open(filename, 'wb'))
+    pickle.dump(output, open(save_path, 'wb'))
     
     return
 

@@ -20,19 +20,20 @@ de_true = 1 - m_true   # (de = e_de(t)/e_crit(t0) at t=t0).
 g_true = 0#-0.50           # Interaction term, rate at which DE decays into matter.
 
 # Number of datapoints to be simulated and number of emcee steps.
-npoints, nsteps = 10000, 10000
+npoints, nsteps = 1000, 100000
+zmax = 2
 
 # Statistical parameteres of noise:
 mu = 0            # mean
-sigma = 0.1      # standard deviation
+sigma = 0.07      # standard deviation
 
-zmax = 2
 # Key for the dictionary of interaction modes in firstderivs
-# 'Hdecay', 'edecay', 'rdecay_de', 'rdecay_m', 'interacting', 'LCDM'
+# 'edecay', 'Hdecay', 'rdecay_de', 'rdecay_m', 'rdecay', 'interacting', 'LCDM'
 # Length of parameters has to correspond to the model being tested.
+
 data_key = 'LCDM'
 
-test_key = 'rdecay'
+test_key = 'edecay'
 
 if data_key == 'LCDM':
     data_params = {'m':m_true}
@@ -44,16 +45,22 @@ if test_key == 'LCDM':
 else:
     params = {'m':m_true, 'gamma':g_true}
 
+#dataname = 'mag_z_'+data_key+'_'+str(npoints)+'_sigma_'+str(sigma)
+#datasim.makensavemagnz(m_true, g_true, mu, sigma, npoints, zmax, data_key, dataname)
+
+def datacheck():
+    mag, zpicks = results.load('./data', 'mag_z_LCDM_1000_sigma_0.15')
+    print(len(mag))
+    print(len(zpicks))
+    return
+
+#datacheck()
 
 def modelcheck():
-    
-    mag, zpicks = datasim.data(zmax, mu, sigma, npoints, data_params, data_key)
-    
-#    mag, zpicks = results.load('./data', 'mag_z_LCDM_1000_sigma_0.01')
-    
+    mag, zpicks = datasim.data(zmax, mu, sigma, npoints, data_params, test_key)
     return
-#
-modelcheck()
+
+#modelcheck()
 
 
 def quickemcee():
@@ -71,7 +78,7 @@ def quickemcee():
             print('_____________________ run number',i)
         
 #        mag, zpicks = datasim.data(mu, sigma, npoints, data_params, data_key)
-        mag, zpicks = results.load('./data', 'mag_z_LCDM_1000_sigma_0.1')
+        mag, zpicks = results.load('./data', 'mag_z_LCDM_1000_sigma_0.05')
         
         propert, sampler = paramfinder.paramfinder(
                 npoints, nsteps, sigma, mu, params, zpicks, 

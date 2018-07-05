@@ -17,16 +17,16 @@ import tools
 
 
 # Key for the dictionary of interaction modes in firstderivs
-# 'edecay', 'Hdecay', 'rdecay_m', 'rdecay_de', 'interacting', 'LCDM'
+# 'edecay', 'Hdecay', 'rdecay_de', 'rdecay_m', 'rdecay', 'interacting', 'LCDM'
 firstderivs_key = 'interacting'
-sigma = 0.1
+sigma = 0.07
 
-dataname = 'mag_z_LCDM_1000_sigma_0.1'
+dataname = 'mag_z_LCDM_1000_sigma_0.07'
 # Load the data
 mag, zpicks = results.load('./data', dataname)
 
-g_max = 0
-g_min = -10
+g_max = 1.45
+g_min = -1.45
     
 
 class Model(object):
@@ -99,15 +99,15 @@ sampler = dnest4.DNest4Sampler(model,
 #                      num_per_step=10000, thread_steps=100,
 #                      num_particles=5, lam=10, beta=100, seed=1234)
 
-# MEDIUM num_per_step can be down to a few thousand 
-gen = sampler.sample(max_num_levels=30, num_steps=1000, new_level_interval=1000,
-                      num_per_step=1000, thread_steps=100,
-                      num_particles=5, lam=10, beta=100, seed=1234)
-
-## SHORT
-#gen = sampler.sample(max_num_levels=30, num_steps=100, new_level_interval=100,
-#                      num_per_step=100, thread_steps=10,
+## MEDIUM num_per_step can be down to a few thousand 
+#gen = sampler.sample(max_num_levels=30, num_steps=1000, new_level_interval=1000,
+#                      num_per_step=1000, thread_steps=100,
 #                      num_particles=5, lam=10, beta=100, seed=1234)
+
+# SHORT
+gen = sampler.sample(max_num_levels=30, num_steps=100, new_level_interval=100,
+                      num_per_step=100, thread_steps=10,
+                      num_particles=5, lam=10, beta=100, seed=1234)
 
 ti = time.time()
 # Do the sampling (one iteration here = one particle save)
@@ -118,12 +118,12 @@ tf = time.time()
 
 tools.timer('Sampling', ti, tf)
 
-# Folder for saving output.
-directory = str(int(time.time()))+'_model_'+firstderivs_key
-# Relative path of output folder.
-save_path = './results_Bfactor/'+directory 
-if not os.path.exists(save_path):
-    os.makedirs(save_path)
+## Folder for saving output.
+#directory = str(int(time.time()))+'_model_'+firstderivs_key
+## Relative path of output folder.
+#save_path = './results_Bfactor/'+directory 
+#if not os.path.exists(save_path):
+#    os.makedirs(save_path)
 
 print('data =', dataname)
 print('sigma =', sigma)
