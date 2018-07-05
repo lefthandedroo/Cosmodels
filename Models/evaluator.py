@@ -17,22 +17,22 @@ import datasim
 # Parameters used to simulate data:  
 m_true = 0.3           # (= e_m(t)/e_crit(t0) at t=t0).
 de_true = 1 - m_true   # (de = e_de(t)/e_crit(t0) at t=t0).
-g_true = -45.7#-0.50           # Interaction term, rate at which DE decays into matter.
+g_true = 0#-0.50           # Interaction term, rate at which DE decays into matter.
 
 # Number of datapoints to be simulated and number of emcee steps.
 npoints, nsteps = 10000, 10000
 
 # Statistical parameteres of noise:
 mu = 0            # mean
-sigma = 0.01      # standard deviation
+sigma = 0.1      # standard deviation
 
 zmax = 2
 # Key for the dictionary of interaction modes in firstderivs
 # 'Hdecay', 'edecay', 'rdecay_de', 'rdecay_m', 'interacting', 'LCDM'
 # Length of parameters has to correspond to the model being tested.
-data_key = 'rdecay'
+data_key = 'LCDM'
 
-test_key = 'rdecay_de'
+test_key = 'rdecay'
 
 if data_key == 'LCDM':
     data_params = {'m':m_true}
@@ -52,7 +52,7 @@ def modelcheck():
 #    mag, zpicks = results.load('./data', 'mag_z_LCDM_1000_sigma_0.01')
     
     return
-
+#
 modelcheck()
 
 
@@ -71,7 +71,7 @@ def quickemcee():
             print('_____________________ run number',i)
         
 #        mag, zpicks = datasim.data(mu, sigma, npoints, data_params, data_key)
-        mag, zpicks = results.load('./data', 'mag_z_LCDM_1000_sigma_0.01')
+        mag, zpicks = results.load('./data', 'mag_z_LCDM_1000_sigma_0.1')
         
         propert, sampler = paramfinder.paramfinder(
                 npoints, nsteps, sigma, mu, params, zpicks, 
@@ -88,7 +88,7 @@ def quickemcee():
 
     return
 
-#quickemcee()
+quickemcee()
 
 
 def errorvsdatasize(params):

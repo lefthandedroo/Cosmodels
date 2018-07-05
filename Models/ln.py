@@ -41,7 +41,7 @@ def lnprior(theta, ndim):
             return 0.0
     elif ndim == 2:
         m, gamma = theta
-        if (0 < m < 1 or m == 1) and abs(gamma) < 100:
+        if (0 < m < 1 or m == 1) and -10 < gamma < 0:
             return 0.0
     elif ndim == 3:
         m, gamma, de = theta

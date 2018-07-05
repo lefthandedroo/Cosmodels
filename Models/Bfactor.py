@@ -18,7 +18,7 @@ import tools
 
 # Key for the dictionary of interaction modes in firstderivs
 # 'edecay', 'Hdecay', 'rdecay_m', 'rdecay_de', 'interacting', 'LCDM'
-firstderivs_key = 'edecay'
+firstderivs_key = 'interacting'
 sigma = 0.1
 
 dataname = 'mag_z_LCDM_1000_sigma_0.1'
