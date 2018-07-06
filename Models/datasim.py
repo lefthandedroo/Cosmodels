@@ -28,7 +28,7 @@ def redshift_picks(zmin, zmax, n):
     return zpicks
 
 
-def magn(params, zpicks, firstderivs_key):
+def magn(params, zpicks, firstderivs_key, plot_key):
     """
     Takes in:
             gamma = interaction constant;
@@ -64,9 +64,10 @@ def magn(params, zpicks, firstderivs_key):
             magnitude = 5 * log10(dlpc[i]/10) + M
         mag.append(magnitude)
     
-#    # Checking evolution of the model.
-#    import plots
-#    plots.modelcheck(mag, zpicks, plot_var, firstderivs_key)
+    if plot_key:
+        # Checking evolution of the model.
+        import plots
+        plots.modelcheck(mag, zpicks, plot_var, firstderivs_key)
         
         
     return mag
@@ -92,11 +93,11 @@ def gnoise(mag, mu, sigma):
     return mag
 
 
-def data(zmax, mu, sigma, npoints, params, firstderivs_key):
+def data(zmax, mu, sigma, npoints, params, firstderivs_key, plot_key):
     
     zpicks = redshift_picks(0.005, zmax, npoints)
     
-    model = magn(params, zpicks, firstderivs_key)
+    model = magn(params, zpicks, firstderivs_key, plot_key)
     model = np.asarray(model)
     mag = gnoise(model, mu, sigma)
     

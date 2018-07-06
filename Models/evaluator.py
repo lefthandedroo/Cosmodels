@@ -20,7 +20,7 @@ de_true = 1 - m_true   # (de = e_de(t)/e_crit(t0) at t=t0).
 g_true = 0#-0.50           # Interaction term, rate at which DE decays into matter.
 
 # Number of datapoints to be simulated and number of emcee steps.
-npoints, nsteps = 1000, 100000
+npoints, nsteps = 1000, 10000
 zmax = 2
 
 # Statistical parameteres of noise:
@@ -28,12 +28,13 @@ mu = 0            # mean
 sigma = 0.07      # standard deviation
 
 # Key for the dictionary of interaction modes in firstderivs
-# 'edecay', 'Hdecay', 'rdecay_de', 'rdecay_m', 'rdecay', 'interacting', 'LCDM'
+# 'expgamma','txgamma','zxgamma','zxxgamma','gammaxxz','rdecay_m','rdecay_de',
+# 'rdecay_mxde','rdecay','interacting','LCDM'
 # Length of parameters has to correspond to the model being tested.
 
 data_key = 'LCDM'
 
-test_key = 'edecay'
+test_key = 'expgamma'
 
 if data_key == 'LCDM':
     data_params = {'m':m_true}
@@ -48,16 +49,10 @@ else:
 #dataname = 'mag_z_'+data_key+'_'+str(npoints)+'_sigma_'+str(sigma)
 #datasim.makensavemagnz(m_true, g_true, mu, sigma, npoints, zmax, data_key, dataname)
 
-def datacheck():
-    mag, zpicks = results.load('./data', 'mag_z_LCDM_1000_sigma_0.15')
-    print(len(mag))
-    print(len(zpicks))
-    return
-
-#datacheck()
 
 def modelcheck():
-    mag, zpicks = datasim.data(zmax, mu, sigma, npoints, data_params, test_key)
+    mag, zpicks = datasim.data(zmax, mu, sigma, npoints, data_params, 
+                               test_key, plot_key=True)
     return
 
 #modelcheck()
@@ -77,20 +72,21 @@ def quickemcee():
         if i > 0:
             print('_____________________ run number',i)
         
-#        mag, zpicks = datasim.data(mu, sigma, npoints, data_params, data_key)
+#        mag, zpicks = datasim.data(zmax, mu, sigma, npoints, data_params, 
+#                                   data_key, plot_key=False)
         mag, zpicks = results.load('./data', 'mag_z_LCDM_1000_sigma_0.05')
         
         propert, sampler = paramfinder.paramfinder(
                 npoints, nsteps, sigma, mu, params, zpicks, 
-                mag, test_key, save_path)
+                mag, save_path, test_key, plot_key=False)
         i += 1
     
     # Saving sampler to directory.
     results.save(save_path, 'sampler', sampler)
 
-    print('Type of interaction in the model being tested:', 
+    print('Model being tested:', 
           test_key)
-    print('Data is simulated using',data_key)
+    print('Data simulated with:',data_key)
     print('directory:',directory)
 
     return

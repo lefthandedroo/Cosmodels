@@ -6,16 +6,20 @@ Created on Thu Feb 15 13:38:48 2018
 @author: BallBlueMeercat
 """
 from scipy.integrate import odeint
-from firstderivs import edecay, rdecay, Hdecay, rdecay_m, rdecay_de, interacting, LCDM
+import firstderivs as f
 import numpy as np
 
-firstderivs_functions = {'edecay':edecay,
-                         'Hdecay':Hdecay,
-                         'rdecay_m':rdecay_m,
-                         'rdecay_de':rdecay_de,
-                         'rdecay':rdecay,                         
-                         'interacting':interacting,
-                         'LCDM':LCDM}
+firstderivs_functions = {'expgamma':f.expgamma,
+                         'txgamma':f.txgamma,
+                         'zxgamma':f.zxgamma,
+                         'zxxgamma':f.zxxgamma,
+                         'gammaxxz':f.gammaxxz,
+                         'rdecay_m':f.rdecay_m,
+                         'rdecay_de':f.rdecay_de,
+                         'rdecay_mxde':f.rdecay_mxde,
+                         'rdecay':f.rdecay,                         
+                         'interacting':f.interacting,
+                         'LCDM':f.LCDM}
 
 def zodesolve(params, zpicks, firstderivs_key):
     """

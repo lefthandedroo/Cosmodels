@@ -13,11 +13,13 @@ import numpy as np
 import time
 import os.path
 
+import datasim
 from tools import timer
 import ln
 from plots import stat
 
-def stats(params, zpicks, mag, sigma, nsteps, save_path, firstderivs_key):
+def stats(params, zpicks, mag, sigma, nsteps, 
+          save_path, firstderivs_key, plot_key):
     """
     Takes in:
             m_true = e_m(t)/ec(t0) at t=t0;
@@ -149,8 +151,7 @@ def stats(params, zpicks, mag, sigma, nsteps, save_path, firstderivs_key):
 
     # Plot of data mag and redshifts, overlayed with
     # mag simulated using emcee best parameters and data redshifts.
-    import datasim
-    magbest = datasim.magn(parambest, zpicks, firstderivs_key)
+    magbest = datasim.magn(parambest, zpicks, firstderivs_key, plot_key)
     figure()
     title('Evolution of magnitude with redshift \n nsteps: '
           +str(nsteps)+', noise: '+str(sigma)+', npoints: '+str(len(zpicks)))

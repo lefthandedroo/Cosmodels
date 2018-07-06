@@ -10,11 +10,6 @@ import numpy as np
 from datasim import magn
 
 def lnlike(theta, zpicks, mag, sigma, firstderivs_key, ndim):
-#    print('@@@@ lnlike has been called')
-#    
-#    print('lnline -- theta', theta)
-#    print('type theta', type(theta))
-#    print('theta.ndim', theta.ndim)
     
     params = {}
     if ndim == 1:
@@ -24,7 +19,7 @@ def lnlike(theta, zpicks, mag, sigma, firstderivs_key, ndim):
     elif ndim == 3:
         params= {'m':theta[0],'gamma':theta[1],'de':theta[2]}
     
-    model = magn(params, zpicks, firstderivs_key)
+    model = magn(params, zpicks, firstderivs_key, False)
     var = sigma**2
     return -0.5*np.sum((mag-model)**2 /var +0.5*np.log(2*np.pi*var))
 #    inv_var = 1.0/(sigma**2)
@@ -64,6 +59,10 @@ def lnprior(theta, firstderivs_key):
     elif firstderivs_key == 'interacting':
         m, gamma = theta
         if (0 < m < 1 or m == 1) and abs(gamma) < 1.45:
+            return 0.0
+    elif firstderivs_key == 'expgamma':
+        m, gamma = theta
+        if (0 < m < 1 or m == 1) and abs(gamma) < 25:
             return 0.0
     else:
         m, gamma = theta
