@@ -1,0 +1,5 @@
+Sampling time:  0min 12s
+model = tutti-frutti
+data = mag_z_LCDM_1000_sigma_0.07
+sigma = 0.07log(Z) = -32846.15664589652
+Information = 11.039618849106773

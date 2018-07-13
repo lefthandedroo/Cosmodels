@@ -9,6 +9,7 @@ Created on Tue Apr  3 10:31:30 2018
 
 import pickle
 import os.path
+import time
 
 def process(propert):
     
@@ -38,3 +39,17 @@ def load(save_path, filename):
         
     return content
 
+
+def relocate(filename, firstderivs_key):
+    
+    filename = filename +'.txt'
+    
+    # Create directory to move files to.
+    directory = './results_Bfactor/'+str(int(time.time()))+'_model_'+firstderivs_key
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    
+    # Add filename to the new directory    
+    new_filename = os.path.join(directory, filename)
+    
+    os.rename(filename, new_filename)

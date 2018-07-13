@@ -1,0 +1,7 @@
+Sampling time:  211min 21s
+model = LCDM
+data = mag_z_LCDM_1000_sigma_0.07
+sigma = 0.07
+log(Z) = -32844.687936297734
+Information = 10.124111540797458 nats.
+Effective sample size = 159.35672533070118

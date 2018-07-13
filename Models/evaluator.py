@@ -59,8 +59,10 @@ def modelcheck():
 
 
 def quickemcee():
-    # Changing directory to dedicated folder for saving output.
-    save_path, directory = tools.path()
+    # Creating a folder for saving output.
+    save_path = './quick_emcee/'+str(int(time.time()))+'_'+test_key
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
 
     if test_key == 'LCDM':
         params = {'m':m_true}
@@ -87,11 +89,10 @@ def quickemcee():
     print('Model being tested:', 
           test_key)
     print('Data simulated with:',data_key)
-    print('directory:',directory)
 
     return
 
-quickemcee()
+#quickemcee()
 
 
 def errorvsdatasize(params):

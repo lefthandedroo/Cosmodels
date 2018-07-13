@@ -119,7 +119,7 @@ tf = time.time()
 
 time = tools.timer('Sampling', ti, tf)
 
-
+firstderivs_key = 'tutti-frutti'
 print('model =',firstderivs_key)
 print('data =', dataname)
 print('sigma =', sigma)
@@ -136,7 +136,6 @@ f.write(time +'\n'
         +'Information = '+str(info[1]) +'\n')
 f.close()
 
-firstderivs_key = 'tutti-frutti'
 # Moving output .txt files into a run specific folder.
 results.relocate('levels', firstderivs_key)
 results.relocate('posterior_sample', firstderivs_key)

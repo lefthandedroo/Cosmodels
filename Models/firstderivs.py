@@ -89,7 +89,7 @@ def txgamma(v, t, gamma, H0):
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
         
-    irate = t*gamma*(1-ombar_de/(ombar_de+ombar_m)) /(1+z)/Hz
+    irate = (gamma/t)*(1-ombar_de/(ombar_de+ombar_m)) /(1+z)/Hz
 
     # first derivatives of functions I want to find:
     f = [# dt/dz (= f.d wrt z of time)

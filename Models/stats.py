@@ -5,7 +5,7 @@ Created on Fri Feb 23 16:02:10 2018
 
 @author: BallBlueMeercat
 """
-
+import matplotlib.pyplot as plt
 from pylab import figure, scatter, xlabel, ylabel, title, show, savefig
 from pylab import legend, errorbar
 from emcee import EnsembleSampler

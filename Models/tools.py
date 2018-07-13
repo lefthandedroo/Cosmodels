@@ -40,8 +40,10 @@ def timer(string,i,f):
     mins, sec= divmod(sec, 60)
 #    mins = round((sec / 60),1)  # minutes
 #    sec = round((sec % 60),2)   # seconds
-    print(str(string),'time:  ',str(int(mins))+'min',str(int(sec))+'s')
-    return
+    time = string+' time:  '+str(int(mins))+'min '+str(int(sec))+'s'
+    print(time)
+    
+    return time
 
 
 def runcount(sigma, sigma_max, sigma_step,
