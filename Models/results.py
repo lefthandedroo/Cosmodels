@@ -42,7 +42,7 @@ def load(save_path, filename):
 
 def relocate(filename, firstderivs_key):
     
-    filename = filename +'.txt'
+    filename = filename
     
     # Create directory to move files to.
     directory = './results_Bfactor/'+str(int(time.time()))+'_model_'+firstderivs_key

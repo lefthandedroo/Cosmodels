@@ -13,14 +13,13 @@ import paramfinder
 import tools
 import datasim
 
-
 # Parameters used to simulate data:  
 m_true = 0.3           # (= e_m(t)/e_crit(t0) at t=t0).
 de_true = 1 - m_true   # (de = e_de(t)/e_crit(t0) at t=t0).
-g_true = 0#-0.50           # Interaction term, rate at which DE decays into matter.
+g_true = -3.828578890806254#-0.50           # Interaction term, rate at which DE decays into matter.
 
 # Number of datapoints to be simulated and number of emcee steps.
-npoints, nsteps = 1000, 10000
+npoints, nsteps = 1000, 1000
 zmax = 2
 
 # Statistical parameteres of noise:
@@ -28,13 +27,13 @@ mu = 0            # mean
 sigma = 0.07      # standard deviation
 
 # Key for the dictionary of interaction modes in firstderivs
-# 'expgamma','txgamma','zxgamma','zxxgamma','gammaxxz','rdecay_m','rdecay_de',
-# 'rdecay_mxde','rdecay','interacting','LCDM'
+# 'expgamma','txgamma','zxgamma','gamma_over_z','zxxgamma','gammaxxz',
+#'rdecay_m','rdecay_de','rdecay_mxde','rdecay','interacting','LCDM'
 # Length of parameters has to correspond to the model being tested.
 
 data_key = 'LCDM'
 
-test_key = 'expgamma'
+test_key = 'zxxgamma'
 
 if data_key == 'LCDM':
     data_params = {'m':m_true}
@@ -51,10 +50,34 @@ else:
 
 
 def modelcheck():
-    mag, zpicks = datasim.data(zmax, mu, sigma, npoints, data_params, 
+    mag, zpicks = datasim.noisy_mag(zmax, mu, sigma, npoints, data_params, 
                                test_key, plot_key=True)
     return
 
+modelcheck()
+
+#def modelcheck():
+#    import firstderivs as f
+#    
+#    firstderivs_functions = {'expgamma':f.expgamma,
+#                         'txgamma':f.txgamma,
+#                         'zxgamma':f.zxgamma,
+#                         'gamma_over_z':f.gamma_over_z,
+#                         'zxxgamma':f.zxxgamma,
+#                         'gammaxxz':f.gammaxxz,
+#                         'rdecay_m':f.rdecay_m,
+#                         'rdecay_de':f.rdecay_de,
+#                         'rdecay_mxde':f.rdecay_mxde,
+#                         'rdecay':f.rdecay,                         
+#                         'interacting':f.interacting,
+#                         'LCDM':f.LCDM}
+#    
+#    for key in firstderivs_functions:
+#        test_key = key
+#        mag, zpicks = datasim.noisy_mag(zmax, mu, sigma, npoints, data_params, 
+#                               test_key, plot_key=True)
+#    return
+#
 #modelcheck()
 
 
@@ -74,8 +97,8 @@ def quickemcee():
         if i > 0:
             print('_____________________ run number',i)
         
-#        mag, zpicks = datasim.data(zmax, mu, sigma, npoints, data_params, 
-#                                   data_key, plot_key=False)
+#        mag, zpicks = datasim.noisy_mag(zmax, mu, sigma, npoints, data_params, 
+#                                   data_key)
         mag, zpicks = results.load('./data', 'mag_z_LCDM_1000_sigma_0.05')
         
         propert, sampler = paramfinder.paramfinder(
@@ -142,7 +165,7 @@ def errorvsdatasize(params):
         npoints = npoints_min 
         
         # Data to be used:
-        mag, zpicks = datasim.data(mu, sigma, npoints, data_params, data_key)
+        mag, zpicks = datasim.noisy_mag(mu, sigma, npoints, data_params, data_key)
         
         while npoints < npoints_max:
             print('_____________________ run number',run)
@@ -181,7 +204,7 @@ def errorvsdatasize(params):
     plt.title('sd of m vs size of dataset, sd of noise = %s'%(sigma))
     plt.scatter(npoints_l, m_sd_l, c='m')        
     stamp = str(int(time.time()))
-    filename = str(stamp)+'_sd_of_m_.png'
+    filename = str(stamp)+'_sd_of_m_.pdf'
     filename = os.path.join(save_path, filename)
     plt.savefig(filename)
     plt.show()
@@ -192,7 +215,7 @@ def errorvsdatasize(params):
     plt.title('mean of m vs size of dataset, sd of noise = %s'%(sigma))
     plt.scatter(npoints_l, m_mean_l, c='c')        
     stamp = str(int(time.time()))
-    filename = str(stamp)+'_mean_of_m_.png'
+    filename = str(stamp)+'_mean_of_m_.pdf'
     filename = os.path.join(save_path, filename)
     plt.savefig(filename)
     plt.show()
@@ -203,7 +226,7 @@ def errorvsdatasize(params):
     plt.title('sd/mean of m vs size of dataset, sd of noise = %s'%(sigma))
     plt.scatter(npoints_l, m_vc_l, c='coral')        
     stamp = str(int(time.time()))
-    filename = str(stamp)+'_cv_of_m_.png'
+    filename = str(stamp)+'_cv_of_m_.pdf'
     filename = os.path.join(save_path, filename)
     plt.savefig(filename)
     plt.show()
@@ -215,7 +238,7 @@ def errorvsdatasize(params):
     plt.title('sd of gamma vs size of dataset, sd of noise = %s'%(sigma))
     plt.scatter(npoints_l, g_sd_l, c='m')        
     stamp = str(int(time.time()))
-    filename = str(stamp)+'_sd_of_g_.png'
+    filename = str(stamp)+'_sd_of_g_.pdf'
     filename = os.path.join(save_path, filename)
     plt.savefig(filename)
     plt.show()
@@ -226,7 +249,7 @@ def errorvsdatasize(params):
     plt.title('mean of gamma vs size of dataset, sd of noise = %s'%(sigma))
     plt.scatter(npoints_l, g_mean_l, c='c')        
     stamp = str(int(time.time()))
-    filename = str(stamp)+'_mean_of_g_.png'
+    filename = str(stamp)+'_mean_of_g_.pdf'
     filename = os.path.join(save_path, filename)
     plt.savefig(filename)
     plt.show()
@@ -237,7 +260,7 @@ def errorvsdatasize(params):
 #    plt.title('sd/mean of gamma vs size of dataset, sd of noise = %s'%(sigma))
 #    plt.scatter(npoints_l, g_vc_l, c='coral')        
 #    plt.stamp = str(int(time.time()))
-#    plt.filename = str(stamp)+'_cv_of_g_.png'
+#    plt.filename = str(stamp)+'_cv_of_g_.pdf'
 #    plt.filename = os.path.join(save_path, filename)
 #    plt.savefig(filename)
 #    plt.show()

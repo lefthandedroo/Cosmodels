@@ -14,7 +14,7 @@ import os
 import time
 
 from results import load
-
+ 
 def setsizevspread():
     
     return
@@ -32,26 +32,26 @@ def stat(hue, var, var_true, var_name, slnprob, zpicks,
     plt.figure()
 #    plt.xlabel(r'$\{}$'.format(var_name))
     plt.xlabel(var_name)
-    plt.title('Marginalised distribution for '+var_name+' \n nsteps: '+str(nsteps)+
+    plt.title('Marginalised distribution for '+name_l+' \n nsteps: '+str(nsteps)+
           ', noise: '+str(sigma)+', npoints: '+str(len(zpicks)))
     plt.hist(var, 50)
     stamp = str(int(time.time()))
     filename = str(stamp)+'_'+initial+'_mhist__nsteps_'+str(nsteps) \
     +'_nwalkers_'+str(nwalkers)+'_noise_'+str(sigma) \
-    +'_numpoints_'+str(len(zpicks))+'.png'
+    +'_numpoints_'+str(len(zpicks))+'.pdf'
     filename = os.path.join(save_path, filename)
     plt.savefig(filename)
     plt.show()
     
     # Walker steps.
     plt.figure()
-    plt.title('flatlnprobability for '+var_name+' \n nsteps: '
+    plt.title('flatlnprobability for '+name_l+' \n nsteps: '
           +str(nsteps)+', noise: '+str(sigma)+', npoints: '+str(len(zpicks)))
     plt.plot(var, slnprob, '.', color=hue)
     stamp = str(int(time.time()))
     filename = str(stamp)+'_'+initial+'_steps__nsteps_'+str(nsteps) \
     +'_nwalkers_'+str(nwalkers)+'_noise_'+str(sigma) \
-    +'_numpoints_'+str(len(zpicks))+'.png'
+    +'_numpoints_'+str(len(zpicks))+'.pdf'
     filename = os.path.join(save_path, filename)
     plt.savefig(filename)
     plt.show()
@@ -68,7 +68,7 @@ def stat(hue, var, var_true, var_name, slnprob, zpicks,
     stamp = str(int(time.time()))
     filename = str(stamp)+'_'+initial+'_chain__nsteps_'+str(nsteps) \
     +'_nwalkers_'+str(nwalkers)+'_noise_'+str(sigma) \
-    +'_numpoints_'+str(len(zpicks))+'.png'
+    +'_numpoints_'+str(len(zpicks))+'.pdf'
     filename = os.path.join(save_path, filename)
     plt.savefig(filename)
     plt.show()
@@ -160,19 +160,17 @@ def onepercent():
 def modelcheck(mag, zpicks, plot_var, firstderivs_key):
     
     t, dlpc, dl, a, ombar_m, gamma, ombar_de, ombar_m0, ombar_de0 = plot_var
-    
-    print('plots.modelcheck:',firstderivs_key, ', gamma =',str(gamma))
-    
+        
 #    a = list(reversed(a))
 #    zpicks = list(reversed(zpicks))
 #    ombar_de = list(reversed(ombar_de))
 #    ombar_m = list(reversed(ombar_m))
     
     print()
-    print('a goes from ',a[-1], 'to ',a[0])
-    print('ombar_de goes from ',ombar_de[-1], 'to ',ombar_de[0])
-    print('ombar_m goes from ',ombar_m[-1], 'to ',ombar_m[0])
-    print('z goes from ',zpicks[-1], 'to ',zpicks[0])
+    print('a:',a[-1], '---->',a[0])
+    print('ombar_de:',ombar_de[-1], '---->',ombar_de[0])
+    print('ombar_m:',ombar_m[-1], '---->',ombar_m[0])
+    print('z:',zpicks[-1], '---->',zpicks[0])
     
     if min(ombar_m) < 0:
         print('unphysical ombar_m', str(min(ombar_m)))
@@ -216,7 +214,9 @@ def modelcheck(mag, zpicks, plot_var, firstderivs_key):
 #    plt.ylabel('a')
 #    plt.grid(True)
 #    plt.plot(zpicks, a, 'xkcd:crimson', lw=1)
-#    plt.title(r'Scale factor evolution, IC: $\bar \Omega_{m0}$ = %s, $\bar \Omega_{DE0}$ =%s, $\gamma$ = %s'
+#    plt.title('Scale factor evolution, model = %s, $\gamma$ = %s'
+#              %(firstderivs_key, gamma))
+##    plt.title(r'Scale factor evolution, IC: $\bar \Omega_{m0}$ = %s, $\bar \Omega_{DE0}$ =%s, $\gamma$ = %s'
 #          %(ombar_m0, ombar_de0, gamma))
 #    plt.show()
     
@@ -226,7 +226,7 @@ def modelcheck(mag, zpicks, plot_var, firstderivs_key):
 #        if np.isnan(H):
 #            print('plots.modelcheck got NaN value for H')
         Hz.append(H)
-    print('Hz goes from ',Hz[-1], 'to ',Hz[0])
+    print('Hz:',Hz[-1], '---->',Hz[0])
 
     # Scale factor vs redshift and expansion rate H vs redshift.
     plt.figure()
@@ -236,8 +236,10 @@ def modelcheck(mag, zpicks, plot_var, firstderivs_key):
     plt.plot(zpicks, a, color='xkcd:crimson', lw=1, label='a = scale factor')
     plt.plot(zpicks, Hz, color='xkcd:blue', lw=1, label='H(z)')
     plt.legend()
-    plt.title(r'Scale factor evolution, IC: $\bar \Omega_{m0}$ = %s, $\bar \Omega_{DE0}$ =%s, $\gamma$ = %s'
-          %(ombar_m0, ombar_de0, gamma))
+    plt.title(r'Scale factor evolution, model = %s, $\gamma$ = %s'
+          %(firstderivs_key, gamma))
+#    plt.title(r'Scale factor evolution, %s \n IC: $\bar \Omega_{m0}$ = %s, $\bar \Omega_{DE0}$ =%s, $\gamma$ = %s'
+#          %(firstderivs_key, ombar_m0, ombar_de0, gamma))
     plt.show()
 
     # ombar_m, ombar_de vs redshift.
@@ -248,8 +250,10 @@ def modelcheck(mag, zpicks, plot_var, firstderivs_key):
     plt.plot(zpicks, ombar_m, label=r'$\bar \Omega_{m}$', color='xkcd:coral', linestyle=':')
     plt.plot(zpicks, ombar_de, label=r'$\bar \Omega_{DE}$', color='xkcd:aquamarine')
     plt.legend()
-    plt.title(r'$\bar \Omega_{m}$, $\bar \Omega_{DE}$ evolution, IC: $\bar \Omega_{m0}$ = %s, $\bar \Omega_{DE0}$ =%s, $\gamma$ = %s'
-          %(ombar_m0, ombar_de0, gamma))
+    plt.title(r'$\bar \Omega_{m}$, $\bar \Omega_{DE}$ evolution, model = %s, $\gamma$ = %s'
+          %(firstderivs_key, gamma))
+#    plt.title(r'$\bar \Omega_{m}$, $\bar \Omega_{DE}$ evolution, IC: $\bar \Omega_{m0}$ = %s, $\bar \Omega_{DE0}$ =%s, $\gamma$ = %s'
+#          %(ombar_m0, ombar_de0, gamma))
     plt.show()
     
     # ombar_m, ombar_de vs redshift log x axis.
@@ -260,8 +264,10 @@ def modelcheck(mag, zpicks, plot_var, firstderivs_key):
     plt.semilogx(zpicks, ombar_m, label=r'$\bar \Omega_{m}$', color='xkcd:coral', linestyle=':')
     plt.semilogx(zpicks, ombar_de, label=r'$\bar \Omega_{DE}$', color='xkcd:aquamarine')
     plt.legend()
-    plt.title(r'$\bar \Omega_{m}$, $\bar \Omega_{DE}$ evolution, IC: $\bar \Omega_{m0}$ = %s, $\bar \Omega_{DE0}$ =%s, $\gamma$ = %s'
-          %(ombar_m0, ombar_de0, gamma))
+    plt.title(r'$\bar \Omega_{m}$, $\bar \Omega_{DE}$ evolution, model = %s, $\gamma$ = %s'
+          %(firstderivs_key, gamma))    
+#    plt.title(r'$\bar \Omega_{m}$, $\bar \Omega_{DE}$ evolution, IC: $\bar \Omega_{m0}$ = %s, $\bar \Omega_{DE0}$ =%s, $\gamma$ = %s'
+#          %(ombar_m0, ombar_de0, gamma))
     plt.show()
 
 #    # ombar_m vs redshift.
@@ -291,8 +297,10 @@ def modelcheck(mag, zpicks, plot_var, firstderivs_key):
         plt.ylabel('$d_L$*($H_0$/c)')
         plt.grid(True)
         plt.plot(zpicks, dl, 'xkcd:lightgreen', lw=1)
-        plt.title('$d_L$ evolution, IC: $\Omega_{m0}$ = %s, $\Omega_{DE0}$ =%s, $\gamma$ = %s'
-              %(ombar_m0, ombar_de0, gamma))
+        plt.title('$d_L$ evolution, model = %s, $\gamma$ = %s'
+              %(firstderivs_key, gamma))
+#        plt.title('$d_L$ evolution, IC: $\Omega_{m0}$ = %s, $\Omega_{DE0}$ =%s, $\gamma$ = %s'
+#              %(ombar_m0, ombar_de0, gamma))
         plt.show()
         break
 
@@ -323,20 +331,23 @@ def modelcheck(mag, zpicks, plot_var, firstderivs_key):
     #        plt.axis([0,-0.8,0,5])
         plt.grid(True)
         plt.plot(t, zpicks, 'm', lw=1)
-        plt.title('Redshift evolution, IC: $\Omega_{m0}$ = %s, $\Omega_{DE0}$ =%s, $\gamma$ = %s'
-              %(ombar_m0, ombar_de0, gamma))
+        plt.title('Redshift evolution, model = %s, $\gamma$ = %s'
+              %(firstderivs_key, gamma))
+#        plt.title('Redshift evolution, IC: $\Omega_{m0}$ = %s, $\Omega_{DE0}$ =%s, $\gamma$ = %s'
+#              %(ombar_m0, ombar_de0, gamma))
         plt.show()
         
-        # Scale factor, H vs time.
+        # Scale factor vs time.
         plt.figure()
         plt.xlabel('time')
         plt.ylabel('a')
         plt.grid(True)
         plt.plot(t, a, color='xkcd:crimson', lw=1, label='a = scale factor')
-        plt.plot(t, Hz, color='xkcd:blue', lw=1, label='H(t)')
         plt.legend()
-        plt.title(r'Scale factor evolution, IC: $\bar \Omega_{m0}$ = %s, $\bar \Omega_{DE0}$ =%s, $\gamma$ = %s'
-              %(ombar_m0, ombar_de0, gamma))
+        plt.title('Scale factor evolution, model = %s, $\gamma$ = %s'
+              %(firstderivs_key, gamma))
+#        plt.title(r'Scale factor evolution, IC: $\bar \Omega_{m0}$ = %s, $\bar \Omega_{DE0}$ =%s, $\gamma$ = %s'
+#              %(ombar_m0, ombar_de0, gamma))
         plt.show()
     
 #        # Magnitude vs redshift.

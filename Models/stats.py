@@ -6,17 +6,15 @@ Created on Fri Feb 23 16:02:10 2018
 @author: BallBlueMeercat
 """
 import matplotlib.pyplot as plt
-from pylab import figure, scatter, xlabel, ylabel, title, show, savefig
-from pylab import legend, errorbar
 from emcee import EnsembleSampler
 import numpy as np
 import time
 import os.path
 
 import datasim
-from tools import timer
+import tools
 import ln
-from plots import stat
+import plots
 
 def stats(params, zpicks, mag, sigma, nsteps, 
           save_path, firstderivs_key, plot_key):
@@ -101,7 +99,7 @@ def stats(params, zpicks, mag, sigma, nsteps,
             propert['m_sd'] = m_sd
             propert['m_mean'] = m_mean
             propert['m'] = mbest
-            stat('coral', m, m_true, 'Matter', lnprob, zpicks, 
+            plots.stat('coral', m, m_true, 'Matter', lnprob, zpicks, 
                  mag, sigma, nsteps, nwalkers, save_path)
             
         elif i == 1:
@@ -119,7 +117,7 @@ def stats(params, zpicks, mag, sigma, nsteps,
             propert['gamma_sd'] = gamma_sd
             propert['gamma_mean'] = gamma_mean
             propert['gamma'] = gammabest
-            stat('aquamarine', gamma, g_true, 'Gamma', lnprob, zpicks, 
+            plots.stat('aquamarine', gamma, g_true, 'Gamma', lnprob, zpicks, 
                  mag, sigma, nsteps, nwalkers, save_path)
                     
         elif i == 2:
@@ -139,7 +137,7 @@ def stats(params, zpicks, mag, sigma, nsteps,
             propert['de_sd'] = de_sd
             propert['de_mean'] = de_mean
             propert['de'] = debest
-            stat('orchid', de, de_true, 'DE', lnprob, zpicks, 
+            plots.stat('orchid', de, de_true, 'DE', lnprob, zpicks, 
                  mag, sigma, nsteps, nwalkers, save_path)
             
     # Checking if best found parameters are within prior.
@@ -152,20 +150,20 @@ def stats(params, zpicks, mag, sigma, nsteps,
     # Plot of data mag and redshifts, overlayed with
     # mag simulated using emcee best parameters and data redshifts.
     magbest = datasim.magn(parambest, zpicks, firstderivs_key, plot_key)
-    figure()
-    title('Evolution of magnitude with redshift \n nsteps: '
+    plt.figure()
+    plt.title('Evolution of magnitude with redshift \n nsteps: '
           +str(nsteps)+', noise: '+str(sigma)+', npoints: '+str(len(zpicks)))
-    data = errorbar(zpicks, mag, yerr=sigma, fmt='.', alpha=0.3)
-    best_fit = scatter(zpicks, magbest, lw='1', c='xkcd:tomato')
-    ylabel('magnitude')
-    xlabel('z')
-    legend([data, best_fit], ['LCDM', firstderivs_key])
+    data = plt.errorbar(zpicks, mag, yerr=sigma, fmt='.', alpha=0.3)
+    best_fit = plt.scatter(zpicks, magbest, lw='1', c='xkcd:tomato')
+    plt.ylabel('magnitude')
+    plt.xlabel('z')
+    plt.legend([data, best_fit], ['LCDM', firstderivs_key])
     stamp = str(int(time.time()))
     filename = str(stamp)+'____magz__nsteps_'+str(nsteps)+'_nwalkers_' \
-    +str(nwalkers)+'_noise_'+str(sigma)+'_numpoints_'+str(len(zpicks))+'.png'
+    +str(nwalkers)+'_noise_'+str(sigma)+'_numpoints_'+str(len(zpicks))+'.pdf'
     filename = os.path.join(save_path, filename)
-    savefig(filename)
-    show()
+    plt.savefig(filename)
+    plt.show()
 
 #    # Corner plot (walkers' walk + histogram).
 #    import corner
@@ -184,7 +182,7 @@ def stats(params, zpicks, mag, sigma, nsteps,
     print('sigma:', str(sigma))
     print('npoints:', str(len(zpicks)))
     
-    timer('burnin', timeb0, timeb1)
-    timer('sampler', times0, times1)
+    tools.timer('burnin', timeb0, timeb1)
+    tools.timer('sampler', times0, times1)
     
     return propert, sampler

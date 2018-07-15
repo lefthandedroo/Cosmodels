@@ -28,7 +28,7 @@ def redshift_picks(zmin, zmax, n):
     return zpicks
 
 
-def magn(params, zpicks, firstderivs_key, plot_key):
+def magn(params, zpicks, firstderivs_key, plot_key=False):
     """
     Takes in:
             gamma = interaction constant;
@@ -93,7 +93,7 @@ def gnoise(mag, mu, sigma):
     return mag
 
 
-def data(zmax, mu, sigma, npoints, params, firstderivs_key, plot_key):
+def noisy_mag(zmax, mu, sigma, npoints, params, firstderivs_key, plot_key=False):
     
     zpicks = redshift_picks(0.005, zmax, npoints)
     

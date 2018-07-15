@@ -10,6 +10,7 @@ import numpy as np
 #expgamma
 #txgamma
 #zxgamma
+#gamma_over_z
 #zxxgamma
 #gammaxxz
 #rdecay_m
@@ -41,6 +42,7 @@ def expgamma(v, t, gamma, H0):
     Hz = H0 * (ombar_m + ombar_de)**(1/2)
         
     if np.isnan(Hz):
+        print('expgamma')
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
 
@@ -86,10 +88,11 @@ def txgamma(v, t, gamma, H0):
     Hz = H0 * (ombar_m + ombar_de)**(1/2)
         
     if np.isnan(Hz):
+        print('txgamma')
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
         
-    irate = (gamma/t)*(1-ombar_de/(ombar_de+ombar_m)) /(1+z)/Hz
+    irate = (gamma/(-t+0.0001))*(1-ombar_de/(ombar_de+ombar_m)) /(1+z)/Hz
 
     # first derivatives of functions I want to find:
     f = [# dt/dz (= f.d wrt z of time)
@@ -129,10 +132,56 @@ def zxgamma(v, t, gamma, H0):
     Hz = H0 * (ombar_m + ombar_de)**(1/2)
         
     if np.isnan(Hz):
+        print('zxgamma')
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
 
     irate = z*gamma*(1-ombar_de/(ombar_de+ombar_m)) /(1+z)/Hz
+    
+    # first derivatives of functions I want to find:
+    f = [# dt/dz (= f.d wrt z of time)
+        -1/((1+z) * Hz),
+            
+        # d(a)/dz (= f.d wrt z of scale factor)
+         -(1+z)**(-2),
+         
+         # d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
+         3*ombar_m /(1+z) - irate,
+         
+         # d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
+         irate,
+         
+         # d(z)/dz (= f.d wrt z of redshift)
+         1,
+         
+         # d(dl)/dz (= f.d wrt z of luminosty distance)
+         1/Hz] # H + Hdz*(1+z)
+        
+    return f
+
+
+def gamma_over_z(v, t, gamma, H0):
+    """
+    Takes in:
+        v = values at z=0;
+        t = list of redshifts to integrate over;
+        gamma = interaction term.
+                
+    Returns a function f =     [dt/dz, d(a)/dz, 
+                                d(e'_m)/dz, d(e'_de)/dz, 
+                                d(z)/dz,
+                                d(dl)/dz]
+    """
+    (t, a, ombar_m, ombar_de, z, dl) = v #omegam, omegade, z, dl) = v
+
+    Hz = H0 * (ombar_m + ombar_de)**(1/2)
+        
+    if np.isnan(Hz):
+        print('gamma_over_z')        
+        print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
+              %(z, Hz, gamma, ombar_m, ombar_de))
+
+    irate = gamma/(z + 0.01)*(1-ombar_de/(ombar_de+ombar_m)) /(1+z)/Hz
     
     # first derivatives of functions I want to find:
     f = [# dt/dz (= f.d wrt z of time)
@@ -173,6 +222,7 @@ def zxxgamma(v, t, gamma, H0):
     Hz = H0 * (ombar_m + ombar_de)**(1/2)
         
     if np.isnan(Hz):
+        print('zxxgamma')        
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
 
@@ -217,6 +267,7 @@ def gammaxxz(v, t, gamma, H0):
     Hz = H0 * (ombar_m + ombar_de)**(1/2)
         
     if np.isnan(Hz):
+        print('gammaxxz')                
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
 
@@ -262,6 +313,7 @@ def rdecay_m(v, t, gamma, H0):
     Hz = H0 * (ombar_m + ombar_de)**(1/2)
         
     if np.isnan(Hz):
+        print('rdecay_m')                        
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
     
@@ -308,6 +360,7 @@ def rdecay_de(v, t, gamma, H0):
     Hz = H0 * (ombar_m + ombar_de)**(1/2)
         
     if np.isnan(Hz):
+        print('rdecay_de')                                
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
     
@@ -354,6 +407,7 @@ def rdecay_mxde(v, t, gamma, H0):
     Hz = H0 * (ombar_m + ombar_de)**(1/2)
         
     if np.isnan(Hz):
+        print('rdecay_mxde')                                        
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
     
@@ -400,6 +454,7 @@ def rdecay(v, t, gamma, H0):
     Hz = H0 * (ombar_m + ombar_de)**(1/2)
         
     if np.isnan(Hz):
+        print('rdecay')                                        
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
     
@@ -447,6 +502,7 @@ def interacting(v, t, gamma, H0):
     Hz = H0 * (ombar_m + ombar_de)**(1/2)
         
     if np.isnan(Hz):
+        print('interacting')                                        
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
 
@@ -489,6 +545,7 @@ def LCDM(v, t, H0):
     Hz = H0 * (ombar_m + ombar_de)**(1/2)
         
     if np.isnan(Hz):
+        print('LCDM')                                        
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, ombar_m, ombar_de))
 

@@ -12,6 +12,7 @@ import numpy as np
 firstderivs_functions = {'expgamma':f.expgamma,
                          'txgamma':f.txgamma,
                          'zxgamma':f.zxgamma,
+                         'gamma_over_z':f.gamma_over_z,
                          'zxxgamma':f.zxxgamma,
                          'gammaxxz':f.gammaxxz,
                          'rdecay_m':f.rdecay_m,

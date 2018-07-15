@@ -18,16 +18,17 @@ import tools
 # Key for the dictionary of interaction modes in firstderivs
 # 'expgamma','txgamma','zxgamma','zxxgamma','gammaxxz','rdecay_m','rdecay_de',
 # 'rdecay_mxde','rdecay','interacting','LCDM'
+#
+#firstderivs_key = 'LCDM'
+#
+#g_max = 0
+#g_min = -10
 
-firstderivs_key = 'LCDM'
 sigma = 0.07
 
 dataname = 'mag_z_LCDM_1000_sigma_0.07'
 # Load the data
 mag, zpicks = results.load('./data', dataname)
-
-g_max = 0
-g_min = -10
 
 
 class Model(object):
@@ -105,46 +106,89 @@ sampler = dnest4.DNest4Sampler(model,
 #                      num_per_step=1000, thread_steps=100,
 #                      num_particles=5, lam=10, beta=100, seed=1234)
 
-# SHORT
-gen = sampler.sample(max_num_levels=30, num_steps=100, new_level_interval=100,
-                      num_per_step=100, thread_steps=10,
-                      num_particles=5, lam=10, beta=100, seed=1234)
+import firstderivs as f
 
-ti = time.time()
-# Do the sampling (one iteration here = one particle save)
-for i, sample in enumerate(gen):
-#    print("# Saved {k} particles.".format(k=(i+1)))
-    pass
-tf = time.time()
+firstderivs_functions = {#'expgamma':f.expgamma,
+#                     'txgamma':f.txgamma,
+#                     'zxgamma':f.zxgamma,
+#                     'gamma_over_z':f.gamma_over_z,
+#                     'zxxgamma':f.zxxgamma,
+                     'gammaxxz':f.gammaxxz,
+                     'rdecay_m':f.rdecay_m,
+                     'rdecay_de':f.rdecay_de,
+                     'rdecay_mxde':f.rdecay_mxde,
+                     'rdecay':f.rdecay,                         
+                     'interacting':f.interacting,
+                     'LCDM':f.LCDM}
 
-time = tools.timer('Sampling', ti, tf)
+for key in firstderivs_functions:
+    
+    firstderivs_key = key    
+    
+    if firstderivs_key == 'rdecay':
+        g_min = -10
+        g_max = 0
 
+    elif firstderivs_key == 'interacting':
+        g_min = -1.45
+        g_max = 1.45
 
-print('model =',firstderivs_key)
-print('data =', dataname)
-print('sigma =', sigma)
-   
-# Run the postprocessing
-info = dnest4.postprocess()
+    elif firstderivs_key == 'expgamma':
+        g_min = -25
+        g_max = 25
+        
+    elif firstderivs_key == 'zxxgamma':
+        g_min = 0
+        g_max = 10        
+        
+    else:
+        g_min = -10
+        g_max = 10
 
-f = open('brief.txt','w')
-f.write(time +'\n'
-        +'model = '+firstderivs_key +'\n'
-        +'data = '+ dataname +'\n'
-        +'sigma = '+str(sigma)    
-        +'log(Z) = '+str(info[0]) +'\n'
-        +'Information = '+str(info[1]) +'\n')
-f.close()
+    # SHORT
+    gen = sampler.sample(max_num_levels=30, num_steps=100, new_level_interval=100,
+                          num_per_step=100, thread_steps=10,
+                          num_particles=5, lam=10, beta=100, seed=1234)
+    
+    ti = time.time()
+    # Do the sampling (one iteration here = one particle save)
+    for i, sample in enumerate(gen):
+    #    print("# Saved {k} particles.".format(k=(i+1)))
+        pass
+    tf = time.time()
+    
+    dnest_time = tools.timer('Sampling', ti, tf)
+    
+    
+    print('model =',firstderivs_key)
+    print('data =', dataname)
+    print('sigma =', sigma)
+       
+    # Run the postprocessing
+    info = dnest4.postprocess()
+    
+    f = open('brief.txt','w')
+    f.write(dnest_time +'\n'
+            +'model = '+firstderivs_key +'\n'
+            +'data = '+ dataname +'\n'
+            +'sigma = '+str(sigma)    
+            +'log(Z) = '+str(info[0]) +'\n'
+            +'Information = '+str(info[1]) +'\n')
+    f.close()
+    
+#    firstderivs_key = 'tutti-frutti'
+    # Moving output .txt files into a run specific folder.
+    results.relocate('levels.txt', firstderivs_key)
+    results.relocate('posterior_sample.txt', firstderivs_key)
+    results.relocate('sample_info.txt', firstderivs_key)
+    results.relocate('sample.txt', firstderivs_key)
+    results.relocate('sampler_state.txt', firstderivs_key)
+    results.relocate('weights.txt', firstderivs_key)
+    results.relocate('brief.txt', firstderivs_key)
+    results.relocate('plot_1.pdf', firstderivs_key)
+    results.relocate('plot_2.pdf', firstderivs_key)
+    results.relocate('plot_3.pdf', firstderivs_key)
 
-firstderivs_key = 'tutti-frutti'
-# Moving output .txt files into a run specific folder.
-results.relocate('levels', firstderivs_key)
-results.relocate('posterior_sample', firstderivs_key)
-results.relocate('sample_info', firstderivs_key)
-results.relocate('sample', firstderivs_key)
-results.relocate('sampler_state', firstderivs_key)
-results.relocate('weights', firstderivs_key)
-results.relocate('brief', firstderivs_key)
 
 #import six
 #import sys
