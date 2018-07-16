@@ -9,13 +9,13 @@ import tools
 import stats
 
 def paramfinder(npoints, nsteps, sigma, mu, params, 
-                zpicks, mag, save_path, firstderivs_key, plot_key):
+                zpicks, mag, save_path, firstderivs_key):
     # Script timer.
     timet0 = time.time()
     
     # emcee parameter search.
     propert, sampler = stats.stats(params, zpicks, mag, sigma, nsteps, 
-                                   save_path, firstderivs_key, plot_key)
+                                   save_path, firstderivs_key)
     
     # Time taken by script. 
     timet1=time.time()

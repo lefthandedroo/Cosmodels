@@ -16,7 +16,7 @@ import datasim
 # Parameters used to simulate data:  
 m_true = 0.3           # (= e_m(t)/e_crit(t0) at t=t0).
 de_true = 1 - m_true   # (de = e_de(t)/e_crit(t0) at t=t0).
-g_true = -3.828578890806254#-0.50           # Interaction term, rate at which DE decays into matter.
+g_true = 0#-0.50           # Interaction term, rate at which DE decays into matter.
 
 # Number of datapoints to be simulated and number of emcee steps.
 npoints, nsteps = 1000, 1000
@@ -33,7 +33,7 @@ sigma = 0.07      # standard deviation
 
 data_key = 'LCDM'
 
-test_key = 'zxxgamma'
+test_key = 'txgamma'
 
 if data_key == 'LCDM':
     data_params = {'m':m_true}
@@ -41,44 +41,58 @@ else:
     data_params = {'m':m_true, 'gamma':g_true}
 
 if test_key == 'LCDM':
-    params = {'m':m_true}
+    test_params = {'m':m_true}
 else:
-    params = {'m':m_true, 'gamma':g_true}
+    test_params = {'m':m_true, 'gamma':g_true}
 
 #dataname = 'mag_z_'+data_key+'_'+str(npoints)+'_sigma_'+str(sigma)
-#datasim.makensavemagnz(m_true, g_true, mu, sigma, npoints, zmax, data_key, dataname)
-
+#datasim.makensavemagnz(m_true, g_true, mu, sigma, zpicks, data_key, dataname)
+               
+zpicks = datasim.redshift_picks(0.005, zmax, npoints)
 
 def modelcheck():
-    mag, zpicks = datasim.noisy_mag(zmax, mu, sigma, npoints, data_params, 
-                               test_key, plot_key=True)
+    datasim.magn(test_params, zpicks, test_key, plot_key=True)
     return
 
-modelcheck()
+#modelcheck()
 
 #def modelcheck():
-#    import firstderivs as f
-#    
-#    firstderivs_functions = {'expgamma':f.expgamma,
-#                         'txgamma':f.txgamma,
-#                         'zxgamma':f.zxgamma,
-#                         'gamma_over_z':f.gamma_over_z,
-#                         'zxxgamma':f.zxxgamma,
-#                         'gammaxxz':f.gammaxxz,
-#                         'rdecay_m':f.rdecay_m,
-#                         'rdecay_de':f.rdecay_de,
-#                         'rdecay_mxde':f.rdecay_mxde,
-#                         'rdecay':f.rdecay,                         
-#                         'interacting':f.interacting,
-#                         'LCDM':f.LCDM}
-#    
-#    for key in firstderivs_functions:
-#        test_key = key
-#        mag, zpicks = datasim.noisy_mag(zmax, mu, sigma, npoints, data_params, 
-#                               test_key, plot_key=True)
+#    gammas = [-10, -5, 0, 5, 10]
+#    datasim.magn(test_params, zpicks, test_key, plot_key=True, gamma_list = gammas)
 #    return
 #
 #modelcheck()
+
+def all_modelcheck():
+    
+    import firstderivs as f
+    
+    firstderivs_functions = {'expgamma':f.expgamma,
+                         'txgamma':f.txgamma,
+                         'zxgamma':f.zxgamma,
+                         'gamma_over_z':f.gamma_over_z,
+                         'zxxgamma':f.zxxgamma,
+                         'gammaxxz':f.gammaxxz,
+                         'rdecay_m':f.rdecay_m,
+                         'rdecay_de':f.rdecay_de,
+                         'rdecay_mxde':f.rdecay_mxde,
+                         'rdecay':f.rdecay,                         
+                         'interacting':f.interacting,
+                         'LCDM':f.LCDM}
+    
+    for key in firstderivs_functions:
+        test_key = key
+
+    if key == 'LCDM':
+        test_params = {'m':m_true}
+    else:
+        test_params = {'m':m_true, 'gamma':g_true}
+    
+        datasim.noisy_mag(zpicks, mu, sigma, test_params, 
+                               test_key, plot_key=True)
+    return
+
+#gamma_comparison()
 
 
 def quickemcee():
@@ -86,24 +100,42 @@ def quickemcee():
     save_path = './quick_emcee/'+str(int(time.time()))+'_'+test_key
     if not os.path.exists(save_path):
         os.makedirs(save_path)
-
-    if test_key == 'LCDM':
-        params = {'m':m_true}
-    else:
-        params = {'m':m_true, 'gamma':g_true}
     
     i = 0
     while i < 1:
         if i > 0:
             print('_____________________ run number',i)
         
-#        mag, zpicks = datasim.noisy_mag(zmax, mu, sigma, npoints, data_params, 
+#        mag = datasim.noisy_mag(zpicks, mu, sigma, data_params, 
 #                                   data_key)
         mag, zpicks = results.load('./data', 'mag_z_LCDM_1000_sigma_0.05')
         
-        propert, sampler = paramfinder.paramfinder(
-                npoints, nsteps, sigma, mu, params, zpicks, 
-                mag, save_path, test_key, plot_key=False)
+        import firstderivs as f
+
+        firstderivs_functions = {
+#                            'expgamma':f.expgamma,
+#                             'txgamma':f.txgamma,
+#                             'zxgamma':f.zxgamma,
+#                             'gamma_over_z':f.gamma_over_z,
+#                             'zxxgamma':f.zxxgamma,
+#                             'gammaxxz':f.gammaxxz,
+#                             'rdecay_m':f.rdecay_m,
+#                             'rdecay_de':f.rdecay_de,
+#                             'rdecay_mxde':f.rdecay_mxde,
+#                             'rdecay':f.rdecay,                         
+#                             'interacting':f.interacting,
+                             'LCDM':f.LCDM}
+        
+        for key in firstderivs_functions:
+    
+            if key == 'LCDM':
+                test_params = {'m':m_true}
+            else:
+                test_params = {'m':m_true, 'gamma':g_true}
+            
+            propert, sampler = paramfinder.paramfinder(
+                    npoints, nsteps, sigma, mu, test_params, zpicks, 
+                    mag, save_path, key)
         i += 1
     
     # Saving sampler to directory.
@@ -115,10 +147,10 @@ def quickemcee():
 
     return
 
-#quickemcee()
+quickemcee()
 
 
-def errorvsdatasize(params):
+def errorvsdatasize():
     # Script timer.
     timet0 = time.time()
     
@@ -165,12 +197,12 @@ def errorvsdatasize(params):
         npoints = npoints_min 
         
         # Data to be used:
-        mag, zpicks = datasim.noisy_mag(mu, sigma, npoints, data_params, data_key)
+        mag = datasim.noisy_mag(mu, sigma, npoints, data_params, data_key)
         
         while npoints < npoints_max:
             print('_____________________ run number',run)
             propert, sampler = paramfinder.paramfinder(       
-            npoints, nsteps, sigma, mu, params, zpicks, 
+            npoints, nsteps, sigma, mu, test_params, zpicks, 
             mag, test_key, save_path)
             
             m_sd = propert.get('m_sd',0)

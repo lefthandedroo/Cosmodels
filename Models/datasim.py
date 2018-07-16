@@ -28,7 +28,51 @@ def redshift_picks(zmin, zmax, n):
     return zpicks
 
 
-def magn(params, zpicks, firstderivs_key, plot_key=False):
+#def magn(params, zpicks, firstderivs_key, plot_key=False, gamma_list=False):
+#    """
+#    Takes in:
+#            gamma = interaction constant;
+#            m = e_m(t)/ec(t0) at t=t0;
+#            de = e_de(t)/ec(t0) at t=t0;
+#            zpicks = list of z to match the interpolated dlmpc to;
+#    Returns:
+#        mag = list of n apparent magnitudes mag corresponding to given redshits.
+#    """
+##    print('@@@ zmsim has been called')
+#    
+#    # Absolute brightness of supernovae.
+#    M = -19
+#    
+#    if not sorted(zpicks) == zpicks:
+#        zpicks.sort()
+#        print('sorted to accending in zmsim')    
+#    
+#    if not isinstance(zpicks, (list,)):
+#        zpicks = zpicks.tolist()
+#        print('converted to list in zmsim')
+#    
+#    dlpc, plot_var = zodesolve.zodesolve(params, zpicks, firstderivs_key)
+#    
+#    # Calculating apparent magnitudes of supernovae at the simulated
+#    # luminosity distances using the distance modulus formula.
+#    mag = []   
+#    for i in range(len(dlpc)):
+#        if dlpc[i] == 0:
+#            magnitude = M
+#        else:
+#            # magnitude from the distance modulus formula
+#            magnitude = 5 * log10(dlpc[i]/10) + M
+#        mag.append(magnitude)
+#    
+#    if plot_key:
+#        # Checking evolution of the model.
+#        import plots
+#        plots.modelcheck(mag, zpicks, plot_var, firstderivs_key)
+#        
+#        
+#    return mag
+    
+def magn(params, zpicks, firstderivs_key, plot_key=False, gamma_list=False):
     """
     Takes in:
             gamma = interaction constant;
@@ -50,24 +94,56 @@ def magn(params, zpicks, firstderivs_key, plot_key=False):
     if not isinstance(zpicks, (list,)):
         zpicks = zpicks.tolist()
         print('converted to list in zmsim')
-    
-    dlpc, plot_var = zodesolve.zodesolve(params, zpicks, firstderivs_key)
-    
-    # Calculating apparent magnitudes of supernovae at the simulated
-    # luminosity distances using the distance modulus formula.
-    mag = []   
-    for i in range(len(dlpc)):
-        if dlpc[i] == 0:
-            magnitude = M
-        else:
-            # magnitude from the distance modulus formula
-            magnitude = 5 * log10(dlpc[i]/10) + M
-        mag.append(magnitude)
-    
-    if plot_key:
-        # Checking evolution of the model.
-        import plots
-        plots.modelcheck(mag, zpicks, plot_var, firstderivs_key)
+        
+    if gamma_list:
+        plot_var_dict = {}
+
+        j = 1        
+        for gamma in gamma_list:
+            params['g_true'] = gamma
+            dlpc, plot_var = zodesolve.zodesolve(params, zpicks, firstderivs_key)
+        
+            # Calculating apparent magnitudes of supernovae at the simulated
+            # luminosity distances using the distance modulus formula.
+            mag = []   
+            for i in range(len(dlpc)):
+                if dlpc[i] == 0:
+                    magnitude = M
+                else:
+                    # magnitude from the distance modulus formula
+                    magnitude = 5 * log10(dlpc[i]/10) + M
+                mag.append(magnitude)
+            
+            plot_var_dict['plot_var_'+str(j)] = plot_var
+            print('plot_var_'+str(j))
+            print(j)
+            plot_var_dict['mag_'+str(j)] = mag
+            
+            j+=1
+        
+        if plot_key:
+            # Checking evolution of the model.
+            import plots
+            plots.modelcheck(mag, zpicks, plot_var, firstderivs_key, plot_var_dict)
+            
+    else:
+        dlpc, plot_var_1 = zodesolve.zodesolve(params, zpicks, firstderivs_key)
+        
+        # Calculating apparent magnitudes of supernovae at the simulated
+        # luminosity distances using the distance modulus formula.
+        mag = []   
+        for i in range(len(dlpc)):
+            if dlpc[i] == 0:
+                magnitude = M
+            else:
+                # magnitude from the distance modulus formula
+                magnitude = 5 * log10(dlpc[i]/10) + M
+            mag.append(magnitude)
+        
+        if plot_key:
+            # Checking evolution of the model.
+            import plots
+            plots.modelcheck(mag, zpicks, plot_var_1, firstderivs_key)
         
         
     return mag
@@ -93,18 +169,16 @@ def gnoise(mag, mu, sigma):
     return mag
 
 
-def noisy_mag(zmax, mu, sigma, npoints, params, firstderivs_key, plot_key=False):
-    
-    zpicks = redshift_picks(0.005, zmax, npoints)
+def noisy_mag(zpicks, mu, sigma, params, firstderivs_key, plot_key=False):
     
     model = magn(params, zpicks, firstderivs_key, plot_key)
     model = np.asarray(model)
     mag = gnoise(model, mu, sigma)
     
-    return mag, zpicks
+    return mag
 
 
-def makensavemagnz(m_true, g_true, mu, sigma, npoints, z_max, data_key, filename):
+def makensavemagnz(m_true, g_true, mu, sigma, zpicks, data_key, filename):
     '''
     Takes in:
     
@@ -137,7 +211,7 @@ def makensavemagnz(m_true, g_true, mu, sigma, npoints, z_max, data_key, filename
     else:
         data_params = {'m':m_true, 'gamma':g_true}
     
-    mag, zpicks = data(z_max, mu, sigma, npoints, data_params, data_key)
+    mag = noisy_mag(zpicks, mu, sigma, data_params, data_key)
     
     output = mag, zpicks
     

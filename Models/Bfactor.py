@@ -9,20 +9,14 @@ import time
 import dnest4
 import numpy as np
 import numpy.random as rng
+from numba import jitclass, int32
 import datasim
 import results
 import tools
 #from scipy.special import erf
 
-
-# Key for the dictionary of interaction modes in firstderivs
-# 'expgamma','txgamma','zxgamma','zxxgamma','gammaxxz','rdecay_m','rdecay_de',
-# 'rdecay_mxde','rdecay','interacting','LCDM'
-#
-#firstderivs_key = 'LCDM'
-#
-#g_max = 0
-#g_min = -10
+# slow = 1, medium = 2, long = 3
+speed = 1
 
 sigma = 0.07
 
@@ -31,15 +25,17 @@ dataname = 'mag_z_LCDM_1000_sigma_0.07'
 mag, zpicks = results.load('./data', dataname)
 
 
+@jitclass([('dummy', int32)])
+
 class Model(object):
     """
     Specify the model in Python.
     """
-#    def __init__(self):
-#        """
-#        Parameter values *are not* stored inside the class
-#        """
-#        pass
+    def __init__(self):
+        """
+        Parameter values *are not* stored inside the class
+        """
+        pass
 
     def from_prior(self):
         """
@@ -96,30 +92,22 @@ sampler = dnest4.DNest4Sampler(model,
                                backend=dnest4.backends.CSVBackend(".",
                                                                   sep=" "))
 
-## LONG Set up the sampler. The first argument is max_num_levels
-#gen = sampler.sample(max_num_levels=30, num_steps=1000, new_level_interval=10000,
-#                      num_per_step=10000, thread_steps=100,
-#                      num_particles=5, lam=10, beta=100, seed=1234)
-
-## MEDIUM num_per_step can be down to a few thousand 
-#gen = sampler.sample(max_num_levels=30, num_steps=1000, new_level_interval=1000,
-#                      num_per_step=1000, thread_steps=100,
-#                      num_particles=5, lam=10, beta=100, seed=1234)
-
 import firstderivs as f
 
-firstderivs_functions = {#'expgamma':f.expgamma,
-#                     'txgamma':f.txgamma,
-#                     'zxgamma':f.zxgamma,
-#                     'gamma_over_z':f.gamma_over_z,
-#                     'zxxgamma':f.zxxgamma,
-                     'gammaxxz':f.gammaxxz,
-                     'rdecay_m':f.rdecay_m,
-                     'rdecay_de':f.rdecay_de,
-                     'rdecay_mxde':f.rdecay_mxde,
-                     'rdecay':f.rdecay,                         
-                     'interacting':f.interacting,
-                     'LCDM':f.LCDM}
+firstderivs_functions = {
+        'expgamma':f.expgamma, 
+#        'txgamma':f.txgamma, 
+#        'zxgamma':f.zxgamma, 
+#        'gamma_over_z':f.gamma_over_z,
+#        'zxxgamma':f.zxxgamma,
+#        'gammaxxz':f.gammaxxz,
+##        'rdecay_m':f.rdecay_m, # nan field
+#        'rdecay_de':f.rdecay_de,
+##        'rdecay_mxde':f.rdecay_mxde, # nan field
+#        'rdecay':f.rdecay, 
+##        'interacting':f.interacting, # nan field
+#        'LCDM':f.LCDM
+        }
 
 for key in firstderivs_functions:
     
@@ -137,7 +125,7 @@ for key in firstderivs_functions:
         g_min = -25
         g_max = 25
         
-    elif firstderivs_key == 'zxxgamma':
+    elif firstderivs_key == 'zxxgamma' or firstderivs_key == 'gammaxxz':
         g_min = 0
         g_max = 10        
         
@@ -145,10 +133,22 @@ for key in firstderivs_functions:
         g_min = -10
         g_max = 10
 
-    # SHORT
-    gen = sampler.sample(max_num_levels=30, num_steps=100, new_level_interval=100,
-                          num_per_step=100, thread_steps=10,
-                          num_particles=5, lam=10, beta=100, seed=1234)
+
+    if speed == 3:   
+        # LONG Set up the sampler. The first argument is max_num_levels
+        gen = sampler.sample(max_num_levels=30, num_steps=1000, new_level_interval=10000,
+                              num_per_step=10000, thread_steps=100,
+                              num_particles=5, lam=10, beta=100, seed=1234)
+    elif speed == 2:
+        # MEDIUM num_per_step can be down to a few thousand 
+        gen = sampler.sample(max_num_levels=30, num_steps=1000, new_level_interval=1000,
+                              num_per_step=1000, thread_steps=100,
+                              num_particles=5, lam=10, beta=100, seed=1234)
+    elif speed == 1:
+        # SHORT
+        gen = sampler.sample(max_num_levels=30, num_steps=100, new_level_interval=100,
+                              num_per_step=100, thread_steps=10,
+                              num_particles=5, lam=10, beta=100, seed=1234)
     
     ti = time.time()
     # Do the sampling (one iteration here = one particle save)

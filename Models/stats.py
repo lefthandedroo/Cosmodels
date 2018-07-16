@@ -17,7 +17,7 @@ import ln
 import plots
 
 def stats(params, zpicks, mag, sigma, nsteps, 
-          save_path, firstderivs_key, plot_key):
+          save_path, firstderivs_key):
     """
     Takes in:
             m_true = e_m(t)/ec(t0) at t=t0;
@@ -27,7 +27,6 @@ def stats(params, zpicks, mag, sigma, nsteps,
     Returns:
     """
 #    print('-stats has been called')
-    
     # emcee parameters:
     ndim = len(params)
     nwalkers = int(ndim * 2)
@@ -149,7 +148,7 @@ def stats(params, zpicks, mag, sigma, nsteps,
 
     # Plot of data mag and redshifts, overlayed with
     # mag simulated using emcee best parameters and data redshifts.
-    magbest = datasim.magn(parambest, zpicks, firstderivs_key, plot_key)
+    magbest = datasim.magn(parambest, zpicks, firstderivs_key)
     plt.figure()
     plt.title('Evolution of magnitude with redshift \n nsteps: '
           +str(nsteps)+', noise: '+str(sigma)+', npoints: '+str(len(zpicks)))
@@ -181,6 +180,7 @@ def stats(params, zpicks, mag, sigma, nsteps,
     print('nsteps:', str(nsteps))
     print('sigma:', str(sigma))
     print('npoints:', str(len(zpicks)))
+    print('model:', firstderivs_key)
     
     tools.timer('burnin', timeb0, timeb1)
     tools.timer('sampler', times0, times1)
