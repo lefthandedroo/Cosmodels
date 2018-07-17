@@ -16,18 +16,17 @@ import tools
 #from scipy.special import erf
 
 # slow = 1, medium = 2, long = 3
-speed = 3
+speed = 1
 
-# Sigma of the noise on data.
 sigma = 0.07
 
 dataname = 'mag_z_LCDM_1000_sigma_0.07'
-
 # Load the data
 mag, zpicks = results.load('./data', dataname)
 
 
 #@jitclass([('dummy', int32)])
+
 class Model(object):
     """
     Specify the model in Python.
@@ -43,8 +42,11 @@ class Model(object):
         Unlike in C++, this must *return* a numpy array of parameters.
         """
         m = rng.rand()
-        g = 1E3*rng.rand()
-        g = dnest4.wrap(g, g_min, g_max)
+        g = rng.uniform(g_min, g_max)
+#        g = 1E3*rng.randn()
+        print('g = ',g)
+        print('m = ',m)
+        
         return np.array([m, g])
 
     def perturb(self, params):
@@ -55,6 +57,7 @@ class Model(object):
         logH = 0.0
         which = rng.randint(2)
         
+#        print(params[which])
         if which == 0:
             log_m = np.log(params[which])
             log_m += dnest4.randh()
@@ -81,7 +84,7 @@ class Model(object):
 
         theta = {'m':m,'gamma':g}
         
-        model = datasim.magn(theta, zpicks, firstderivs_key)
+        model = datasim.magn(theta, zpicks, firstderivs_key, plot_key=False)
         
         var = sigma**2
         return -0.5*np.sum((mag-model)**2 /var +0.5*np.log(2*np.pi*var))
@@ -96,17 +99,17 @@ import firstderivs as f
 
 firstderivs_functions = {
         'expgamma':f.expgamma, 
-        'txgamma':f.txgamma, 
-        'zxgamma':f.zxgamma, 
-        'gamma_over_z':f.gamma_over_z,
-        'zxxgamma':f.zxxgamma,
-        'gammaxxz':f.gammaxxz,
-#        'rdecay_m':f.rdecay_m, # nan field
-        'rdecay_de':f.rdecay_de,
-#        'rdecay_mxde':f.rdecay_mxde, # nan field
-        'rdecay':f.rdecay, 
-#        'interacting':f.interacting, # nan field
-        'LCDM':f.LCDM
+#        'txgamma':f.txgamma, 
+#        'zxgamma':f.zxgamma, 
+#        'gamma_over_z':f.gamma_over_z,
+#        'zxxgamma':f.zxxgamma,
+#        'gammaxxz':f.gammaxxz,
+##        'rdecay_m':f.rdecay_m, # nan field
+#        'rdecay_de':f.rdecay_de,
+##        'rdecay_mxde':f.rdecay_mxde, # nan field
+#        'rdecay':f.rdecay, 
+##        'interacting':f.interacting, # nan field
+#        'LCDM':f.LCDM
         }
 
 for key in firstderivs_functions:
@@ -153,7 +156,7 @@ for key in firstderivs_functions:
     ti = time.time()
     # Do the sampling (one iteration here = one particle save)
     for i, sample in enumerate(gen):
-#        print("# Saved {k} particles.".format(k=(i+1)))
+    #    print("# Saved {k} particles.".format(k=(i+1)))
         pass
     tf = time.time()
     

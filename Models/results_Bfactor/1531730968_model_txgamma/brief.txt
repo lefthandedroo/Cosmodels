@@ -1,0 +1,5 @@
+Sampling time:  47min 53s
+model = txgamma
+data = mag_z_LCDM_1000_sigma_0.07
+sigma = 0.07log(Z) = 325.62261021989286
+Information = 11.692271060293251
