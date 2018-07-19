@@ -16,7 +16,7 @@ import tools
 #from scipy.special import erf
 
 # slow = 1, medium = 2, long = 3
-speed = 3
+speed = 1
 
 # Sigma of the noise on data.
 sigma = 0.07
@@ -96,17 +96,17 @@ import firstderivs as f
 
 firstderivs_functions = {
         'expgamma':f.expgamma, 
-        'txgamma':f.txgamma, 
-        'zxgamma':f.zxgamma, 
-        'gamma_over_z':f.gamma_over_z,
-        'zxxgamma':f.zxxgamma,
-        'gammaxxz':f.gammaxxz,
-#        'rdecay_m':f.rdecay_m, # nan field
-        'rdecay_de':f.rdecay_de,
-#        'rdecay_mxde':f.rdecay_mxde, # nan field
-        'rdecay':f.rdecay, 
-#        'interacting':f.interacting, # nan field
-        'LCDM':f.LCDM
+#        'txgamma':f.txgamma, 
+#        'zxgamma':f.zxgamma, 
+#        'gamma_over_z':f.gamma_over_z,
+#        'zxxgamma':f.zxxgamma,
+#        'gammaxxz':f.gammaxxz,
+##        'rdecay_m':f.rdecay_m, # nan field
+#        'rdecay_de':f.rdecay_de,
+##        'rdecay_mxde':f.rdecay_mxde, # nan field
+#        'rdecay':f.rdecay, 
+##        'interacting':f.interacting, # nan field
+#        'LCDM':f.LCDM
         }
 
 for key in firstderivs_functions:
@@ -150,12 +150,25 @@ for key in firstderivs_functions:
                               num_per_step=100, thread_steps=10,
                               num_particles=5, lam=10, beta=100, seed=1234)
     
+    
+    import cProfile, pstats, io
+    pr = cProfile.Profile()
+    pr.enable()
+    # ... do something ...
+    
     ti = time.time()
     # Do the sampling (one iteration here = one particle save)
     for i, sample in enumerate(gen):
 #        print("# Saved {k} particles.".format(k=(i+1)))
         pass
     tf = time.time()
+    
+    pr.disable()
+    s = io.StringIO()
+    sortby = 'cumulative'
+    ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+    ps.print_stats()
+    print (s.getvalue())
     
     dnest_time = tools.timer('Sampling', ti, tf)
     
@@ -191,6 +204,8 @@ for key in firstderivs_functions:
     results.relocate('plot_1.pdf', firstderivs_key)
     results.relocate('plot_2.pdf', firstderivs_key)
     results.relocate('plot_3.pdf', firstderivs_key)
+
+
 
 
 #import six

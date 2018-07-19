@@ -54,7 +54,7 @@ def modelcheck():
     datasim.magn(test_params, zpicks, test_key, plot_key=True)
     return
 
-#modelcheck()
+modelcheck()
 
 #def modelcheck():
 #    gammas = [-10, -5, 0, 5, 10]
@@ -92,14 +92,11 @@ def all_modelcheck():
                                test_key, plot_key=True)
     return
 
-#gamma_comparison()
+#all_modelcheck()
 
 
 def quickemcee():
-    # Creating a folder for saving output.
-    save_path = './quick_emcee/'+str(int(time.time()))+'_'+test_key
-    if not os.path.exists(save_path):
-        os.makedirs(save_path)
+
     
     i = 0
     while i < 1:
@@ -127,6 +124,11 @@ def quickemcee():
                              'LCDM':f.LCDM}
         
         for key in firstderivs_functions:
+            
+            # Creating a folder for saving output.
+            save_path = './quick_emcee/'+str(int(time.time()))+'_'+key
+            if not os.path.exists(save_path):
+                os.makedirs(save_path)    
     
             if key == 'LCDM':
                 test_params = {'m':m_true}
@@ -138,6 +140,8 @@ def quickemcee():
                     mag, save_path, key)
         i += 1
     
+
+    
     # Saving sampler to directory.
     results.save(save_path, 'sampler', sampler)
 
@@ -147,7 +151,7 @@ def quickemcee():
 
     return
 
-quickemcee()
+#quickemcee()
 
 
 def errorvsdatasize():
