@@ -19,7 +19,7 @@ de_true = 1 - m_true   # (de = e_de(t)/e_crit(t0) at t=t0).
 g_true = 0#-0.50           # Interaction term, rate at which DE decays into matter.
 
 # Number of datapoints to be simulated and number of emcee steps.
-npoints, nsteps = 1000, 1000
+npoints, nsteps = 1000, 10000
 zmax = 2
 
 # Statistical parameteres of noise:
@@ -54,7 +54,7 @@ def modelcheck():
     datasim.magn(test_params, zpicks, test_key, plot_key=True)
     return
 
-modelcheck()
+#modelcheck()
 
 #def modelcheck():
 #    gammas = [-10, -5, 0, 5, 10]
@@ -135,9 +135,26 @@ def quickemcee():
             else:
                 test_params = {'m':m_true, 'gamma':g_true}
             
+            import cProfile, pstats, io
+            pr = cProfile.Profile()
+            pr.enable()
+            # ... do something ...
+            
             propert, sampler = paramfinder.paramfinder(
                     npoints, nsteps, sigma, mu, test_params, zpicks, 
                     mag, save_path, key)
+            
+            pr.disable()
+            s = io.StringIO()
+            sortby = 'cumulative'
+            ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+            ps.print_stats()
+#            print (s.getvalue())
+            
+            f = open('profiler_quick_emcee.txt','w')
+            f.write(s.getvalue())
+            f.close()
+            
         i += 1
     
 
@@ -151,7 +168,7 @@ def quickemcee():
 
     return
 
-#quickemcee()
+quickemcee()
 
 
 def errorvsdatasize():
