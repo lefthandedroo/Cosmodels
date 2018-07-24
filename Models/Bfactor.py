@@ -16,12 +16,12 @@ import tools
 #from scipy.special import erf
 
 # slow = 1, medium = 2, long = 3
-speed = 2
+speed = 1
 
 # Sigma of the noise on data.
 sigma = 0.07
 
-dataname = 'mag_z_LCDM_1000_sigma_0.07'
+dataname = 'mag_z_LCDM_1000_sigma_'+str(sigma)
 
 # Load the data
 mag, zpicks = results.load('./data', dataname)
@@ -44,7 +44,7 @@ class Model(object):
         """
         m = rng.rand()
         g = 1E3*rng.rand()
-        g = dnest4.wrap(g, g_min, g_max)
+        g = self.wrap(g, g_min, g_max)
         return np.array([m, g])
 
     def perturb(self, params):
@@ -54,21 +54,19 @@ class Model(object):
         """
         logH = 0.0
         which = rng.randint(2)
+        # Note the difference between dnest4.wrap in Python and
+        # DNest4::wrap in C++. The former *returns* the wrapped value.
         
         if which == 0:
             log_m = np.log(params[which])
-            log_m += dnest4.randh()
-            # Note the difference between dnest4.wrap in Python and
-            # DNest4::wrap in C++. The former *returns* the wrapped value.
-            log_m = dnest4.wrap(log_m, 0.0, 1.0)
+            log_m += self.randh()
+            log_m = self.wrap(log_m, 0.0, 1.0)
             params[which] = np.exp(log_m)
             
         elif which == 1:
             g = params[which]
-            g += dnest4.randh()
-            # Note the difference between dnest4.wrap in Python and
-            # DNest4::wrap in C++. The former *returns* the wrapped value.
-            g = dnest4.wrap(g, g_min, g_max)
+            g += self.randh()
+            g = self.wrap(g, g_min, g_max)
             params[which] = g
 
         return logH
@@ -85,6 +83,20 @@ class Model(object):
         
         var = sigma**2.0
         return -0.5*np.sum((mag-model)**2.0 /var +0.5*np.log(2.0*np.pi*var))
+    
+    def randh(self):
+        """
+        Generate from the heavy-tailed distribution.
+        """
+        a = np.random.randn()
+        b = np.random.rand()
+        t = a/np.sqrt(-np.log(b))
+        n = np.random.randn()
+        return 10.0**(1.5 - 3*np.abs(t))*n
+
+    def wrap(self, x, a, b):
+        assert b > a
+        return (x - a)%(b - a) + a
 
 # Create a model object and a sampler
 model = Model()
@@ -134,19 +146,22 @@ for key in firstderivs_functions:
 
     if speed == 3:   
         # LONG Set up the sampler. The first argument is max_num_levels
-        gen = sampler.sample(max_num_levels=30, num_steps=1000, new_level_interval=10000,
-                              num_per_step=10000, thread_steps=100,
-                              num_particles=5, lam=10, beta=100, seed=1234)
+        gen = sampler.sample(max_num_levels=30, num_steps=1000, 
+                             new_level_interval=10000, num_per_step=10000, 
+                             thread_steps=100, num_particles=5, 
+                             lam=10, beta=100, seed=1234)
     elif speed == 2:
         # MEDIUM num_per_step can be down to a few thousand 
-        gen = sampler.sample(max_num_levels=30, num_steps=1000, new_level_interval=1000,
-                              num_per_step=1000, thread_steps=100,
-                              num_particles=5, lam=10, beta=100, seed=1234)
+        gen = sampler.sample(max_num_levels=30, num_steps=1000, 
+                             new_level_interval=1000, num_per_step=1000, 
+                              thread_steps=100, num_particles=5, 
+                              lam=10, beta=100, seed=1234)
     elif speed == 1:
         # SHORT
-        gen = sampler.sample(max_num_levels=30, num_steps=100, new_level_interval=100,
-                              num_per_step=100, thread_steps=10,
-                              num_particles=5, lam=10, beta=100, seed=1234)
+        gen = sampler.sample(max_num_levels=30, num_steps=100, 
+                             new_level_interval=100, num_per_step=100, 
+                             thread_steps=10, num_particles=5, 
+                             lam=10, beta=100, seed=1234)
     
     
     import cProfile, pstats, io
@@ -165,50 +180,49 @@ for key in firstderivs_functions:
     sortby = 'cumulative'
     ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
     ps.print_stats()
-#    print (s.getvalue())
+    print (s.getvalue())
     
-    dnest_time = tools.timer('Sampling', ti, tf)
+    dnest_time = tools.timer('Bfactor', ti, tf)
     
-    
-    print('model =',firstderivs_key)
+    print('testing =',firstderivs_key)
     print('data =', dataname)
     print('sigma =', sigma)
        
     # Run the postprocessing
     info = dnest4.postprocess()
     
-    f = open('brief.txt','w')
-    f.write(dnest_time +'\n'
-            +'model = '+firstderivs_key +'\n'
-            +'data = '+ dataname +'\n'
-            +'sigma = '+str(sigma)    
-            +'log(Z) = '+str(info[0]) +'\n'
-            +'Information = '+str(info[1]) +'\n'
-            +'speed = '+str(speed))
-    f.close()
     
-    if speed == 1:
-        firstderivs_key = 'tutti-frutti'
+    if speed > 1:
+        
+        f = open('brief.txt','w')
+        f.write(dnest_time +'\n'
+                +'model = '+firstderivs_key +'\n'
+                +'data = '+ dataname +'\n'
+                +'sigma = '+str(sigma)    
+                +'log(Z) = '+str(info[0]) +'\n'
+                +'Information = '+str(info[1]) +'\n'
+                +'speed = '+str(speed))
+        f.close()
     
-    # Moving output .txt files into a run specific folder.
-    results.relocate('levels.txt', firstderivs_key)
-    results.relocate('posterior_sample.txt', firstderivs_key)
-    results.relocate('sample_info.txt', firstderivs_key)
-    results.relocate('sample.txt', firstderivs_key)
-    results.relocate('sampler_state.txt', firstderivs_key)
-    results.relocate('weights.txt', firstderivs_key)
-    results.relocate('brief.txt', firstderivs_key)
-    results.relocate('plot_1.pdf', firstderivs_key)
-    results.relocate('plot_2.pdf', firstderivs_key)
-    results.relocate('plot_3.pdf', firstderivs_key)
+        # Moving output .txt files into a run specific folder.
+        results.relocate('levels.txt', firstderivs_key)
+        results.relocate('posterior_sample.txt', firstderivs_key)
+        results.relocate('sample_info.txt', firstderivs_key)
+        results.relocate('sample.txt', firstderivs_key)
+        results.relocate('sampler_state.txt', firstderivs_key)
+        results.relocate('weights.txt', firstderivs_key)
+        results.relocate('brief.txt', firstderivs_key)
+        results.relocate('plot_1.pdf', firstderivs_key)
+        results.relocate('plot_2.pdf', firstderivs_key)
+        results.relocate('plot_3.pdf', firstderivs_key)
 
 
 
 
 #import six
 #import sys
-## Run the postprocessing to get marginal likelihood and generate posterior samples
-#logZdnest4, infogaindnest4, plot = dnest4.postprocess()
+## Run the postprocessing to get marginal likelihood and generate posterior 
+#samples logZdnest4, infogaindnest4, plot = dnest4.postprocess()
 #
 #postsamples = np.loadtxt('posterior_sample.txt')
 #

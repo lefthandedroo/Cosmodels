@@ -77,7 +77,7 @@ def lnprior(theta, firstderivs_key):
 
 
 def lnprob(theta, zpicks, mag, sigma, firstderivs_key, ndim):
-#    print('@@@@@ lnprob has been called')
+
     lp = lnprior(theta, firstderivs_key)
     if not np.isfinite(lp):
         return -np.inf

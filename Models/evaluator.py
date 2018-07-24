@@ -31,6 +31,8 @@ sigma = 0.07      # standard deviation
 #'rdecay_m','rdecay_de','rdecay_mxde','rdecay','interacting','LCDM'
 # Length of parameters has to correspond to the model being tested.
 
+dataname = 'mag_z_LCDM_1000_sigma_'+str(sigma)
+
 data_key = 'LCDM'
 
 test_key = 'expgamma'
@@ -106,11 +108,11 @@ def quickemcee():
             print('_____________________ run number',i)
         
 #        mag = datasim.noisy_mag(zpicks, mu, sigma, data_params, data_key)
-        mag, zpicks = results.load('./data', 'mag_z_LCDM_1000_sigma_0.05')
+        mag, zpicks = results.load('./data', dataname)
         
-        firstderivs_functions = ['expgamma']
+        firstderivs_functions = ['expgamma', 'txgamma']
 #        firstderivs_functions = ['expgamma','txgamma','zxgamma','gamma_over_z',
-#                                 'zxxgamma','gammaxxz','rdecay_m','rdecay_de',
+#                                 'zxxgamma','gammaxxz','rdecay_m','rdecay_de', 
 #                                 'rdecay_mxde','rdecay','interacting','LCDM']
         
         for key in firstderivs_functions:

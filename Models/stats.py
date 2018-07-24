@@ -99,7 +99,7 @@ def stats(params, zpicks, mag, sigma, nsteps,
             propert['m_mean'] = m_mean
             propert['m'] = mbest
             plots.stat('coral', m, m_true, 'Matter', lnprob, zpicks, 
-                 mag, sigma, nsteps, nwalkers, save_path)
+                 mag, sigma, nsteps, nwalkers, save_path, firstderivs_key)
             
         elif i == 1:
             gammabest = sampler.flatchain[bi,i]
@@ -117,7 +117,7 @@ def stats(params, zpicks, mag, sigma, nsteps,
             propert['gamma_mean'] = gamma_mean
             propert['gamma'] = gammabest
             plots.stat('aquamarine', gamma, g_true, 'Gamma', lnprob, zpicks, 
-                 mag, sigma, nsteps, nwalkers, save_path)
+                 mag, sigma, nsteps, nwalkers, save_path, firstderivs_key)
                     
         elif i == 2:
             debest = sampler.flatchain[bi,i]
@@ -137,7 +137,7 @@ def stats(params, zpicks, mag, sigma, nsteps,
             propert['de_mean'] = de_mean
             propert['de'] = debest
             plots.stat('orchid', de, de_true, 'DE', lnprob, zpicks, 
-                 mag, sigma, nsteps, nwalkers, save_path)
+                 mag, sigma, nsteps, nwalkers, save_path, firstderivs_key)
             
     # Checking if best found parameters are within prior.
     lp = ln.lnprior(thetabest, firstderivs_key)
@@ -150,7 +150,8 @@ def stats(params, zpicks, mag, sigma, nsteps,
     # mag simulated using emcee best parameters and data redshifts.
     magbest = datasim.magn(parambest, zpicks, firstderivs_key)
     plt.figure()
-    plt.title('Evolution of magnitude with redshift \n nsteps: '
+    plt.title('model: '+firstderivs_key
+              +'\n Evolution of magnitude with redshift \n nsteps: '
           +str(nsteps)+', noise: '+str(sigma)+', npoints: '+str(len(zpicks)))
     data = plt.errorbar(zpicks, mag, yerr=sigma, fmt='.', alpha=0.3)
     best_fit = plt.scatter(zpicks, magbest, lw='1', c='xkcd:tomato')
@@ -162,7 +163,7 @@ def stats(params, zpicks, mag, sigma, nsteps,
     +str(nwalkers)+'_noise_'+str(sigma)+'_numpoints_'+str(len(zpicks))+'.pdf'
     filename = os.path.join(save_path, filename)
     plt.savefig(filename)
-    plt.show()
+    plt.show(block=False)
 
 #    # Corner plot (walkers' walk + histogram).
 #    import corner
@@ -171,7 +172,7 @@ def stats(params, zpicks, mag, sigma, nsteps,
 #    corner.corner(samples, labels=["$m$"], 
 #                        truths=true)
 #    show()
-
+    
     # Results getting printed:
     if bi == 0: 
         print('@@@@@@@@@@@@@@@@@')

@@ -37,9 +37,7 @@ def timer(string,i,f):
     Returns: Time taken in full minutes and seconds.
     """
     sec = f - i     # Total time to run.
-    mins, sec= divmod(sec, 60)
-#    mins = round((sec / 60),1)  # minutes
-#    sec = round((sec % 60),2)   # seconds
+    mins, sec= divmod(sec, 60.0)
     time = string+' time:  '+str(int(mins))+'min '+str(int(sec))+'s'
     print(time)
     

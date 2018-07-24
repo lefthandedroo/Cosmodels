@@ -88,35 +88,29 @@ def txgamma(double[:] v, redshifts, double gamma, double H0):
     cdef double ombar_de = v[3]
     cdef double z = v[4]
     cdef double dl = v[5]
-    
-    cdef double Hz = H0 * (ombar_m + ombar_de)**(1/2)
+        
+    cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
         
     if math.isnan(Hz):
         print('txgamma')
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
         
-    cdef double irate = (gamma/(-t+0.0001))*(1-ombar_de/(ombar_de+ombar_m)) /(1+z)/Hz
+    cdef double irate = (gamma/(-t+0.0001))*(1.0-ombar_de/(ombar_de+ombar_m)) /(1.0+z)/Hz
+    
+    cdef double dtdz = -1.0/((1.0+z) * Hz)
+    cdef double dadz = -(1.0+z)**(-2.0)
+    cdef double domdz = 3.0*ombar_m /(1.0+z) - irate
+    cdef double ddldz = 1.0/Hz
     
     # first derivatives of functions I want to find:
-    cdef array.array f = array.array('d', [# dt/dz (= f.d wrt z of time)
-        -1/((1+z) * Hz),
-            
-        # d(a)/dz (= f.d wrt z of scale factor)
-         -(1+z)**(-2),
-         
-         # d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
-         3*ombar_m /(1+z) - irate,
-         
-         # d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
-         irate,
-         
-         # d(z)/dz (= f.d wrt z of redshift)
-         1,
-         
-         # d(dl)/dz (= f.d wrt z of luminosty distance)
-         1/Hz]) # H + Hdz*(1+z)
-        
+    f = [dtdz,# dt/dz (= f.d wrt z of time)
+         dadz,# d(a)/dz (= f.d wrt z of scale factor)
+         domdz,# d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
+         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
+         1.0,# d(z)/dz (= f.d wrt z of redshift)
+         ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
+    
     return f
 
 def zxgamma(double[:] v, redshifts, double gamma, double H0):
@@ -137,35 +131,29 @@ def zxgamma(double[:] v, redshifts, double gamma, double H0):
     cdef double ombar_de = v[3]
     cdef double z = v[4]
     cdef double dl = v[5]
-    
-    cdef double Hz = H0 * (ombar_m + ombar_de)**(1/2)
+        
+    cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
         
     if math.isnan(Hz):
         print('zxgamma')
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
         
-    cdef double irate = z*gamma*(1-ombar_de/(ombar_de+ombar_m)) /(1+z)/Hz
+    cdef double irate = z*gamma*(1.0-ombar_de/(ombar_de+ombar_m)) /(1.0+z)/Hz
+    
+    cdef double dtdz = -1.0/((1.0+z) * Hz)
+    cdef double dadz = -(1.0+z)**(-2.0)
+    cdef double domdz = 3.0*ombar_m /(1.0+z) - irate
+    cdef double ddldz = 1.0/Hz
     
     # first derivatives of functions I want to find:
-    cdef array.array f = array.array('d', [# dt/dz (= f.d wrt z of time)
-        -1/((1+z) * Hz),
-            
-        # d(a)/dz (= f.d wrt z of scale factor)
-         -(1+z)**(-2),
-         
-         # d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
-         3*ombar_m /(1+z) - irate,
-         
-         # d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
-         irate,
-         
-         # d(z)/dz (= f.d wrt z of redshift)
-         1,
-         
-         # d(dl)/dz (= f.d wrt z of luminosty distance)
-         1/Hz]) # H + Hdz*(1+z)
-        
+    f = [dtdz,# dt/dz (= f.d wrt z of time)
+         dadz,# d(a)/dz (= f.d wrt z of scale factor)
+         domdz,# d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
+         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
+         1.0,# d(z)/dz (= f.d wrt z of redshift)
+         ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
+    
     return f
 
 def gamma_over_z(double[:] v, redshifts, double gamma, double H0):
@@ -186,35 +174,29 @@ def gamma_over_z(double[:] v, redshifts, double gamma, double H0):
     cdef double ombar_de = v[3]
     cdef double z = v[4]
     cdef double dl = v[5]
-    
-    cdef double Hz = H0 * (ombar_m + ombar_de)**(1/2)
+        
+    cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
         
     if math.isnan(Hz):
         print('gamma_over_z')
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
         
-    cdef double irate = gamma/(z + 0.01)*(1-ombar_de/(ombar_de+ombar_m)) /(1+z)/Hz
+    cdef double irate = gamma/(z + 0.01)*(1.0-ombar_de/(ombar_de+ombar_m)) /(1.0+z)/Hz
+    
+    cdef double dtdz = -1.0/((1.0+z) * Hz)
+    cdef double dadz = -(1.0+z)**(-2.0)
+    cdef double domdz = 3.0*ombar_m /(1.0+z) - irate
+    cdef double ddldz = 1.0/Hz
     
     # first derivatives of functions I want to find:
-    cdef array.array f = array.array('d', [# dt/dz (= f.d wrt z of time)
-        -1/((1+z) * Hz),
-            
-        # d(a)/dz (= f.d wrt z of scale factor)
-         -(1+z)**(-2),
-         
-         # d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
-         3*ombar_m /(1+z) - irate,
-         
-         # d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
-         irate,
-         
-         # d(z)/dz (= f.d wrt z of redshift)
-         1,
-         
-         # d(dl)/dz (= f.d wrt z of luminosty distance)
-         1/Hz]) # H + Hdz*(1+z)
-        
+    f = [dtdz,# dt/dz (= f.d wrt z of time)
+         dadz,# d(a)/dz (= f.d wrt z of scale factor)
+         domdz,# d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
+         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
+         1.0,# d(z)/dz (= f.d wrt z of redshift)
+         ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
+    
     return f
 
 def zxxgamma(double[:] v, redshifts, double gamma, double H0):
@@ -235,35 +217,29 @@ def zxxgamma(double[:] v, redshifts, double gamma, double H0):
     cdef double ombar_de = v[3]
     cdef double z = v[4]
     cdef double dl = v[5]
-    
-    cdef double Hz = H0 * (ombar_m + ombar_de)**(1/2)
+        
+    cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
         
     if math.isnan(Hz):
         print('zxxgamma')
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
         
-    cdef double irate = (z**gamma)*(1-ombar_de/(ombar_de+ombar_m)) /(1+z)/Hz
+    cdef double irate = (z**gamma)*(1.0-ombar_de/(ombar_de+ombar_m)) /(1.0+z)/Hz
+    
+    cdef double dtdz = -1.0/((1.0+z) * Hz)
+    cdef double dadz = -(1.0+z)**(-2.0)
+    cdef double domdz = 3.0*ombar_m /(1.0+z) - irate
+    cdef double ddldz = 1.0/Hz
     
     # first derivatives of functions I want to find:
-    cdef array.array f = array.array('d', [# dt/dz (= f.d wrt z of time)
-        -1/((1+z) * Hz),
-            
-        # d(a)/dz (= f.d wrt z of scale factor)
-         -(1+z)**(-2),
-         
-         # d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
-         3*ombar_m /(1+z) - irate,
-         
-         # d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
-         irate,
-         
-         # d(z)/dz (= f.d wrt z of redshift)
-         1,
-         
-         # d(dl)/dz (= f.d wrt z of luminosty distance)
-         1/Hz]) # H + Hdz*(1+z)
-        
+    f = [dtdz,# dt/dz (= f.d wrt z of time)
+         dadz,# d(a)/dz (= f.d wrt z of scale factor)
+         domdz,# d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
+         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
+         1.0,# d(z)/dz (= f.d wrt z of redshift)
+         ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
+    
     return f
 
 def gammaxxz(double[:] v, redshifts, double gamma, double H0):
@@ -284,35 +260,29 @@ def gammaxxz(double[:] v, redshifts, double gamma, double H0):
     cdef double ombar_de = v[3]
     cdef double z = v[4]
     cdef double dl = v[5]
-    
-    cdef double Hz = H0 * (ombar_m + ombar_de)**(1/2)
+        
+    cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
         
     if math.isnan(Hz):
         print('gammaxxz')
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
         
-    cdef double irate = (gamma**z)*(1-ombar_de/(ombar_de+ombar_m)) /(1+z)/Hz
+    cdef double irate = (gamma**z)*(1.0-ombar_de/(ombar_de+ombar_m)) /(1.0+z)/Hz
+    
+    cdef double dtdz = -1.0/((1.0+z) * Hz)
+    cdef double dadz = -(1.0+z)**(-2.0)
+    cdef double domdz = 3.0*ombar_m /(1.0+z) - irate
+    cdef double ddldz = 1.0/Hz
     
     # first derivatives of functions I want to find:
-    cdef array.array f = array.array('d', [# dt/dz (= f.d wrt z of time)
-        -1/((1+z) * Hz),
-            
-        # d(a)/dz (= f.d wrt z of scale factor)
-         -(1+z)**(-2),
-         
-         # d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
-         3*ombar_m /(1+z) - irate,
-         
-         # d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
-         irate,
-         
-         # d(z)/dz (= f.d wrt z of redshift)
-         1,
-         
-         # d(dl)/dz (= f.d wrt z of luminosty distance)
-         1/Hz]) # H + Hdz*(1+z)
-        
+    f = [dtdz,# dt/dz (= f.d wrt z of time)
+         dadz,# d(a)/dz (= f.d wrt z of scale factor)
+         domdz,# d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
+         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
+         1.0,# d(z)/dz (= f.d wrt z of redshift)
+         ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
+    
     return f
 
 def rdecay_m(double[:] v, redshifts, double gamma, double H0):
@@ -333,35 +303,29 @@ def rdecay_m(double[:] v, redshifts, double gamma, double H0):
     cdef double ombar_de = v[3]
     cdef double z = v[4]
     cdef double dl = v[5]
-    
-    cdef double Hz = H0 * (ombar_m + ombar_de)**(1/2)
+        
+    cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
         
     if math.isnan(Hz):
         print('rdecay_m')
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
         
-    cdef double irate = gamma*(1-ombar_m/(ombar_de+ombar_m)) /(1+z)/Hz
+    cdef double irate = gamma*(1.0-ombar_m/(ombar_de+ombar_m)) /(1.0+z)/Hz
+    
+    cdef double dtdz = -1.0/((1.0+z) * Hz)
+    cdef double dadz = -(1.0+z)**(-2.0)
+    cdef double domdz = 3.0*ombar_m /(1.0+z) - irate
+    cdef double ddldz = 1.0/Hz
     
     # first derivatives of functions I want to find:
-    cdef array.array f = array.array('d', [# dt/dz (= f.d wrt z of time)
-        -1/((1+z) * Hz),
-            
-        # d(a)/dz (= f.d wrt z of scale factor)
-         -(1+z)**(-2),
-         
-         # d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
-         3*ombar_m /(1+z) - irate,
-         
-         # d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
-         irate,
-         
-         # d(z)/dz (= f.d wrt z of redshift)
-         1,
-         
-         # d(dl)/dz (= f.d wrt z of luminosty distance)
-         1/Hz]) # H + Hdz*(1+z)
-        
+    f = [dtdz,# dt/dz (= f.d wrt z of time)
+         dadz,# d(a)/dz (= f.d wrt z of scale factor)
+         domdz,# d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
+         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
+         1.0,# d(z)/dz (= f.d wrt z of redshift)
+         ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
+    
     return f
 
 def rdecay_de(double[:] v, redshifts, double gamma, double H0):
@@ -382,35 +346,29 @@ def rdecay_de(double[:] v, redshifts, double gamma, double H0):
     cdef double ombar_de = v[3]
     cdef double z = v[4]
     cdef double dl = v[5]
-    
-    cdef double Hz = H0 * (ombar_m + ombar_de)**(1/2)
+        
+    cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
         
     if math.isnan(Hz):
         print('rdecay_de')
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
         
-    cdef double irate = gamma*(1-ombar_de/(ombar_de+ombar_m)) /(1+z)/Hz
+    cdef double irate = gamma*(1.0-ombar_de/(ombar_de+ombar_m)) /(1.0+z)/Hz
+    
+    cdef double dtdz = -1.0/((1.0+z) * Hz)
+    cdef double dadz = -(1.0+z)**(-2.0)
+    cdef double domdz = 3.0*ombar_m /(1.0+z) - irate
+    cdef double ddldz = 1.0/Hz
     
     # first derivatives of functions I want to find:
-    cdef array.array f = array.array('d', [# dt/dz (= f.d wrt z of time)
-        -1/((1+z) * Hz),
-            
-        # d(a)/dz (= f.d wrt z of scale factor)
-         -(1+z)**(-2),
-         
-         # d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
-         3*ombar_m /(1+z) - irate,
-         
-         # d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
-         irate,
-         
-         # d(z)/dz (= f.d wrt z of redshift)
-         1,
-         
-         # d(dl)/dz (= f.d wrt z of luminosty distance)
-         1/Hz]) # H + Hdz*(1+z)
-        
+    f = [dtdz,# dt/dz (= f.d wrt z of time)
+         dadz,# d(a)/dz (= f.d wrt z of scale factor)
+         domdz,# d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
+         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
+         1.0,# d(z)/dz (= f.d wrt z of redshift)
+         ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
+    
     return f
 
 def rdecay_mxde(double[:] v, redshifts, double gamma, double H0):
@@ -431,35 +389,29 @@ def rdecay_mxde(double[:] v, redshifts, double gamma, double H0):
     cdef double ombar_de = v[3]
     cdef double z = v[4]
     cdef double dl = v[5]
-    
-    cdef double Hz = H0 * (ombar_m + ombar_de)**(1/2)
+        
+    cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
         
     if math.isnan(Hz):
         print('rdecay_mxde')
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
         
-    cdef double irate = gamma*ombar_de*ombar_m /(1+z)/Hz
+    cdef double irate = gamma*ombar_de*ombar_m /(1.0+z)/Hz
+    
+    cdef double dtdz = -1.0/((1.0+z) * Hz)
+    cdef double dadz = -(1.0+z)**(-2.0)
+    cdef double domdz = 3.0*ombar_m /(1.0+z) - irate
+    cdef double ddldz = 1.0/Hz
     
     # first derivatives of functions I want to find:
-    cdef array.array f = array.array('d', [# dt/dz (= f.d wrt z of time)
-        -1/((1+z) * Hz),
-            
-        # d(a)/dz (= f.d wrt z of scale factor)
-         -(1+z)**(-2),
-         
-         # d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
-         3*ombar_m /(1+z) - irate,
-         
-         # d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
-         irate,
-         
-         # d(z)/dz (= f.d wrt z of redshift)
-         1,
-         
-         # d(dl)/dz (= f.d wrt z of luminosty distance)
-         1/Hz]) # H + Hdz*(1+z)
-        
+    f = [dtdz,# dt/dz (= f.d wrt z of time)
+         dadz,# d(a)/dz (= f.d wrt z of scale factor)
+         domdz,# d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
+         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
+         1.0,# d(z)/dz (= f.d wrt z of redshift)
+         ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
+    
     return f
 
 def rdecay(double[:] v, redshifts, double gamma, double H0):
@@ -480,35 +432,29 @@ def rdecay(double[:] v, redshifts, double gamma, double H0):
     cdef double ombar_de = v[3]
     cdef double z = v[4]
     cdef double dl = v[5]
-    
-    cdef double Hz = H0 * (ombar_m + ombar_de)**(1/2)
+        
+    cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
         
     if math.isnan(Hz):
         print('rdecay')
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
         
-    cdef double irate = gamma*ombar_de /(1+z)/Hz
+    cdef double irate = gamma*ombar_de /(1.0+z)/Hz
+    
+    cdef double dtdz = -1.0/((1.0+z) * Hz)
+    cdef double dadz = -(1.0+z)**(-2.0)
+    cdef double domdz = 3.0*ombar_m /(1.0+z) - irate
+    cdef double ddldz = 1.0/Hz
     
     # first derivatives of functions I want to find:
-    cdef array.array f = array.array('d', [# dt/dz (= f.d wrt z of time)
-        -1/((1+z) * Hz),
-            
-        # d(a)/dz (= f.d wrt z of scale factor)
-         -(1+z)**(-2),
-         
-         # d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
-         3*ombar_m /(1+z) - irate,
-         
-         # d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
-         irate,
-         
-         # d(z)/dz (= f.d wrt z of redshift)
-         1,
-         
-         # d(dl)/dz (= f.d wrt z of luminosty distance)
-         1/Hz]) # H + Hdz*(1+z)
-        
+    f = [dtdz,# dt/dz (= f.d wrt z of time)
+         dadz,# d(a)/dz (= f.d wrt z of scale factor)
+         domdz,# d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
+         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
+         1.0,# d(z)/dz (= f.d wrt z of redshift)
+         ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
+    
     return f
 
 def interacting(double[:] v, redshifts, double gamma, double H0):
@@ -531,33 +477,29 @@ def interacting(double[:] v, redshifts, double gamma, double H0):
     cdef double ombar_de = v[3]
     cdef double z = v[4]
     cdef double dl = v[5]
-    
-    cdef double Hz = H0 * (ombar_m + ombar_de)**(1/2)
+        
+    cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
         
     if math.isnan(Hz):
         print('interacting')
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
-
-    # first derivatives of functions I want to find:
-    cdef array.array f = array.array('d', [# dt/dz (= f.d wrt z of time)
-        -1/((1+z) * Hz),
-            
-        # d(a)/dz (= f.d wrt z of scale factor)
-         -(1+z)**(-2),
-         
-         # d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
-         3*ombar_m /(1+z) - gamma/(1+z)/Hz,
-         
-         # d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
-         gamma/(1+z)/Hz,
-         
-         # d(z)/dz (= f.d wrt z of redshift)
-         1,
-         
-         # d(dl)/dz (= f.d wrt z of luminosty distance)
-         1/Hz]) # H + Hdz*(1+z)
         
+    cdef double irate = gamma/(1.0+z)/Hz
+    
+    cdef double dtdz = -1.0/((1.0+z) * Hz)
+    cdef double dadz = -(1.0+z)**(-2.0)
+    cdef double domdz = 3.0*ombar_m /(1.0+z) - irate
+    cdef double ddldz = 1.0/Hz
+    
+    # first derivatives of functions I want to find:
+    f = [dtdz,# dt/dz (= f.d wrt z of time)
+         dadz,# d(a)/dz (= f.d wrt z of scale factor)
+         domdz,# d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
+         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
+         1.0,# d(z)/dz (= f.d wrt z of redshift)
+         ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
+    
     return f
 
 def LCDM(double[:] v, redshifts, double H0):
@@ -578,31 +520,25 @@ def LCDM(double[:] v, redshifts, double H0):
     cdef double ombar_de = v[3]
     cdef double z = v[4]
     cdef double dl = v[5]
-    
-    cdef double Hz = H0 * (ombar_m + ombar_de)**(1/2)
+        
+    cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
         
     if math.isnan(Hz):
         print('LCDM')                                        
         print('z = %s, Hz = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, ombar_m, ombar_de))
-            
+        
+    cdef double dtdz = -1.0/((1.0+z) * Hz)
+    cdef double dadz = -(1.0+z)**(-2.0)
+    cdef double domdz = 3.0*ombar_m /(1.0+z)
+    cdef double ddldz = 1.0/Hz
+    
     # first derivatives of functions I want to find:
-    cdef array.array f = array.array('d', [# dt/dz (= f.d wrt z of time)
-        -1/((1+z) * Hz),
-            
-        # d(a)/dz (= f.d wrt z of scale factor)
-         -(1+z)**(-2),
-         
-         # d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
-         3*ombar_m /(1+z),
-         
-         # d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
-         0,
-         
-         # d(z)/dz (= f.d wrt z of redshift)
-         1,
-         
-         # d(dl)/dz (= f.d wrt z of luminosty distance)
-         1/Hz]) # H + Hdz*(1+z)
+    f = [dtdz,# dt/dz (= f.d wrt z of time)
+         dadz,# d(a)/dz (= f.d wrt z of scale factor)
+         domdz,# d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
+         0.0,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
+         1.0,# d(z)/dz (= f.d wrt z of redshift)
+         ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
         
     return f

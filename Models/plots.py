@@ -14,13 +14,10 @@ import os
 import time
 
 from results import load
- 
-def setsizevspread():
-    
-    return
+
 
 def stat(hue, var, var_true, var_name, slnprob, zpicks, 
-          mag, sigma, nsteps, nwalkers, save_path):
+          mag, sigma, nsteps, nwalkers, save_path, firstderivs_key):
     
     name_l = var_name.lower()
     initial = name_l[:1]
@@ -30,10 +27,11 @@ def stat(hue, var, var_true, var_name, slnprob, zpicks,
     
     # Marginalised distribution histogram.
     plt.figure()
-#    plt.xlabel(r'$\{}$'.format(var_name))
-    plt.xlabel(var_name)
-    plt.title('Marginalised distribution for '+name_l+' \n nsteps: '+str(nsteps)+
-          ', noise: '+str(sigma)+', npoints: '+str(len(zpicks)))
+#    plt.xlabel(r'$\{}$'.format(name_l))
+    plt.xlabel(name_l)
+    plt.title('model: '+firstderivs_key+'\n Marginalised distribution of '
+              +name_l+' \n nsteps: '+str(nsteps)+', noise: '+str(sigma)
+              +', npoints: '+str(len(zpicks))+' '+firstderivs_key)
     plt.hist(var, 50)
     stamp = str(int(time.time()))
     filename = str(stamp)+'_'+initial+'_mhist__nsteps_'+str(nsteps) \
@@ -41,12 +39,13 @@ def stat(hue, var, var_true, var_name, slnprob, zpicks,
     +'_numpoints_'+str(len(zpicks))+'.pdf'
     filename = os.path.join(save_path, filename)
     plt.savefig(filename)
-    plt.show()
     
     # Walker steps.
     plt.figure()
-    plt.title('flatlnprobability for '+name_l+' \n nsteps: '
-          +str(nsteps)+', noise: '+str(sigma)+', npoints: '+str(len(zpicks)))
+    plt.xlabel(name_l)
+    plt.title('model: '+firstderivs_key+'\n lnprobability of '+name_l
+              +' \n nsteps: '+str(nsteps)+', noise: '+str(sigma)
+              +', npoints: '+str(len(zpicks)))
     plt.plot(var, slnprob, '.', color=hue)
     stamp = str(int(time.time()))
     filename = str(stamp)+'_'+initial+'_steps__nsteps_'+str(nsteps) \
@@ -54,15 +53,15 @@ def stat(hue, var, var_true, var_name, slnprob, zpicks,
     +'_numpoints_'+str(len(zpicks))+'.pdf'
     filename = os.path.join(save_path, filename)
     plt.savefig(filename)
-    plt.show()
     
     # Chains.
     plt.figure()
     plt.xlabel('step number')
-#    plt.ylabel(r'$\{}$'.format(var_name))
-    plt.ylabel(var_name)
-    plt.title('flatChains with '+name_true+' in '+hue_name+' \n nsteps: '
-          +str(nsteps)+', noise: '+str(sigma)+', npoints: '+str(len(zpicks)))
+#    plt.ylabel(r'$\{}$'.format(name_l))
+    plt.ylabel(name_l)
+    plt.title('model: '+firstderivs_key+'\n flatchains, '+name_true+
+              ' in '+hue_name+' \n nsteps: '+str(nsteps)+', noise: '
+              +str(sigma)+', npoints: '+str(len(zpicks)))
     plt.plot(var.T, '-', color='k', alpha=0.3)
     plt.axhline(var_true, color=hue)
     stamp = str(int(time.time()))
@@ -71,7 +70,8 @@ def stat(hue, var, var_true, var_name, slnprob, zpicks,
     +'_numpoints_'+str(len(zpicks))+'.pdf'
     filename = os.path.join(save_path, filename)
     plt.savefig(filename)
-    plt.show()
+    
+    plt.show(block=False)
     
     return
 
