@@ -15,15 +15,15 @@ import datasim
 
 # Parameters used to simulate data:  
 m_true = 0.3           # (= e_m(t)/e_crit(t0) at t=t0).
-de_true = 1 - m_true   # (de = e_de(t)/e_crit(t0) at t=t0).
-g_true = 0#-0.50           # Interaction term, rate at which DE decays into matter.
+de_true = 1.0 - m_true   # (de = e_de(t)/e_crit(t0) at t=t0).
+g_true = 0#-0.50           # Interaction, rate at which DE decays into matter.
 
 # Number of datapoints to be simulated and number of emcee steps.
 npoints, nsteps = 1000, 10000
 zmax = 2
 
 # Statistical parameteres of noise:
-mu = 0            # mean
+mu = 0.0            # mean
 sigma = 0.07      # standard deviation
 
 # Key for the dictionary of interaction modes in firstderivs
@@ -33,7 +33,7 @@ sigma = 0.07      # standard deviation
 
 data_key = 'LCDM'
 
-test_key = 'txgamma'
+test_key = 'expgamma'
 
 if data_key == 'LCDM':
     data_params = {'m':m_true}
@@ -51,14 +51,16 @@ else:
 zpicks = datasim.redshift_picks(0.005, zmax, npoints)
 
 def modelcheck():
+
     datasim.magn(test_params, zpicks, test_key, plot_key=True)
+
     return
 
 #modelcheck()
 
 #def modelcheck():
-#    gammas = [-10, -5, 0, 5, 10]
-#    datasim.magn(test_params, zpicks, test_key, plot_key=True, gamma_list = gammas)
+#    g = [-10, -5, 0, 5, 10]
+#    datasim.magn(test_params, zpicks, test_key, plot_key=True, gamma_list = g)
 #    return
 #
 #modelcheck()
@@ -103,25 +105,13 @@ def quickemcee():
         if i > 0:
             print('_____________________ run number',i)
         
-#        mag = datasim.noisy_mag(zpicks, mu, sigma, data_params, 
-#                                   data_key)
+#        mag = datasim.noisy_mag(zpicks, mu, sigma, data_params, data_key)
         mag, zpicks = results.load('./data', 'mag_z_LCDM_1000_sigma_0.05')
         
-        import firstderivs as f
-
-        firstderivs_functions = {
-#                            'expgamma':f.expgamma,
-#                             'txgamma':f.txgamma,
-#                             'zxgamma':f.zxgamma,
-#                             'gamma_over_z':f.gamma_over_z,
-#                             'zxxgamma':f.zxxgamma,
-#                             'gammaxxz':f.gammaxxz,
-#                             'rdecay_m':f.rdecay_m,
-#                             'rdecay_de':f.rdecay_de,
-#                             'rdecay_mxde':f.rdecay_mxde,
-#                             'rdecay':f.rdecay,                         
-#                             'interacting':f.interacting,
-                             'LCDM':f.LCDM}
+        firstderivs_functions = ['expgamma']
+#        firstderivs_functions = ['expgamma','txgamma','zxgamma','gamma_over_z',
+#                                 'zxxgamma','gammaxxz','rdecay_m','rdecay_de',
+#                                 'rdecay_mxde','rdecay','interacting','LCDM']
         
         for key in firstderivs_functions:
             
@@ -135,14 +125,14 @@ def quickemcee():
             else:
                 test_params = {'m':m_true, 'gamma':g_true}
             
+            # Profiling
             import cProfile, pstats, io
             pr = cProfile.Profile()
             pr.enable()
-            # ... do something ...
             
-            propert, sampler = paramfinder.paramfinder(
-                    npoints, nsteps, sigma, mu, test_params, zpicks, 
-                    mag, save_path, key)
+            propert, sampler = paramfinder.paramfinder(npoints, nsteps, sigma, 
+                                                       mu, test_params, zpicks, 
+                                                       mag, save_path, key)
             
             pr.disable()
             s = io.StringIO()

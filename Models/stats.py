@@ -174,7 +174,9 @@ def stats(params, zpicks, mag, sigma, nsteps,
 
     # Results getting printed:
     if bi == 0: 
+        print('@@@@@@@@@@@@@@@@@')
         print('best index =',str(bi))
+        print('@@@@@@@@@@@@@@@@@')
     print('best parameters =',str(parambest.values()))
     print('m.a.f.:', np.mean(sampler.acceptance_fraction))
     print('nsteps:', str(nsteps))

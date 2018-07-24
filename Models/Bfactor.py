@@ -16,7 +16,7 @@ import tools
 #from scipy.special import erf
 
 # slow = 1, medium = 2, long = 3
-speed = 1
+speed = 2
 
 # Sigma of the noise on data.
 sigma = 0.07
@@ -60,7 +60,7 @@ class Model(object):
             log_m += dnest4.randh()
             # Note the difference between dnest4.wrap in Python and
             # DNest4::wrap in C++. The former *returns* the wrapped value.
-            log_m = dnest4.wrap(log_m, 0, 1)
+            log_m = dnest4.wrap(log_m, 0.0, 1.0)
             params[which] = np.exp(log_m)
             
         elif which == 1:
@@ -83,8 +83,8 @@ class Model(object):
         
         model = datasim.magn(theta, zpicks, firstderivs_key)
         
-        var = sigma**2
-        return -0.5*np.sum((mag-model)**2 /var +0.5*np.log(2*np.pi*var))
+        var = sigma**2.0
+        return -0.5*np.sum((mag-model)**2.0 /var +0.5*np.log(2.0*np.pi*var))
 
 # Create a model object and a sampler
 model = Model()
@@ -92,22 +92,20 @@ sampler = dnest4.DNest4Sampler(model,
                                backend=dnest4.backends.CSVBackend(".",
                                                                   sep=" "))
 
-import firstderivs as f
-
-firstderivs_functions = {
-        'expgamma':f.expgamma, 
-#        'txgamma':f.txgamma, 
-#        'zxgamma':f.zxgamma, 
-#        'gamma_over_z':f.gamma_over_z,
-#        'zxxgamma':f.zxxgamma,
-#        'gammaxxz':f.gammaxxz,
-##        'rdecay_m':f.rdecay_m, # nan field
-#        'rdecay_de':f.rdecay_de,
-##        'rdecay_mxde':f.rdecay_mxde, # nan field
-#        'rdecay':f.rdecay, 
-##        'interacting':f.interacting, # nan field
-#        'LCDM':f.LCDM
-        }
+firstderivs_functions = [
+        'expgamma'
+#        ,'txgamma'
+#        ,'zxgamma'
+#        ,'gamma_over_z'
+#        ,'zxxgamma'
+#        ,'gammaxxz'
+##        ,'rdecay_m' # nan field
+#        ,'rdecay_de'
+##        ,'rdecay_mxde' # nan field
+#        ,'rdecay'
+##        ,'interacting' # nan field
+#        ,'LCDM'
+        ]
 
 for key in firstderivs_functions:
     
@@ -154,7 +152,6 @@ for key in firstderivs_functions:
     import cProfile, pstats, io
     pr = cProfile.Profile()
     pr.enable()
-    # ... do something ...
     
     ti = time.time()
     # Do the sampling (one iteration here = one particle save)
@@ -168,7 +165,7 @@ for key in firstderivs_functions:
     sortby = 'cumulative'
     ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
     ps.print_stats()
-    print (s.getvalue())
+#    print (s.getvalue())
     
     dnest_time = tools.timer('Sampling', ti, tf)
     

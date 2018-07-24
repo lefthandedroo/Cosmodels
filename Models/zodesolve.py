@@ -6,8 +6,9 @@ Created on Thu Feb 15 13:38:48 2018
 @author: BallBlueMeercat
 """
 from scipy.integrate import odeint
-import firstderivs as f
-#import numpy as np
+import firstderivs_cython as f
+#import firstderivs as f
+
 
 firstderivs_functions = {'expgamma':f.expgamma,
                          'txgamma':f.txgamma,
@@ -20,7 +21,8 @@ firstderivs_functions = {'expgamma':f.expgamma,
                          'rdecay_mxde':f.rdecay_mxde,
                          'rdecay':f.rdecay,                         
                          'interacting':f.interacting,
-                         'LCDM':f.LCDM}
+                         'LCDM':f.LCDM
+                         }
 
 def zodesolve(params, zpicks, firstderivs_key):
     """
@@ -39,18 +41,18 @@ def zodesolve(params, zpicks, firstderivs_key):
     zpicks = [0.0] + zpicks
     
     # Standard cosmological parameters.
-    H0 = 1
+    H0 = 1.0
     c_over_H0 = 4167 * 10**6    # c/H0 in parsecs
     
     # Initial conditions at z = 0 (now).
-    t0 = 0              # time
+    t0 = 0.0              # time
     a0 = 1.0            # scale factor
-    z0 = 0              # redshift
-    dl0 = 0             # luminosity distance
+    z0 = 0.0              # redshift
+    dl0 = 0.0             # luminosity distance
     rho_c0 = H0**2      # critical density
     ombar_m0 = params.get('m', 0)                        # e_m(z)/ec(z=0)
     gamma = params.get('gamma',0)
-    ombar_de0 = params.get('de', rho_c0/rho_c0 -ombar_m0)# e_de(z)/ec(z=0)
+    ombar_de0 = params.get('de', rho_c0/rho_c0 -ombar_m0) # e_de(z)/ec(z=0)
     
     # ODE solver parameters:
     abserr = 1.0e-8
@@ -58,7 +60,7 @@ def zodesolve(params, zpicks, firstderivs_key):
     
     # Pack up the initial conditions and eq of state parameters.
     v0 = [t0, a0, ombar_m0, ombar_de0, z0, dl0]
-    
+        
     # Extracting the parsed mode of interaction.
     firstderivs_function = firstderivs_functions.get(firstderivs_key,0)
     if firstderivs_function == 0:
