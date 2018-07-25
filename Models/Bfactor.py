@@ -16,7 +16,7 @@ import tools
 #from scipy.special import erf
 
 # slow = 1, medium = 2, long = 3
-speed = 1
+speed = 3
 
 # Sigma of the noise on data.
 sigma = 0.07
@@ -44,7 +44,7 @@ class Model(object):
         """
         m = rng.rand()
         g = 1E3*rng.rand()
-        g = self.wrap(g, g_min, g_max)
+        g = dnest4.wrap(g, g_min, g_max)
         return np.array([m, g])
 
     def perturb(self, params):
@@ -59,14 +59,14 @@ class Model(object):
         
         if which == 0:
             log_m = np.log(params[which])
-            log_m += self.randh()
-            log_m = self.wrap(log_m, 0.0, 1.0)
+            log_m += dnest4.randh()
+            log_m = dnest4.wrap(log_m, 0.0, 1.0)
             params[which] = np.exp(log_m)
             
         elif which == 1:
             g = params[which]
-            g += self.randh()
-            g = self.wrap(g, g_min, g_max)
+            g += dnest4.randh()
+            g = dnest4.wrap(g, g_min, g_max)
             params[which] = g
 
         return logH
@@ -84,19 +84,19 @@ class Model(object):
         var = sigma**2.0
         return -0.5*np.sum((mag-model)**2.0 /var +0.5*np.log(2.0*np.pi*var))
     
-    def randh(self):
-        """
-        Generate from the heavy-tailed distribution.
-        """
-        a = np.random.randn()
-        b = np.random.rand()
-        t = a/np.sqrt(-np.log(b))
-        n = np.random.randn()
-        return 10.0**(1.5 - 3*np.abs(t))*n
-
-    def wrap(self, x, a, b):
-        assert b > a
-        return (x - a)%(b - a) + a
+#    def randh(self):
+#        """
+#        Generate from the heavy-tailed distribution.
+#        """
+#        a = np.random.randn()
+#        b = np.random.rand()
+#        t = a/np.sqrt(-np.log(b))
+#        n = np.random.randn()
+#        return 10.0**(1.5 - 3*np.abs(t))*n
+#
+#    def wrap(self, x, a, b):
+#        assert b > a
+#        return (x - a)%(b - a) + a
 
 # Create a model object and a sampler
 model = Model()
@@ -105,7 +105,8 @@ sampler = dnest4.DNest4Sampler(model,
                                                                   sep=" "))
 
 firstderivs_functions = [
-        'expgamma'
+        'late_int'
+#        ,'expgamma'
 #        ,'txgamma'
 #        ,'zxgamma'
 #        ,'gamma_over_z'
@@ -116,17 +117,19 @@ firstderivs_functions = [
 ##        ,'rdecay_mxde' # nan field
 #        ,'rdecay'
 ##        ,'interacting' # nan field
-#        ,'LCDM'
+        ,'LCDM'
         ]
 
-for key in firstderivs_functions:
-    
-    firstderivs_key = key    
-    
+for firstderivs_key in firstderivs_functions:
+        
     if firstderivs_key == 'rdecay':
         g_min = -10
         g_max = 0
-
+        
+    elif firstderivs_key == 'late_int':
+        g_min = -1.45
+        g_max = 0.2
+        
     elif firstderivs_key == 'interacting':
         g_min = -1.45
         g_max = 1.45

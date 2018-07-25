@@ -52,6 +52,10 @@ def lnprior(theta, firstderivs_key):
         m = theta
         if 0 < m < 1 or m == 1:
             return 0.0
+    elif firstderivs_key == 'late_int':
+        m, gamma = theta
+        if (0 < m < 1 or m == 1) and -1.45 < gamma < 0.2:
+            return 0.0       
     elif firstderivs_key == 'rdecay':
         m, gamma = theta
         if (0 < m < 1 or m == 1) and -10 < gamma < 0:

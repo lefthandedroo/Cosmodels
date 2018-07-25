@@ -27,6 +27,98 @@ cdef double w_r = 1/3     # radiation
 cdef double w_m = 0.0     # matter
 cdef double w_de = -1.0   # cosmological constant (dark energy?)
 
+def late_intxde(double[:] v, redshifts, double gamma, double H0):
+    """
+    Takes in:
+        v = values at z=0;
+        t = list of redshifts to integrate over;
+        gamma = interaction term.
+                
+    Returns a function f =     [dt/dz, d(a)/dz, 
+                                d(e'_m)/dz, d(e'_de)/dz, 
+                                d(z)/dz,
+                                d(dl)/dz]
+    """
+    cdef double t = v[0]
+    cdef double a = v[1]
+    cdef double ombar_m = v[2]
+    cdef double ombar_de = v[3]
+    cdef double z = v[4]
+    cdef double dl = v[5]
+        
+    cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
+        
+    if math.isnan(Hz):
+        print('late_intxde')
+        print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
+              %(z, Hz, gamma, ombar_m, ombar_de))
+
+    irate = 0.0
+
+    if z < 0.9:
+        irate = ombar_de * gamma/(1.0+z)/Hz        
+    
+    cdef double dtdz = -1.0/((1.0+z) * Hz)
+    cdef double dadz = -(1.0+z)**(-2.0)
+    cdef double domdz = 3.0*ombar_m /(1.0+z) - irate
+    cdef double ddldz = 1.0/Hz
+    
+    # first derivatives of functions I want to find:
+    f = [dtdz,# dt/dz (= f.d wrt z of time)
+         dadz,# d(a)/dz (= f.d wrt z of scale factor)
+         domdz,# d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
+         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
+         1.0,# d(z)/dz (= f.d wrt z of redshift)
+         ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
+    
+    return f
+
+def late_int(double[:] v, redshifts, double gamma, double H0):
+    """
+    Takes in:
+        v = values at z=0;
+        t = list of redshifts to integrate over;
+        gamma = interaction term.
+                
+    Returns a function f =     [dt/dz, d(a)/dz, 
+                                d(e'_m)/dz, d(e'_de)/dz, 
+                                d(z)/dz,
+                                d(dl)/dz]
+    """
+    cdef double t = v[0]
+    cdef double a = v[1]
+    cdef double ombar_m = v[2]
+    cdef double ombar_de = v[3]
+    cdef double z = v[4]
+    cdef double dl = v[5]
+        
+    cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
+        
+    if math.isnan(Hz):
+        print('late_int')
+        print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
+              %(z, Hz, gamma, ombar_m, ombar_de))
+
+    irate = 0.0
+
+    if z < 0.9:
+        irate = gamma/(1.0+z)/Hz        
+    
+    cdef double dtdz = -1.0/((1.0+z) * Hz)
+    cdef double dadz = -(1.0+z)**(-2.0)
+    cdef double domdz = 3.0*ombar_m /(1.0+z) - irate
+    cdef double ddldz = 1.0/Hz
+    
+    # first derivatives of functions I want to find:
+    f = [dtdz,# dt/dz (= f.d wrt z of time)
+         dadz,# d(a)/dz (= f.d wrt z of scale factor)
+         domdz,# d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
+         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
+         1.0,# d(z)/dz (= f.d wrt z of redshift)
+         ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
+    
+    return f
+
 def expgamma(double[:] v, redshifts, double gamma, double H0):
     """
     Takes in:

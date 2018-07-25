@@ -10,7 +10,8 @@ import firstderivs_cython as f
 #import firstderivs as f
 
 
-firstderivs_functions = {'expgamma':f.expgamma,
+firstderivs_functions = {'late_int':f.late_int,
+                        'expgamma':f.expgamma,
                          'txgamma':f.txgamma,
                          'zxgamma':f.zxgamma,
                          'gamma_over_z':f.gamma_over_z,

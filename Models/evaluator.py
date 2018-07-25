@@ -13,10 +13,6 @@ import paramfinder
 import tools
 import datasim
 
-# Parameters used to simulate data:  
-m_true = 0.3           # (= e_m(t)/e_crit(t0) at t=t0).
-de_true = 1.0 - m_true   # (de = e_de(t)/e_crit(t0) at t=t0).
-g_true = 0#-0.50           # Interaction, rate at which DE decays into matter.
 
 # Number of datapoints to be simulated and number of emcee steps.
 npoints, nsteps = 1000, 10000
@@ -26,71 +22,40 @@ zmax = 2
 mu = 0.0            # mean
 sigma = 0.07      # standard deviation
 
-# Key for the dictionary of interaction modes in firstderivs
-# 'expgamma','txgamma','zxgamma','gamma_over_z','zxxgamma','gammaxxz',
-#'rdecay_m','rdecay_de','rdecay_mxde','rdecay','interacting','LCDM'
-# Length of parameters has to correspond to the model being tested.
-
 dataname = 'mag_z_LCDM_1000_sigma_'+str(sigma)
 
-data_key = 'LCDM'
-
-test_key = 'expgamma'
-
-if data_key == 'LCDM':
-    data_params = {'m':m_true}
-else:
-    data_params = {'m':m_true, 'gamma':g_true}
-
-if test_key == 'LCDM':
-    test_params = {'m':m_true}
-else:
-    test_params = {'m':m_true, 'gamma':g_true}
-
+# Making data (mag and z)
 #dataname = 'mag_z_'+data_key+'_'+str(npoints)+'_sigma_'+str(sigma)
 #datasim.makensavemagnz(m_true, g_true, mu, sigma, zpicks, data_key, dataname)
                
 zpicks = datasim.redshift_picks(0.005, zmax, npoints)
 
-def modelcheck():
 
-    datasim.magn(test_params, zpicks, test_key, plot_key=True)
+# Interaction modes in firstderivs_cython:
+# 'late_int', 'expgamma','txgamma','zxgamma','gamma_over_z','zxxgamma','gammaxxz',
+#'rdecay_m','rdecay_de','rdecay_mxde','rdecay','interacting','LCDM'
+# Length of parameters has to correspond to the model being tested.
+# Interaction mdoes with limited prior:
+#LCDM, late_int, rdecay, interacting, expgamma, zxxgamma
 
-    return
+# Plots for a model.
+#datasim.magn({'m':0.3, 'gamma':-3}, zpicks, 'rdecay', plot_key=True)
 
-#modelcheck()
-
-#def modelcheck():
-#    g = [-10, -5, 0, 5, 10]
-#    datasim.magn(test_params, zpicks, test_key, plot_key=True, gamma_list = g)
-#    return
-#
-#modelcheck()
+# Plots for one model, but with multiple gammas
+datasim.magn_gs({'m':0.3}, zpicks, 'rdecay', [-10, -7, -5, -3, -1])
 
 def all_modelcheck():
     
-    import firstderivs as f
+    firstderivs_functions = ['late_int', 'expgamma','txgamma','zxgamma',
+                             'gamma_over_z','zxxgamma','gammaxxz','rdecay_m',
+                             'rdecay_de','rdecay_mxde','rdecay','interacting',
+                             'LCDM']
     
-    firstderivs_functions = {'expgamma':f.expgamma,
-                         'txgamma':f.txgamma,
-                         'zxgamma':f.zxgamma,
-                         'gamma_over_z':f.gamma_over_z,
-                         'zxxgamma':f.zxxgamma,
-                         'gammaxxz':f.gammaxxz,
-                         'rdecay_m':f.rdecay_m,
-                         'rdecay_de':f.rdecay_de,
-                         'rdecay_mxde':f.rdecay_mxde,
-                         'rdecay':f.rdecay,                         
-                         'interacting':f.interacting,
-                         'LCDM':f.LCDM}
-    
-    for key in firstderivs_functions:
-        test_key = key
-
-    if key == 'LCDM':
-        test_params = {'m':m_true}
-    else:
-        test_params = {'m':m_true, 'gamma':g_true}
+    for test_key in firstderivs_functions:
+        if test_key == 'LCDM':
+            test_params = {'m':0.3}
+        else:
+            test_params = {'m':0.3, 'gamma':0}
     
         datasim.noisy_mag(zpicks, mu, sigma, test_params, 
                                test_key, plot_key=True)
@@ -110,22 +75,23 @@ def quickemcee():
 #        mag = datasim.noisy_mag(zpicks, mu, sigma, data_params, data_key)
         mag, zpicks = results.load('./data', dataname)
         
-        firstderivs_functions = ['expgamma', 'txgamma']
-#        firstderivs_functions = ['expgamma','txgamma','zxgamma','gamma_over_z',
-#                                 'zxxgamma','gammaxxz','rdecay_m','rdecay_de', 
-#                                 'rdecay_mxde','rdecay','interacting','LCDM']
+        firstderivs_functions = ['late_int']
+#        firstderivs_functions = ['late_int', 'expgamma','txgamma','zxgamma',
+#                             'gamma_over_z','zxxgamma','gammaxxz','rdecay_m',
+#                             'rdecay_de','rdecay_mxde','rdecay','interacting',
+#                             'LCDM']
         
-        for key in firstderivs_functions:
+        for test_key in firstderivs_functions:
             
             # Creating a folder for saving output.
-            save_path = './quick_emcee/'+str(int(time.time()))+'_'+key
+            save_path = './quick_emcee/'+str(int(time.time()))+'_'+test_key
             if not os.path.exists(save_path):
                 os.makedirs(save_path)    
     
-            if key == 'LCDM':
-                test_params = {'m':m_true}
+            if test_key == 'LCDM':
+                test_params = {'m':0.3}
             else:
-                test_params = {'m':m_true, 'gamma':g_true}
+                test_params = {'m':0.3, 'gamma':0}
             
             # Profiling
             import cProfile, pstats, io
@@ -134,7 +100,7 @@ def quickemcee():
             
             propert, sampler = paramfinder.paramfinder(npoints, nsteps, sigma, 
                                                        mu, test_params, zpicks, 
-                                                       mag, save_path, key)
+                                                       mag, save_path, test_key)
             
             pr.disable()
             s = io.StringIO()
@@ -149,21 +115,34 @@ def quickemcee():
             
         i += 1
     
-
     
     # Saving sampler to directory.
     results.save(save_path, 'sampler', sampler)
 
-    print('Model being tested:', 
-          test_key)
-    print('Data simulated with:',data_key)
+    print('Model being tested:', test_key)
+    print('Data:',dataname)
 
     return
 
-quickemcee()
+#quickemcee()
 
 
 def errorvsdatasize():
+    
+    data_key = 'LCDM'
+    
+    test_key = 'late_int'
+    
+    if data_key == 'LCDM':
+        data_params = {'m':0.3}
+    else:
+        data_params = {'m':0.3, 'gamma':0}
+    
+    if test_key == 'LCDM':
+        test_params = {'m':0.3}
+    else:
+        test_params = {'m':0.3, 'gamma':0}
+    
     # Script timer.
     timet0 = time.time()
     
