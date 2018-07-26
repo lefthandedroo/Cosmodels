@@ -42,13 +42,13 @@ zpicks = datasim.redshift_picks(0.005, zmax, npoints)
 #datasim.magn({'m':0.3, 'gamma':-3}, zpicks, 'rdecay', plot_key=True)
 
 # Plots for one model, but with multiple gammas
-datasim.model_comparison({'m':0.3}, zpicks, 'LCDM', [-10, 0, 2])
-#firstderivs_list = ['rdecay_mxde', 'late_int', 'LCDM']
-#datasim.model_comparison({'m':0.3, 'gamma':5}, zpicks, firstderivs_list, [-1])
+datasim.model_comparison({'m':0.3}, zpicks, 'heaviside_late_int', [-3, 0, -2])
+#firstderivs_list = ['late_intxde', 'late_int', 'heaviside_late_int']
+#datasim.model_comparison({'m':0.3, 'gamma':-1}, zpicks, firstderivs_list)
 
 
 def all_modelcheck():
-    
+    print('@@@@@@@ RUNNING all_modelcheck @@@@@@@')
     firstderivs_functions = [
 #            'late_int', 'expgamma','txgamma','zxgamma',
 #                             'gamma_over_z','zxxgamma','gammaxxz','rdecay_m',
@@ -66,17 +66,16 @@ def all_modelcheck():
 
 
 def quickemcee():
-
+    print('@@@@@@@ RUNNING quickemcee @@@@@@@')
 #    mag = datasim.noisy_mag(zpicks, mu, sigma, data_params, data_key)
     mag, zpicks = results.load('./data', dataname)
     
-    firstderivs_functions = ['LCDM']
+    firstderivs_functions = ['late_int']
 #    firstderivs_functions = ['late_int', 'expgamma','txgamma','zxgamma',
 #                         'gamma_over_z','zxxgamma','gammaxxz','rdecay_m',
 #                         'rdecay_de','rdecay_mxde','rdecay','interacting',
 #                         'LCDM']
     test_params = {'m':0.3, 'gamma':2}
-#    test_params = {'m':0.3}   
 
     for test_key in firstderivs_functions:
         
@@ -124,18 +123,10 @@ def quickemcee():
 def errorvsdatasize():
     
     data_key = 'LCDM'
-    
     test_key = 'late_int'
     
-    if data_key == 'LCDM':
-        data_params = {'m':0.3}
-    else:
-        data_params = {'m':0.3, 'gamma':0}
-    
-    if test_key == 'LCDM':
-        test_params = {'m':0.3}
-    else:
-        test_params = {'m':0.3, 'gamma':0}
+    data_params = {'m':0.3, 'gamma':0}
+    test_params = {'m':0.3, 'gamma':0}
     
     # Script timer.
     timet0 = time.time()
@@ -152,9 +143,7 @@ def errorvsdatasize():
               npoints_min, npoints_max, npoints_step)
     
     decision = input('Happy with the number of iterations? (enter=yes) ')
-    if not decision:
-        pass
-    else:
+    if  decision:
         return
     
     # Folder for saving output.

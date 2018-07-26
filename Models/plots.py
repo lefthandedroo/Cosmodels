@@ -177,7 +177,6 @@ def ivcdmcheck(mag, zpicks, firstderivs_key, plot_var_dict):
 
     
     # Scale factor vs redshift.
-    # Create plots with pre-defined labels.
     fig, ax = plt.subplots()
     plt.xlabel('redshift $z$')
     plt.ylabel('a')
@@ -185,26 +184,24 @@ def ivcdmcheck(mag, zpicks, firstderivs_key, plot_var_dict):
     ax.plot(zpicks, a_1, 'r:', label=firstderivs_key_1)
     ax.plot(zpicks, a_2, 'g-.', label=firstderivs_key_2)
     ax.plot(zpicks, a_3, 'b-', label=firstderivs_key_3)
-    plt.title('Scale factor evolution, model = %s, $\gamma$ = %s'
-          %(firstderivs_key, gamma_1))
+    plt.title('Scale factor evolution, $\gamma$ = %s'%(gamma_1))
     ax.legend()
-
+    
+    # H vs redshift.
     Hz_1 = (ombar_m_1 + ombar_de_1)**(1/2)
     Hz_2 = (ombar_m_2 + ombar_de_2)**(1/2)
     Hz_3 = (ombar_m_3 + ombar_de_3)**(1/2)
-
-
-    # H vs redshift.
-    plt.figure()
+    
+    fig, ax = plt.subplots()
     plt.xlabel('redshift $z$')
     plt.ylabel('H')
     plt.grid(True)
-    plt.plot(zpicks, Hz_1, 'r:',
-             zpicks, Hz_2, 'g-.', 
-             zpicks, Hz_3, 'b-')
-    plt.title(r'H evolution, model = %s'
-          %(firstderivs_key))
-
+    ax.plot(zpicks, Hz_1, 'r:', label=firstderivs_key_1)
+    ax.plot(zpicks, Hz_2, 'g-.', label=firstderivs_key_2)
+    ax.plot(zpicks, Hz_3, 'b-', label=firstderivs_key_3)
+    plt.title('H evolution, $\gamma$ = %s'%(gamma_1))
+    ax.legend()
+    
     # ombar_m, ombar_de vs redshift.
     plt.figure()
     plt.xlabel('redshift $z$')
@@ -213,10 +210,10 @@ def ivcdmcheck(mag, zpicks, firstderivs_key, plot_var_dict):
     plt.plot(zpicks, ombar_m_1, 'r:', zpicks, ombar_de_1, 'r:', 
              zpicks, ombar_m_2, 'g-.', zpicks, ombar_de_2, 'g-.', 
              zpicks, ombar_m_3, 'b-', zpicks, ombar_de_3, 'b-')
-    plt.title(r'$\bar \Omega_{m}$, $\bar \Omega_{DE}$ evolution, model = %s, $\gamma$ = %s'
+    plt.title(r'models = %s \n $\bar \Omega_{m}$, $\bar \Omega_{DE}$ evolution, $\gamma$ = %s'
           %(firstderivs_key, gamma_1))
     plt.show()
-    
+	
     # ombar_m, ombar_de vs redshift log x axis.
     plt.figure()
     plt.xlabel('redshift $z$')
@@ -225,76 +222,73 @@ def ivcdmcheck(mag, zpicks, firstderivs_key, plot_var_dict):
     plt.semilogx(zpicks, ombar_m_1, 'r:', zpicks, ombar_de_1, 'r:', 
                  zpicks, ombar_m_2, 'g-.', zpicks, ombar_de_2, 'g-.', 
                  zpicks, ombar_m_3, 'b-', zpicks, ombar_de_3, 'b-')
-    plt.title(r'$\bar \Omega_{m}$, $\bar \Omega_{DE}$ evolution, model = %s, $\gamma$ = %s'
+    plt.title(r'models = %s \n $\bar \Omega_{m}$, $\bar \Omega_{DE}$ evolution, $\gamma$ = %s'
           %(firstderivs_key, gamma_1))
 
     # ombar_m vs redshift.
-    plt.figure()
+    fig, ax = plt.subplots()
     plt.xlabel('redshift $z$')
-    plt.ylabel('$\Omega_{m0}$')
+    plt.ylabel('$\Omega_{m}$')
     plt.grid(True)
-    plt.plot(zpicks, ombar_m_1, 'r:',
-             zpicks, ombar_m_2, 'g-.',
-             zpicks, ombar_m_3, 'b-')
-    plt.title('$\Omega_{m}$ evolution, $\gamma$ = %s'
-          %(gamma_1))
+    ax.plot(zpicks, ombar_m_1, 'r:', label=firstderivs_key_1)
+    ax.plot(zpicks, ombar_m_2, 'g-.', label=firstderivs_key_2)
+    ax.plot(zpicks, ombar_m_3, 'b-', label=firstderivs_key_3)
+    plt.title('$\Omega_{m}$ evolution, $\gamma$ = %s'%(gamma_1))
+    ax.legend()
+	
     # ombar_de vs redshift.
-    plt.figure()
+    fig, ax = plt.subplots()
     plt.xlabel('redshift $z$')
     plt.ylabel('$\Omega_{DE}$')
     plt.grid(True)
-    plt.plot(zpicks, ombar_de_1, 'r:',
-             zpicks, ombar_de_2, 'g-.',
-             zpicks, ombar_de_3, 'b-')
-    plt.title('$\Omega_{de}$ evolution, $\gamma$ = %s'
-          %(gamma_1))
+    ax.plot(zpicks, ombar_de_1, 'r:', label=firstderivs_key_1)
+    ax.plot(zpicks, ombar_de_2, 'g-.', label=firstderivs_key_2)
+    ax.plot(zpicks, ombar_de_3, 'b-', label=firstderivs_key_3)
+    plt.title('$\Omega_{DE}$ evolution, $\gamma$ = %s'%(gamma_1))
+    ax.legend()
+	
     # Luminosity distance vs redshift.
-    while True:
-        plt.figure()
-        plt.xlabel('redshift $z$')
-        plt.ylabel('$d_L$*($H_0$/c)')
-        plt.grid(True)
-        plt.plot(zpicks, dl_1, 'r:',
-                 zpicks, dl_2, 'g-.', 
-                 zpicks, dl_3, 'b-')
-        plt.title('$d_L$ evolution, model = %s, $\gamma$ = %s'
-          %(firstderivs_key, gamma_1))
-        break
+    fig, ax = plt.subplots()
+    plt.xlabel('redshift $z$')
+    plt.ylabel('$d_L$*($H_0$/c)')
+    plt.grid(True)
+    ax.plot(zpicks, dl_1, 'r:', label=firstderivs_key_1)
+    ax.plot(zpicks, dl_2, 'g-.', label=firstderivs_key_2)
+    ax.plot(zpicks, dl_3, 'b-', label=firstderivs_key_3)
+    plt.title('$d_L$ evolution, $\gamma$ = %s'%(gamma_1))
+    ax.legend()
 
-
-    while True:
-        # Redshift vs -time.
-        plt.figure()
-        plt.xlabel('age')
-        plt.ylabel('redshift $z$')
-    #        plt.axis([0,-0.8,0,5])
-        plt.grid(True)
-        plt.plot(t_1, dl_1, 'r:',
-                 t_2, dl_2, 'g-.', 
-                 t_3, dl_3, 'b-')
-        plt.title('Redshift evolution, model = %s, $\gamma$ = %s'
-          %(firstderivs_key, gamma_1))
-        
-        # Scale factor vs -time.
-        plt.figure()
-        plt.xlabel('age')
-        plt.ylabel('a')
-        plt.grid(True)
-        plt.plot(t_1, a_1, 'r:',
-                 t_2, a_2, 'g-.', 
-                 t_3, a_3, 'b-')
-        plt.title('Scale factor evolution, model = %s, $\gamma$ = %s'
-          %(firstderivs_key, gamma_1))
+    # Redshift vs age.
+    fig, ax = plt.subplots()
+    plt.xlabel('age')
+    plt.ylabel('redshift $z$')
+    plt.grid(True)
+    ax.plot(t_1, zpicks, 'r:', label=firstderivs_key_1)
+    ax.plot(t_2, zpicks, 'g-.', label=firstderivs_key_2)
+    ax.plot(t_3, zpicks, 'b-', label=firstderivs_key_3)
+    plt.title('Redshift evolution, $\gamma$ = %s'%(gamma_1))
+    ax.legend()
     
-        # Magnitude vs redshift.
-        plt.figure()
-        plt.xlabel('redshift $z$')
-        plt.ylabel('magnitude')
-        plt.title('Magnitude evolution, $\gamma$ = %s'%(gamma_1))
-        plt.scatter(zpicks, mag_1, c='r', marker=',', linewidths=0.1)
-        plt.scatter(zpicks, mag_2, c='g', marker='x', linewidths=0.1) 
-        plt.scatter(zpicks, mag_3, c='b', marker='.', linewidths=0.2)
-        break
+    # Scale factor vs -time.
+    fig, ax = plt.subplots()
+    plt.xlabel('age')
+    plt.ylabel('a')
+    plt.grid(True)
+    ax.plot(t_1, a_1, 'r:', label=firstderivs_key_1)
+    ax.plot(t_2, a_2, 'g-.', label=firstderivs_key_2)
+    ax.plot(t_3, a_3, 'b-', label=firstderivs_key_3)
+    plt.title('Scale factor evolution, $\gamma$ = %s'%(gamma_1))
+    ax.legend()
+
+    # Magnitude vs redshift.
+    fig, ax = plt.subplots()
+    plt.xlabel('redshift $z$')
+    plt.ylabel('magnitude')
+    plt.title('Magnitude evolution, $\gamma$ = %s'%(gamma_1))
+    plt.scatter(zpicks, mag_1, c='r', marker=',', linewidths=0.1, label=firstderivs_key_1)
+    plt.scatter(zpicks, mag_2, c='g', marker='x', linewidths=0.1, label=firstderivs_key_2) 
+    plt.scatter(zpicks, mag_3, c='b', marker='.', linewidths=0.2, label=firstderivs_key_3)
+    ax.legend()
     
     plt.show()
     return
@@ -499,33 +493,31 @@ def gammacheck(mag, zpicks, firstderivs_key, plot_var_dict):
 
     
     # Scale factor vs redshift.
-    # Create plots with pre-defined labels.
     fig, ax = plt.subplots()
     plt.xlabel('redshift $z$')
     plt.ylabel('a')
     plt.grid(True)
-    ax.plot(zpicks, a_1, 'r:', label= str(gamma_1))
-    ax.plot(zpicks, a_2, 'g-.', label=str(gamma_2))
-    ax.plot(zpicks, a_3, 'b-', label=str(gamma_3))
-    plt.title('Scale factor evolution, model = %s' %(firstderivs_key))
+    ax.plot(zpicks, a_1, 'r:', label=gamma_1)
+    ax.plot(zpicks, a_2, 'g-.', label=gamma_2)
+    ax.plot(zpicks, a_3, 'b-', label=gamma_3)
+    plt.title('Scale factor evolution, model = %s'%(firstderivs_key))
     ax.legend()
-
+    
+    # H vs redshift.
     Hz_1 = (ombar_m_1 + ombar_de_1)**(1/2)
     Hz_2 = (ombar_m_2 + ombar_de_2)**(1/2)
     Hz_3 = (ombar_m_3 + ombar_de_3)**(1/2)
-
-
-    # H vs redshift.
-    plt.figure()
+    
+    fig, ax = plt.subplots()
     plt.xlabel('redshift $z$')
     plt.ylabel('H')
     plt.grid(True)
-    plt.plot(zpicks, Hz_1, 'r:',
-             zpicks, Hz_2, 'g-.', 
-             zpicks, Hz_3, 'b-')
-    plt.title(r'H evolution, model = %s'
-          %(firstderivs_key))
-
+    ax.plot(zpicks, Hz_1, 'r:', label=gamma_1)
+    ax.plot(zpicks, Hz_2, 'g-.', label=gamma_2)
+    ax.plot(zpicks, Hz_3, 'b-', label=gamma_3)
+    plt.title('H evolution, model = %s'%(firstderivs_key))
+    ax.legend()
+    
     # ombar_m, ombar_de vs redshift.
     plt.figure()
     plt.xlabel('redshift $z$')
@@ -534,10 +526,9 @@ def gammacheck(mag, zpicks, firstderivs_key, plot_var_dict):
     plt.plot(zpicks, ombar_m_1, 'r:', zpicks, ombar_de_1, 'r:', 
              zpicks, ombar_m_2, 'g-.', zpicks, ombar_de_2, 'g-.', 
              zpicks, ombar_m_3, 'b-', zpicks, ombar_de_3, 'b-')
-    plt.title(r'$\bar \Omega_{m}$, $\bar \Omega_{DE}$ evolution, model = %s'
-          %(firstderivs_key))
+    plt.title(r'$\bar \Omega_{m}$, $\bar \Omega_{DE}$ evolution, model = %s'%(firstderivs_key))
     plt.show()
-    
+	
     # ombar_m, ombar_de vs redshift log x axis.
     plt.figure()
     plt.xlabel('redshift $z$')
@@ -546,76 +537,72 @@ def gammacheck(mag, zpicks, firstderivs_key, plot_var_dict):
     plt.semilogx(zpicks, ombar_m_1, 'r:', zpicks, ombar_de_1, 'r:', 
                  zpicks, ombar_m_2, 'g-.', zpicks, ombar_de_2, 'g-.', 
                  zpicks, ombar_m_3, 'b-', zpicks, ombar_de_3, 'b-')
-    plt.title(r'$\bar \Omega_{m}$, $\bar \Omega_{DE}$ evolution, model = %s'
-          %(firstderivs_key))    
+    plt.title(r'$\bar \Omega_{m}$, $\bar \Omega_{DE}$ evolution, model = %s'%(firstderivs_key))
 
     # ombar_m vs redshift.
-    plt.figure()
+    fig, ax = plt.subplots()
     plt.xlabel('redshift $z$')
-    plt.ylabel('$\Omega_{m0}$')
+    plt.ylabel('$\Omega_{m}$')
     plt.grid(True)
-    plt.plot(zpicks, ombar_m_1, 'r:',
-             zpicks, ombar_m_2, 'g-.',
-             zpicks, ombar_m_3, 'b-')
-    plt.title('$\Omega_{m}$ evolution')
-
+    ax.plot(zpicks, ombar_m_1, 'r:', label=gamma_1)
+    ax.plot(zpicks, ombar_m_2, 'g-.', label=gamma_2)
+    ax.plot(zpicks, ombar_m_3, 'b-', label=gamma_3)
+    plt.title('$\Omega_{m}$ evolution, model = %s'%(firstderivs_key))
+    ax.legend()
+	
     # ombar_de vs redshift.
-    plt.figure()
+    fig, ax = plt.subplots()
     plt.xlabel('redshift $z$')
     plt.ylabel('$\Omega_{DE}$')
     plt.grid(True)
-    plt.plot(zpicks, ombar_de_1, 'r:',
-             zpicks, ombar_de_2, 'g-.',
-             zpicks, ombar_de_3, 'b-')
-    plt.title('$\Omega_{de}$ evolution')
-
+    ax.plot(zpicks, ombar_de_1, 'r:', label=gamma_1)
+    ax.plot(zpicks, ombar_de_2, 'g-.', label=gamma_2)
+    ax.plot(zpicks, ombar_de_3, 'b-', label=gamma_3)
+    plt.title('$\Omega_{DE}$ evolution, model = %s'%(firstderivs_key))
+    ax.legend()
+	
     # Luminosity distance vs redshift.
-    while True:
-        plt.figure()
-        plt.xlabel('redshift $z$')
-        plt.ylabel('$d_L$*($H_0$/c)')
-        plt.grid(True)
-        plt.plot(zpicks, dl_1, 'r:',
-                 zpicks, dl_2, 'g-.', 
-                 zpicks, dl_3, 'b-')
-        plt.title('$d_L$ evolution, model = %s'
-              %(firstderivs_key))
-        break
+    fig, ax = plt.subplots()
+    plt.xlabel('redshift $z$')
+    plt.ylabel('$d_L$*($H_0$/c)')
+    plt.grid(True)
+    ax.plot(zpicks, dl_1, 'r:', label=gamma_1)
+    ax.plot(zpicks, dl_2, 'g-.', label=gamma_2)
+    ax.plot(zpicks, dl_3, 'b-', label=gamma_3)
+    plt.title('$d_L$ evolution, model = %s'%(firstderivs_key))
+    ax.legend()
 
-
-    while True:
-        # Redshift vs -time.
-        plt.figure()
-        plt.xlabel('age')
-        plt.ylabel('redshift $z$')
-    #        plt.axis([0,-0.8,0,5])
-        plt.grid(True)
-        plt.plot(t_1, dl_1, 'r:',
-                 t_2, dl_2, 'g-.', 
-                 t_3, dl_3, 'b-')
-        plt.title('Redshift evolution, model = %s'
-              %(firstderivs_key))
-        
-        # Scale factor vs -time.
-        plt.figure()
-        plt.xlabel('age')
-        plt.ylabel('a')
-        plt.grid(True)
-        plt.plot(t_1, a_1, 'r:',
-                 t_2, a_2, 'g-.', 
-                 t_3, a_3, 'b-')
-        plt.title('Scale factor evolution, model = %s'
-              %(firstderivs_key))
+    # Redshift vs age.
+    fig, ax = plt.subplots()
+    plt.xlabel('age')
+    plt.ylabel('redshift $z$')
+    plt.grid(True)
+    ax.plot(t_1, zpicks, 'r:', label=gamma_1)
+    ax.plot(t_2, zpicks, 'g-.', label=gamma_2)
+    ax.plot(t_3, zpicks, 'b-', label=gamma_3)
+    plt.title('Redshift evolution, model = %s'%(firstderivs_key))
+    ax.legend()
     
-        # Magnitude vs redshift.
-        plt.figure()
-        plt.xlabel('redshift $z$')
-        plt.ylabel('magnitude')
-        plt.title('Magnitude evolution')
-        plt.scatter(zpicks, mag_1, c='r', marker=',', linewidths=0.1)
-        plt.scatter(zpicks, mag_2, c='g', marker='x', linewidths=0.1) 
-        plt.scatter(zpicks, mag_3, c='b', marker='.', linewidths=0.2)
-        break
+    # Scale factor vs -time.
+    fig, ax = plt.subplots()
+    plt.xlabel('age')
+    plt.ylabel('a')
+    plt.grid(True)
+    ax.plot(t_1, a_1, 'r:', label=gamma_1)
+    ax.plot(t_2, a_2, 'g-.', label=gamma_2)
+    ax.plot(t_3, a_3, 'b-', label=gamma_3)
+    plt.title('Scale factor evolution, model = %s'%(firstderivs_key))
+    ax.legend()
+
+    # Magnitude vs redshift.
+    fig, ax = plt.subplots()
+    plt.xlabel('redshift $z$')
+    plt.ylabel('magnitude')
+    plt.title('Magnitude evolution, model = %s'%(firstderivs_key))
+    plt.scatter(zpicks, mag_1, c='r', marker=',', linewidths=0.1, label=gamma_1)
+    plt.scatter(zpicks, mag_2, c='g', marker='x', linewidths=0.1, label=gamma_2) 
+    plt.scatter(zpicks, mag_3, c='b', marker='.', linewidths=0.2, label=gamma_3)
+    ax.legend()
     
     plt.show()
     return

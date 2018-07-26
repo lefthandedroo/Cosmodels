@@ -70,7 +70,7 @@ def magn(params, zpicks, firstderivs_key, plot_key=False):
 #            magnitude = 5 * math.log10(dlpc[i]/10) + M
 #        mag.append(magnitude)
     
-def model_comparison(params, zpicks, firstderivs_key, gamma_list):
+def model_comparison(params, zpicks, firstderivs_key, gamma_list=False):
     """
     Takes in:
             params = dictionary with true parameters;
@@ -91,7 +91,7 @@ def model_comparison(params, zpicks, firstderivs_key, gamma_list):
     plot_var_dict = {}
 
     j = 1
-    if len(gamma_list) > 1:  
+    if gamma_list:  
         for gamma in gamma_list:
             params['gamma'] = gamma
             dlpc, plot_var = zodesolve.zodesolve(params, zpicks, firstderivs_key)
@@ -110,7 +110,6 @@ def model_comparison(params, zpicks, firstderivs_key, gamma_list):
         
     elif len(firstderivs_key) > 1:
         for key in firstderivs_key:
-            params['gamma'] = gamma_list[0]
             dlpc, plot_var = zodesolve.zodesolve(params, zpicks, key)
         
             # Calculating apparent magnitudes of supernovae at the simulated

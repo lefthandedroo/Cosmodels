@@ -10,7 +10,9 @@ import firstderivs_cython as f
 #import firstderivs as f
 
 
-firstderivs_functions = {'late_int':f.late_int,
+firstderivs_functions = {'heaviside_late_int':f.heaviside_late_int,
+                        'late_intxde':f.late_intxde,
+                        'late_int':f.late_int,
                         'expgamma':f.expgamma,
                          'txgamma':f.txgamma,
                          'zxgamma':f.zxgamma,
@@ -66,15 +68,13 @@ def zodesolve(params, zpicks, firstderivs_key):
     # Extracting the parsed mode of interaction.
     firstderivs_function = firstderivs_functions.get(firstderivs_key,0)
     if firstderivs_function == 0:
+        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
         print("firstderivs_functions dict didn't have the key zodeosolve asked for")
+        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
     
-    # Call the ODE solver. maxstep=5000000 added later to try and avoid
-#    if firstderivs_key == 'LCDM':
-#        vsol = odeint(firstderivs_function, v0, zpicks, args=(H0,), 
-#                  atol=abserr, rtol=relerr, mxstep=5000000)  
-#    else:
+    # Call the ODE solver. 
     vsol = odeint(firstderivs_function, v0, zpicks, args=(gamma,H0), 
-                  atol=abserr, rtol=relerr, mxstep=5000000)
+                  atol=abserr, rtol=relerr)
             
     # Separate results into their own arrays:
     t = vsol[1:,0]
@@ -128,13 +128,9 @@ def zodesolve(params, zpicks, firstderivs_key):
 #    if firstderivs_function == 0:
 #        print("firstderivs_functions dict didn't have the key zodeosolve asked for")
 #    
-#    # Call the ODE solver. maxstep=5000000 added later to try and avoid
-#    if firstderivs_key == 'LCDM':
-#        vsol = odeint(firstderivs_function, v0, zpicks, args=(H0,), 
-#                  atol=abserr, rtol=relerr, mxstep=5000000)  
-#    else:
-#        vsol = odeint(firstderivs_function, v0, zpicks, args=(gamma,H0), 
-#                  atol=abserr, rtol=relerr, mxstep=5000000)
+#    # Call the ODE solver.
+#    vsol = odeint(firstderivs_function, v0, zpicks, args=(gamma,H0), 
+#                  atol=abserr, rtol=relerr)
 #            
 #    # Separate results into their own arrays:
 #    z = np.asarray(zpicks)
