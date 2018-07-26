@@ -38,6 +38,7 @@ def zodesolve(params, zpicks, firstderivs_key):
     """
 #    print('@@ zodesolve has been called')
 
+
     # Inserting 0 at the front of redshifts to allow initial conditions.
     zpicks = [0.0] + zpicks
     
@@ -68,11 +69,11 @@ def zodesolve(params, zpicks, firstderivs_key):
         print("firstderivs_functions dict didn't have the key zodeosolve asked for")
     
     # Call the ODE solver. maxstep=5000000 added later to try and avoid
-    if firstderivs_key == 'LCDM':
-        vsol = odeint(firstderivs_function, v0, zpicks, args=(H0,), 
-                  atol=abserr, rtol=relerr, mxstep=5000000)  
-    else:
-        vsol = odeint(firstderivs_function, v0, zpicks, args=(gamma,H0), 
+#    if firstderivs_key == 'LCDM':
+#        vsol = odeint(firstderivs_function, v0, zpicks, args=(H0,), 
+#                  atol=abserr, rtol=relerr, mxstep=5000000)  
+#    else:
+    vsol = odeint(firstderivs_function, v0, zpicks, args=(gamma,H0), 
                   atol=abserr, rtol=relerr, mxstep=5000000)
             
     # Separate results into their own arrays:

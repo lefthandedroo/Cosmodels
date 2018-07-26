@@ -594,7 +594,7 @@ def interacting(double[:] v, redshifts, double gamma, double H0):
     
     return f
 
-def LCDM(double[:] v, redshifts, double H0):
+def LCDM(double[:] v, redshifts, double gamma, double H0):
     """
     Takes in:
         v = values at z=0;

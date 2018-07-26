@@ -27,6 +27,11 @@ def stats(params, zpicks, mag, sigma, nsteps,
     Returns:
     """
 #    print('-stats has been called')
+    
+    if firstderivs_key == 'LCDM':
+        params['gamma'] = 0
+        del params['gamma']
+    
     # emcee parameters:
     ndim = len(params)
     nwalkers = int(ndim * 2)

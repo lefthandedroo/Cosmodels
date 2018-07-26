@@ -38,6 +38,9 @@ def magn(params, zpicks, firstderivs_key, plot_key=False):
         mag = np.ndarray of apparent mag corresponding to input redshits.
     """
 #    print('@@@ magn has been called')
+    if firstderivs_key == 'LCDM':
+        params['gamma'] = 0
+        del params['gamma']
     
     # Absolute brightness of supernovae.
     M = -19
@@ -143,9 +146,9 @@ def gnoise(mag, mu, sigma):
     return mag
 
 
-def noisy_mag(zpicks, mu, sigma, params, firstderivs_key, plot_key=False):
+def noisy_mag(zpicks, mu, sigma, params, firstderivs_key):
     
-    model = magn(params, zpicks, firstderivs_key, plot_key)
+    model = magn(params, zpicks, firstderivs_key)
     model = np.asarray(model)
     mag = gnoise(model, mu, sigma)
     

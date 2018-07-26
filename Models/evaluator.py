@@ -9,9 +9,9 @@ import matplotlib.pyplot as plt
 import time
 import os.path
 import results
-import paramfinder
 import tools
 import datasim
+import stats
 
 
 # Number of datapoints to be simulated and number of emcee steps.
@@ -42,26 +42,24 @@ zpicks = datasim.redshift_picks(0.005, zmax, npoints)
 #datasim.magn({'m':0.3, 'gamma':-3}, zpicks, 'rdecay', plot_key=True)
 
 # Plots for one model, but with multiple gammas
-#datasim.model_comparison({'m':0.3}, zpicks, 'rdecay_mxde', [-10, 0, 2])
-firstderivs_list = ['rdecay_mxde', 'late_int', 'LCDM']
-datasim.model_comparison({'m':0.3}, zpicks, firstderivs_list, [-1])
+datasim.model_comparison({'m':0.3}, zpicks, 'LCDM', [-10, 0, 2])
+#firstderivs_list = ['rdecay_mxde', 'late_int', 'LCDM']
+#datasim.model_comparison({'m':0.3, 'gamma':5}, zpicks, firstderivs_list, [-1])
 
 
 def all_modelcheck():
     
-    firstderivs_functions = ['late_int', 'expgamma','txgamma','zxgamma',
-                             'gamma_over_z','zxxgamma','gammaxxz','rdecay_m',
-                             'rdecay_de','rdecay_mxde','rdecay','interacting',
+    firstderivs_functions = [
+#            'late_int', 'expgamma','txgamma','zxgamma',
+#                             'gamma_over_z','zxxgamma','gammaxxz','rdecay_m',
+#                             'rdecay_de','rdecay_mxde','rdecay','interacting',
                              'LCDM']
     
     for test_key in firstderivs_functions:
-        if test_key == 'LCDM':
-            test_params = {'m':0.3}
-        else:
-            test_params = {'m':0.3, 'gamma':0}
+        test_params = {'m':0.3, 'gamma':10}
+#        test_params = {'m':0.3}
     
-        datasim.noisy_mag(zpicks, mu, sigma, test_params, 
-                               test_key, plot_key=True)
+        datasim.magn(test_params, zpicks, test_key, plot_key=True)
     return
 
 #all_modelcheck()
@@ -69,55 +67,48 @@ def all_modelcheck():
 
 def quickemcee():
 
+#    mag = datasim.noisy_mag(zpicks, mu, sigma, data_params, data_key)
+    mag, zpicks = results.load('./data', dataname)
     
-    i = 0
-    while i < 1:
-        if i > 0:
-            print('_____________________ run number',i)
+    firstderivs_functions = ['LCDM']
+#    firstderivs_functions = ['late_int', 'expgamma','txgamma','zxgamma',
+#                         'gamma_over_z','zxxgamma','gammaxxz','rdecay_m',
+#                         'rdecay_de','rdecay_mxde','rdecay','interacting',
+#                         'LCDM']
+    test_params = {'m':0.3, 'gamma':2}
+#    test_params = {'m':0.3}   
+
+    for test_key in firstderivs_functions:
         
-#        mag = datasim.noisy_mag(zpicks, mu, sigma, data_params, data_key)
-        mag, zpicks = results.load('./data', dataname)
+        # Creating a folder for saving output.
+        save_path = './quick_emcee/'+str(int(time.time()))+'_'+test_key
+        if not os.path.exists(save_path):
+            os.makedirs(save_path)    
+      
+        # Profiling
+        import cProfile, pstats, io
+        pr = cProfile.Profile()
+        pr.enable()
+        # Script timer.
+        timet0 = time.time()            
         
-        firstderivs_functions = ['late_int']
-#        firstderivs_functions = ['late_int', 'expgamma','txgamma','zxgamma',
-#                             'gamma_over_z','zxxgamma','gammaxxz','rdecay_m',
-#                             'rdecay_de','rdecay_mxde','rdecay','interacting',
-#                             'LCDM']
+        # emcee parameter search.
+        propert, sampler = stats.stats(test_params, zpicks, mag, sigma, 
+                                       nsteps, save_path, test_key)
         
-        for test_key in firstderivs_functions:
+        # Time taken by script. 
+        timet1=time.time()
+        tools.timer('script', timet0, timet1)
+        # End of profiling. 
+        pr.disable()
+        s = io.StringIO()
+        sortby = 'cumulative'
+        ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+        ps.print_stats()    
+        f = open('profiler_quick_emcee.txt','w')
+        f.write(s.getvalue())
+        f.close()
             
-            # Creating a folder for saving output.
-            save_path = './quick_emcee/'+str(int(time.time()))+'_'+test_key
-            if not os.path.exists(save_path):
-                os.makedirs(save_path)    
-    
-            if test_key == 'LCDM':
-                test_params = {'m':0.3}
-            else:
-                test_params = {'m':0.3, 'gamma':0}
-            
-            # Profiling
-            import cProfile, pstats, io
-            pr = cProfile.Profile()
-            pr.enable()
-            
-            propert, sampler = paramfinder.paramfinder(npoints, nsteps, sigma, 
-                                                       mu, test_params, zpicks, 
-                                                       mag, save_path, test_key)
-            
-            pr.disable()
-            s = io.StringIO()
-            sortby = 'cumulative'
-            ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-            ps.print_stats()
-#            print (s.getvalue())
-            
-            f = open('profiler_quick_emcee.txt','w')
-            f.write(s.getvalue())
-            f.close()
-            
-        i += 1
-    
     
     # Saving sampler to directory.
     results.save(save_path, 'sampler', sampler)
@@ -196,9 +187,9 @@ def errorvsdatasize():
         
         while npoints < npoints_max:
             print('_____________________ run number',run)
-            propert, sampler = paramfinder.paramfinder(       
-            npoints, nsteps, sigma, mu, test_params, zpicks, 
-            mag, test_key, save_path)
+          
+            propert, sampler = stats.stats(test_params, zpicks, mag, 
+                                           sigma, nsteps, save_path, test_key)
             
             m_sd = propert.get('m_sd',0)
             m_mean = propert.get('m_mean', 0)
