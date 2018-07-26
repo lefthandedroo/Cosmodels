@@ -67,43 +67,60 @@ def magn(params, zpicks, firstderivs_key, plot_key=False):
 #            magnitude = 5 * math.log10(dlpc[i]/10) + M
 #        mag.append(magnitude)
     
-def magn_gs(params, zpicks, firstderivs_key, gamma_list, plot_key=True):
+def model_comparison(params, zpicks, firstderivs_key, gamma_list):
     """
     Takes in:
             params = dictionary with true parameters;
             zpicks = list of redshifts to integrate over, in accending order;
-            firstderivs_key = string, indicates which firstderivs to integrate;
-            plot_key = Boolean, to plot or not to plot model figures;
-    Returns:
-        mag = np.ndarray of apparent mag corresponding to input redshits.
+            firstderivs_key = list of strings, which firstderivs to integrate;
+            gamma_list = list of floats or integers, interaction constants.
+    Action:
+        plots one model evolution with different gamma,
+        or evolution of different models with the same gamma.
+
     """
-#    print('@@@ magn_gs has been called')
+    
+    import plots
     
     # Absolute brightness of supernovae.
     M = -19
         
     plot_var_dict = {}
 
-    j = 1        
-    for gamma in gamma_list:
-        params['g_true'] = gamma
-        print(params)
-        dlpc, plot_var = zodesolve.zodesolve(params, zpicks, firstderivs_key)
-    
-        # Calculating apparent magnitudes of supernovae at the simulated
-        # luminosity distances using the distance modulus formula.
-        mag = 5 * np.log10(dlpc/10) + M
+    j = 1
+    if len(gamma_list) > 1:  
+        for gamma in gamma_list:
+            params['gamma'] = gamma
+            dlpc, plot_var = zodesolve.zodesolve(params, zpicks, firstderivs_key)
         
-        plot_var_dict['plot_var_'+str(j)] = plot_var
-        plot_var_dict['mag_'+str(j)] = mag
-        
-        j+=1
-    
-    if plot_key:
-        # Checking evolution of the model.
-        import plots
+            # Calculating apparent magnitudes of supernovae at the simulated
+            # luminosity distances using the distance modulus formula.
+            mag = 5 * np.log10(dlpc/10) + M
+            
+            plot_var_dict['plot_var_'+str(j)] = plot_var
+            plot_var_dict['mag_'+str(j)] = mag
+            
+            j+=1
+            
+        # Plotting evolution of the model with different gamma.
         plots.gammacheck(mag, zpicks, firstderivs_key, plot_var_dict)
-    return mag
+        
+    elif len(firstderivs_key) > 1:
+        for key in firstderivs_key:
+            params['gamma'] = gamma_list[0]
+            dlpc, plot_var = zodesolve.zodesolve(params, zpicks, key)
+        
+            # Calculating apparent magnitudes of supernovae at the simulated
+            # luminosity distances using the distance modulus formula.
+            mag = 5 * np.log10(dlpc/10) + M
+            
+            plot_var_dict['plot_var_'+str(j)] = plot_var
+            plot_var_dict['mag_'+str(j)] = mag
+            
+            j+=1
+        # Plotting evolution of different models with same gamma.
+        plots.ivcdmcheck(mag, zpicks, firstderivs_key, plot_var_dict)
+    return 
 
 
 def gnoise(mag, mu, sigma):

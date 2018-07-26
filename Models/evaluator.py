@@ -42,7 +42,10 @@ zpicks = datasim.redshift_picks(0.005, zmax, npoints)
 #datasim.magn({'m':0.3, 'gamma':-3}, zpicks, 'rdecay', plot_key=True)
 
 # Plots for one model, but with multiple gammas
-datasim.magn_gs({'m':0.3}, zpicks, 'rdecay', [-10, -7, -5, -3, -1])
+#datasim.model_comparison({'m':0.3}, zpicks, 'rdecay_mxde', [-10, 0, 2])
+firstderivs_list = ['rdecay_mxde', 'late_int', 'LCDM']
+datasim.model_comparison({'m':0.3}, zpicks, firstderivs_list, [-1])
+
 
 def all_modelcheck():
     
