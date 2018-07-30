@@ -46,29 +46,29 @@ def lnlike(theta, zpicks, mag, sigma, firstderivs_key, ndim):
 #    return -np.inf
 
 
-def lnprior(theta, firstderivs_key):
+def lnprior(theta, key):
     
-    if firstderivs_key == 'LCDM':
+    if key == 'LCDM':
         m = theta
         if 0 < m < 1 or m == 1:
             return 0.0
-    elif firstderivs_key == 'late_int':
+    elif key == 'late_int' or 'heaviside_late_int' or 'late_intxde':
         m, gamma = theta
         if (0 < m < 1 or m == 1) and -1.45 < gamma < 0.2:
             return 0.0       
-    elif firstderivs_key == 'rdecay':
+    elif key == 'rdecay':
         m, gamma = theta
         if (0 < m < 1 or m == 1) and -10 < gamma < 0:
             return 0.0
-    elif firstderivs_key == 'interacting':
+    elif key == 'interacting':
         m, gamma = theta
         if (0 < m < 1 or m == 1) and abs(gamma) < 1.45:
             return 0.0
-    elif firstderivs_key == 'expgamma':
+    elif key == 'expgamma':
         m, gamma = theta
         if (0 < m < 1 or m == 1) and abs(gamma) < 25:
             return 0.0
-    elif firstderivs_key == 'zxxgamma' or firstderivs_key == 'gammaxxz':
+    elif key == 'zxxgamma' or 'gammaxxz':
         m, gamma = theta
         if (0 < m < 1 or m == 1) and 0 < gamma:
             return 0.0        

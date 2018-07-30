@@ -40,12 +40,12 @@ def load(save_path, filename):
     return content
 
 
-def relocate(filename, firstderivs_key):
+def relocate(filename, speed, firstderivs_key):
     
     filename = filename
     
     # Create directory to move files to.
-    directory = './results_Bfactor/'+str(int(time.time()))+'_model_'+firstderivs_key
+    directory = './results_Bfactor/'+str(int(time.time()))+'_'+str(speed)+'_model_'+firstderivs_key
     if not os.path.exists(directory):
         os.makedirs(directory)
     

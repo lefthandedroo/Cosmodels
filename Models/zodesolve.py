@@ -10,22 +10,23 @@ import firstderivs_cython as f
 #import firstderivs as f
 
 
-firstderivs_functions = {'heaviside_late_int':f.heaviside_late_int,
-                        'late_intxde':f.late_intxde,
-                        'late_int':f.late_int,
-                        'expgamma':f.expgamma,
-                         'txgamma':f.txgamma,
-                         'zxgamma':f.zxgamma,
-                         'gamma_over_z':f.gamma_over_z,
-                         'zxxgamma':f.zxxgamma,
-                         'gammaxxz':f.gammaxxz,
-                         'rdecay_m':f.rdecay_m,
-                         'rdecay_de':f.rdecay_de,
-                         'rdecay_mxde':f.rdecay_mxde,
-                         'rdecay':f.rdecay,                         
-                         'interacting':f.interacting,
-                         'LCDM':f.LCDM
-                         }
+firstderivs_functions = {
+        'late_intxde':f.late_intxde,
+        'heaviside_late_int':f.heaviside_late_int,
+        'late_int':f.late_int,
+        'expgamma':f.expgamma,
+         'txgamma':f.txgamma,
+         'zxgamma':f.zxgamma,
+         'gamma_over_z':f.gamma_over_z,
+         'zxxgamma':f.zxxgamma,
+         'gammaxxz':f.gammaxxz,
+         'rdecay_m':f.rdecay_m,
+         'rdecay_de':f.rdecay_de,
+         'rdecay_mxde':f.rdecay_mxde,
+         'rdecay':f.rdecay,                         
+         'interacting':f.interacting,
+         'LCDM':f.LCDM
+         }
 
 def zodesolve(params, zpicks, firstderivs_key):
     """

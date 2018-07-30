@@ -79,7 +79,7 @@ class Model(object):
 
         theta = {'m':m,'gamma':g}
         
-        model = datasim.magn(theta, zpicks, firstderivs_key)
+        model = datasim.magn(theta, zpicks, key)
         
         var = sigma**2.0
         return -0.5*np.sum((mag-model)**2.0 /var +0.5*np.log(2.0*np.pi*var))
@@ -105,40 +105,42 @@ sampler = dnest4.DNest4Sampler(model,
                                                                   sep=" "))
 
 firstderivs_functions = [
-        'late_int'
-#        ,'expgamma'
-#        ,'txgamma'
-#        ,'zxgamma'
-#        ,'gamma_over_z'
-#        ,'zxxgamma'
-#        ,'gammaxxz'
-##        ,'rdecay_m' # nan field
-#        ,'rdecay_de'
-##        ,'rdecay_mxde' # nan field
-#        ,'rdecay'
-##        ,'interacting' # nan field
+        'late_intxde'
+        ,'heaviside_late_int'
+        ,'late_int'
+        ,'expgamma'
+        ,'txgamma'
+        ,'zxgamma'
+        ,'gamma_over_z'
+        ,'zxxgamma'
+        ,'gammaxxz'
+#        ,'rdecay_m' # nan field
+        ,'rdecay_de'
+#        ,'rdecay_mxde' # nan field
+        ,'rdecay'                        
+#        ,'interacting' # nan field
         ,'LCDM'
-        ]
+         ]
 
-for firstderivs_key in firstderivs_functions:
+for key in firstderivs_functions:
         
-    if firstderivs_key == 'rdecay':
+    if key == 'rdecay':
         g_min = -10
         g_max = 0
         
-    elif firstderivs_key == 'late_int':
+    elif key == 'late_int' or key =='heaviside_late_int' or key=='late_intxde':
         g_min = -1.45
         g_max = 0.2
         
-    elif firstderivs_key == 'interacting':
+    elif key == 'interacting':
         g_min = -1.45
         g_max = 1.45
 
-    elif firstderivs_key == 'expgamma':
+    elif key == 'expgamma':
         g_min = -25
         g_max = 25
         
-    elif firstderivs_key == 'zxxgamma' or firstderivs_key == 'gammaxxz':
+    elif key == 'zxxgamma' or key == 'gammaxxz':
         g_min = 0
         g_max = 10        
         
@@ -167,9 +169,9 @@ for firstderivs_key in firstderivs_functions:
                              lam=10, beta=100, seed=1234)
     
     
-    import cProfile, pstats, io
-    pr = cProfile.Profile()
-    pr.enable()
+#    import cProfile, pstats, io
+#    pr = cProfile.Profile()
+#    pr.enable()
     
     ti = time.time()
     # Do the sampling (one iteration here = one particle save)
@@ -178,16 +180,16 @@ for firstderivs_key in firstderivs_functions:
         pass
     tf = time.time()
     
-    pr.disable()
-    s = io.StringIO()
-    sortby = 'cumulative'
-    ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-    ps.print_stats()
-    print (s.getvalue())
+#    pr.disable()
+#    s = io.StringIO()
+#    sortby = 'cumulative'
+#    ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+#    ps.print_stats()
+#    print (s.getvalue())
     
     dnest_time = tools.timer('Bfactor', ti, tf)
     
-    print('testing =',firstderivs_key)
+    print('testing =',key)
     print('data =', dataname)
     print('sigma =', sigma)
        
@@ -199,25 +201,25 @@ for firstderivs_key in firstderivs_functions:
         
         f = open('brief.txt','w')
         f.write(dnest_time +'\n'
-                +'model = '+firstderivs_key +'\n'
+                +'model = '+key +'\n'
                 +'data = '+ dataname +'\n'
-                +'sigma = '+str(sigma)    
+                +'sigma = '+str(sigma) +'\n'
                 +'log(Z) = '+str(info[0]) +'\n'
                 +'Information = '+str(info[1]) +'\n'
                 +'speed = '+str(speed))
         f.close()
     
         # Moving output .txt files into a run specific folder.
-        results.relocate('levels.txt', firstderivs_key)
-        results.relocate('posterior_sample.txt', firstderivs_key)
-        results.relocate('sample_info.txt', firstderivs_key)
-        results.relocate('sample.txt', firstderivs_key)
-        results.relocate('sampler_state.txt', firstderivs_key)
-        results.relocate('weights.txt', firstderivs_key)
-        results.relocate('brief.txt', firstderivs_key)
-        results.relocate('plot_1.pdf', firstderivs_key)
-        results.relocate('plot_2.pdf', firstderivs_key)
-        results.relocate('plot_3.pdf', firstderivs_key)
+        results.relocate('levels.txt', speed, key)
+        results.relocate('posterior_sample.txt', speed, key)
+        results.relocate('sample_info.txt', speed, key)
+        results.relocate('sample.txt', speed, key)
+        results.relocate('sampler_state.txt', speed, key)
+        results.relocate('weights.txt', speed, key)
+        results.relocate('brief.txt', speed, key)
+        results.relocate('plot_1.pdf', speed, key)
+        results.relocate('plot_2.pdf', speed, key)
+        results.relocate('plot_3.pdf', speed, key)
 
 
 

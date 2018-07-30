@@ -176,7 +176,7 @@ def stats(params, zpicks, mag, sigma, nsteps,
 #    samples = sampler.chain[:, :, :].reshape((-1, ndim))
 #    corner.corner(samples, labels=["$m$"], 
 #                        truths=true)
-#    show()
+#    show(block=False)
     
     # Results getting printed:
     if bi == 0: 

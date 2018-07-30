@@ -9,19 +9,21 @@ import numpy as np
 from cpython cimport array
 import array
 import math
-
-#expgamma
-#txgamma
-#zxgamma
-#gamma_over_z
-#zxxgamma
-#gammaxxz
-#rdecay_m
-#rdecay_de
-#rdecay_mxde
-#rdecay
-#interacting
-#LCDM
+# 'late_intxde'
+# 'heaviside_late_int'
+# 'late_int'
+# 'expgamma'
+# 'txgamma'
+# 'zxgamma'
+# 'gamma_over_z'
+# 'zxxgamma'
+# 'gammaxxz'
+# 'rdecay_m'
+# 'rdecay_de'
+# 'rdecay_mxde'
+# 'rdecay'                        
+# 'interacting'
+# 'LCDM'
 
 # Eq of state parameters for known fluids:
 cdef double w_r = 1/3     # radiation
@@ -100,7 +102,7 @@ def heaviside_late_int(double[:] v, redshifts, double gamma, double H0):
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
     
-    irate = gamma/(1.0+z)/Hz * np.heaviside(1-z, 1)     
+    irate = gamma/(1.0+z)/Hz * np.heaviside(0.9-z, 1)     
     
     cdef double dtdz = -1.0/((1.0+z) * Hz)
     cdef double dadz = -(1.0+z)**(-2.0)

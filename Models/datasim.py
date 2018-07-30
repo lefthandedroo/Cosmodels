@@ -6,7 +6,6 @@ Created on Thu Feb 15 13:47:44 2018
 @author: BallBlueMeercat
 """
 import random
-import math
 import numpy as np
 import zodesolve
 import tools

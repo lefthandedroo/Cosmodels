@@ -15,7 +15,7 @@ import stats
 
 
 # Number of datapoints to be simulated and number of emcee steps.
-npoints, nsteps = 1000, 10000
+npoints, nsteps = 1000, 100000
 zmax = 2
 
 # Statistical parameteres of noise:
@@ -31,35 +31,46 @@ dataname = 'mag_z_LCDM_1000_sigma_'+str(sigma)
 zpicks = datasim.redshift_picks(0.005, zmax, npoints)
 
 
-# Interaction modes in firstderivs_cython:
+#     Interaction modes in firstderivs_cython:
 # 'late_int', 'expgamma','txgamma','zxgamma','gamma_over_z','zxxgamma','gammaxxz',
 #'rdecay_m','rdecay_de','rdecay_mxde','rdecay','interacting','LCDM'
 # Length of parameters has to correspond to the model being tested.
 # Interaction mdoes with limited prior:
 #LCDM, late_int, rdecay, interacting, expgamma, zxxgamma
 
-# Plots for a model.
-#datasim.magn({'m':0.3, 'gamma':-3}, zpicks, 'rdecay', plot_key=True)
+#     Plots for a model.
+#datasim.magn({'m':0.3, 'gamma':0.2}, zpicks, 'heaviside_late_int', plot_key=True)
+#     Plots for one model, but with multiple gammas
+#datasim.model_comparison({'m':0.3}, zpicks, 'heaviside_late_int', [-1.45, 0, 0.2])
+#     Do check if models overlap, put them two of interest last.
+#firstderivs_list = ['heaviside_late_int', 'late_int', 'late_intxde']
+#datasim.model_comparison({'m':0.3, 'gamma':-2}, zpicks, firstderivs_list)
 
-# Plots for one model, but with multiple gammas
-datasim.model_comparison({'m':0.3}, zpicks, 'heaviside_late_int', [-3, 0, -2])
-#firstderivs_list = ['late_intxde', 'late_int', 'heaviside_late_int']
-#datasim.model_comparison({'m':0.3, 'gamma':-1}, zpicks, firstderivs_list)
-
+firstderivs_functions = [
+            'late_intxde'
+            ,'heaviside_late_int'
+            ,'late_int'
+            ,'expgamma'
+            ,'txgamma'
+            ,'zxgamma'
+            ,'gamma_over_z'
+            ,'zxxgamma'
+            ,'gammaxxz'
+            ,'rdecay_m' # nan field
+            ,'rdecay_de'
+            ,'rdecay_mxde' # nan field
+            ,'rdecay'                        
+            ,'interacting' # nan field
+            ,'LCDM'
+             ]
 
 def all_modelcheck():
     print('@@@@@@@ RUNNING all_modelcheck @@@@@@@')
-    firstderivs_functions = [
-#            'late_int', 'expgamma','txgamma','zxgamma',
-#                             'gamma_over_z','zxxgamma','gammaxxz','rdecay_m',
-#                             'rdecay_de','rdecay_mxde','rdecay','interacting',
-                             'LCDM']
     
     for test_key in firstderivs_functions:
-        test_params = {'m':0.3, 'gamma':10}
-#        test_params = {'m':0.3}
+        test_params = {'m':0.3, 'gamma':0}
     
-        datasim.magn(test_params, zpicks, test_key, plot_key=True)
+        datasim.magn(test_params, zpicks, test_key)
     return
 
 #all_modelcheck()
@@ -70,12 +81,7 @@ def quickemcee():
 #    mag = datasim.noisy_mag(zpicks, mu, sigma, data_params, data_key)
     mag, zpicks = results.load('./data', dataname)
     
-    firstderivs_functions = ['late_int']
-#    firstderivs_functions = ['late_int', 'expgamma','txgamma','zxgamma',
-#                         'gamma_over_z','zxxgamma','gammaxxz','rdecay_m',
-#                         'rdecay_de','rdecay_mxde','rdecay','interacting',
-#                         'LCDM']
-    test_params = {'m':0.3, 'gamma':2}
+    test_params = {'m':0.3, 'gamma':0}
 
     for test_key in firstderivs_functions:
         
@@ -84,36 +90,21 @@ def quickemcee():
         if not os.path.exists(save_path):
             os.makedirs(save_path)    
       
-        # Profiling
-        import cProfile, pstats, io
-        pr = cProfile.Profile()
-        pr.enable()
         # Script timer.
         timet0 = time.time()            
         
         # emcee parameter search.
         propert, sampler = stats.stats(test_params, zpicks, mag, sigma, 
-                                       nsteps, save_path, test_key)
-        
+                                       nsteps, save_path, test_key)        
         # Time taken by script. 
         timet1=time.time()
         tools.timer('script', timet0, timet1)
-        # End of profiling. 
-        pr.disable()
-        s = io.StringIO()
-        sortby = 'cumulative'
-        ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-        ps.print_stats()    
-        f = open('profiler_quick_emcee.txt','w')
-        f.write(s.getvalue())
-        f.close()
-            
-    
-    # Saving sampler to directory.
-    results.save(save_path, 'sampler', sampler)
+        
+        # Saving sampler to directory.
+        results.save(save_path, 'sampler', sampler)
 
-    print('Model being tested:', test_key)
-    print('Data:',dataname)
+        print('Model being tested:', test_key)
+        print('Data:',dataname)
 
     return
 
