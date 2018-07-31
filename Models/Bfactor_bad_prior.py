@@ -17,7 +17,7 @@ import tools
 #from scipy.special import erf
 
 # slow = 1, medium = 2, long = 3
-speed = 0
+speed = 1
 
 # Sigma of the noise on data.
 sigma = 0.07
@@ -33,13 +33,11 @@ class Model(object):
     """
     Specify the model in Python.
     """
-    def __init__(self, g_min=None, g_max=None):
+    def __init__(self):
         """
         Parameter values *are not* stored inside the class
         """
-        self.g_min = g_min
-        self.g_max = g_max
-#        pass
+        pass
 
     def from_prior(self):
         """
@@ -47,7 +45,7 @@ class Model(object):
         """
         m = rng.rand()
         g = 1E3*rng.rand()
-        g = dnest4.wrap(g, self.g_min, self.g_max)
+        g = dnest4.wrap(g, g_min, g_max)
         return np.array([m, g])
 
     def perturb(self, params):
@@ -61,12 +59,16 @@ class Model(object):
         # DNest4::wrap in C++. The former *returns* the wrapped value.
         
         if which == 0:
-            params[which] += dnest4.randh()
-            params[which] = dnest4.wrap(params[which], 0.0, 1.0)
+            log_m = np.log(params[which])
+            log_m += dnest4.randh()
+            log_m = dnest4.wrap(log_m, 0.0, 1.0)
+            params[which] = np.exp(log_m)
             
         elif which == 1:
-            params[which] += dnest4.randh()
-            params[which] = dnest4.wrap(params[which], self.g_min, self.g_max)
+            g = params[which]
+            g += dnest4.randh()
+            g = dnest4.wrap(g, g_min, g_max)
+            params[which] = g
 
         return logH
 
@@ -97,6 +99,12 @@ class Model(object):
 #        assert b > a
 #        return (x - a)%(b - a) + a
 
+# Create a model object and a sampler
+model = Model()
+sampler = dnest4.DNest4Sampler(model,
+                               backend=dnest4.backends.CSVBackend(".",
+                                                                  sep=" "))
+
 firstderivs_functions = [
 #        'late_intxde'
 #        ,'heaviside_late_int'
@@ -107,11 +115,11 @@ firstderivs_functions = [
 #        ,'gamma_over_z'
 #        ,'zxxgamma'
 #        ,'gammaxxz'
-#        ,'rdecay_m' # nan field
+##        ,'rdecay_m' # nan field
 #        ,'rdecay_de'
-#        ,'rdecay_mxde' # nan field
+##        ,'rdecay_mxde' # nan field
 #        ,'rdecay'                        
-#        ,'interacting' # nan field
+##        ,'interacting' # nan field
         'LCDM'
          ]
 
@@ -120,7 +128,7 @@ for key in firstderivs_functions:
     if key == 'rdecay':
         g_min = -10
         g_max = 0
-    
+        
     elif key == 'late_int' or key =='heaviside_late_int' or key=='late_intxde':
         g_min = -1.45
         g_max = 0.2
@@ -141,12 +149,7 @@ for key in firstderivs_functions:
         g_min = -10
         g_max = 10
 
-    # Create a model object and a sampler
-    model = Model(g_min, g_max)
-    sampler = dnest4.DNest4Sampler(model,
-                                   backend=dnest4.backends.CSVBackend(".",
-                                                                  sep=" "))
-    
+
     if speed == 3:   
         # LONG Set up the sampler. The first argument is max_num_levels
         gen = sampler.sample(max_num_levels=30, num_steps=1000, 
@@ -165,12 +168,7 @@ for key in firstderivs_functions:
                              new_level_interval=100, num_per_step=100, 
                              thread_steps=10, num_particles=5, 
                              lam=10, beta=100, seed=1234)
-    elif speed == 0:
-        # SHORT
-        gen = sampler.sample(max_num_levels=1, num_steps=1000, 
-                             new_level_interval=100, num_per_step=100, 
-                             thread_steps=10, num_particles=5, 
-                             lam=10, beta=100, seed=1234)    
+    
     
 #    import cProfile, pstats, io
 #    pr = cProfile.Profile()

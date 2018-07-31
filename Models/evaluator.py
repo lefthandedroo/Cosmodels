@@ -50,16 +50,16 @@ firstderivs_functions = [
 #            ,'gamma_over_z'
 #            ,'zxxgamma'     # nan emcee, limited prior
 #            ,'gammaxxz'    # nan emcee
-            'rdecay_m'     # nan field
-            ,'rdecay_de'
-            ,'rdecay_mxde'  # nan field
-            ,'rdecay'       # limited prior               
-            ,'interacting'  # nan field, limited prior
-            ,'LCDM'         # limited prior
+#            ,'rdecay_m'     # nan field
+#            ,'rdecay_de'
+#            ,'rdecay_mxde'  # nan field
+#            ,'rdecay'       # limited prior               
+#            ,'interacting'  # nan field, limited prior
+            'LCDM'         # limited prior
              ]
 
 def all_modelcheck():
-    print('@@@@@@@ RUNNING all_modelcheck @@@@@@@')
+    print('@@@@@@@ all_modelcheck @@@@@@@')
     
     for test_key in firstderivs_functions:
         test_params = {'m':0.3, 'gamma':0}
@@ -71,8 +71,9 @@ def all_modelcheck():
 
 
 def quickemcee():
-    print('@@@@@@@ RUNNING quickemcee @@@@@@@')
+    print('@@@@@@@ quickemcee @@@@@@@')
 #    mag = datasim.noisy_mag(zpicks, mu, sigma, data_params, data_key)
+    dataname = 'sorted1'
     mag, zpicks = results.load('./data', dataname)
     
     test_params = {'m':0.3, 'gamma':0}
