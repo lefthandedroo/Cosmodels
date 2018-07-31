@@ -9,6 +9,7 @@ import time
 import dnest4
 import numpy as np
 import numpy.random as rng
+import pickle
 #from numba import jitclass, int32
 import datasim
 import results
@@ -208,8 +209,10 @@ for key in firstderivs_functions:
                 +'Information = '+str(info[1]) +'\n'
                 +'speed = '+str(speed))
         f.close()
-    
+        
+        pickle.dump(info[0], open('evidence.p', 'wb'))
         # Moving output .txt files into a run specific folder.
+        results.relocate('evidence.p', speed, key)
         results.relocate('levels.txt', speed, key)
         results.relocate('posterior_sample.txt', speed, key)
         results.relocate('sample_info.txt', speed, key)

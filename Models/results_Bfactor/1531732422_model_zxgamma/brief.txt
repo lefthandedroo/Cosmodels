@@ -1,5 +1,0 @@
-Sampling time:  24min 13s
-model = zxgamma
-data = mag_z_LCDM_1000_sigma_0.07
-sigma = 0.07log(Z) = -20298.889517816533
-Information = 19.13195469925995

@@ -1,7 +1,0 @@
-Bfactor time:  17min 25s
-model = heaviside_late_int
-data = mag_z_LCDM_1000_sigma_0.07
-sigma = 0.07
-log(Z) = -31040.911807978944
-Information = 18.400217486036127
-speed = 2

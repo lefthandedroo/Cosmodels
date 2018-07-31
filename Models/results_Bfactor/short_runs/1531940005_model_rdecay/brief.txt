@@ -1,0 +1,6 @@
+Sampling time:  213min 47s
+model = rdecay
+data = mag_z_LCDM_1000_sigma_0.07
+sigma = 0.07log(Z) = -32844.146465677615
+Information = 9.514185640240612
+speed = 3

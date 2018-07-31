@@ -1,6 +1,0 @@
-Sampling time:  216min 48s
-model = gammaxxz
-data = mag_z_LCDM_1000_sigma_0.07
-sigma = 0.07log(Z) = -19860.09060509672
-Information = 16.88530085286766
-speed = 3

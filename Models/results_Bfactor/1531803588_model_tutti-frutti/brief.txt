@@ -1,5 +1,0 @@
-Sampling time:  0min 19s
-model = expgamma
-data = mag_z_LCDM_1000_sigma_0.07
-sigma = 0.07log(Z) = -24240.68053878151
-Information = 8.497822949120746

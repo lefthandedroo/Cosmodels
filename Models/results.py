@@ -11,10 +11,6 @@ import pickle
 import os.path
 import time
 
-def process(propert):
-    
-    
-    return
 
 def save(save_path, output_name, output): 
     # Saving results to run directory.

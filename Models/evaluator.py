@@ -24,44 +24,38 @@ sigma = 0.07      # standard deviation
 
 dataname = 'mag_z_LCDM_1000_sigma_'+str(sigma)
 
-# Making data (mag and z)
+#    Making data (mag and z)
 #dataname = 'mag_z_'+data_key+'_'+str(npoints)+'_sigma_'+str(sigma)
 #datasim.makensavemagnz(m_true, g_true, mu, sigma, zpicks, data_key, dataname)
-               
+
+#    Making redshifts to use in this script.
 zpicks = datasim.redshift_picks(0.005, zmax, npoints)
 
-
-#     Interaction modes in firstderivs_cython:
-# 'late_int', 'expgamma','txgamma','zxgamma','gamma_over_z','zxxgamma','gammaxxz',
-#'rdecay_m','rdecay_de','rdecay_mxde','rdecay','interacting','LCDM'
-# Length of parameters has to correspond to the model being tested.
-# Interaction mdoes with limited prior:
-#LCDM, late_int, rdecay, interacting, expgamma, zxxgamma
-
-#     Plots for a model.
+#    Plots for a model.
 #datasim.magn({'m':0.3, 'gamma':0.2}, zpicks, 'heaviside_late_int', plot_key=True)
-#     Plots for one model, but with multiple gammas
+#    Plots for one model with multiple gammas.
 #datasim.model_comparison({'m':0.3}, zpicks, 'heaviside_late_int', [-1.45, 0, 0.2])
-#     Do check if models overlap, put them two of interest last.
+#   Plots of various models on the same plot. 
+#   To check if models overlap, put the two of interest last.
 #firstderivs_list = ['heaviside_late_int', 'late_int', 'late_intxde']
 #datasim.model_comparison({'m':0.3, 'gamma':-2}, zpicks, firstderivs_list)
 
 firstderivs_functions = [
-            'late_intxde'
-            ,'heaviside_late_int'
-            ,'late_int'
-            ,'expgamma'
-            ,'txgamma'
-            ,'zxgamma'
-            ,'gamma_over_z'
-            ,'zxxgamma'
-            ,'gammaxxz'
-            ,'rdecay_m' # nan field
+#            'late_intxde'
+#            ,'heaviside_late_int'
+#            ,'late_int'     # limited prior
+#            ,'expgamma'     # limited prior
+#            ,'txgamma'
+#            ,'zxgamma'      
+#            ,'gamma_over_z'
+#            ,'zxxgamma'     # nan emcee, limited prior
+#            ,'gammaxxz'    # nan emcee
+            'rdecay_m'     # nan field
             ,'rdecay_de'
-            ,'rdecay_mxde' # nan field
-            ,'rdecay'                        
-            ,'interacting' # nan field
-            ,'LCDM'
+            ,'rdecay_mxde'  # nan field
+            ,'rdecay'       # limited prior               
+            ,'interacting'  # nan field, limited prior
+            ,'LCDM'         # limited prior
              ]
 
 def all_modelcheck():
@@ -108,7 +102,7 @@ def quickemcee():
 
     return
 
-#quickemcee()
+quickemcee()
 
 
 def errorvsdatasize():

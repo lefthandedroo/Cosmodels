@@ -29,7 +29,7 @@ def compare(LCDM_log_Z, sigma, model_name, model_log_Z):
 #    
 #    print(model_name,'Z / LCDM Z = ', str(Bfactor))
     
-    return Bfactor
+    return
     
 #compare(-32844.59417770218, 0.07, 'late_intxde', -32844.55643113441)
 #compare(-32844.59417770218, 0.07, 'heaviside_late_int', -31040.911807978944)
@@ -43,4 +43,23 @@ def compare(LCDM_log_Z, sigma, model_name, model_log_Z):
 #compare(-32844.59417770218, 0.07, 'rdecay_de', -621.290963339889)
 #compare(-32844.59417770218, 0.07, 'rdecay', -32844.30784323075)
 #compare(-32844.59417770218, 0.07, 'rdecay_de', -621.290963339889)
-compare(-32844.50826284908, 0.07, 'not real model', -32847.50826284908)
+#compare(-32844.50826284908, 0.07, 'not real model', -32847.50826284908)
+
+import os
+rootdir = './results_Bfactor'
+
+for subdir, dirs, files in os.walk(rootdir):
+    for directry in dirs:
+        print(os.path.join(subdir, directry))
+#    for file in files:
+#        print(os.path.join(subdir, file))
+
+import results
+def findncompare(folder, LCDM_log_Z):
+    
+    for file in folder:
+#        open file
+        results.load('path to evidence', 'evidence.p')     
+
+    
+    return
