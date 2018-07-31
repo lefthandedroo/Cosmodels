@@ -1,0 +1,7 @@
+Bfactor time:  6min 1s
+model = late_int
+data = mag_z_LCDM_1000_sigma_0.07
+sigma = 0.07
+log(Z) = 350.47999115615346
+Information = 7.661418670996966
+speed = 2

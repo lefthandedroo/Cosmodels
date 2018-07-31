@@ -1,7 +1,0 @@
-Bfactor time:  6min 47s
-model = LCDM
-data = mag_z_LCDM_1000_sigma_0.07
-sigma = 0.07
-log(Z) = -32844.59417770218
-Information = 10.053441655400093
-speed = 2

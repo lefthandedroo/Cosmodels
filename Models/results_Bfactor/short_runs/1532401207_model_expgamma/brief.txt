@@ -1,6 +1,0 @@
-Bfactor time:  11min 3s
-model = expgamma
-data = mag_z_LCDM_1000_sigma_0.07
-sigma = 0.07log(Z) = -24232.321306929036
-Information = 11.163758658920415
-speed = 2

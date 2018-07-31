@@ -1,5 +1,0 @@
-Sampling time:  20min 46s
-model = LCDM
-data = mag_z_LCDM_1000_sigma_0.07
-sigma = 0.07log(Z) = -32844.69732103212
-Information = 10.119750166442827

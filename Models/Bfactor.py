@@ -17,28 +17,33 @@ import tools
 #from scipy.special import erf
 
 # slow = 1, medium = 2, long = 3
-speed = 0
+speed = 2
 
-# Sigma of the noise on data.
-sigma = 0.07
+## Sigma of the noise on data.
+#sigma = 0.07
+#
+#dataname = 'mag_z_LCDM_1000_sigma_'+str(sigma)
+#
+## Load the data
+#mag, zpicks = results.load('./data', dataname)
 
-dataname = 'mag_z_LCDM_1000_sigma_'+str(sigma)
-
-# Load the data
+dataname = 'Amanullah_sorted1'
 mag, zpicks = results.load('./data', dataname)
-
+mag -= 19
+sigma = 0.5
 
 #@jitclass([('dummy', int32)])
 class Model(object):
     """
     Specify the model in Python.
     """
-    def __init__(self, g_min=None, g_max=None):
+    def __init__(self, g_lim=None):
         """
         Parameter values *are not* stored inside the class
         """
-        self.g_min = g_min
-        self.g_max = g_max
+        if g_lim != None:
+            self.g_min = g_lim[0]
+            self.g_max = g_lim[1]
 #        pass
 
     def from_prior(self):
@@ -46,9 +51,11 @@ class Model(object):
         Unlike in C++, this must *return* a numpy array of parameters.
         """
         m = rng.rand()
-        g = 1E3*rng.rand()
-        g = dnest4.wrap(g, self.g_min, self.g_max)
-        return np.array([m, g])
+        if g_lim != None:
+            g = 1E3*rng.rand()
+            g = dnest4.wrap(g, self.g_min, self.g_max)
+            return np.array([m, g])
+        return np.array([m])
 
     def perturb(self, params):
         """
@@ -56,7 +63,7 @@ class Model(object):
         and modifies it in-place. The return value is still logH.
         """
         logH = 0.0
-        which = rng.randint(2)
+        which = rng.randint(len(params))
         # Note the difference between dnest4.wrap in Python and
         # DNest4::wrap in C++. The former *returns* the wrapped value.
         
@@ -74,9 +81,11 @@ class Model(object):
         """
         Gaussian sampling distribution.
         """
-        m, g = params
-
-        theta = {'m':m,'gamma':g}
+        if len(params) > 1:
+            m, g = params
+            theta = {'m':m,'gamma':g}
+        else:
+            theta = {'m':params[0]}
         
         model = datasim.magn(theta, zpicks, key)
         
@@ -98,51 +107,50 @@ class Model(object):
 #        return (x - a)%(b - a) + a
 
 firstderivs_functions = [
-#        'late_intxde'
-#        ,'heaviside_late_int'
-#        ,'late_int'
-#        ,'expgamma'
-#        ,'txgamma'
-#        ,'zxgamma'
-#        ,'gamma_over_z'
-#        ,'zxxgamma'
-#        ,'gammaxxz'
-#        ,'rdecay_m' # nan field
-#        ,'rdecay_de'
-#        ,'rdecay_mxde' # nan field
-#        ,'rdecay'                        
-#        ,'interacting' # nan field
-        'LCDM'
+        'late_intxde'
+        ,'heaviside_late_int'
+        ,'late_int'
+        ,'expgamma'
+        ,'txgamma'
+        ,'zxgamma'
+        ,'gamma_over_z'
+
+#        ,'zxxgamma'    # nan field
+#        ,'gammaxxz'     # nan field
+
+        ,'rdecay_m' 
+        ,'rdecay_de'
+        ,'rdecay_mxde'
+        ,'rdecay'                        
+        ,'interacting'
+        ,'LCDM'
          ]
 
 for key in firstderivs_functions:
         
     if key == 'rdecay':
-        g_min = -10
-        g_max = 0
+        g_lim = [-10, 0]
+        
+    elif key == 'LCDM':
+        g_lim = None
     
-    elif key == 'late_int' or key =='heaviside_late_int' or key=='late_intxde':
-        g_min = -1.45
-        g_max = 0.2
+    elif key == 'late_int' or 'heaviside_late_int' or 'late_intxde':
+        g_lim = [-1.45, 0]
         
     elif key == 'interacting':
-        g_min = -1.45
-        g_max = 1.45
+        g_lim = [-1.45, 1.45]
+        
+    elif key == 'zxxgamma' or 'gammaxxz':
+        g_lim = [0, 10]
 
     elif key == 'expgamma':
-        g_min = -25
-        g_max = 25
-        
-    elif key == 'zxxgamma' or key == 'gammaxxz':
-        g_min = 0
-        g_max = 10        
+        g_lim = [-25, 25]
         
     else:
-        g_min = -10
-        g_max = 10
+        g_lim = [-10, 10]
 
     # Create a model object and a sampler
-    model = Model(g_min, g_max)
+    model = Model(g_lim)
     sampler = dnest4.DNest4Sampler(model,
                                    backend=dnest4.backends.CSVBackend(".",
                                                                   sep=" "))
@@ -161,12 +169,12 @@ for key in firstderivs_functions:
                               lam=10, beta=100, seed=1234)
     elif speed == 1:
         # SHORT
-        gen = sampler.sample(max_num_levels=1, num_steps=100, 
+        gen = sampler.sample(max_num_levels=30, num_steps=100, 
                              new_level_interval=100, num_per_step=100, 
                              thread_steps=10, num_particles=5, 
                              lam=10, beta=100, seed=1234)
     elif speed == 0:
-        # SHORT
+        # SHORT, sampling from prior
         gen = sampler.sample(max_num_levels=1, num_steps=1000, 
                              new_level_interval=100, num_per_step=100, 
                              thread_steps=10, num_particles=5, 
@@ -198,8 +206,7 @@ for key in firstderivs_functions:
        
     # Run the postprocessing
     info = dnest4.postprocess()
-    
-    
+        
     if speed > 1:
         
         f = open('brief.txt','w')
@@ -225,6 +232,25 @@ for key in firstderivs_functions:
         results.relocate('plot_1.pdf', speed, key)
         results.relocate('plot_2.pdf', speed, key)
         results.relocate('plot_3.pdf', speed, key)
+        
+    else:
+        # Histogram of parameters found by DNest4.
+        array = np.loadtxt('sample.txt')
+        import matplotlib.pyplot as plt
+        if key == 'LCDM':
+            plt.figure()
+            plt.title('matter')
+            plt.hist(array)
+            plt.show()
+        else:
+            plt.figure()
+            plt.title('matter')
+            plt.hist(array[:, 0])
+            
+            plt.figure()
+            plt.title('gamma')
+            plt.hist(array[:, 1])
+            plt.show()
 
 
 

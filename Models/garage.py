@@ -1690,34 +1690,35 @@ mag = [
         ,42.388163454
         ,44.2516558833]
 
-#zpicks1, mag1 = (list(t) for t in zip(*sorted(zip(zpicks1, mag))))
-#zpicks2, mag2 = (list(t) for t in zip(*sorted(zip(zpicks2, mag))))
-#
-#
-#mag1 = np.asarray(mag1)
-#mag2 = np.asarray(mag2)
-#
-#
-#output1 = mag1, zpicks1
-#
-## Relative path of output folder.
-#save_path = './data/'+'sorted1'
-#    
-#import pickle
-#pickle.dump(output1, open(save_path, 'wb'))
-#
-#output2 = mag2, zpicks2
-#
-## Relative path of output folder.
-#save_path = './data/'+'sorted2'
-#    
-#pickle.dump(output2, open(save_path, 'wb'))
+import matplotlib.pyplot as plt
+plt.figure()
+plt.scatter(zpicks1,mag)
+plt.title('zpicks1')
+
+plt.figure()
+plt.scatter(zpicks2,mag)
+plt.title('zpicks2')
+
+
+zpicks1, mag = (list(t) for t in zip(*sorted(zip(zpicks1, mag))))
+
+plt.figure()
+plt.plot(zpicks1,mag)
+plt.title('zpicks1 sorted')
+
+mag = np.asarray(mag)
+
+output1 = mag, zpicks1
+
+# Relative path of output folder.
+save_path = './data/'+'sorted1'
+    
+import pickle
+pickle.dump(output1, open(save_path, 'wb'))
+
 
 import results
-import matplotlib.pyplot as plt
-
 mag1, zpicks1 = results.load('./data', 'sorted1')
-mag2, zpicks2 = results.load('./data', 'sorted1')
 
 
 plt.figure()
@@ -1728,49 +1729,3 @@ best_fit = plt.scatter(zpicks1, mag1, marker='.', lw='1', c='xkcd:tomato')
 plt.ylabel('magnitude')
 plt.xlabel('z')
 plt.show(block=False)
-
-
-plt.figure()
-plt.title('model: sorted2'
-          +'\n Evolution of magnitude with redshift')
-#data = plt.errorbar(zpicks2, mag1, yerr=0.7, fmt='.', alpha=0.3)
-best_fit = plt.scatter(zpicks2, mag2, marker='.', lw='1', c='xkcd:tomato')
-plt.ylabel('magnitude')
-plt.xlabel('z')
-plt.show(block=False)
-
-
-#import results
-#import matplotlib.pyplot as plt
-#
-#mag, zpicks1 = results.load('./data', 'Amanullah1')
-#
-#plt.figure()
-#plt.title('model: zpicks1'
-#          +'\n Evolution of magnitude with redshift')
-#data = plt.errorbar(zpicks1, mag, yerr=0.7, fmt='.', alpha=0.3)
-##best_fit = plt.scatter(zpicks1, mag, lw='1', c='xkcd:tomato')
-#plt.ylabel('magnitude')
-#plt.xlabel('z')
-#plt.show(block=False)
-#
-#mag, zpicks2 = results.load('./data', 'Amanullah1')
-#
-#plt.figure()
-#plt.title('model: zpicks2'
-#          +'\n Evolution of magnitude with redshift')
-#data = plt.errorbar(zpicks2, mag, yerr=0.7, fmt='.', alpha=0.3)
-##best_fit = plt.scatter(zpicks2, mag, lw='1', c='xkcd:tomato')
-#plt.ylabel('magnitude')
-#plt.xlabel('z')
-#plt.show(block=False)
-#
-#plt.figure()
-#plt.title('model: zpicks 1 and zpicks2'
-#          +'\n Evolution of magnitude with redshift')
-##data = plt.errorbar(zpicks, mag, yerr=sigma, fmt='.', alpha=0.3)
-#best_fit = plt.scatter(zpicks2, mag, marker='.', lw='0.1', c='xkcd:tomato')
-#best_fit = plt.scatter(zpicks1, mag, marker='.', lw='0.1', c='xkcd:blue')
-#plt.ylabel('magnitude')
-#plt.xlabel('z')
-#plt.show(block=False)

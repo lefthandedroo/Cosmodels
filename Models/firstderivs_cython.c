@@ -25810,7 +25810,7 @@ static int __pyx_pymod_exec_firstderivs_cython(PyObject *__pyx_pyinit_module)
  * from cpython cimport array
  * import array             # <<<<<<<<<<<<<<
  * import math
- * #'late_intxde'
+ * # 'late_intxde'
  */
   __pyx_t_1 = __Pyx_Import(__pyx_n_s_array, 0, -1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 10, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
@@ -25821,8 +25821,8 @@ static int __pyx_pymod_exec_firstderivs_cython(PyObject *__pyx_pyinit_module)
  * from cpython cimport array
  * import array
  * import math             # <<<<<<<<<<<<<<
- * #'late_intxde'
- * #'heaviside_late_int'
+ * # 'late_intxde'
+ * # 'heaviside_late_int'
  */
   __pyx_t_1 = __Pyx_Import(__pyx_n_s_math, 0, -1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 11, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);

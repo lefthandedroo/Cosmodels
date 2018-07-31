@@ -1,0 +1,7 @@
+Bfactor time:  5min 54s
+model = late_intxde
+data = Amanullah_sorted1
+sigma = 0.5
+log(Z) = -156.21305962134687
+Information = 2.352796900110434
+speed = 2

@@ -70,7 +70,7 @@ def lnprior(theta, key):
             return 0.0
     elif key == 'zxxgamma' or 'gammaxxz':
         m, gamma = theta
-        if (0 < m < 1 or m == 1) and 0 < gamma:
+        if (0 < m < 1 or m == 1) and 0 < gamma < 10:
             return 0.0        
     else:
         m, gamma = theta

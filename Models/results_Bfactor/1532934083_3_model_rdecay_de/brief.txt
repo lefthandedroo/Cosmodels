@@ -1,7 +1,0 @@
-Bfactor time:  118min 25s
-model = rdecay_de
-data = mag_z_LCDM_1000_sigma_0.07
-sigma = 0.07
-log(Z) = -621.3219160674403
-Information = 11.707430223095344
-speed = 3
