@@ -1,0 +1,7 @@
+Bfactor time:  10min 5s
+model = txgamma
+data = Amanullah_sorted1
+sigma = 0.5
+log(Z) = -159.41305110450696
+Information = 4.786968176954929
+speed = 2

@@ -10,13 +10,15 @@ import numpy as np
 import os
 import results
 
-rootdir = './results_Bfactor'
-LCDM_log_Z = 353.97527367893576
+# Data_name options 'man, 'sn'.
+data_name = 'sn'
+
+rootdir = os.path.join('./results_Bfactor', data_name)
+LCDM_log_Z = None
 
 def compare(LCDM_log_Z, model_name, model_log_Z):
     
     log_Bfactor = LCDM_log_Z - model_log_Z
-    print()
     print('log(Bfactor) =',log_Bfactor)
     
     Bfactor = np.exp(log_Bfactor)
@@ -26,14 +28,23 @@ def compare(LCDM_log_Z, model_name, model_log_Z):
    
     return
     
+for subdir, dirs, files in os.walk(rootdir):
+    for directory in dirs:
+        model_name = directory[19:]
+        if model_name == 'LCDM':
+            path = os.path.join(subdir, directory)
+            LCDM_log_Z = results.load(path, 'evidence.p')
+            print(model_name, LCDM_log_Z)
+            print()
+            break
 
 for subdir, dirs, files in os.walk(rootdir):
     for directory in dirs:
-
         path = os.path.join(subdir, directory)
-        model_log_Z = results.load(path, 'evidence.p') 
         model_name = directory[19:]
         if model_name == 'LCDM':
             pass
         else:
+            model_log_Z = results.load(path, 'evidence.p') 
+            print(model_name, model_log_Z)
             compare(LCDM_log_Z, model_name, model_log_Z)
