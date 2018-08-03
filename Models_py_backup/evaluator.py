@@ -73,10 +73,10 @@ def all_modelcheck():
 def quickemcee():
     print('@@@@@@@ quickemcee @@@@@@@')
 #    mag = datasim.noisy_mag(zpicks, mu, sigma, data_params, data_key)
-#    dataname = 'Amanullah_sorted1'
+    dataname = 'Amanullah_sorted1'
     mag, zpicks = results.load('./data', dataname)
-#    mag -= 19
-#    sigma = 0.5
+    mag -= 19
+    sigma = 0.5
 #    print(mag)
     
     test_params = {'m':0.3, 'gamma':0}

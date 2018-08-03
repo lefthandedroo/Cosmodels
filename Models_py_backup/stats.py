@@ -124,40 +124,24 @@ def stats(params, zpicks, mag, sigma, nsteps,
                  mag, sigma, nsteps, nwalkers, save_path, firstderivs_key)
                     
         elif i == 2:
-            Mbest = sampler.flatchain[bi,i]
-            thetabest[i] = Mbest
-            parambest['M'] = Mbest
-            # Input M.
-            M_true = params.get('M',0)
-            true.append(M_true)
-            # Output M.
-            M = sampler.flatchain[:,i]
+            debest = sampler.flatchain[bi,i]
+            thetabest[i] = debest
+            parambest['de'] = debest
+            H0 = 1
+            rho_c0 = H0**2 # critical density
+            # Input de = e_de(z)/ec(z=0).
+            de_true = params.get('de', rho_c0/rho_c0 - m_true)
+            true.append(de_true)
+            # Output de.
+            de = sampler.flatchain[:,i]
             # Standard deviation and mean of the de distribution
-            M_sd = np.std(M)
-            M_mean = np.mean(M)
-            propert['M_sd'] = M_sd
-            propert['M_mean'] = M_mean
-            propert['M'] = Mbest
-            plots.stat('orchid', M, M_true, 'M', lnprob, zpicks, 
+            de_sd = np.std(de)
+            de_mean = np.mean(de)
+            propert['de_sd'] = de_sd
+            propert['de_mean'] = de_mean
+            propert['de'] = debest
+            plots.stat('orchid', de, de_true, 'DE', lnprob, zpicks, 
                  mag, sigma, nsteps, nwalkers, save_path, firstderivs_key)
-#            debest = sampler.flatchain[bi,i]
-#            thetabest[i] = debest
-#            parambest['de'] = debest
-#            H0 = 1
-#            rho_c0 = H0**2 # critical density
-#            # Input de = e_de(z)/ec(z=0).
-#            de_true = params.get('de', rho_c0/rho_c0 - m_true)
-#            true.append(de_true)
-#            # Output de.
-#            de = sampler.flatchain[:,i]
-#            # Standard deviation and mean of the de distribution
-#            de_sd = np.std(de)
-#            de_mean = np.mean(de)
-#            propert['de_sd'] = de_sd
-#            propert['de_mean'] = de_mean
-#            propert['de'] = debest
-#            plots.stat('orchid', de, de_true, 'DE', lnprob, zpicks, 
-#                 mag, sigma, nsteps, nwalkers, save_path, firstderivs_key)
             
     # Checking if best found parameters are within prior.
     lp = ln.lnprior(thetabest, firstderivs_key)
