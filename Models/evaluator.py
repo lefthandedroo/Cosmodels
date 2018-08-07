@@ -75,7 +75,7 @@ def quickemcee():
 #    mag = datasim.noisy_mag(zpicks, mu, sigma, data_params, data_key)
 #    dataname = 'Amanullah_sorted1'
     mag, zpicks = results.load('./data', dataname)
-#    mag -= 19
+#    mag -= (19.3146267582)
 #    sigma = 0.5
 #    print(mag)
     
