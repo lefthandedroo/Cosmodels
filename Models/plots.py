@@ -171,10 +171,6 @@ def ivcdmcheck(mag, zpicks, firstderivs_key, plot_var_dict):
     # Changing time into age
     t_1, t_2, t_3 = -t_1, -t_2, -t_3
 
-    mag_1 = plot_var_dict['mag_1']
-    mag_2 = plot_var_dict['mag_2']
-    mag_3 = plot_var_dict['mag_3']
-
     
 #    # Scale factor vs redshift.
 #    fig, ax = plt.subplots()
@@ -287,6 +283,11 @@ def ivcdmcheck(mag, zpicks, firstderivs_key, plot_var_dict):
 #    ax.legend()
 #
 #    # Magnitude vs redshift.
+#    
+#    mag_1 = plot_var_dict['mag_1']
+#    mag_2 = plot_var_dict['mag_2']
+#    mag_3 = plot_var_dict['mag_3']
+#    
 #    fig, ax = plt.subplots()
 #    plt.xlabel('redshift $z$')
 #    plt.ylabel('magnitude')

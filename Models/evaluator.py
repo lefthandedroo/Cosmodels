@@ -5,6 +5,7 @@ Created on Wed Apr 18 21:45:40 2018
 
 @author: BallBlueMeercat
 """
+import pandas as pd
 import matplotlib.pyplot as plt
 import time
 import os.path
@@ -74,10 +75,19 @@ def quickemcee():
     print('@@@@@@@ quickemcee @@@@@@@')
 #    mag = datasim.noisy_mag(zpicks, mu, sigma, data_params, data_key)
 #    dataname = 'Amanullah_sorted1'
-    mag, zpicks = results.load('./data', dataname)
-#    mag -= (19.3146267582)
-#    sigma = 0.5
-#    print(mag)
+#    mag, zpicks = results.load('./data', dataname)
+
+
+    pantheon = pd.read_csv('./data/lcparam_full_long.txt', sep=" ")#,
+#                   names = ['#name','zcmb','zhel','dz','mb','dmb','x1','dx1',
+#                            'color', 'dcolor','3rdvar','d3rdvar','cov_m_s',
+#                            'cov_m_c','cov_s_c','set','ra','dec','biascor'])
+    mag = pantheon.mb.values
+    print(type(mag))
+    print(len(mag))
+    zpicks = list(pantheon.zhel.values.flatten())
+    print(type(zpicks))
+    print(len(zpicks))
     
     test_params = {'m':0.3, 'gamma':0}
 
