@@ -19,18 +19,18 @@ import tools
 # slow = 1, medium = 2, long = 3
 speed = 2
 
-## Sigma of the noise on data.
-#sigma = 0.07
-#
-#dataname = 'mag_z_LCDM_1000_sigma_'+str(sigma)
-#
-## Load the data
-#mag, zpicks = results.load('./data', dataname)
+# Sigma of the noise on data.
+sigma = 0.07
 
-dataname = 'Amanullah_sorted1'
+dataname = 'mag_z_LCDM_1000_sigma_'+str(sigma)
+
+# Load the data
 mag, zpicks = results.load('./data', dataname)
-mag -= 19
-sigma = 0.5
+
+#dataname = 'Amanullah_sorted1'
+#mag, zpicks = results.load('./data', dataname)
+#mag -= 19
+#sigma = 0.5
 
 #@jitclass([('dummy', int32)])
 class Model(object):
@@ -106,25 +106,25 @@ class Model(object):
 #        assert b > a
 #        return (x - a)%(b - a) + a
 
-firstderivs_functions = [
-        'late_intxde'
-        ,'heaviside_late_int'
-        ,'late_int'
-        ,'expgamma'
-        ,'txgamma'
-        ,'zxgamma'
-        ,'gamma_over_z'
-
-#        ,'zxxgamma'    # nan field
-#        ,'gammaxxz'     # nan field
-
-        ,'rdecay_m' 
-        ,'rdecay_de'
-        ,'rdecay_mxde'
-        ,'rdecay'                        
-        ,'interacting'
-        ,'LCDM'
-         ]
+firstderivs_functions = ['expgamma', 'late_intxde']
+#        'late_intxde'
+#        ,'heaviside_late_int'
+#        ,'late_int'
+#        ,'expgamma'
+#        ,'txgamma'
+#        ,'zxgamma'
+#        ,'gamma_over_z'
+#
+##        ,'zxxgamma'    # nan field
+##        ,'gammaxxz'     # nan field
+#
+#        ,'rdecay_m' 
+#        ,'rdecay_de'
+#        ,'rdecay_mxde'
+#        ,'rdecay'                        
+#        ,'interacting'
+#        ,'LCDM'
+#         ]
 
 for key in firstderivs_functions:
         
