@@ -31,12 +31,11 @@ firstderivs_functions = {
 def zodesolve(params, zpicks, firstderivs_key):
     """
     Takes in:
-        gamma = interaction constant;
-        m = e_m(t)/ec(t0) at t=t0;
-#        de = e_de(t)/ec(t0) at t=t0.
-    Returns: 
-        z = numpoints number of redshifts zmin<z<zmax;
-        dlpc = luminosity distance in pc.
+        params = dictionary w/ key:value
+            'gamma':int/float = interaction constant;
+            'm':int/float = e_m(t)/ec(t0) at t=t0;
+        zpicks = list of redshifts ;
+        firstderivs_key = string, name of IVCDM model to use for model mag.
     
     """
 #    print('@@ zodesolve has been called')

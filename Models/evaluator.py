@@ -6,6 +6,7 @@ Created on Wed Apr 18 21:45:40 2018
 @author: BallBlueMeercat
 """
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 import time
 import os.path
@@ -75,20 +76,21 @@ def quickemcee():
     print('@@@@@@@ quickemcee @@@@@@@')
 #    mag = datasim.noisy_mag(zpicks, mu, sigma, data_params, data_key)
 #    dataname = 'Amanullah_sorted1'
-#    mag, zpicks = results.load('./data', dataname)
-
-
-    pantheon = pd.read_csv('./data/lcparam_full_long.txt', sep=" ")#,
-#                   names = ['#name','zcmb','zhel','dz','mb','dmb','x1','dx1',
-#                            'color', 'dcolor','3rdvar','d3rdvar','cov_m_s',
-#                            'cov_m_c','cov_s_c','set','ra','dec','biascor'])
-    mag = pantheon.mb.values
-    print(type(mag))
-    print(len(mag))
-    zpicks = list(pantheon.zhel.values.flatten())
-    print(type(zpicks))
-    print(len(zpicks))
+    mag, zpicks = results.load('./data', dataname)
     
+#    pantheon = pd.read_csv('./data/lcparam_full_long.txt', sep=" ")
+#    
+#    # Reading each txt file column of interest as numpy.ndarray
+#    mag = pantheon.mb.values
+#    zpicks = pantheon.zhel.values
+#    # Stacking them together and sorting by accending redshift.
+#    data = np.stack((mag,zpicks), axis=0)
+#    data.sort(axis=-1)
+#    mag = data[0]
+#    zpicks = data[1]
+#    zpicks = zpicks.tolist()
+    
+    data_dict = {'mag':mag, 'zpicks':zpicks}
     test_params = {'m':0.3, 'gamma':0}
 
     for test_key in firstderivs_functions:
@@ -102,7 +104,7 @@ def quickemcee():
         timet0 = time.time()            
         
         # emcee parameter search.
-        propert, sampler = stats.stats(test_params, zpicks, mag, sigma, 
+        propert, sampler = stats.stats(test_params, data_dict, sigma, 
                                        nsteps, save_path, test_key)        
         # Time taken by script. 
         timet1=time.time()
@@ -116,7 +118,59 @@ def quickemcee():
 
     return
 
-quickemcee()
+#quickemcee()
+    
+def Mcor_emcee():
+    print('@@@@@@@ Mcor_emcee @@@@@@@')
+
+    pantheon = pd.read_csv('./data/lcparam_full_long.txt', sep=" ")
+    
+    # Reading each txt file column of interest as numpy.ndarray
+    mag = pantheon.mb.values
+    x1 = pantheon.x1.values
+    colour = pantheon.color.values
+    zpicks = pantheon.zhel.values
+    
+    # Stacking them together and sorting by accending redshift.
+    data = np.stack((mag,x1,colour,zpicks), axis=0)
+    data.sort(axis=-1)
+    
+    mag = data[0]
+    x1 = data[1]
+    colour = data[2]
+    zpicks = data[3]
+    zpicks = zpicks.tolist()
+    
+    data_dict = {'mag':mag, 'x1':x1, 'colour':colour, 'zpicks':zpicks}
+    
+    test_params = {'m':0.3, 'gamma':0, 'alpha':0, 'beta':0}
+
+    for test_key in firstderivs_functions:
+        
+        # Creating a folder for saving output.
+        save_path = './quick_emcee/'+str(int(time.time()))+'_'+test_key
+        if not os.path.exists(save_path):
+            os.makedirs(save_path)    
+      
+        # Script timer.
+        timet0 = time.time()            
+        
+        # emcee parameter search.
+        propert, sampler = stats.stats(test_params, data_dict, sigma, 
+                                       nsteps, save_path, test_key)        
+        # Time taken by script. 
+        timet1=time.time()
+        tools.timer('script', timet0, timet1)
+        
+        # Saving sampler to directory.
+        results.save(save_path, 'sampler', sampler)
+
+        print('Model being tested:', test_key)
+        print('Data:',dataname)
+
+    return
+
+Mcor_emcee()
 
 
 def errorvsdatasize():

@@ -6,7 +6,23 @@ Created on Thu Sep 21 15:50:29 2017
 @author: BallBlueMeercat
 """
 import pandas as pd
-data = pd.read_csv('./data/lcparam_full_long.txt', sep=" ")#,
-#                   names = ['#name','zcmb','zhel','dz','mb','dmb','x1','dx1',
-#                            'color', 'dcolor','3rdvar','d3rdvar','cov_m_s',
-#                            'cov_m_c','cov_s_c','set','ra','dec','biascor'])
+import matplotlib.pyplot as plt
+import numpy as np
+
+amanullah = pd.read_csv('/Users/BallBlueMeercat/Documents/Study/MPhil/Geraint/Cosmodels/Models/data/Amanullah.txt', sep=" ")
+
+mag = amanullah.mb.values
+zpicks = amanullah.zhel.values
+
+data = np.stack((mag,x1,colour,zpicks), axis=0)
+
+data.sort(axis=-1)
+
+
+
+mag = data[0]
+x1 = data[1]
+colour = data[2]
+zpicks = data[3]
+
+plt.plot(zpicks, mag)

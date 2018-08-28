@@ -16,28 +16,41 @@ import tools
 import ln
 import plots
 
-def stats(params, zpicks, mag, sigma, nsteps, 
+def stats(test_params, data_dict, sigma, nsteps, 
           save_path, firstderivs_key):
     """
     Takes in:
-            m_true = e_m(t)/ec(t0) at t=t0;
-            zpicks = list of z to match the interpolated dlmpc to;
-            mag = list of n apparent magnitudes mag for zpicks redshits;
-            sigma = standard deviation used to generate Gaussian noise.
+            test_params = dictionary of parameters to be emcee fitted
+                'm':int/float = e_m(t)/ec(t0) at t=t0;
+                'gamma':int/float = interaction term;
+                'alpha':int/float = SN peak mag correlation parameter;
+                'beta' :int/float = SN peak mag correlation parameter;
+            data_dict = dictionary of parameters from data
+                'colour': numpy.ndarray = SN colour;
+                'x1': numpy.ndarray = SN stretch correction as;
+                'zpicks':list of redshifts sorted in accending order;
+                'mag':list of apparent magnitudes;
+            sigma = standard deviation of error on the data;
+            nsteps = int, steps to be taken by each emcee walker;
+            save_path = string, directory for saving output;
+            firstderivs_key = string, name of IVCDM model to use for model mag.
     Returns:
     """
 #    print('-stats has been called')
     
+    zpicks = data_dict.get('zpicks',0)
+    mag = data_dict.get('mag',0)
+    
     if firstderivs_key == 'LCDM':
-        params['gamma'] = 0
-        del params['gamma']
+        test_params['gamma'] = 0
+        del test_params['gamma']
     
     # emcee parameters:
-    ndim = len(params)
+    ndim = len(test_params)
     nwalkers = int(ndim * 2)
 
     # Initializing walkers.
-    poslist = list(params.values())
+    poslist = list(test_params.values())
     pos = []
     for i in poslist:
         pos.append(i / 2)
@@ -56,7 +69,7 @@ def stats(params, zpicks, mag, sigma, nsteps,
     # Sampler setup.
     times0 = time.time()    # starting sampler timer
     sampler = EnsembleSampler(nwalkers, ndim, ln.lnprob, 
-                                    args=(zpicks, mag, sigma, firstderivs_key, ndim))
+                                    args=(data_dict, sigma, firstderivs_key, ndim))
     
     # Burnin.
     burnin = int(nsteps/4)  # steps to discard
@@ -92,7 +105,7 @@ def stats(params, zpicks, mag, sigma, nsteps,
             thetabest[i] = mbest
             parambest['m'] = mbest
             # Input m = e_m(z)/ec(z=0).
-            m_true = params.get('m', 0)
+            m_true = test_params.get('m', 0)
             true.append(m_true)
             # Output m.
             m = sampler.flatchain[:,i]
@@ -110,7 +123,7 @@ def stats(params, zpicks, mag, sigma, nsteps,
             thetabest[i] = gammabest
             parambest['gamma'] = gammabest
             # Input interaction term.
-            g_true = params.get('gamma',0)
+            g_true = test_params.get('gamma',0)
             true.append(g_true)
             # Output gamma.
             gamma = sampler.flatchain[:,i]
@@ -124,21 +137,21 @@ def stats(params, zpicks, mag, sigma, nsteps,
                  mag, sigma, nsteps, nwalkers, save_path, firstderivs_key)
                     
         elif i == 2:
-            Mbest = sampler.flatchain[bi,i]
-            thetabest[i] = Mbest
-            parambest['M'] = Mbest
-            # Input M.
-            M_true = params.get('M',0)
-            true.append(M_true)
-            # Output M.
-            M = sampler.flatchain[:,i]
-            # Standard deviation and mean of the de distribution
-            M_sd = np.std(M)
-            M_mean = np.mean(M)
-            propert['M_sd'] = M_sd
-            propert['M_mean'] = M_mean
-            propert['M'] = Mbest
-            plots.stat('orchid', M, M_true, 'M', lnprob, zpicks, 
+            alphabest = sampler.flatchain[bi,i]
+            thetabest[i] = alphabest
+            parambest['alpha'] = alphabest
+            # Input alpha.
+            alpha_true = test_params.get('alpha',0)
+            true.append(alpha_true)
+            # Output alpha.
+            alpha = sampler.flatchain[:,i]
+            # Standard deviation and mean of the alpha distribution
+            alpha_sd = np.std(alpha)
+            alpha_mean = np.mean(alpha)
+            propert['alpha_sd'] = alpha_sd
+            propert['alpha_mean'] = alpha_mean
+            propert['alpha'] = alphabest
+            plots.stat('orchid', alpha, alpha_true, 'alpha', lnprob, zpicks, 
                  mag, sigma, nsteps, nwalkers, save_path, firstderivs_key)
 #            debest = sampler.flatchain[bi,i]
 #            thetabest[i] = debest
@@ -168,7 +181,7 @@ def stats(params, zpicks, mag, sigma, nsteps,
 
     # Plot of data mag and redshifts, overlayed with
     # mag simulated using emcee best parameters and data redshifts.
-    magbest = datasim.magn(parambest, zpicks, firstderivs_key)
+    magbest = datasim.magn(parambest, data_dict, firstderivs_key)
     plt.figure()
     plt.title('model: '+firstderivs_key
               +'\n Evolution of magnitude with redshift \n nsteps: '

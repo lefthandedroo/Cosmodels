@@ -26,7 +26,40 @@ def redshift_picks(zmin, zmax, n):
     zpicks = sorted(zpicks)
     return zpicks
 
-def magn(params, zpicks, firstderivs_key, plot_key=False):
+#def magn(params, data, firstderivs_key, plot_key=False):
+#    """
+#    Takes in:
+#            params = dictionary with true parameters;
+#            zpicks = list of redshifts to integrate over, in accending order;
+#            firstderivs_key = string, indicates which firstderivs to integrate;
+#            plot_key = Boolean, to plot or not to plot model figures;
+#    Returns:
+#        mag = np.ndarray of apparent mag corresponding to input redshits.
+#    """
+##    print('@@@ magn has been called')
+#    if firstderivs_key == 'LCDM':
+#        params['gamma'] = 0
+#        del params['gamma']
+#    
+#    zpicks = data['zpicks']
+#    
+#    # Absolute brightness of supernovae.
+#    M = -19
+#    
+#    dlpc, plot_var = zodesolve.zodesolve(params, zpicks, firstderivs_key)
+#    
+#    # Calculating apparent magnitudes of supernovae at the simulated
+#    # luminosity distances using the distance modulus formula.
+#    mag = 5 * np.log10(dlpc/10) + M
+#
+#    if plot_key:
+#        # Checking evolution of the model.
+#        import plots
+#        plots.modelcheck(mag, zpicks, plot_var, firstderivs_key)
+#        
+#    return mag
+
+def magn(params, data, firstderivs_key, plot_key=False):
     """
     Takes in:
             params = dictionary with true parameters;
@@ -41,14 +74,20 @@ def magn(params, zpicks, firstderivs_key, plot_key=False):
         params['gamma'] = 0
         del params['gamma']
     
+    zpicks = data['zpicks']
+    x1 = data['x1']
+    colour = data['colour']
+    
     # Absolute brightness of supernovae.
-    M = -19
+    M_b = -19
+    alpha = params['alpha']
+    beta = params['beta']
     
     dlpc, plot_var = zodesolve.zodesolve(params, zpicks, firstderivs_key)
     
     # Calculating apparent magnitudes of supernovae at the simulated
     # luminosity distances using the distance modulus formula.
-    mag = 5 * np.log10(dlpc/10) + M
+    mag = 5 * np.log10(dlpc/10) + M_b - alpha*x1 +beta*colour
 
     if plot_key:
         # Checking evolution of the model.

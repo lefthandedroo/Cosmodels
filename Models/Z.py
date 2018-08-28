@@ -11,7 +11,7 @@ import os
 import results
 
 # Data_name options 'man, 'sn'.
-data_name = 'sn'
+data_name = 'man'
 
 rootdir = os.path.join('./results_Bfactor', data_name)
 LCDM_log_Z = None
