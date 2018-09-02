@@ -48,12 +48,12 @@ def stats(test_params, data_dict, sigma, nsteps,
     # emcee parameters:
     ndim = len(test_params)
     nwalkers = int(ndim * 2)
-
+    
     # Initializing walkers.
     poslist = list(test_params.values())
     pos = []
     for i in poslist:
-        pos.append(i / 2)
+        pos.append(i)
     startpos = np.array(pos)
     pos = [startpos + 0.01*np.random.randn(ndim) for i in range(nwalkers)]
     
@@ -99,8 +99,9 @@ def stats(test_params, data_dict, sigma, nsteps,
     true = []
     propert = {}
     propert['trace'] = trace
+    
     for i in range(ndim):
-        if i == 0:                       
+        if i == 0:     
             mbest = sampler.flatchain[bi,i]
             thetabest[i] = mbest
             parambest['m'] = mbest
@@ -119,6 +120,24 @@ def stats(test_params, data_dict, sigma, nsteps,
                  mag, sigma, nsteps, nwalkers, save_path, firstderivs_key)
             
         elif i == 1:
+            Mbest = sampler.flatchain[bi,i]
+            thetabest[i] = Mbest
+            parambest['M'] = Mbest
+            # Input M.
+            M_true = test_params.get('M',0)
+            true.append(M_true)
+            # Output alpha.
+            M = sampler.flatchain[:,i]
+            # Standard deviation and mean of the alpha distribution
+            M_sd = np.std(M)
+            M_mean = np.mean(M)
+            propert['M_sd'] = M_sd
+            propert['M_mean'] = M_mean
+            propert['M'] = Mbest
+            plots.stat('orchid', M, M_true, 'Mcorr', lnprob, zpicks, 
+                 mag, sigma, nsteps, nwalkers, save_path, firstderivs_key)
+                    
+        elif i == 2:
             gammabest = sampler.flatchain[bi,i]
             thetabest[i] = gammabest
             parambest['gamma'] = gammabest
@@ -135,24 +154,8 @@ def stats(test_params, data_dict, sigma, nsteps,
             propert['gamma'] = gammabest
             plots.stat('aquamarine', gamma, g_true, 'Gamma', lnprob, zpicks, 
                  mag, sigma, nsteps, nwalkers, save_path, firstderivs_key)
-                    
-        elif i == 2:
-            alphabest = sampler.flatchain[bi,i]
-            thetabest[i] = alphabest
-            parambest['alpha'] = alphabest
-            # Input alpha.
-            alpha_true = test_params.get('alpha',0)
-            true.append(alpha_true)
-            # Output alpha.
-            alpha = sampler.flatchain[:,i]
-            # Standard deviation and mean of the alpha distribution
-            alpha_sd = np.std(alpha)
-            alpha_mean = np.mean(alpha)
-            propert['alpha_sd'] = alpha_sd
-            propert['alpha_mean'] = alpha_mean
-            propert['alpha'] = alphabest
-            plots.stat('orchid', alpha, alpha_true, 'alpha', lnprob, zpicks, 
-                 mag, sigma, nsteps, nwalkers, save_path, firstderivs_key)
+            
+
 #            debest = sampler.flatchain[bi,i]
 #            thetabest[i] = debest
 #            parambest['de'] = debest

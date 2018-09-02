@@ -28,6 +28,8 @@ def redshift_picks(zmin, zmax, n):
 
 #def magn(params, data, firstderivs_key, plot_key=False):
 #    """
+#    Finding matter density m, interaction gamma.
+#    
 #    Takes in:
 #            params = dictionary with true parameters;
 #            zpicks = list of redshifts to integrate over, in accending order;
@@ -59,8 +61,10 @@ def redshift_picks(zmin, zmax, n):
 #        
 #    return mag
 
+
 def magn(params, data, firstderivs_key, plot_key=False):
     """
+    Finding matter density m, corrected absolute mag M, interaction gamma.
     Takes in:
             params = dictionary with true parameters;
             zpicks = list of redshifts to integrate over, in accending order;
@@ -75,19 +79,15 @@ def magn(params, data, firstderivs_key, plot_key=False):
         del params['gamma']
     
     zpicks = data['zpicks']
-    x1 = data['x1']
-    colour = data['colour']
     
     # Absolute brightness of supernovae.
-    M_b = -19
-    alpha = params['alpha']
-    beta = params['beta']
+    M = params['M']
     
     dlpc, plot_var = zodesolve.zodesolve(params, zpicks, firstderivs_key)
     
     # Calculating apparent magnitudes of supernovae at the simulated
     # luminosity distances using the distance modulus formula.
-    mag = 5 * np.log10(dlpc/10) + M_b - alpha*x1 +beta*colour
+    mag = 5 * np.log10(dlpc/10) + M
 
     if plot_key:
         # Checking evolution of the model.
@@ -95,6 +95,45 @@ def magn(params, data, firstderivs_key, plot_key=False):
         plots.modelcheck(mag, zpicks, plot_var, firstderivs_key)
         
     return mag
+
+
+#def magn(params, data, firstderivs_key, plot_key=False):
+#    """
+#    Finding matter density m, alpha, beta, interaction gamma.
+#    Takes in:
+#            params = dictionary with true parameters;
+#            zpicks = list of redshifts to integrate over, in accending order;
+#            firstderivs_key = string, indicates which firstderivs to integrate;
+#            plot_key = Boolean, to plot or not to plot model figures;
+#    Returns:
+#        mag = np.ndarray of apparent mag corresponding to input redshits.
+#    """
+##    print('@@@ magn has been called')
+#    if firstderivs_key == 'LCDM':
+#        params['gamma'] = 0
+#        del params['gamma']
+#    
+#    zpicks = data['zpicks']
+#    x1 = data['x1']
+#    colour = data['colour']
+#    
+#    # Absolute brightness of supernovae.
+#    M_b = -19
+#    alpha = params['alpha']
+#    beta = params['beta']
+#    
+#    dlpc, plot_var = zodesolve.zodesolve(params, zpicks, firstderivs_key)
+#    
+#    # Calculating apparent magnitudes of supernovae at the simulated
+#    # luminosity distances using the distance modulus formula.
+#    mag = 5 * np.log10(dlpc/10) + M_b - alpha*x1 +beta*colour
+#
+#    if plot_key:
+#        # Checking evolution of the model.
+#        import plots
+#        plots.modelcheck(mag, zpicks, plot_var, firstderivs_key)
+#        
+#    return mag
 
 # Slow mag calculation
 #    # Calculating apparent magnitudes of supernovae at the simulated

@@ -17,7 +17,7 @@ import stats
 
 
 # Number of datapoints to be simulated and number of emcee steps.
-npoints, nsteps = 1000, 100000
+npoints, nsteps = 1000, 10000
 zmax = 2
 
 # Statistical parameteres of noise:
@@ -43,7 +43,7 @@ zpicks = datasim.redshift_picks(0.005, zmax, npoints)
 #datasim.model_comparison({'m':0.3, 'gamma':-2}, zpicks, firstderivs_list)
 
 firstderivs_functions = [
-#            'late_intxde'
+            'late_intxde'
 #            ,'heaviside_late_int'
 #            ,'late_int'     # limited prior
 #            ,'expgamma'     # limited prior
@@ -57,7 +57,7 @@ firstderivs_functions = [
 #            ,'rdecay_mxde'  # nan field
 #            ,'rdecay'       # limited prior               
 #            ,'interacting'  # nan field, limited prior
-            'LCDM'         # limited prior
+#            ,'LCDM'         # limited prior
              ]
 
 def all_modelcheck():
@@ -123,27 +123,31 @@ def quickemcee():
 def Mcor_emcee():
     print('@@@@@@@ Mcor_emcee @@@@@@@')
 
-    pantheon = pd.read_csv('./data/lcparam_full_long.txt', sep=" ")
+#    pantheon = pd.read_csv('./data/lcparam_full_long.txt', sep=" ")
+#    
+#    # Reading each txt file column of interest as numpy.ndarray
+#    mag = pantheon.mb.values
+#    x1 = pantheon.x1.values
+#    colour = pantheon.color.values
+#    zpicks = pantheon.zhel.values
+#    
+#    # Stacking them together and sorting by accending redshift.
+#    data = np.stack((mag,x1,colour,zpicks), axis=0)
+#    data.sort(axis=-1)
+#    
+#    mag = data[0]
+#    x1 = data[1]
+#    colour = data[2]
+#    zpicks = data[3]
+#    zpicks = zpicks.tolist()
     
-    # Reading each txt file column of interest as numpy.ndarray
-    mag = pantheon.mb.values
-    x1 = pantheon.x1.values
-    colour = pantheon.color.values
-    zpicks = pantheon.zhel.values
+    mag, zpicks = results.load('./data', dataname)
     
-    # Stacking them together and sorting by accending redshift.
-    data = np.stack((mag,x1,colour,zpicks), axis=0)
-    data.sort(axis=-1)
+#    data_dict = {'mag':mag, 'x1':x1, 'colour':colour, 'zpicks':zpicks}
+    data_dict = {'mag':mag,'zpicks':zpicks}
     
-    mag = data[0]
-    x1 = data[1]
-    colour = data[2]
-    zpicks = data[3]
-    zpicks = zpicks.tolist()
-    
-    data_dict = {'mag':mag, 'x1':x1, 'colour':colour, 'zpicks':zpicks}
-    
-    test_params = {'m':0.3, 'gamma':0, 'alpha':0, 'beta':0}
+#    test_params = {'m':0.3, 'gamma':0, 'alpha':0, 'beta':0}
+    test_params = {'m':0.3, 'M':-19, 'gamma':0}
 
     for test_key in firstderivs_functions:
         
