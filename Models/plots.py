@@ -36,7 +36,7 @@ def stat(hue, var, var_true, var_name, slnprob, zpicks,
     stamp = str(int(time.time()))
     filename = str(stamp)+'_'+initial+'_mhist__nsteps_'+str(nsteps) \
     +'_nwalkers_'+str(nwalkers)+'_noise_'+str(sigma) \
-    +'_numpoints_'+str(len(zpicks))+'.pdf'
+    +'_numpoints_'+str(len(zpicks))+'.png'
     filename = os.path.join(save_path, filename)
     plt.savefig(filename)
     
@@ -50,7 +50,7 @@ def stat(hue, var, var_true, var_name, slnprob, zpicks,
     stamp = str(int(time.time()))
     filename = str(stamp)+'_'+initial+'_steps__nsteps_'+str(nsteps) \
     +'_nwalkers_'+str(nwalkers)+'_noise_'+str(sigma) \
-    +'_numpoints_'+str(len(zpicks))+'.pdf'
+    +'_numpoints_'+str(len(zpicks))+'.png'
     filename = os.path.join(save_path, filename)
     plt.savefig(filename)
     
@@ -67,7 +67,7 @@ def stat(hue, var, var_true, var_name, slnprob, zpicks,
     stamp = str(int(time.time()))
     filename = str(stamp)+'_'+initial+'_chain__nsteps_'+str(nsteps) \
     +'_nwalkers_'+str(nwalkers)+'_noise_'+str(sigma) \
-    +'_numpoints_'+str(len(zpicks))+'.pdf'
+    +'_numpoints_'+str(len(zpicks))+'.png'
     filename = os.path.join(save_path, filename)
     plt.savefig(filename)
     

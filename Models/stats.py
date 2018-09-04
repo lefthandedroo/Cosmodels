@@ -136,8 +136,44 @@ def stats(test_params, data_dict, sigma, nsteps,
             propert['M'] = Mbest
             plots.stat('orchid', M, M_true, 'Mcorr', lnprob, zpicks, 
                  mag, sigma, nsteps, nwalkers, save_path, firstderivs_key)
-                    
+            
         elif i == 2:
+            alphabest = sampler.flatchain[bi,i]
+            thetabest[i] = alphabest
+            parambest['alpha'] = alphabest
+            # Input interaction term.
+            a_true = test_params.get('alpha',0)
+            true.append(a_true)
+            # Output gamma.
+            alpha = sampler.flatchain[:,i]
+            # Standard deviation and mean of the gamme distribution.
+            alpha_sd = np.std(alpha)
+            alpha_mean = np.mean(alpha)
+            propert['alpha_sd'] = alpha_sd
+            propert['alpha_mean'] = alpha_mean
+            propert['alpha'] = alphabest
+            plots.stat('apple', alpha, a_true, 'alpha', lnprob, zpicks, 
+                 mag, sigma, nsteps, nwalkers, save_path, firstderivs_key)
+            
+        elif i == 3:
+            betabest = sampler.flatchain[bi,i]
+            thetabest[i] = betabest
+            parambest['beta'] = betabest
+            # Input interaction term.
+            b_true = test_params.get('beta',0)
+            true.append(b_true)
+            # Output gamma.
+            beta = sampler.flatchain[:,i]
+            # Standard deviation and mean of the gamme distribution.
+            beta_sd = np.std(beta)
+            beta_mean = np.mean(beta)
+            propert['beta_sd'] = beta_sd
+            propert['beta_mean'] = beta_mean
+            propert['beta'] = betabest
+            plots.stat('orange', beta, b_true, 'beta', lnprob, zpicks, 
+                 mag, sigma, nsteps, nwalkers, save_path, firstderivs_key)
+                    
+        elif i == 4:
             gammabest = sampler.flatchain[bi,i]
             thetabest[i] = gammabest
             parambest['gamma'] = gammabest
@@ -156,24 +192,6 @@ def stats(test_params, data_dict, sigma, nsteps,
                  mag, sigma, nsteps, nwalkers, save_path, firstderivs_key)
             
 
-#            debest = sampler.flatchain[bi,i]
-#            thetabest[i] = debest
-#            parambest['de'] = debest
-#            H0 = 1
-#            rho_c0 = H0**2 # critical density
-#            # Input de = e_de(z)/ec(z=0).
-#            de_true = params.get('de', rho_c0/rho_c0 - m_true)
-#            true.append(de_true)
-#            # Output de.
-#            de = sampler.flatchain[:,i]
-#            # Standard deviation and mean of the de distribution
-#            de_sd = np.std(de)
-#            de_mean = np.mean(de)
-#            propert['de_sd'] = de_sd
-#            propert['de_mean'] = de_mean
-#            propert['de'] = debest
-#            plots.stat('orchid', de, de_true, 'DE', lnprob, zpicks, 
-#                 mag, sigma, nsteps, nwalkers, save_path, firstderivs_key)
             
     # Checking if best found parameters are within prior.
     lp = ln.lnprior(thetabest, firstderivs_key)
@@ -196,7 +214,7 @@ def stats(test_params, data_dict, sigma, nsteps,
     plt.legend([data, best_fit], ['LCDM', firstderivs_key])
     stamp = str(int(time.time()))
     filename = str(stamp)+'____magz__nsteps_'+str(nsteps)+'_nwalkers_' \
-    +str(nwalkers)+'_noise_'+str(sigma)+'_numpoints_'+str(len(zpicks))+'.pdf'
+    +str(nwalkers)+'_noise_'+str(sigma)+'_numpoints_'+str(len(zpicks))+'.png'
     filename = os.path.join(save_path, filename)
     plt.savefig(filename)
     plt.show(block=False)

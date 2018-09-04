@@ -118,7 +118,7 @@ def magn(params, data, firstderivs_key, plot_key=False):
 #    colour = data['colour']
 #    
 #    # Absolute brightness of supernovae.
-#    M_b = -19
+#    M = params['M']
 #    alpha = params['alpha']
 #    beta = params['beta']
 #    
@@ -126,7 +126,7 @@ def magn(params, data, firstderivs_key, plot_key=False):
 #    
 #    # Calculating apparent magnitudes of supernovae at the simulated
 #    # luminosity distances using the distance modulus formula.
-#    mag = 5 * np.log10(dlpc/10) + M_b - alpha*x1 +beta*colour
+#    mag = 5 * np.log10(dlpc/10) + M - alpha*x1 +beta*colour
 #
 #    if plot_key:
 #        # Checking evolution of the model.
