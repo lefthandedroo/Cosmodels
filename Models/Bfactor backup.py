@@ -8,7 +8,6 @@ Created on Tue Jun 12 20:20:03 2018
 import time
 import dnest4
 import numpy as np
-import pandas as pd
 import numpy.random as rng
 import pickle
 #from numba import jitclass, int32
@@ -17,35 +16,21 @@ import results
 import tools
 #from scipy.special import erf
 
-# from prior = 0, short = 1, medium = 2, long = 3
-speed = 0
+# slow = 1, medium = 2, long = 3
+speed = 2
 
 # Sigma of the noise on data.
 sigma = 0.07
 
-# Loading data:
-#dataname = 'mag_z_LCDM_1000_sigma_'+str(sigma)
+dataname = 'mag_z_LCDM_1000_sigma_'+str(sigma)
+
+# Load the data
+mag, zpicks = results.load('./data', dataname)
+
+#dataname = 'Amanullah_sorted1'
 #mag, zpicks = results.load('./data', dataname)
-
-dataname = './data/lcparam_full_long.txt'
-pantheon = pd.read_csv(dataname, sep=" ")
-
-# Reading each txt file column of interest as numpy.ndarray
-mag = pantheon.mb.values
-x1 = pantheon.x1.values
-colour = pantheon.color.values
-zpicks = pantheon.zhel.values
-
-# Stacking them together and sorting by accending redshift.
-data = np.stack((mag,x1,colour,zpicks), axis=0)
-data.sort(axis=-1)
-
-mag = data[0]
-x1 = data[1]
-colour = data[2]
-zpicks = data[3]
-zpicks = zpicks.tolist()
-data_dict = {'mag':mag, 'x1':x1, 'colour':colour, 'zpicks':zpicks}
+#mag -= 19
+#sigma = 0.5
 
 #@jitclass([('dummy', int32)])
 class Model(object):
@@ -56,13 +41,6 @@ class Model(object):
         """
         Parameter values *are not* stored inside the class
         """
-        self.M_min = -20
-        self.M_max = -18
-        self.a_min = -20
-        self.a_max = 20
-        self.b_min = -20
-        self.b_max = 20
-        
         if g_lim != None:
             self.g_min = g_lim[0]
             self.g_max = g_lim[1]
@@ -73,17 +51,11 @@ class Model(object):
         Unlike in C++, this must *return* a numpy array of parameters.
         """
         m = rng.rand()
-        M = 1E3*rng.rand()
-        M = dnest4.wrap(M, self.M_min, self.M_max)
-        a = 1E3*rng.rand()
-        a = dnest4.wrap(a, self.a_min, self.a_max)
-        b = 1E3*rng.rand()
-        b = dnest4.wrap(b, self.b_min, self.b_max)
         if g_lim != None:
             g = 1E3*rng.rand()
             g = dnest4.wrap(g, self.g_min, self.g_max)
-            return np.array([m, M, a, b, g])
-        return np.array([m, M, a, b])
+            return np.array([m, g])
+        return np.array([m])
 
     def perturb(self, params):
         """
@@ -98,18 +70,8 @@ class Model(object):
         if which == 0:
             params[which] += dnest4.randh()
             params[which] = dnest4.wrap(params[which], 0.0, 1.0)
-
+            
         elif which == 1:
-            params[which] += dnest4.randh()
-            params[which] = dnest4.wrap(params[which], self.M_min, self.M_max)
-
-        elif which == 2:
-            params[which] += dnest4.randh()
-            params[which] = dnest4.wrap(params[which], self.a_min, self.a_max)
-        elif which == 3:
-            params[which] += dnest4.randh()
-            params[which] = dnest4.wrap(params[which], self.b_min, self.b_max)            
-        elif which == 4:
             params[which] += dnest4.randh()
             params[which] = dnest4.wrap(params[which], self.g_min, self.g_max)
 
@@ -119,14 +81,13 @@ class Model(object):
         """
         Gaussian sampling distribution.
         """
-        if len(params) > 4:
-            m, M, a, b, g = params
-            theta = {'m':m, 'M':M, 'a':a, 'b':b, 'gamma':g}
+        if len(params) > 1:
+            m, g = params
+            theta = {'m':m,'gamma':g}
         else:
-            m, M, a, b = params
-            theta = {'m':m, 'M':M, 'a':a, 'b':b}
+            theta = {'m':params[0]}
         
-        model = datasim.magn(theta, data_dict, key)
+        model = datasim.magn(theta, zpicks, key)
         
         var = sigma**2.0
         return -0.5*np.sum((mag-model)**2.0 /var +0.5*np.log(2.0*np.pi*var))
@@ -145,7 +106,7 @@ class Model(object):
 #        assert b > a
 #        return (x - a)%(b - a) + a
 
-firstderivs_functions = ['LCDM', 'zxxgamma'
+firstderivs_functions = ['expgamma', 'late_intxde']
 #        'late_intxde'
 #        ,'heaviside_late_int'
 #        ,'late_int'
@@ -153,17 +114,17 @@ firstderivs_functions = ['LCDM', 'zxxgamma'
 #        ,'txgamma'
 #        ,'zxgamma'
 #        ,'gamma_over_z'
-
-##        'zxxgamma'    # nan field
+#
+##        ,'zxxgamma'    # nan field
 ##        ,'gammaxxz'     # nan field
-
+#
 #        ,'rdecay_m' 
 #        ,'rdecay_de'
 #        ,'rdecay_mxde'
 #        ,'rdecay'                        
 #        ,'interacting'
 #        ,'LCDM'
-         ]
+#         ]
 
 for key in firstderivs_functions:
         
@@ -279,47 +240,16 @@ for key in firstderivs_functions:
         if key == 'LCDM':
             plt.figure()
             plt.title('matter')
-            plt.hist(array[:,0])
+            plt.hist(array)
             plt.show()
-        
-            plt.figure()
-            plt.title('M_b')
-            plt.hist(array[:,1])
-            plt.show()   
-            
-            plt.figure()
-            plt.title('alpha')
-            plt.hist(array[:,2])
-            plt.show()
-            
-            plt.figure()
-            plt.title('beta')
-            plt.hist(array[:,3])
-            plt.show()            
         else:
             plt.figure()
             plt.title('matter')
-            plt.hist(array[:,0])
-            plt.show()
-        
-            plt.figure()
-            plt.title('M_b')
-            plt.hist(array[:,1])
-            plt.show()   
-            
-            plt.figure()
-            plt.title('alpha')
-            plt.hist(array[:,2])
-            plt.show()
-            
-            plt.figure()
-            plt.title('beta')
-            plt.hist(array[:,3])
-            plt.show()
+            plt.hist(array[:, 0])
             
             plt.figure()
             plt.title('gamma')
-            plt.hist(array[:,4])
+            plt.hist(array[:, 1])
             plt.show()
 
 
