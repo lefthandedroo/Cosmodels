@@ -11,22 +11,23 @@ import firstderivs_cython as f
 
 
 firstderivs_functions = {
+        'exotic':f.exotic,
         'late_intxde':f.late_intxde,
         'heaviside_late_int':f.heaviside_late_int,
         'late_int':f.late_int,
         'expgamma':f.expgamma,
-         'txgamma':f.txgamma,
-         'zxgamma':f.zxgamma,
-         'gamma_over_z':f.gamma_over_z,
-         'zxxgamma':f.zxxgamma,
-         'gammaxxz':f.gammaxxz,
-         'rdecay_m':f.rdecay_m,
-         'rdecay_de':f.rdecay_de,
-         'rdecay_mxde':f.rdecay_mxde,
-         'rdecay':f.rdecay,                         
-         'interacting':f.interacting,
-         'LCDM':f.LCDM
-         }
+        'txgamma':f.txgamma,
+        'zxgamma':f.zxgamma,
+        'gamma_over_z':f.gamma_over_z,
+        'zxxgamma':f.zxxgamma,
+        'gammaxxz':f.gammaxxz,
+        'rdecay_m':f.rdecay_m,
+        'rdecay_de':f.rdecay_de,
+        'rdecay_mxde':f.rdecay_mxde,
+        'rdecay':f.rdecay,                         
+        'interacting':f.interacting,
+        'LCDM':f.LCDM
+        }
 
 def zodesolve(params, zpicks, firstderivs_key):
     """
@@ -57,6 +58,8 @@ def zodesolve(params, zpicks, firstderivs_key):
     ombar_m0 = params.get('m', 0)                        # e_m(z)/ec(z=0)
     gamma = params.get('gamma',0)
     ombar_de0 = params.get('de', rho_c0/rho_c0 -ombar_m0) # e_de(z)/ec(z=0)
+    a = params.get('a', 0) 
+    b = params.get('b', 0)
     
     # ODE solver parameters:
     abserr = 1.0e-8

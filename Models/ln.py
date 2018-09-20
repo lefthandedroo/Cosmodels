@@ -55,6 +55,9 @@ def lnlike(theta, data, sigma, firstderivs_key, ndim):
     elif ndim == 5:
         params= {'m':theta[0], 'M':theta[1], 'alpha':theta[2], 
                  'beta':theta[3],'gamma':theta[4]}
+    elif ndim == 6:
+        params= {'m':theta[0], 'M':theta[1], 'alpha':theta[2], 
+                 'beta':theta[3],'a':theta[4], 'b':theta[5]}
     
     model = magn(params, data, firstderivs_key)
     var = sigma**2
@@ -179,7 +182,11 @@ def lnprior(theta, key):
     elif key == 'zxxgamma' or 'gammaxxz':
         m, M, alpha, beta, gamma = theta
         if (0 < m < 1 or m == 1) and Mmin < M < Mmax and amin < alpha < amax and bmin < beta < bmax and 0 < gamma < 10:
-            return 0.0        
+            return 0.0
+    elif key == 'exotic':
+        m, M, alpha, beta, a, b = theta
+        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and amin < alpha < amax and bmin < beta < bmax and 0 < a < 10 and 0 < b < 10:
+            return 0.0
     else:
         m, M, alpha, beta, gamma = theta
         if (0 < m < 1 or m == 1) and Mmin < M < Mmax and amin < alpha < amax and bmin < beta < bmax and abs(gamma) < 10:
