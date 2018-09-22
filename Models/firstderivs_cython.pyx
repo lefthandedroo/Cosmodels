@@ -32,13 +32,14 @@ cdef double w_r = 1/3     # radiation
 cdef double w_m = 0.0     # matter
 cdef double w_de = -1.0   # cosmological constant (dark energy?)
 
-def exotic(double[:] v, redshifts, double gamma, double H0):
+def exotic(double[:] v, redshifts, double gamma, double zeta, double H0):
     """    
     matter decays into radiation, that decays into dark energy
     Takes in:
         v = values at z=0;
         t = list of redshifts to integrate over;
-        gamma = interaction term.
+        gamma = float interaction term, matter decaying into radioation;
+        zeta = float interaction term, radioation decaying into dark energy.
                 
     Returns a function f =     [dt/dz, d(a)/dz, 
                                 d(e'_m)/dz, d(e'_de)/dz, 
@@ -48,8 +49,8 @@ def exotic(double[:] v, redshifts, double gamma, double H0):
     cdef double t = v[0]
     cdef double a = v[1]
     cdef double ombar_m = v[2]
-    cdef double ombar_de = v[3]
-    cdef double ombar_r = v[4]
+    cdef double ombar_r = v[3]
+    cdef double ombar_de = v[4]
     cdef double z = v[5]
     cdef double dl = v[6]
         
@@ -57,23 +58,23 @@ def exotic(double[:] v, redshifts, double gamma, double H0):
         
     if math.isnan(Hz):
         print('exotic')
-        print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s, ombar_r = %s'
-              %(z, Hz, gamma, ombar_m, ombar_de, ombar_r))
-    
-    # irate_d differs from the usual irate, only applies to dark energy
-    cdef double irate_d = b * ombar_r 
+        print('z = %s, Hz = %s, gamma = %s, zeta = %s'% (z, Hz, gamma, zeta))
+        print('ombar_m = %s, ombar_de = %s, ombar_r = %s'
+              % (ombar_m, ombar_de, ombar_r))
     
     cdef double dtdz = -1.0/((1.0+z) * Hz)
     cdef double dadz = -(1.0+z)**(-2.0)
-    cdef double domdz = 3.0*ombar_m /(1.0+z) -a * ombar_m
-    cdef double dordz = 4.0*ombar_m /(1.0+z) +a * ombar_m -b * ombar_r 
+    cdef double domdz = 3.0*ombar_m /(1.0+z) -gamma * ombar_m
+    cdef double dordz = 4.0*ombar_m /(1.0+z) +gamma * ombar_m -zeta * ombar_r
+    cdef double dodedz = zeta * ombar_r
     cdef double ddldz = 1.0/Hz
     
     # first derivatives of functions I want to find:
     f = [dtdz,# dt/dz (= f.d wrt z of time)
          dadz,# d(a)/dz (= f.d wrt z of scale factor)
          domdz,# d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
-         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
+         dordz,# d(ombar_r)/dz   (= f.d wrt z of density_r(t) / crit density(t0))
+         dodedz,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
          1.0,# d(z)/dz (= f.d wrt z of redshift)
          ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
     

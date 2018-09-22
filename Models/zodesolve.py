@@ -57,16 +57,14 @@ def zodesolve(params, zpicks, firstderivs_key):
     rho_c0 = H0**2      # critical density
     ombar_m0 = params.get('m', 0)                        # e_m(z)/ec(z=0)
     gamma = params.get('gamma',0)
+    zeta = params.get('zeta', 0) 
     ombar_de0 = params.get('de', rho_c0/rho_c0 -ombar_m0) # e_de(z)/ec(z=0)
-    a = params.get('a', 0) 
-    b = params.get('b', 0)
+    ombar_r0 = 0.0
     
     # ODE solver parameters:
     abserr = 1.0e-8
     relerr = 1.0e-6
     
-    # Pack up the initial conditions and eq of state parameters.
-    v0 = [t0, a0, ombar_m0, ombar_de0, z0, dl0]
         
     # Extracting the parsed mode of interaction.
     firstderivs_function = firstderivs_functions.get(firstderivs_key,0)
@@ -74,20 +72,42 @@ def zodesolve(params, zpicks, firstderivs_key):
         print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
         print("firstderivs_functions dict didn't have the key zodeosolve asked for")
         print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+        
+    if firstderivs_key == 'exotic':
+        # Pack up the initial conditions and eq of state parameters.
+        v0 = [t0, a0, ombar_m0, ombar_r0, ombar_de0, z0, dl0]
+        
+        # Call the ODE solver. 
+        vsol = odeint(firstderivs_function, v0, zpicks, args=(gamma,zeta,H0), 
+                      atol=abserr, rtol=relerr)        
+
+        # Separate results into their own arrays:
+        t = vsol[1:,0]
+        a = vsol[1:,1]
+        ombar_m = vsol[1:,2]
+#        ombar_r = vsol[1:,3]
+        ombar_de = vsol[1:,4]
+        z = vsol[1:,5]    
+        dl = vsol[1:,6] * (1+z)  # in units of dl*(H0/c)
+        dlpc = dl * c_over_H0    # dl in parsecs (= vsol[dl] * c/H0)
+        
+    else:
+        # Pack up the initial conditions and eq of state parameters.
+        v0 = [t0, a0, ombar_m0, ombar_de0, z0, dl0] 
     
-    # Call the ODE solver. 
-    vsol = odeint(firstderivs_function, v0, zpicks, args=(gamma,H0), 
-                  atol=abserr, rtol=relerr)
+        # Call the ODE solver. 
+        vsol = odeint(firstderivs_function, v0, zpicks, args=(gamma,H0), 
+                      atol=abserr, rtol=relerr)
             
-    # Separate results into their own arrays:
-    t = vsol[1:,0]
-    a = vsol[1:,1]
-    ombar_m = vsol[1:,2]
-    ombar_de = vsol[1:,3]
-    z = vsol[1:,4]    
-    dl = vsol[1:,5] * (1+z)  # in units of dl*(H0/c)
-    dlpc = dl * c_over_H0    # dl in parsecs (= vsol[dl] * c/H0)
-    
+        # Separate results into their own arrays:
+        t = vsol[1:,0]
+        a = vsol[1:,1]
+        ombar_m = vsol[1:,2]
+        ombar_de = vsol[1:,3]
+        z = vsol[1:,4]    
+        dl = vsol[1:,5] * (1+z)  # in units of dl*(H0/c)
+        dlpc = dl * c_over_H0    # dl in parsecs (= vsol[dl] * c/H0)
+        
     plot_var = t, dlpc, dl, a, ombar_m, gamma, ombar_de, ombar_m0, ombar_de0
     
     return dlpc, plot_var

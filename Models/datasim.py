@@ -65,9 +65,20 @@ def redshift_picks(zmin, zmax, n):
 def magn(params, data, firstderivs_key, plot_key=False):
     """
     Finding matter density m, corrected absolute mag M, interaction gamma.
+    
     Takes in:
-            params = dictionary with true parameters;
-            zpicks = list of redshifts to integrate over, in accending order;
+            params = dictionary w/ 
+                'm':int/float = e_m(t)/ec(t0) at t=t0;
+                'gamma':int/float = interaction term;
+                'zeta':int/float = interaction term;
+                'alpha':int/float = SN peak mag correlation parameter;
+                'beta' :int/float = SN peak mag correlation parameter;
+            data = dictionary w/
+                'colour': numpy.ndarray = SN colour;
+                'x1': numpy.ndarray = SN stretch correction as;
+                'zpicks':list of redshifts sorted in accending order;
+                'mag':list of apparent magnitudes;
+                
             firstderivs_key = string, indicates which firstderivs to integrate;
             plot_key = Boolean, to plot or not to plot model figures;
     Returns:

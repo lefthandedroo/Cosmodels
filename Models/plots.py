@@ -32,7 +32,7 @@ def stat(hue, var, var_true, var_name, slnprob, zpicks,
     plt.title('model: '+firstderivs_key+'\n Marginalised distribution of '
               +name_l+' \n nsteps: '+str(nsteps)+', noise: '+str(sigma)
               +', npoints: '+str(len(zpicks))+' '+firstderivs_key)
-    plt.hist(var, 50)
+    plt.hist(var, 50, facecolor=hue)
     stamp = str(int(time.time()))
     filename = str(stamp)+'_'+initial+'_mhist__nsteps_'+str(nsteps) \
     +'_nwalkers_'+str(nwalkers)+'_noise_'+str(sigma) \

@@ -52,12 +52,13 @@ def lnlike(theta, data, sigma, firstderivs_key, ndim):
     params = {}
     if ndim == 4:
         params= {'m':theta[0], 'M':theta[1], 'alpha':theta[2], 'beta':theta[3]}
+        
     elif ndim == 5:
         params= {'m':theta[0], 'M':theta[1], 'alpha':theta[2], 
                  'beta':theta[3],'gamma':theta[4]}
     elif ndim == 6:
         params= {'m':theta[0], 'M':theta[1], 'alpha':theta[2], 
-                 'beta':theta[3],'a':theta[4], 'b':theta[5]}
+                 'beta':theta[3],'gamma':theta[4], 'zeta':theta[5]}
     
     model = magn(params, data, firstderivs_key)
     var = sigma**2
@@ -150,50 +151,96 @@ def lnlike(theta, data, sigma, firstderivs_key, ndim):
 #    return -np.inf
     
 
+#def lnprior(theta, key):
+#    '''
+#    Finding matter density m, absolute M, alpha, beta, interaction gamma.
+#    '''  
+#    
+#    Mmin, Mmax = -20, -18
+#    amax = 5
+#    bmax = 5
+#    
+#    print('key ln prior gets is = ',key)
+#    
+#    if key == 'LCDM':
+#        m, M, alpha, beta = theta
+#        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and abs(alpha) < amax and abs(beta) < bmax:
+#            return 0.0
+#    elif key == 'late_int' or 'heaviside_late_int' or 'late_intxde':
+#        m, M, alpha, beta, gamma = theta
+#        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and abs(alpha) < amax and abs(beta) < bmax and -1.45 < gamma < 0.2:
+#            return 0.0       
+#    elif key == 'rdecay':
+#        m, M, alpha, beta, gamma = theta
+#        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and abs(alpha) < amax and abs(beta) < bmax and -10 < gamma < 0 :
+#            return 0.0
+#    elif key == 'interacting':
+#        m, M, alpha, beta, gamma = theta
+#        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and abs(alpha) < amax and abs(beta) < bmax and abs(gamma) < 1.45:
+#            return 0.0
+#    elif key == 'expgamma':
+#        m, M, alpha, beta, gamma = theta
+#        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and abs(alpha) < amax and abs(beta) < bmax and abs(gamma) < 25 :
+#            return 0.0
+#    elif key == 'zxxgamma' or 'gammaxxz':
+#        m, M, alpha, beta, gamma = theta
+#        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and abs(alpha) < amax and abs(beta) < bmax and 0 < gamma < 10:
+#            return 0.0
+#    elif key == 'exotic':
+#        m, M, alpha, beta, gamma, zeta = theta
+#        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and abs(alpha) < amax and abs(beta) < bmax and 0 < gamma < 10 and 0 < zeta < 10:
+#            return 0.0
+#    else:
+#        m, M, alpha, beta, gamma = theta
+#        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and abs(alpha) < amax and abs(beta) < bmax and abs(gamma) < 10:
+#            return 0.0
+#        
+#    return -np.inf
+
 def lnprior(theta, key):
     '''
     Finding matter density m, absolute M, alpha, beta, interaction gamma.
-    '''  
-    
+    '''      
     Mmin, Mmax = -20, -18
-    amin, amax = -20, 20
-    bmin, bmax = -20, 20
+    amax = 5
+    bmax = 5
     
     if key == 'LCDM':
         m, M, alpha, beta = theta
-        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and amin < alpha < amax and bmin < beta < bmax:
-            return 0.0
-    elif key == 'late_int' or 'heaviside_late_int' or 'late_intxde':
-        m, M, alpha, beta, gamma = theta
-        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and amin < alpha < amax and bmin < beta < bmax and -1.45 < gamma < 0.2:
-            return 0.0       
-    elif key == 'rdecay':
-        m, M, alpha, beta, gamma = theta
-        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and amin < alpha < amax and bmin < beta < bmax and -10 < gamma < 0 :
-            return 0.0
-    elif key == 'interacting':
-        m, M, alpha, beta, gamma = theta
-        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and amin < alpha < amax and bmin < beta < bmax and abs(gamma) < 1.45:
-            return 0.0
-    elif key == 'expgamma':
-        m, M, alpha, beta, gamma = theta
-        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and amin < alpha < amax and bmin < beta < bmax and abs(gamma) < 25 :
-            return 0.0
-    elif key == 'zxxgamma' or 'gammaxxz':
-        m, M, alpha, beta, gamma = theta
-        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and amin < alpha < amax and bmin < beta < bmax and 0 < gamma < 10:
-            return 0.0
     elif key == 'exotic':
-        m, M, alpha, beta, a, b = theta
-        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and amin < alpha < amax and bmin < beta < bmax and 0 < a < 10 and 0 < b < 10:
-            return 0.0
+        m, M, alpha, beta, gamma, zeta = theta
     else:
-        m, M, alpha, beta, gamma = theta
-        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and amin < alpha < amax and bmin < beta < bmax and abs(gamma) < 10:
-            return 0.0
+         m, M, alpha, beta, gamma = theta       
+        
+    if (0 < m < 1 or m == 1):
+        if Mmin < M < Mmax:
+            if abs(alpha) < amax:
+                if abs(beta) < bmax:
+                    if key == 'LCDM':
+                        return 0.0
+                    elif key == 'exotic':
+                        if -1 < gamma < 10 and -1 < zeta < 10:
+                            return 0.0                        
+                    elif key == 'late_int' or 'heaviside_late_int' or 'late_intxde':
+                        if -1.45 < gamma < 0.2:
+                            return 0.0      
+                    elif key == 'rdecay':
+                        if -10 < gamma < 0:
+                            return 0.0
+                    elif key == 'interacting':
+                        if abs(gamma) < 1.45:
+                            return 0.0
+                    elif key == 'expgamma':
+                        if abs(gamma) < 25:
+                            return 0.0
+                    elif key == 'zxxgamma' or 'gammaxxz':
+                        if 0 < gamma < 10:
+                            return 0.0
+                    else:
+                        if abs(gamma) < 10:
+                            return 0.0
         
     return -np.inf
-
 
 
 

@@ -23,6 +23,7 @@ def stats(test_params, data_dict, sigma, nsteps,
             test_params = dictionary of parameters to be emcee fitted
                 'm':int/float = e_m(t)/ec(t0) at t=t0;
                 'gamma':int/float = interaction term;
+                'zeta':int/float = interaction term;
                 'alpha':int/float = SN peak mag correlation parameter;
                 'beta' :int/float = SN peak mag correlation parameter;
             data_dict = dictionary of parameters from data
@@ -41,9 +42,16 @@ def stats(test_params, data_dict, sigma, nsteps,
     zpicks = data_dict.get('zpicks',0)
     mag = data_dict.get('mag',0)
     
-    if firstderivs_key == 'LCDM':
+    if firstderivs_key == 'exotic':
+        pass
+    elif firstderivs_key == 'LCDM':
         test_params['gamma'] = 0
         del test_params['gamma']
+        test_params['zeta'] = 0
+        del test_params['zeta']
+    else:
+        test_params['zeta'] = 0
+        del test_params['zeta']
     
     # emcee parameters:
     ndim = len(test_params)
@@ -55,7 +63,7 @@ def stats(test_params, data_dict, sigma, nsteps,
     for i in poslist:
         pos.append(i)
     startpos = np.array(pos)
-    pos = [startpos + 0.01*np.random.randn(ndim) for i in range(nwalkers)]
+    pos = [startpos + 0.001*np.random.randn(ndim) for i in range(nwalkers)]
     
     # Are walkers starting outside of prior?
     i = 0
@@ -191,6 +199,24 @@ def stats(test_params, data_dict, sigma, nsteps,
             plots.stat('aquamarine', gamma, g_true, 'Gamma', lnprob, zpicks, 
                  mag, sigma, nsteps, nwalkers, save_path, firstderivs_key)
             
+        elif i == 5:
+            zetabest = sampler.flatchain[bi,i]
+            thetabest[i] = zetabest
+            parambest['zeta'] = zetabest
+            # Input interaction term.
+            z_true = test_params.get('zeta',0)
+            true.append(z_true)
+            # Output zeta.
+            zeta = sampler.flatchain[:,i]
+            # Standard deviation and mean of the gamme distribution.
+            zeta_sd = np.std(zeta)
+            zeta_mean = np.mean(zeta)
+            propert['zeta_sd'] = zeta_sd
+            propert['zeta_mean'] = zeta_mean
+            propert['zeta'] = zetabest
+            plots.stat('black', zeta, z_true, 'Zeta', lnprob, zpicks, 
+                 mag, sigma, nsteps, nwalkers, save_path, firstderivs_key)
+            
 
             
     # Checking if best found parameters are within prior.
@@ -232,7 +258,7 @@ def stats(test_params, data_dict, sigma, nsteps,
         print('@@@@@@@@@@@@@@@@@')
         print('best index =',str(bi))
         print('@@@@@@@@@@@@@@@@@')
-    print('best parameters =',str(parambest.values()))
+    print('best parameters =',str(parambest))
     print('m.a.f.:', np.mean(sampler.acceptance_fraction))
     print('nsteps:', str(nsteps))
     print('sigma:', str(sigma))

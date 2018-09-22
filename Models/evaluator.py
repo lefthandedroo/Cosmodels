@@ -17,7 +17,7 @@ import stats
 
 
 # Number of datapoints to be simulated and number of emcee steps.
-npoints, nsteps = 1000, 100000
+npoints, nsteps = 1000, 10000
 zmax = 2
 
 # Statistical parameteres of noise:
@@ -43,7 +43,8 @@ zpicks = datasim.redshift_picks(0.005, zmax, npoints)
 #datasim.model_comparison({'m':0.3, 'gamma':-2}, zpicks, firstderivs_list)
 
 firstderivs_functions = [
-            'late_intxde'
+            'exotic'
+#            'late_intxde'
 #            ,'heaviside_late_int'
 #            ,'late_int'     # limited prior
 #            ,'expgamma'     # limited prior
@@ -63,61 +64,81 @@ firstderivs_functions = [
 def all_modelcheck():
     print('@@@@@@@ all_modelcheck @@@@@@@')
     
-    for test_key in firstderivs_functions:
-        test_params = {'m':0.3, 'gamma':0}
+    dataname = './data/lcparam_full_long.txt'
+    pantheon = pd.read_csv(dataname, sep=" ")
     
-        datasim.magn(test_params, zpicks, test_key)
+    # Reading each txt file column of interest as numpy.ndarray
+    mag = pantheon.mb.values
+    x1 = pantheon.x1.values
+    colour = pantheon.color.values
+    zpicks = pantheon.zhel.values
+    
+    # Stacking them together and sorting by accending redshift.
+    data = np.stack((mag,x1,colour,zpicks), axis=0)
+    data.sort(axis=-1)
+    
+    mag = data[0]
+    x1 = data[1]
+    colour = data[2]
+    zpicks = data[3]
+    zpicks = zpicks.tolist()
+    data_dict = {'mag':mag, 'x1':x1, 'colour':colour, 'zpicks':zpicks}
+    test_params = {'m':0.3,'M':-19.3,'alpha':0,'beta':0,'gamma':0,'zeta':0}
+    
+    for test_key in firstderivs_functions:
+        datasim.magn(test_params, data_dict, test_key, plot_key=True)
+        
     return
 
 #all_modelcheck()
 
 
-def quickemcee():
-    print('@@@@@@@ quickemcee @@@@@@@')
-#    mag = datasim.noisy_mag(zpicks, mu, sigma, data_params, data_key)
-#    dataname = 'Amanullah_sorted1'
-    mag, zpicks = results.load('./data', dataname)
-    
-#    pantheon = pd.read_csv('./data/lcparam_full_long.txt', sep=" ")
+#def quickemcee():
+#    print('@@@@@@@ quickemcee @@@@@@@')
+##    mag = datasim.noisy_mag(zpicks, mu, sigma, data_params, data_key)
+##    dataname = 'Amanullah_sorted1'
+#    mag, zpicks = results.load('./data', dataname)
 #    
-#    # Reading each txt file column of interest as numpy.ndarray
-#    mag = pantheon.mb.values
-#    zpicks = pantheon.zhel.values
-#    # Stacking them together and sorting by accending redshift.
-#    data = np.stack((mag,zpicks), axis=0)
-#    data.sort(axis=-1)
-#    mag = data[0]
-#    zpicks = data[1]
-#    zpicks = zpicks.tolist()
-    
-    data_dict = {'mag':mag, 'zpicks':zpicks}
-    test_params = {'m':0.3, 'gamma':0}
-
-    for test_key in firstderivs_functions:
-        
-        # Creating a folder for saving output.
-        save_path = './quick_emcee/'+str(int(time.time()))+'_'+test_key
-        if not os.path.exists(save_path):
-            os.makedirs(save_path)    
-      
-        # Script timer.
-        timet0 = time.time()            
-        
-        # emcee parameter search.
-        propert, sampler = stats.stats(test_params, data_dict, sigma, 
-                                       nsteps, save_path, test_key)        
-        # Time taken by script. 
-        timet1=time.time()
-        tools.timer('script', timet0, timet1)
-        
-        # Saving sampler to directory.
-        results.save(save_path, 'sampler', sampler)
-
-        print('Model being tested:', test_key)
-        print('Data:',dataname)
-
-    return
-
+##    pantheon = pd.read_csv('./data/lcparam_full_long.txt', sep=" ")
+##    
+##    # Reading each txt file column of interest as numpy.ndarray
+##    mag = pantheon.mb.values
+##    zpicks = pantheon.zhel.values
+##    # Stacking them together and sorting by accending redshift.
+##    data = np.stack((mag,zpicks), axis=0)
+##    data.sort(axis=-1)
+##    mag = data[0]
+##    zpicks = data[1]
+##    zpicks = zpicks.tolist()
+#    
+#    data_dict = {'mag':mag, 'zpicks':zpicks}
+#    test_params = {'m':0.3, 'gamma':0}
+#
+#    for test_key in firstderivs_functions:
+#        
+#        # Creating a folder for saving output.
+#        save_path = './quick_emcee/'+str(int(time.time()))+'_'+test_key
+#        if not os.path.exists(save_path):
+#            os.makedirs(save_path)    
+#      
+#        # Script timer.
+#        timet0 = time.time()            
+#        
+#        # emcee parameter search.
+#        propert, sampler = stats.stats(test_params, data_dict, sigma, 
+#                                       nsteps, save_path, test_key)        
+#        # Time taken by script. 
+#        timet1=time.time()
+#        tools.timer('script', timet0, timet1)
+#        
+#        # Saving sampler to directory.
+#        results.save(save_path, 'sampler', sampler)
+#
+#        print('Model being tested:', test_key)
+#        print('Data:',dataname)
+#
+#    return
+#
 #quickemcee()
     
 def Mcor_emcee():
@@ -141,7 +162,7 @@ def Mcor_emcee():
     zpicks = data[3]
     zpicks = zpicks.tolist()
     data_dict = {'mag':mag, 'x1':x1, 'colour':colour, 'zpicks':zpicks}
-    test_params = {'m':0.3, 'M':-19.3, 'alpha':0, 'beta':0, 'gamma':0}
+    test_params = {'m':0.3,'M':-19.3,'alpha':0,'beta':0,'gamma':0,'zeta':0}
 
     
 #    mag, zpicks = results.load('./data', dataname)
