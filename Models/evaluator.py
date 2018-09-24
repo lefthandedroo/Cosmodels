@@ -42,23 +42,23 @@ zpicks = datasim.redshift_picks(0.005, zmax, npoints)
 #firstderivs_list = ['heaviside_late_int', 'late_int', 'late_intxde']
 #datasim.model_comparison({'m':0.3, 'gamma':-2}, zpicks, firstderivs_list)
 
-firstderivs_functions = [
-            'exotic'
-#            'late_intxde'
-#            ,'heaviside_late_int'
-#            ,'late_int'     # limited prior
-#            ,'expgamma'     # limited prior
-#            ,'txgamma'
-#            ,'zxgamma'      
-#            ,'gamma_over_z'
-#            ,'zxxgamma'     # nan emcee, limited prior
-#            ,'gammaxxz'    # nan emcee
-#            ,'rdecay_m'     # nan field
-#            ,'rdecay_de'
-#            ,'rdecay_mxde'  # nan field
-#            ,'rdecay'       # limited prior               
-#            ,'interacting'  # nan field, limited prior
-            ,'LCDM'         # limited prior
+firstderivs_functions = [None
+            ,'exotic'
+            ,'late_intxde'
+            ,'heaviside_late_int'
+            ,'late_int'
+            ,'expgamma'
+            ,'txgamma'         # doesn't converge
+            ,'zxgamma'
+            ,'gamma_over_z'    # doesn't converge
+            ,'zxxgamma'        # gamma forced positive inside firstderivs
+            ,'gammaxxz'        # gamma forced positive inside firstderivs
+            ,'rdecay_m'
+            ,'rdecay_de'
+            ,'rdecay_mxde'
+            ,'rdecay'               
+            ,'interacting'
+            ,'LCDM'
              ]
 
 def all_modelcheck():
@@ -170,27 +170,27 @@ def Mcor_emcee():
 #    test_params = {'m':0.3, 'M':-19.3, 'gamma':0}
 
     for test_key in firstderivs_functions:
-        
-        # Creating a folder for saving output.
-        save_path = './quick_emcee/'+str(int(time.time()))+'_'+test_key
-        if not os.path.exists(save_path):
-            os.makedirs(save_path)    
-      
-        # Script timer.
-        timet0 = time.time()            
-        
-        # emcee parameter search.
-        propert, sampler = stats.stats(test_params, data_dict, sigma, 
-                                       nsteps, save_path, test_key)        
-        # Time taken by script. 
-        timet1=time.time()
-        tools.timer('script', timet0, timet1)
-        
-        # Saving sampler to directory.
-        results.save(save_path, 'sampler', sampler)
-
-        print('Model being tested:', test_key)
-        print('Data:',dataname)
+        if test_key:
+            print('---',test_key)
+            # Creating a folder for saving output.
+            save_path = './quick_emcee/'+str(int(time.time()))+'_'+test_key
+            if not os.path.exists(save_path):
+                os.makedirs(save_path)    
+          
+            # Script timer.
+            timet0 = time.time()            
+            
+            # emcee parameter search.
+            propert, sampler = stats.stats(test_params, data_dict, sigma, 
+                                           nsteps, save_path, test_key)        
+            # Time taken by script. 
+            timet1=time.time()
+            tools.timer('script', timet0, timet1)
+            
+            # Saving sampler to directory.
+            results.save(save_path, 'sampler', sampler)
+    
+            print('Data:',dataname)
 
     return
 

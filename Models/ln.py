@@ -166,7 +166,7 @@ def lnlike(theta, data, sigma, firstderivs_key, ndim):
 #        m, M, alpha, beta = theta
 #        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and abs(alpha) < amax and abs(beta) < bmax:
 #            return 0.0
-#    elif key == 'late_int' or 'heaviside_late_int' or 'late_intxde':
+#    elif key == 'late_int' or key == 'heaviside_late_int' or key == 'late_intxde':
 #        m, M, alpha, beta, gamma = theta
 #        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and abs(alpha) < amax and abs(beta) < bmax and -1.45 < gamma < 0.2:
 #            return 0.0       
@@ -182,7 +182,7 @@ def lnlike(theta, data, sigma, firstderivs_key, ndim):
 #        m, M, alpha, beta, gamma = theta
 #        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and abs(alpha) < amax and abs(beta) < bmax and abs(gamma) < 25 :
 #            return 0.0
-#    elif key == 'zxxgamma' or 'gammaxxz':
+#    elif key == 'zxxgamma' or key == 'gammaxxz':
 #        m, M, alpha, beta, gamma = theta
 #        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and abs(alpha) < amax and abs(beta) < bmax and 0 < gamma < 10:
 #            return 0.0
@@ -210,32 +210,59 @@ def lnprior(theta, key):
     elif key == 'exotic':
         m, M, alpha, beta, gamma, zeta = theta
     else:
-         m, M, alpha, beta, gamma = theta       
-        
+         m, M, alpha, beta, gamma = theta    
     if (0 < m < 1 or m == 1):
         if Mmin < M < Mmax:
             if abs(alpha) < amax:
                 if abs(beta) < bmax:
-                    if key == 'LCDM':
-                        return 0.0
-                    elif key == 'exotic':
-                        if -1 < gamma < 10 and -1 < zeta < 10:
-                            return 0.0                        
-                    elif key == 'late_int' or 'heaviside_late_int' or 'late_intxde':
-                        if -1.45 < gamma < 0.2:
-                            return 0.0      
-                    elif key == 'rdecay':
-                        if -10 < gamma < 0:
+                    
+                    if key == 'exotic':
+                        if -1.5 < gamma < 0.1 and -2 < zeta < 2:
                             return 0.0
-                    elif key == 'interacting':
-                        if abs(gamma) < 1.45:
+                        
+                    elif key == 'late_intxde':
+                        if -2 < gamma < 0.1:
                             return 0.0
+                        
+                    elif key == 'heaviside_late_int':
+                        if -1.45 < gamma < 0.1:
+                            return 0.0
+                        
+                    elif key == 'late_int':
+                        if -15 < gamma < 0.1:
+                            return 0.0
+                        
                     elif key == 'expgamma':
-                        if abs(gamma) < 25:
+                        if -0.1 < gamma < 1.5:
                             return 0.0
-                    elif key == 'zxxgamma' or 'gammaxxz':
-                        if 0 < gamma < 10:
+                        
+                    elif key == 'txgamma':
+                        if -0.5 < gamma < 0.1:
                             return 0.0
+                        
+                    elif key == 'zxgamma':
+                        if -10 < gamma < 0.1:
+                            return 0.0
+                        
+                    elif key == 'zxxgamma':
+                        if -0.1 < gamma < 12:
+                            return 0.0
+                        
+                    elif key == 'gammaxxz':
+                        if -1 < gamma < 1:
+                            return 0.0
+                        
+                    elif key == 'rdecay':
+                        if -2 < gamma < 0.1:
+                            return 0.0
+                        
+                    elif key == 'interacting':
+                        if -1.5 < gamma < 0.1:
+                            return 0.0
+                        
+                    elif key == 'LCDM':
+                        return 0.0
+                    
                     else:
                         if abs(gamma) < 10:
                             return 0.0

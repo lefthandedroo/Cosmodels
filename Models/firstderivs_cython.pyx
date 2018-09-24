@@ -408,7 +408,9 @@ def zxxgamma(double[:] v, redshifts, double gamma, double H0):
     cdef double dl = v[5]
         
     cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
-        
+    
+    gamma = abs(gamma)
+    
     if math.isnan(Hz):
         print('zxxgamma')
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
@@ -451,6 +453,8 @@ def gammaxxz(double[:] v, redshifts, double gamma, double H0):
     cdef double dl = v[5]
         
     cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
+    
+    gamma = abs(gamma)
         
     if math.isnan(Hz):
         print('gammaxxz')
