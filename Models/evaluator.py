@@ -33,32 +33,31 @@ dataname = 'mag_z_LCDM_1000_sigma_'+str(sigma)
 #    Making redshifts to use in this script.
 zpicks = datasim.redshift_picks(0.005, zmax, npoints)
 
-#    Plots for a model.
-#datasim.magn({'m':0.3, 'gamma':0.2}, zpicks, 'heaviside_late_int', plot_key=True)
 #    Plots for one model with multiple gammas.
-#datasim.model_comparison({'m':0.3}, zpicks, 'heaviside_late_int', [-1.45, 0, 0.2])
+#datasim.model_comparison({'m':0.3}, zpicks, 'exotic', [-0.1, 0, 0.1])
+
 #   Plots of various models on the same plot. 
 #   To check if models overlap, put the two of interest last.
-#firstderivs_list = ['heaviside_late_int', 'late_int', 'late_intxde']
-#datasim.model_comparison({'m':0.3, 'gamma':-2}, zpicks, firstderivs_list)
+firstderivs_list = ['expgamma', 'exotic', 'rdecay']
+datasim.model_comparison({'m':0.3, 'gamma':-0.1}, zpicks, firstderivs_list)
 
 firstderivs_functions = [None
             ,'exotic'
-            ,'late_intxde'
-            ,'heaviside_late_int'
-            ,'late_int'
-            ,'expgamma'
-            ,'txgamma'         # doesn't converge
-            ,'zxgamma'
-            ,'gamma_over_z'    # doesn't converge
-            ,'zxxgamma'        # gamma forced positive inside firstderivs
-            ,'gammaxxz'        # gamma forced positive inside firstderivs
-            ,'rdecay_m'
-            ,'rdecay_de'
-            ,'rdecay_mxde'
-            ,'rdecay'               
-            ,'interacting'
-            ,'LCDM'
+#            ,'late_intxde'
+#            ,'heaviside_late_int'
+#            ,'late_int'
+#            ,'expgamma'
+#            ,'txgamma'         # doesn't converge
+#            ,'zxgamma'
+#            ,'gamma_over_z'    # doesn't converge
+#            ,'zxxgamma'        # gamma forced positive inside firstderivs
+#            ,'gammaxxz'        # gamma forced positive inside firstderivs
+#            ,'rdecay_m'
+#            ,'rdecay_de'
+#            ,'rdecay_mxde'
+#            ,'rdecay'               
+#            ,'interacting'
+#            ,'LCDM'
              ]
 
 def all_modelcheck():
@@ -83,63 +82,15 @@ def all_modelcheck():
     zpicks = data[3]
     zpicks = zpicks.tolist()
     data_dict = {'mag':mag, 'x1':x1, 'colour':colour, 'zpicks':zpicks}
-    test_params = {'m':0.3,'M':-19.3,'alpha':0,'beta':0,'gamma':0,'zeta':0}
+    test_params = {'m':0.3,'M':-19.3,'alpha':0,'beta':0,'gamma':-0.1,'zeta':0}
     
     for test_key in firstderivs_functions:
-        datasim.magn(test_params, data_dict, test_key, plot_key=True)
-        
+        if test_key:
+            datasim.magn(test_params, data_dict, test_key, plot_key=True)    
     return
 
 #all_modelcheck()
 
-
-#def quickemcee():
-#    print('@@@@@@@ quickemcee @@@@@@@')
-##    mag = datasim.noisy_mag(zpicks, mu, sigma, data_params, data_key)
-##    dataname = 'Amanullah_sorted1'
-#    mag, zpicks = results.load('./data', dataname)
-#    
-##    pantheon = pd.read_csv('./data/lcparam_full_long.txt', sep=" ")
-##    
-##    # Reading each txt file column of interest as numpy.ndarray
-##    mag = pantheon.mb.values
-##    zpicks = pantheon.zhel.values
-##    # Stacking them together and sorting by accending redshift.
-##    data = np.stack((mag,zpicks), axis=0)
-##    data.sort(axis=-1)
-##    mag = data[0]
-##    zpicks = data[1]
-##    zpicks = zpicks.tolist()
-#    
-#    data_dict = {'mag':mag, 'zpicks':zpicks}
-#    test_params = {'m':0.3, 'gamma':0}
-#
-#    for test_key in firstderivs_functions:
-#        
-#        # Creating a folder for saving output.
-#        save_path = './quick_emcee/'+str(int(time.time()))+'_'+test_key
-#        if not os.path.exists(save_path):
-#            os.makedirs(save_path)    
-#      
-#        # Script timer.
-#        timet0 = time.time()            
-#        
-#        # emcee parameter search.
-#        propert, sampler = stats.stats(test_params, data_dict, sigma, 
-#                                       nsteps, save_path, test_key)        
-#        # Time taken by script. 
-#        timet1=time.time()
-#        tools.timer('script', timet0, timet1)
-#        
-#        # Saving sampler to directory.
-#        results.save(save_path, 'sampler', sampler)
-#
-#        print('Model being tested:', test_key)
-#        print('Data:',dataname)
-#
-#    return
-#
-#quickemcee()
     
 def Mcor_emcee():
     print('@@@@@@@ Mcor_emcee @@@@@@@')
@@ -163,11 +114,6 @@ def Mcor_emcee():
     zpicks = zpicks.tolist()
     data_dict = {'mag':mag, 'x1':x1, 'colour':colour, 'zpicks':zpicks}
     test_params = {'m':0.3,'M':-19.3,'alpha':0,'beta':0,'gamma':0,'zeta':0}
-
-    
-#    mag, zpicks = results.load('./data', dataname)
-#    data_dict = {'mag':mag,'zpicks':zpicks}
-#    test_params = {'m':0.3, 'M':-19.3, 'gamma':0}
 
     for test_key in firstderivs_functions:
         if test_key:
@@ -194,7 +140,7 @@ def Mcor_emcee():
 
     return
 
-Mcor_emcee()
+#Mcor_emcee()
 
 
 def errorvsdatasize():

@@ -2687,7 +2687,7 @@ static PyObject *__pyx_pf_18firstderivs_cython_exotic(CYTHON_UNUSED PyObject *__
  *     cdef double dtdz = -1.0/((1.0+z) * Hz)
  *     cdef double dadz = -(1.0+z)**(-2.0)             # <<<<<<<<<<<<<<
  *     cdef double domdz = 3.0*ombar_m /(1.0+z) -gamma * ombar_m
- *     cdef double dordz = 4.0*ombar_m /(1.0+z) +gamma * ombar_m -zeta * ombar_r
+ *     cdef double dordz = 4.0*ombar_m /(1.0+z) +gamma * ombar_m -gamma * math.exp(-z/10) * ombar_r
  */
   __pyx_v_dadz = (-pow((1.0 + __pyx_v_z), -2.0));
 
@@ -2695,8 +2695,8 @@ static PyObject *__pyx_pf_18firstderivs_cython_exotic(CYTHON_UNUSED PyObject *__
  *     cdef double dtdz = -1.0/((1.0+z) * Hz)
  *     cdef double dadz = -(1.0+z)**(-2.0)
  *     cdef double domdz = 3.0*ombar_m /(1.0+z) -gamma * ombar_m             # <<<<<<<<<<<<<<
- *     cdef double dordz = 4.0*ombar_m /(1.0+z) +gamma * ombar_m -zeta * ombar_r
- *     cdef double dodedz = zeta * ombar_r
+ *     cdef double dordz = 4.0*ombar_m /(1.0+z) +gamma * ombar_m -gamma * math.exp(-z/10) * ombar_r
+ *     cdef double dodedz = gamma * math.exp(-z/10) * ombar_r
  */
   __pyx_t_15 = (3.0 * __pyx_v_ombar_m);
   __pyx_t_16 = (1.0 + __pyx_v_z);
@@ -2709,8 +2709,8 @@ static PyObject *__pyx_pf_18firstderivs_cython_exotic(CYTHON_UNUSED PyObject *__
   /* "firstderivs_cython.pyx":68
  *     cdef double dadz = -(1.0+z)**(-2.0)
  *     cdef double domdz = 3.0*ombar_m /(1.0+z) -gamma * ombar_m
- *     cdef double dordz = 4.0*ombar_m /(1.0+z) +gamma * ombar_m -zeta * ombar_r             # <<<<<<<<<<<<<<
- *     cdef double dodedz = zeta * ombar_r
+ *     cdef double dordz = 4.0*ombar_m /(1.0+z) +gamma * ombar_m -gamma * math.exp(-z/10) * ombar_r             # <<<<<<<<<<<<<<
+ *     cdef double dodedz = gamma * math.exp(-z/10) * ombar_r
  *     cdef double ddldz = 1.0/Hz
  */
   __pyx_t_16 = (4.0 * __pyx_v_ombar_m);
@@ -2719,20 +2719,160 @@ static PyObject *__pyx_pf_18firstderivs_cython_exotic(CYTHON_UNUSED PyObject *__
     PyErr_SetString(PyExc_ZeroDivisionError, "float division");
     __PYX_ERR(0, 68, __pyx_L1_error)
   }
-  __pyx_v_dordz = (((__pyx_t_16 / __pyx_t_15) + (__pyx_v_gamma * __pyx_v_ombar_m)) - (__pyx_v_zeta * __pyx_v_ombar_r));
+  __pyx_t_13 = PyFloat_FromDouble(((__pyx_t_16 / __pyx_t_15) + (__pyx_v_gamma * __pyx_v_ombar_m))); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 68, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_13);
+  __pyx_t_11 = PyFloat_FromDouble(__pyx_v_gamma); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 68, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_11);
+  __pyx_t_10 = __Pyx_GetModuleGlobalName(__pyx_n_s_math); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 68, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_10);
+  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_10, __pyx_n_s_exp); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 68, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_9);
+  __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+  __pyx_t_10 = PyFloat_FromDouble(((-__pyx_v_z) / 10.0)); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 68, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_10);
+  __pyx_t_17 = NULL;
+  if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_9))) {
+    __pyx_t_17 = PyMethod_GET_SELF(__pyx_t_9);
+    if (likely(__pyx_t_17)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_9);
+      __Pyx_INCREF(__pyx_t_17);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_9, function);
+    }
+  }
+  if (!__pyx_t_17) {
+    __pyx_t_12 = __Pyx_PyObject_CallOneArg(__pyx_t_9, __pyx_t_10); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 68, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+    __Pyx_GOTREF(__pyx_t_12);
+  } else {
+    #if CYTHON_FAST_PYCALL
+    if (PyFunction_Check(__pyx_t_9)) {
+      PyObject *__pyx_temp[2] = {__pyx_t_17, __pyx_t_10};
+      __pyx_t_12 = __Pyx_PyFunction_FastCall(__pyx_t_9, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 68, __pyx_L1_error)
+      __Pyx_XDECREF(__pyx_t_17); __pyx_t_17 = 0;
+      __Pyx_GOTREF(__pyx_t_12);
+      __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+    } else
+    #endif
+    #if CYTHON_FAST_PYCCALL
+    if (__Pyx_PyFastCFunction_Check(__pyx_t_9)) {
+      PyObject *__pyx_temp[2] = {__pyx_t_17, __pyx_t_10};
+      __pyx_t_12 = __Pyx_PyCFunction_FastCall(__pyx_t_9, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 68, __pyx_L1_error)
+      __Pyx_XDECREF(__pyx_t_17); __pyx_t_17 = 0;
+      __Pyx_GOTREF(__pyx_t_12);
+      __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+    } else
+    #endif
+    {
+      __pyx_t_18 = PyTuple_New(1+1); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 68, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_18);
+      __Pyx_GIVEREF(__pyx_t_17); PyTuple_SET_ITEM(__pyx_t_18, 0, __pyx_t_17); __pyx_t_17 = NULL;
+      __Pyx_GIVEREF(__pyx_t_10);
+      PyTuple_SET_ITEM(__pyx_t_18, 0+1, __pyx_t_10);
+      __pyx_t_10 = 0;
+      __pyx_t_12 = __Pyx_PyObject_Call(__pyx_t_9, __pyx_t_18, NULL); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 68, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_12);
+      __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
+    }
+  }
+  __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+  __pyx_t_9 = PyNumber_Multiply(__pyx_t_11, __pyx_t_12); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 68, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_9);
+  __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
+  __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
+  __pyx_t_12 = PyFloat_FromDouble(__pyx_v_ombar_r); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 68, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_12);
+  __pyx_t_11 = PyNumber_Multiply(__pyx_t_9, __pyx_t_12); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 68, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_11);
+  __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+  __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
+  __pyx_t_12 = PyNumber_Subtract(__pyx_t_13, __pyx_t_11); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 68, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_12);
+  __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
+  __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
+  __pyx_t_15 = __pyx_PyFloat_AsDouble(__pyx_t_12); if (unlikely((__pyx_t_15 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 68, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
+  __pyx_v_dordz = __pyx_t_15;
 
   /* "firstderivs_cython.pyx":69
  *     cdef double domdz = 3.0*ombar_m /(1.0+z) -gamma * ombar_m
- *     cdef double dordz = 4.0*ombar_m /(1.0+z) +gamma * ombar_m -zeta * ombar_r
- *     cdef double dodedz = zeta * ombar_r             # <<<<<<<<<<<<<<
+ *     cdef double dordz = 4.0*ombar_m /(1.0+z) +gamma * ombar_m -gamma * math.exp(-z/10) * ombar_r
+ *     cdef double dodedz = gamma * math.exp(-z/10) * ombar_r             # <<<<<<<<<<<<<<
  *     cdef double ddldz = 1.0/Hz
  * 
  */
-  __pyx_v_dodedz = (__pyx_v_zeta * __pyx_v_ombar_r);
+  __pyx_t_12 = PyFloat_FromDouble(__pyx_v_gamma); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 69, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_12);
+  __pyx_t_13 = __Pyx_GetModuleGlobalName(__pyx_n_s_math); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 69, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_13);
+  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_13, __pyx_n_s_exp); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 69, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_9);
+  __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
+  __pyx_t_13 = PyFloat_FromDouble(((-__pyx_v_z) / 10.0)); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 69, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_13);
+  __pyx_t_18 = NULL;
+  if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_9))) {
+    __pyx_t_18 = PyMethod_GET_SELF(__pyx_t_9);
+    if (likely(__pyx_t_18)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_9);
+      __Pyx_INCREF(__pyx_t_18);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_9, function);
+    }
+  }
+  if (!__pyx_t_18) {
+    __pyx_t_11 = __Pyx_PyObject_CallOneArg(__pyx_t_9, __pyx_t_13); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 69, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
+    __Pyx_GOTREF(__pyx_t_11);
+  } else {
+    #if CYTHON_FAST_PYCALL
+    if (PyFunction_Check(__pyx_t_9)) {
+      PyObject *__pyx_temp[2] = {__pyx_t_18, __pyx_t_13};
+      __pyx_t_11 = __Pyx_PyFunction_FastCall(__pyx_t_9, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 69, __pyx_L1_error)
+      __Pyx_XDECREF(__pyx_t_18); __pyx_t_18 = 0;
+      __Pyx_GOTREF(__pyx_t_11);
+      __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
+    } else
+    #endif
+    #if CYTHON_FAST_PYCCALL
+    if (__Pyx_PyFastCFunction_Check(__pyx_t_9)) {
+      PyObject *__pyx_temp[2] = {__pyx_t_18, __pyx_t_13};
+      __pyx_t_11 = __Pyx_PyCFunction_FastCall(__pyx_t_9, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 69, __pyx_L1_error)
+      __Pyx_XDECREF(__pyx_t_18); __pyx_t_18 = 0;
+      __Pyx_GOTREF(__pyx_t_11);
+      __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
+    } else
+    #endif
+    {
+      __pyx_t_10 = PyTuple_New(1+1); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 69, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_10);
+      __Pyx_GIVEREF(__pyx_t_18); PyTuple_SET_ITEM(__pyx_t_10, 0, __pyx_t_18); __pyx_t_18 = NULL;
+      __Pyx_GIVEREF(__pyx_t_13);
+      PyTuple_SET_ITEM(__pyx_t_10, 0+1, __pyx_t_13);
+      __pyx_t_13 = 0;
+      __pyx_t_11 = __Pyx_PyObject_Call(__pyx_t_9, __pyx_t_10, NULL); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 69, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_11);
+      __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+    }
+  }
+  __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+  __pyx_t_9 = PyNumber_Multiply(__pyx_t_12, __pyx_t_11); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 69, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_9);
+  __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
+  __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
+  __pyx_t_11 = PyFloat_FromDouble(__pyx_v_ombar_r); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 69, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_11);
+  __pyx_t_12 = PyNumber_Multiply(__pyx_t_9, __pyx_t_11); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 69, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_12);
+  __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+  __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
+  __pyx_t_15 = __pyx_PyFloat_AsDouble(__pyx_t_12); if (unlikely((__pyx_t_15 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 69, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
+  __pyx_v_dodedz = __pyx_t_15;
 
   /* "firstderivs_cython.pyx":70
- *     cdef double dordz = 4.0*ombar_m /(1.0+z) +gamma * ombar_m -zeta * ombar_r
- *     cdef double dodedz = zeta * ombar_r
+ *     cdef double dordz = 4.0*ombar_m /(1.0+z) +gamma * ombar_m -gamma * math.exp(-z/10) * ombar_r
+ *     cdef double dodedz = gamma * math.exp(-z/10) * ombar_r
  *     cdef double ddldz = 1.0/Hz             # <<<<<<<<<<<<<<
  * 
  *     # first derivatives of functions I want to find:
@@ -2750,8 +2890,8 @@ static PyObject *__pyx_pf_18firstderivs_cython_exotic(CYTHON_UNUSED PyObject *__
  *          dadz,# d(a)/dz (= f.d wrt z of scale factor)
  *          domdz,# d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
  */
-  __pyx_t_13 = PyFloat_FromDouble(__pyx_v_dtdz); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 73, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_13);
+  __pyx_t_12 = PyFloat_FromDouble(__pyx_v_dtdz); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 73, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_12);
 
   /* "firstderivs_cython.pyx":74
  *     # first derivatives of functions I want to find:
@@ -2770,8 +2910,8 @@ static PyObject *__pyx_pf_18firstderivs_cython_exotic(CYTHON_UNUSED PyObject *__
  *          dordz,# d(ombar_r)/dz   (= f.d wrt z of density_r(t) / crit density(t0))
  *          dodedz,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
  */
-  __pyx_t_12 = PyFloat_FromDouble(__pyx_v_domdz); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 75, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_12);
+  __pyx_t_9 = PyFloat_FromDouble(__pyx_v_domdz); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 75, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_9);
 
   /* "firstderivs_cython.pyx":76
  *          dadz,# d(a)/dz (= f.d wrt z of scale factor)
@@ -2790,8 +2930,8 @@ static PyObject *__pyx_pf_18firstderivs_cython_exotic(CYTHON_UNUSED PyObject *__
  *          1.0,# d(z)/dz (= f.d wrt z of redshift)
  *          ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
  */
-  __pyx_t_9 = PyFloat_FromDouble(__pyx_v_dodedz); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 77, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_9);
+  __pyx_t_13 = PyFloat_FromDouble(__pyx_v_dodedz); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 77, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_13);
 
   /* "firstderivs_cython.pyx":79
  *          dodedz,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
@@ -2800,8 +2940,8 @@ static PyObject *__pyx_pf_18firstderivs_cython_exotic(CYTHON_UNUSED PyObject *__
  * 
  *     return f
  */
-  __pyx_t_17 = PyFloat_FromDouble(__pyx_v_ddldz); if (unlikely(!__pyx_t_17)) __PYX_ERR(0, 79, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_17);
+  __pyx_t_18 = PyFloat_FromDouble(__pyx_v_ddldz); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 79, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_18);
 
   /* "firstderivs_cython.pyx":73
  * 
@@ -2810,31 +2950,31 @@ static PyObject *__pyx_pf_18firstderivs_cython_exotic(CYTHON_UNUSED PyObject *__
  *          dadz,# d(a)/dz (= f.d wrt z of scale factor)
  *          domdz,# d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
  */
-  __pyx_t_18 = PyList_New(7); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 73, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_18);
-  __Pyx_GIVEREF(__pyx_t_13);
-  PyList_SET_ITEM(__pyx_t_18, 0, __pyx_t_13);
-  __Pyx_GIVEREF(__pyx_t_11);
-  PyList_SET_ITEM(__pyx_t_18, 1, __pyx_t_11);
+  __pyx_t_17 = PyList_New(7); if (unlikely(!__pyx_t_17)) __PYX_ERR(0, 73, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_17);
   __Pyx_GIVEREF(__pyx_t_12);
-  PyList_SET_ITEM(__pyx_t_18, 2, __pyx_t_12);
-  __Pyx_GIVEREF(__pyx_t_10);
-  PyList_SET_ITEM(__pyx_t_18, 3, __pyx_t_10);
+  PyList_SET_ITEM(__pyx_t_17, 0, __pyx_t_12);
+  __Pyx_GIVEREF(__pyx_t_11);
+  PyList_SET_ITEM(__pyx_t_17, 1, __pyx_t_11);
   __Pyx_GIVEREF(__pyx_t_9);
-  PyList_SET_ITEM(__pyx_t_18, 4, __pyx_t_9);
+  PyList_SET_ITEM(__pyx_t_17, 2, __pyx_t_9);
+  __Pyx_GIVEREF(__pyx_t_10);
+  PyList_SET_ITEM(__pyx_t_17, 3, __pyx_t_10);
+  __Pyx_GIVEREF(__pyx_t_13);
+  PyList_SET_ITEM(__pyx_t_17, 4, __pyx_t_13);
   __Pyx_INCREF(__pyx_float_1_0);
   __Pyx_GIVEREF(__pyx_float_1_0);
-  PyList_SET_ITEM(__pyx_t_18, 5, __pyx_float_1_0);
-  __Pyx_GIVEREF(__pyx_t_17);
-  PyList_SET_ITEM(__pyx_t_18, 6, __pyx_t_17);
-  __pyx_t_13 = 0;
-  __pyx_t_11 = 0;
+  PyList_SET_ITEM(__pyx_t_17, 5, __pyx_float_1_0);
+  __Pyx_GIVEREF(__pyx_t_18);
+  PyList_SET_ITEM(__pyx_t_17, 6, __pyx_t_18);
   __pyx_t_12 = 0;
-  __pyx_t_10 = 0;
+  __pyx_t_11 = 0;
   __pyx_t_9 = 0;
-  __pyx_t_17 = 0;
-  __pyx_v_f = ((PyObject*)__pyx_t_18);
+  __pyx_t_10 = 0;
+  __pyx_t_13 = 0;
   __pyx_t_18 = 0;
+  __pyx_v_f = ((PyObject*)__pyx_t_17);
+  __pyx_t_17 = 0;
 
   /* "firstderivs_cython.pyx":81
  *          ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)

@@ -217,7 +217,7 @@ def lnprior(theta, key):
                 if abs(beta) < bmax:
                     
                     if key == 'exotic':
-                        if -1.5 < gamma < 0.1 and -2 < zeta < 2:
+                        if -1.5 < gamma < 0.1 and 0.0000001 < abs(zeta) < 2:
                             return 0.0
                         
                     elif key == 'late_intxde':

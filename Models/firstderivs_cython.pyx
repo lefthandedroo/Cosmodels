@@ -65,8 +65,8 @@ def exotic(double[:] v, redshifts, double gamma, double zeta, double H0):
     cdef double dtdz = -1.0/((1.0+z) * Hz)
     cdef double dadz = -(1.0+z)**(-2.0)
     cdef double domdz = 3.0*ombar_m /(1.0+z) -gamma * ombar_m
-    cdef double dordz = 4.0*ombar_m /(1.0+z) +gamma * ombar_m -zeta * ombar_r
-    cdef double dodedz = zeta * ombar_r
+    cdef double dordz = 4.0*ombar_m /(1.0+z) +gamma * ombar_m -gamma * math.exp(-z/10) * ombar_r
+    cdef double dodedz = gamma * math.exp(-z/10) * ombar_r
     cdef double ddldz = 1.0/Hz
     
     # first derivatives of functions I want to find:
