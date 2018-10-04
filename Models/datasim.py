@@ -158,7 +158,7 @@ def magn(params, data, firstderivs_key, plot_key=False):
 #            magnitude = 5 * math.log10(dlpc[i]/10) + M
 #        mag.append(magnitude)
     
-def model_comparison(params, zpicks, firstderivs_key, gamma_list=False):
+def model_comparison(params, zpicks, firstderivs_key, gamma_list=False, zeta_list = False):
     """
     Takes in:
             params = dictionary with true parameters;
@@ -180,6 +180,8 @@ def model_comparison(params, zpicks, firstderivs_key, gamma_list=False):
 
     j = 1
     if gamma_list:  
+        print('investigating gamma')
+        print('firstderivs_key is',firstderivs_key)
         for gamma in gamma_list:
             params['gamma'] = gamma
             dlpc, plot_var = zodesolve.zodesolve(params, zpicks, firstderivs_key)
@@ -194,8 +196,27 @@ def model_comparison(params, zpicks, firstderivs_key, gamma_list=False):
             j+=1
             
         # Plotting evolution of the model with different gamma.
-        plots.gammacheck(mag, zpicks, firstderivs_key, plot_var_dict)
+        plots.paramcheck(mag, zpicks, firstderivs_key, plot_var_dict, 'gamma')
+     
+    elif zeta_list:
+        print('investigating zeta')
+        print('firstderivs_key is',firstderivs_key)
+        for zeta in zeta_list:
+            params['zeta'] = zeta
+            dlpc, plot_var = zodesolve.zodesolve(params, zpicks, firstderivs_key)
         
+            # Calculating apparent magnitudes of supernovae at the simulated
+            # luminosity distances using the distance modulus formula.
+            mag = 5 * np.log10(dlpc/10) + M
+            
+            plot_var_dict['plot_var_'+str(j)] = plot_var
+            plot_var_dict['mag_'+str(j)] = mag
+            
+            j+=1
+            
+        # Plotting evolution of the model with different gamma.
+        plots.paramcheck(mag, zpicks, firstderivs_key, plot_var_dict, 'zeta')            
+    
     elif len(firstderivs_key) > 1:
         for key in firstderivs_key:
             dlpc, plot_var = zodesolve.zodesolve(params, zpicks, key)
@@ -286,8 +307,3 @@ def makensavemagnz(m_true, g_true, mu, sigma, zpicks, data_key, filename):
     pickle.dump(output, open(save_path, 'wb'))
     
     return
-
-
-
-
-

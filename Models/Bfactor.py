@@ -18,7 +18,7 @@ import tools
 #from scipy.special import erf
 
 # from prior = 0, short = 1, medium = 2, long = 3
-speed = 0
+speed = 1
 
 # Sigma of the noise on data.
 sigma = 0.07
@@ -47,7 +47,6 @@ zpicks = data[3]
 zpicks = zpicks.tolist()
 data_dict = {'mag':mag, 'x1':x1, 'colour':colour, 'zpicks':zpicks}
 
-#@jitclass([('dummy', int32)])
 class Model(object):
     """
     Specify the model in Python.
@@ -145,182 +144,203 @@ class Model(object):
 #        assert b > a
 #        return (x - a)%(b - a) + a
 
-firstderivs_functions = ['LCDM', 'zxxgamma'
-#        'late_intxde'
-#        ,'heaviside_late_int'
-#        ,'late_int'
-#        ,'expgamma'
-#        ,'txgamma'
-#        ,'zxgamma'
-#        ,'gamma_over_z'
 
-##        'zxxgamma'    # nan field
-##        ,'gammaxxz'     # nan field
-
-#        ,'rdecay_m' 
-#        ,'rdecay_de'
-#        ,'rdecay_mxde'
-#        ,'rdecay'                        
-#        ,'interacting'
-#        ,'LCDM'
-         ]
+firstderivs_functions = [None
+            ,'exotic'
+            ,'late_intxde'
+            ,'heaviside_late_int'
+            ,'late_int'
+            ,'expgamma'
+            ,'txgamma'         # doesn't converge
+            ,'zxgamma'
+            ,'gamma_over_z'    # doesn't converge
+            ,'zxxgamma'        # gamma forced positive in firstderivs
+            ,'gammaxxz'        # gamma forced positive in firstderivs
+            ,'rdecay_m'
+            ,'rdecay_de'
+            ,'rdecay_mxde'
+            ,'rdecay'               
+            ,'interacting'
+            ,'LCDM'
+             ]
 
 for key in firstderivs_functions:
-        
-    if key == 'rdecay':
-        g_lim = [-10, 0]
-        
-    elif key == 'LCDM':
-        g_lim = None
-    
-    elif key == 'late_int' or 'heaviside_late_int' or 'late_intxde':
-        g_lim = [-1.45, 0]
-        
-    elif key == 'interacting':
-        g_lim = [-1.45, 1.45]
-        
-    elif key == 'zxxgamma' or 'gammaxxz':
-        g_lim = [0, 10]
-
-    elif key == 'expgamma':
-        g_lim = [-25, 25]
-        
-    else:
-        g_lim = [-10, 10]
-
-    # Create a model object and a sampler
-    model = Model(g_lim)
-    sampler = dnest4.DNest4Sampler(model,
-                                   backend=dnest4.backends.CSVBackend(".",
-                                                                  sep=" "))
-    
-    if speed == 3:   
-        # LONG Set up the sampler. The first argument is max_num_levels
-        gen = sampler.sample(max_num_levels=30, num_steps=1000, 
-                             new_level_interval=10000, num_per_step=10000, 
-                             thread_steps=100, num_particles=5, 
-                             lam=10, beta=100, seed=1234)
-    elif speed == 2:
-        # MEDIUM num_per_step can be down to a few thousand 
-        gen = sampler.sample(max_num_levels=30, num_steps=1000, 
-                             new_level_interval=1000, num_per_step=1000, 
-                              thread_steps=100, num_particles=5, 
-                              lam=10, beta=100, seed=1234)
-    elif speed == 1:
-        # SHORT
-        gen = sampler.sample(max_num_levels=30, num_steps=100, 
-                             new_level_interval=100, num_per_step=100, 
-                             thread_steps=10, num_particles=5, 
-                             lam=10, beta=100, seed=1234)
-    elif speed == 0:
-        # SHORT, sampling from prior
-        gen = sampler.sample(max_num_levels=1, num_steps=1000, 
-                             new_level_interval=100, num_per_step=100, 
-                             thread_steps=10, num_particles=5, 
-                             lam=10, beta=100, seed=1234)    
-    
-#    import cProfile, pstats, io
-#    pr = cProfile.Profile()
-#    pr.enable()
-    
-    ti = time.time()
-    # Do the sampling (one iteration here = one particle save)
-    for i, sample in enumerate(gen):
-#        print("# Saved {k} particles.".format(k=(i+1)))
-        pass
-    tf = time.time()
-    
-#    pr.disable()
-#    s = io.StringIO()
-#    sortby = 'cumulative'
-#    ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-#    ps.print_stats()
-#    print (s.getvalue())
-    
-    dnest_time = tools.timer('Bfactor', ti, tf)
-    
-    print('testing =',key)
-    print('data =', dataname)
-    print('sigma =', sigma)
-       
-    # Run the postprocessing
-    info = dnest4.postprocess()
-        
-    if speed > 1:
-        
-        f = open('brief.txt','w')
-        f.write(dnest_time +'\n'
-                +'model = '+key +'\n'
-                +'data = '+ dataname +'\n'
-                +'sigma = '+str(sigma) +'\n'
-                +'log(Z) = '+str(info[0]) +'\n'
-                +'Information = '+str(info[1]) +'\n'
-                +'speed = '+str(speed))
-        f.close()
-        
-        pickle.dump(info[0], open('evidence.p', 'wb'))
-        # Moving output .txt files into a run specific folder.
-        results.relocate('evidence.p', speed, key)
-        results.relocate('levels.txt', speed, key)
-        results.relocate('posterior_sample.txt', speed, key)
-        results.relocate('sample_info.txt', speed, key)
-        results.relocate('sample.txt', speed, key)
-        results.relocate('sampler_state.txt', speed, key)
-        results.relocate('weights.txt', speed, key)
-        results.relocate('brief.txt', speed, key)
-        results.relocate('plot_1.pdf', speed, key)
-        results.relocate('plot_2.pdf', speed, key)
-        results.relocate('plot_3.pdf', speed, key)
-        
-    else:
-        # Histogram of parameters found by DNest4.
-        array = np.loadtxt('sample.txt')
-        import matplotlib.pyplot as plt
-        if key == 'LCDM':
-            plt.figure()
-            plt.title('matter')
-            plt.hist(array[:,0])
-            plt.show()
-        
-            plt.figure()
-            plt.title('M_b')
-            plt.hist(array[:,1])
-            plt.show()   
+     if key:   
+        if key == 'exotic':
+            g_lim = [-1.5, 0.1]
             
-            plt.figure()
-            plt.title('alpha')
-            plt.hist(array[:,2])
-            plt.show()
+        elif key == 'late_intxde':
+            g_lim = [-2, 0.1]
             
-            plt.figure()
-            plt.title('beta')
-            plt.hist(array[:,3])
-            plt.show()            
+        elif key == 'heaviside_late_int':
+            g_lim = [-1.45, 0.1]
+            
+        elif key == 'late_int':
+            g_lim = [-15, 0.1]
+            
+        elif key == 'expgamma':
+            g_lim = [-0.1, 1.5]
+            
+        elif key == 'txgamma':
+            g_lim = [-0.5, 0.1]
+            
+        elif key == 'zxgamma':
+            g_lim = [-10, 0.1]
+            
+        elif key == 'zxxgamma':
+            g_lim = [-0.1, 12]
+            
+        elif key == 'gammaxxz':
+            g_lim = [-1, 1]
+            
+        elif key == 'rdecay_m':
+            g_lim = [-3, 0]
+            
+        elif key == 'rdecay':
+            g_lim = [-2, 0]
+            
+        elif key == 'interacting':
+            g_lim = [-1.5, 0.1]
+            
+        elif key == 'LCDM':
+            g_lim = None
+        
         else:
-            plt.figure()
-            plt.title('matter')
-            plt.hist(array[:,0])
-            plt.show()
+            g_lim = [-10,10]
         
-            plt.figure()
-            plt.title('M_b')
-            plt.hist(array[:,1])
-            plt.show()   
+        # Create a model object and a sampler
+        model = Model(g_lim)
+        sampler = dnest4.DNest4Sampler(model,
+                                       backend=dnest4.backends.CSVBackend(".",
+                                                                      sep=" "))
+        
+        if speed == 3:   
+            # LONG Set up the sampler. The first argument is max_num_levels
+            gen = sampler.sample(max_num_levels=30, num_steps=1000, 
+                                 new_level_interval=10000, num_per_step=10000, 
+                                 thread_steps=100, num_particles=5, 
+                                 lam=10, beta=100, seed=1234)
+        elif speed == 2:
+            # MEDIUM num_per_step can be down to a few thousand 
+            gen = sampler.sample(max_num_levels=30, num_steps=1000, 
+                                 new_level_interval=1000, num_per_step=1000, 
+                                  thread_steps=100, num_particles=5, 
+                                  lam=10, beta=100, seed=1234)
+        elif speed == 1:
+            # SHORT
+            gen = sampler.sample(max_num_levels=30, num_steps=100, 
+                                 new_level_interval=100, num_per_step=100, 
+                                 thread_steps=10, num_particles=5, 
+                                 lam=10, beta=100, seed=1234)
+        elif speed == 0:
+            # SHORT, sampling from prior
+            gen = sampler.sample(max_num_levels=1, num_steps=1000, 
+                                 new_level_interval=100, num_per_step=100, 
+                                 thread_steps=10, num_particles=5, 
+                                 lam=10, beta=100, seed=1234)    
+        
+    #    import cProfile, pstats, io
+    #    pr = cProfile.Profile()
+    #    pr.enable()
+        
+        ti = time.time()
+        # Do the sampling (one iteration here = one particle save)
+        for i, sample in enumerate(gen):
+    #        print("# Saved {k} particles.".format(k=(i+1)))
+            pass
+        tf = time.time()
+        
+    #    pr.disable()
+    #    s = io.StringIO()
+    #    sortby = 'cumulative'
+    #    ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+    #    ps.print_stats()
+    #    print (s.getvalue())
+        
+        dnest_time = tools.timer('Bfactor', ti, tf)
+        
+        print('testing =',key)
+        print('data =', dataname)
+        print('sigma =', sigma)
+           
+        # Run the postprocessing
+        info = dnest4.postprocess()
             
-            plt.figure()
-            plt.title('alpha')
-            plt.hist(array[:,2])
-            plt.show()
+        if speed > 1:
             
-            plt.figure()
-            plt.title('beta')
-            plt.hist(array[:,3])
-            plt.show()
+            f = open('brief.txt','w')
+            f.write(dnest_time +'\n'
+                    +'model = '+key +'\n'
+                    +'data = '+ dataname +'\n'
+                    +'sigma = '+str(sigma) +'\n'
+                    +'log(Z) = '+str(info[0]) +'\n'
+                    +'Information = '+str(info[1]) +'\n'
+                    +'speed = '+str(speed))
+            f.close()
             
-            plt.figure()
-            plt.title('gamma')
-            plt.hist(array[:,4])
-            plt.show()
+            pickle.dump(info[0], open('evidence.p', 'wb'))
+            # Moving output .txt files into a run specific folder.
+            results.relocate('evidence.p', speed, key)
+            results.relocate('levels.txt', speed, key)
+            results.relocate('posterior_sample.txt', speed, key)
+            results.relocate('sample_info.txt', speed, key)
+            results.relocate('sample.txt', speed, key)
+            results.relocate('sampler_state.txt', speed, key)
+            results.relocate('weights.txt', speed, key)
+            results.relocate('brief.txt', speed, key)
+            results.relocate('plot_1.pdf', speed, key)
+            results.relocate('plot_2.pdf', speed, key)
+            results.relocate('plot_3.pdf', speed, key)
+            
+        else:
+            # Histogram of parameters found by DNest4.
+            array = np.loadtxt('sample.txt')
+            import matplotlib.pyplot as plt
+            if key == 'LCDM':
+                plt.figure()
+                plt.title('matter')
+                plt.hist(array[:,0])
+                plt.show()
+            
+                plt.figure()
+                plt.title('M_b')
+                plt.hist(array[:,1])
+                plt.show()   
+                
+                plt.figure()
+                plt.title('alpha')
+                plt.hist(array[:,2])
+                plt.show()
+                
+                plt.figure()
+                plt.title('beta')
+                plt.hist(array[:,3])
+                plt.show()            
+            else:
+                plt.figure()
+                plt.title('matter')
+                plt.hist(array[:,0])
+                plt.show()
+            
+                plt.figure()
+                plt.title('M_b')
+                plt.hist(array[:,1])
+                plt.show()   
+                
+                plt.figure()
+                plt.title('alpha')
+                plt.hist(array[:,2])
+                plt.show()
+                
+                plt.figure()
+                plt.title('beta')
+                plt.hist(array[:,3])
+                plt.show()
+                
+                plt.figure()
+                plt.title('gamma')
+                plt.hist(array[:,4])
+                plt.show()
 
 
 

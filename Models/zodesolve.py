@@ -85,11 +85,28 @@ def zodesolve(params, zpicks, firstderivs_key):
         t = vsol[1:,0]
         a = vsol[1:,1]
         ombar_m = vsol[1:,2]
-#        ombar_r = vsol[1:,3]
+        ombar_r = vsol[1:,3]
         ombar_de = vsol[1:,4]
         z = vsol[1:,5]    
         dl = vsol[1:,6] * (1+z)  # in units of dl*(H0/c)
         dlpc = dl * c_over_H0    # dl in parsecs (= vsol[dl] * c/H0)
+        
+#        import matplotlib.pyplot as plt
+#        plt.figure()
+#        plt.xlabel('redshift $z$')
+#        plt.ylabel(r'$\bar \Omega $')
+#        plt.grid(True)
+#        plt.plot(z, ombar_m, label=r'$\bar \Omega_{m}$', 
+#                 color='xkcd:coral', linestyle=':')
+#        plt.plot(z, ombar_de, label=r'$\bar \Omega_{DE}$', 
+#                 color='xkcd:aquamarine')
+#        plt.plot(z, ombar_r, label=r'$\bar \Omega_{r}$', 
+#                 color='xkcd:black')
+#        plt.legend()
+#        plt.title(r'$\bar \Omega_{r}$ evolution, model = %s, $\gamma$ = %s'
+#              %(firstderivs_key, gamma))        
+        
+        plot_var = t, dlpc, dl, a, ombar_m, ombar_r, gamma, zeta, ombar_de, ombar_m0, ombar_r0, ombar_de0
         
     else:
         # Pack up the initial conditions and eq of state parameters.
@@ -108,7 +125,7 @@ def zodesolve(params, zpicks, firstderivs_key):
         dl = vsol[1:,5] * (1+z)  # in units of dl*(H0/c)
         dlpc = dl * c_over_H0    # dl in parsecs (= vsol[dl] * c/H0)
         
-    plot_var = t, dlpc, dl, a, ombar_m, gamma, ombar_de, ombar_m0, ombar_de0
+        plot_var = t, dlpc, dl, a, ombar_m, gamma, ombar_de, ombar_m0, ombar_de0
     
     return dlpc, plot_var
 

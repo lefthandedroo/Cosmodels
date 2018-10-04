@@ -33,31 +33,31 @@ dataname = 'mag_z_LCDM_1000_sigma_'+str(sigma)
 #    Making redshifts to use in this script.
 zpicks = datasim.redshift_picks(0.005, zmax, npoints)
 
-#    Plots for one model with multiple gammas.
-#datasim.model_comparison({'m':0.3}, zpicks, 'exotic', [-0.1, 0, 0.1])
+#    Plots for one model with multiple gamma or zeta.
+datasim.model_comparison({'m':0.3,'gamma':0.7, 'zeta':0.8}, zpicks, 'exotic', zeta_list = [-0.3, 0, 0.6])
 
-#   Plots of various models on the same plot. 
-#   To check if models overlap, put the two of interest last.
-firstderivs_list = ['expgamma', 'exotic', 'rdecay']
-datasim.model_comparison({'m':0.3, 'gamma':-0.1}, zpicks, firstderivs_list)
+##   Plots of various models on the same plot. 
+##   To check if models overlap, put the two of interest last.
+#firstderivs_list = ['expgamma', 'exotic', 'rdecay']
+#datasim.model_comparison({'m':0.3, 'gamma':-0.1}, zpicks, firstderivs_list)
 
 firstderivs_functions = [None
             ,'exotic'
-#            ,'late_intxde'
+            ,'late_intxde'
 #            ,'heaviside_late_int'
 #            ,'late_int'
 #            ,'expgamma'
 #            ,'txgamma'         # doesn't converge
 #            ,'zxgamma'
 #            ,'gamma_over_z'    # doesn't converge
-#            ,'zxxgamma'        # gamma forced positive inside firstderivs
-#            ,'gammaxxz'        # gamma forced positive inside firstderivs
+#            ,'zxxgamma'        # gamma forced positive in firstderivs
+#            ,'gammaxxz'        # gamma forced positive in firstderivs
 #            ,'rdecay_m'
 #            ,'rdecay_de'
 #            ,'rdecay_mxde'
 #            ,'rdecay'               
 #            ,'interacting'
-#            ,'LCDM'
+            ,'LCDM'
              ]
 
 def all_modelcheck():
@@ -82,7 +82,7 @@ def all_modelcheck():
     zpicks = data[3]
     zpicks = zpicks.tolist()
     data_dict = {'mag':mag, 'x1':x1, 'colour':colour, 'zpicks':zpicks}
-    test_params = {'m':0.3,'M':-19.3,'alpha':0,'beta':0,'gamma':-0.1,'zeta':0}
+    test_params = {'m':0.3,'M':-19.3,'alpha':0,'beta':0,'gamma':-0.6,'zeta':-0.6}
     
     for test_key in firstderivs_functions:
         if test_key:

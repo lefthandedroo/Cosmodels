@@ -59,14 +59,14 @@ def exotic(double[:] v, redshifts, double gamma, double zeta, double H0):
     if math.isnan(Hz):
         print('exotic')
         print('z = %s, Hz = %s, gamma = %s, zeta = %s'% (z, Hz, gamma, zeta))
-        print('ombar_m = %s, ombar_de = %s, ombar_r = %s'
-              % (ombar_m, ombar_de, ombar_r))
+        print('ombar_m = %s, ombar_r = %s, ombar_de = %s'
+              % (ombar_m, ombar_r, ombar_de))
     
     cdef double dtdz = -1.0/((1.0+z) * Hz)
     cdef double dadz = -(1.0+z)**(-2.0)
-    cdef double domdz = 3.0*ombar_m /(1.0+z) -gamma * ombar_m
-    cdef double dordz = 4.0*ombar_m /(1.0+z) +gamma * ombar_m -gamma * math.exp(-z/10) * ombar_r
-    cdef double dodedz = gamma * math.exp(-z/10) * ombar_r
+    cdef double domdz = 3.0*ombar_m /(1.0+z) +gamma * ombar_m /(1.0+z) /Hz
+    cdef double dordz = 4.0*ombar_r /(1.0+z) -gamma * ombar_m /(1.0+z) /Hz +zeta * ombar_r /(1.0+z) /Hz
+    cdef double dodedz = -zeta * ombar_r /(1.0+z) /Hz
     cdef double ddldz = 1.0/Hz
     
     # first derivatives of functions I want to find:

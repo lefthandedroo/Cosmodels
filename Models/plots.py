@@ -409,12 +409,22 @@ def modelcheck(mag, zpicks, plot_var_1, firstderivs_key):
     plt.show()
     return
 
-def gammacheck(mag, zpicks, firstderivs_key, plot_var_dict):
+def paramcheck(mag, zpicks, firstderivs_key, plot_var_dict, param_name):
     
-    t_1, dlpc_1, dl_1, a_1, ombar_m_1, gamma_1, ombar_de_1, ombar_m0_1, ombar_de0_1 = plot_var_dict['plot_var_1']
-    t_2, dlpc_2, dl_2, a_2, ombar_m_2, gamma_2, ombar_de_2, ombar_m0_2, ombar_de0_2 = plot_var_dict['plot_var_2']
-    t_3, dlpc_3, dl_3, a_3, ombar_m_3, gamma_3, ombar_de_3, ombar_m0_3, ombar_de0_3 = plot_var_dict['plot_var_3']
-
+    if firstderivs_key == 'exotic':
+        t_1, dlpc_1, dl_1, a_1, ombar_m_1, ombar_r_1, gamma_1, zeta_1, ombar_de_1, ombar_m0_1, ombar_r0_1, ombar_de0_1 = plot_var_dict['plot_var_1']
+        t_2, dlpc_2, dl_2, a_2, ombar_m_2, ombar_r_2, gamma_2, zeta_2, ombar_de_2, ombar_m0_2, ombar_r0_2, ombar_de0_2 = plot_var_dict['plot_var_2']
+        t_3, dlpc_3, dl_3, a_3, ombar_m_3, ombar_r_3, gamma_3, zeta_3, ombar_de_3, ombar_m0_3, ombar_r0_3, ombar_de0_3 = plot_var_dict['plot_var_3']
+    else:    
+        t_1, dlpc_1, dl_1, a_1, ombar_m_1, gamma_1, ombar_de_1, ombar_m0_1, ombar_de0_1 = plot_var_dict['plot_var_1']
+        t_2, dlpc_2, dl_2, a_2, ombar_m_2, gamma_2, ombar_de_2, ombar_m0_2, ombar_de0_2 = plot_var_dict['plot_var_2']
+        t_3, dlpc_3, dl_3, a_3, ombar_m_3, gamma_3, ombar_de_3, ombar_m0_3, ombar_de0_3 = plot_var_dict['plot_var_3']
+  
+    if param_name == 'gamma':
+        param_1, param_2, param_3 = gamma_1, gamma_2, gamma_3
+    elif param_name == 'zeta':
+        param_1, param_2, param_3 = zeta_1, zeta_2, zeta_3
+    
     # Changing time into age
     t_1, t_2, t_3 = -t_1, -t_2, -t_3
 
@@ -428,9 +438,9 @@ def gammacheck(mag, zpicks, firstderivs_key, plot_var_dict):
     plt.xlabel('redshift $z$')
     plt.ylabel('a')
     plt.grid(True)
-    ax.plot(zpicks, a_1, 'r:', label=gamma_1)
-    ax.plot(zpicks, a_2, 'g-.', label=gamma_2)
-    ax.plot(zpicks, a_3, 'b-', label=gamma_3)
+    ax.plot(zpicks, a_1, 'r:', label=param_1)
+    ax.plot(zpicks, a_2, 'g-.', label=param_2)
+    ax.plot(zpicks, a_3, 'b-', label=param_3)
     plt.title('Scale factor evolution, model = %s'%(firstderivs_key))
     ax.legend()
     
@@ -443,9 +453,9 @@ def gammacheck(mag, zpicks, firstderivs_key, plot_var_dict):
     plt.xlabel('redshift $z$')
     plt.ylabel('H')
     plt.grid(True)
-    ax.plot(zpicks, Hz_1, 'r:', label=gamma_1)
-    ax.plot(zpicks, Hz_2, 'g-.', label=gamma_2)
-    ax.plot(zpicks, Hz_3, 'b-', label=gamma_3)
+    ax.plot(zpicks, Hz_1, 'r:', label=param_1)
+    ax.plot(zpicks, Hz_2, 'g-.', label=param_2)
+    ax.plot(zpicks, Hz_3, 'b-', label=param_3)
     plt.title('H evolution, model = %s'%(firstderivs_key))
     ax.legend()
     
@@ -454,26 +464,26 @@ def gammacheck(mag, zpicks, firstderivs_key, plot_var_dict):
     plt.xlabel('redshift $z$')
     plt.ylabel(r'$\bar \Omega $')
     plt.grid(True)
-    ax.plot(zpicks, ombar_m_1, 'r:', label='m, gamma = %.f'%(gamma_1))
-    ax.plot(zpicks, ombar_m_2, 'g-.', label='m, gamma = %.f'%(gamma_2))
-    ax.plot(zpicks, ombar_m_3, 'b-', label='m, gamma = %.f'%(gamma_3))
-    ax.plot(zpicks, ombar_de_1, 'm:', label='de, gamma = %.f'%(gamma_1))
-    ax.plot(zpicks, ombar_de_2, 'k-.', label='de, gamma = %.f'%(gamma_2))
-    ax.plot(zpicks, ombar_de_3, 'c-', label='de, gamma = %.f'%(gamma_3))
+    ax.plot(zpicks, ombar_m_1, 'r:', label='m, param = %s'%(param_1))
+    ax.plot(zpicks, ombar_m_2, 'g-.', label='m, param = %s'%(param_2))
+    ax.plot(zpicks, ombar_m_3, 'b-', label='m, param = %s'%(param_3))
+    ax.plot(zpicks, ombar_de_1, 'm:', label='de, param = %s'%(param_1))
+    ax.plot(zpicks, ombar_de_2, 'k-.', label='de, param = %s'%(param_2))
+    ax.plot(zpicks, ombar_de_3, 'c-', label='de, param = %s'%(param_3))
     plt.title(r'$\bar \Omega_{m}$, $\bar \Omega_{DE}$ evolution')
     ax.legend()
-	
+
     # ombar_m, ombar_de vs redshift log x axis.
     fig, ax = plt.subplots()
     plt.xlabel('redshift $z$')
     plt.ylabel(r'$\bar \Omega $')
     plt.grid(True)
-    ax.semilogx(zpicks, ombar_m_1, 'r:', label='m, gamma = %.f'%(gamma_1))
-    ax.semilogx(zpicks, ombar_m_2, 'g-.', label='m, gamma = %.f'%(gamma_2))
-    ax.semilogx(zpicks, ombar_m_3, 'b-', label='m, gamma = %.f'%(gamma_3))
-    ax.semilogx(zpicks, ombar_de_1, 'm:', label='de, gamma = %.f'%(gamma_1))
-    ax.semilogx(zpicks, ombar_de_2, 'k-.', label='de, gamma = %.f'%(gamma_2))
-    ax.semilogx(zpicks, ombar_de_3, 'c-', label='de, gamma = %.f'%(gamma_3))
+    ax.semilogx(zpicks, ombar_m_1, 'r:', label='m, param = %s'%(param_1))
+    ax.semilogx(zpicks, ombar_m_2, 'g-.', label='m, param = %s'%(param_2))
+    ax.semilogx(zpicks, ombar_m_3, 'b-', label='m, param = %s'%(param_3))
+    ax.semilogx(zpicks, ombar_de_1, 'm:', label='de, param = %s'%(param_1))
+    ax.semilogx(zpicks, ombar_de_2, 'k-.', label='de, param = %s'%(param_2))
+    ax.semilogx(zpicks, ombar_de_3, 'c-', label='de, param = %s'%(param_3))
     plt.title(r'$\bar \Omega_{m}$, $\bar \Omega_{DE}$ evolution')
     ax.legend()
 
@@ -482,9 +492,9 @@ def gammacheck(mag, zpicks, firstderivs_key, plot_var_dict):
     plt.xlabel('redshift $z$')
     plt.ylabel('$\Omega_{m}$')
     plt.grid(True)
-    ax.plot(zpicks, ombar_m_1, 'r:', label=gamma_1)
-    ax.plot(zpicks, ombar_m_2, 'g-.', label=gamma_2)
-    ax.plot(zpicks, ombar_m_3, 'b-', label=gamma_3)
+    ax.plot(zpicks, ombar_m_1, 'r:', label=param_1)
+    ax.plot(zpicks, ombar_m_2, 'g-.', label=param_2)
+    ax.plot(zpicks, ombar_m_3, 'b-', label=param_3)
     plt.title('$\Omega_{m}$ evolution, model = %s'%(firstderivs_key))
     ax.legend()
 	
@@ -493,9 +503,9 @@ def gammacheck(mag, zpicks, firstderivs_key, plot_var_dict):
     plt.xlabel('redshift $z$')
     plt.ylabel('$\Omega_{DE}$')
     plt.grid(True)
-    ax.plot(zpicks, ombar_de_1, 'r:', label=gamma_1)
-    ax.plot(zpicks, ombar_de_2, 'g-.', label=gamma_2)
-    ax.plot(zpicks, ombar_de_3, 'b-', label=gamma_3)
+    ax.plot(zpicks, ombar_de_1, 'r:', label=param_1)
+    ax.plot(zpicks, ombar_de_2, 'g-.', label=param_2)
+    ax.plot(zpicks, ombar_de_3, 'b-', label=param_3)
     plt.title('$\Omega_{DE}$ evolution, model = %s'%(firstderivs_key))
     ax.legend()
 	
@@ -504,9 +514,9 @@ def gammacheck(mag, zpicks, firstderivs_key, plot_var_dict):
     plt.xlabel('redshift $z$')
     plt.ylabel('$d_L$*($H_0$/c)')
     plt.grid(True)
-    ax.plot(zpicks, dl_1, 'r:', label=gamma_1)
-    ax.plot(zpicks, dl_2, 'g-.', label=gamma_2)
-    ax.plot(zpicks, dl_3, 'b-', label=gamma_3)
+    ax.plot(zpicks, dl_1, 'r:', label=param_1)
+    ax.plot(zpicks, dl_2, 'g-.', label=param_2)
+    ax.plot(zpicks, dl_3, 'b-', label=param_3)
     plt.title('$d_L$ evolution, model = %s'%(firstderivs_key))
     ax.legend()
 
@@ -515,9 +525,9 @@ def gammacheck(mag, zpicks, firstderivs_key, plot_var_dict):
     plt.xlabel('age')
     plt.ylabel('redshift $z$')
     plt.grid(True)
-    ax.plot(t_1, zpicks, 'r:', label=gamma_1)
-    ax.plot(t_2, zpicks, 'g-.', label=gamma_2)
-    ax.plot(t_3, zpicks, 'b-', label=gamma_3)
+    ax.plot(t_1, zpicks, 'r:', label=param_1)
+    ax.plot(t_2, zpicks, 'g-.', label=param_2)
+    ax.plot(t_3, zpicks, 'b-', label=param_3)
     plt.title('Redshift evolution, model = %s'%(firstderivs_key))
     ax.legend()
     
@@ -526,9 +536,9 @@ def gammacheck(mag, zpicks, firstderivs_key, plot_var_dict):
     plt.xlabel('age')
     plt.ylabel('a')
     plt.grid(True)
-    ax.plot(t_1, a_1, 'r:', label=gamma_1)
-    ax.plot(t_2, a_2, 'g-.', label=gamma_2)
-    ax.plot(t_3, a_3, 'b-', label=gamma_3)
+    ax.plot(t_1, a_1, 'r:', label=param_1)
+    ax.plot(t_2, a_2, 'g-.', label=param_2)
+    ax.plot(t_3, a_3, 'b-', label=param_3)
     plt.title('Scale factor evolution, model = %s'%(firstderivs_key))
     ax.legend()
 
@@ -537,9 +547,9 @@ def gammacheck(mag, zpicks, firstderivs_key, plot_var_dict):
     plt.xlabel('redshift $z$')
     plt.ylabel('magnitude')
     plt.title('Magnitude evolution, model = %s'%(firstderivs_key))
-    plt.scatter(zpicks, mag_1, c='r', marker=',', lw=0.1, label=gamma_1)
-    plt.scatter(zpicks, mag_2, c='g', marker='x', lw=0.1, label=gamma_2) 
-    plt.scatter(zpicks, mag_3, c='b', marker='.', lw=0.2, label=gamma_3)
+    plt.scatter(zpicks, mag_1, c='r', marker=',', lw=0.1, label=param_1)
+    plt.scatter(zpicks, mag_2, c='g', marker='x', lw=0.1, label=param_2) 
+    plt.scatter(zpicks, mag_3, c='b', marker='.', lw=0.2, label=param_3)
     ax.legend()
     
     plt.show()
