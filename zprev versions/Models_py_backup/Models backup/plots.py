@@ -19,7 +19,8 @@ from results import load
 def stat(hue, var, var_true, var_name, slnprob, zpicks, 
           mag, sigma, nsteps, nwalkers, save_path, firstderivs_key):
     
-    initial = var_name.lower()[:1]
+    name_l = var_name.lower()
+    initial = name_l[:1]
     name_true = initial + '_true'
     hue_name = hue
     hue = 'xkcd:'+hue
@@ -27,9 +28,9 @@ def stat(hue, var, var_true, var_name, slnprob, zpicks,
     # Marginalised distribution histogram.
     plt.figure()
 #    plt.xlabel(r'$\{}$'.format(name_l))
-    plt.xlabel(var_name)
+    plt.xlabel(name_l)
     plt.title('model: '+firstderivs_key+'\n Marginalised distribution of '
-              +var_name+' \n nsteps: '+str(nsteps)+', noise: '+str(sigma)
+              +name_l+' \n nsteps: '+str(nsteps)+', noise: '+str(sigma)
               +', npoints: '+str(len(zpicks))+' '+firstderivs_key)
     plt.hist(var, 50, facecolor=hue)
     stamp = str(int(time.time()))
@@ -41,8 +42,8 @@ def stat(hue, var, var_true, var_name, slnprob, zpicks,
     
     # Walker steps.
     plt.figure()
-    plt.xlabel(var_name)
-    plt.title('model: '+firstderivs_key+'\n lnprobability of '+var_name
+    plt.xlabel(name_l)
+    plt.title('model: '+firstderivs_key+'\n lnprobability of '+name_l
               +' \n nsteps: '+str(nsteps)+', noise: '+str(sigma)
               +', npoints: '+str(len(zpicks)))
     plt.plot(var, slnprob, '.', color=hue)
@@ -57,7 +58,7 @@ def stat(hue, var, var_true, var_name, slnprob, zpicks,
     plt.figure()
     plt.xlabel('step number')
 #    plt.ylabel(r'$\{}$'.format(name_l))
-    plt.ylabel(var_name)
+    plt.ylabel(name_l)
     plt.title('model: '+firstderivs_key+'\n flatchains, '+name_true+
               ' in '+hue_name+' \n nsteps: '+str(nsteps)+', noise: '
               +str(sigma)+', npoints: '+str(len(zpicks)))
@@ -157,24 +158,15 @@ def onepercent():
 #m_vc, g_vc, sigma, npoints = onepercent()
     
 def ivcdmcheck(mag, zpicks, firstderivs_key, plot_var_dict):
-    firstderivs_key_1 = firstderivs_key[0]
-    firstderivs_key_2 = firstderivs_key[1]
-    firstderivs_key_3 = firstderivs_key[2]   
+    firstderivs_key_3 = firstderivs_key[0]   
+    firstderivs_key_1 = firstderivs_key[1]
+    firstderivs_key_2 = firstderivs_key[2]
 
-    print('ivcdmcheck on')
 
-    for key in firstderivs_key:
-        print('key',key)
-        if firstderivs_key == 'exotic':
-            print('exotic')
-            t_1, dlpc_1, dl_1, a_1, ombar_m_1, ombar_r_1, gamma_1, zeta_1, ombar_de_1, ombar_m0_1, ombar_r0_1, ombar_de0_1 = plot_var_dict['plot_var_1']
-            t_2, dlpc_2, dl_2, a_2, ombar_m_2, ombar_r_2, gamma_2, zeta_2, ombar_de_2, ombar_m0_2, ombar_r0_2, ombar_de0_2 = plot_var_dict['plot_var_2']
-            t_3, dlpc_3, dl_3, a_3, ombar_m_3, ombar_r_3, gamma_3, zeta_3, ombar_de_3, ombar_m0_3, ombar_r0_3, ombar_de0_3 = plot_var_dict['plot_var_3']
-        else:    
-            print('else')
-            t_1, dlpc_1, dl_1, a_1, ombar_m_1, gamma_1, ombar_de_1, ombar_m0_1, ombar_de0_1 = plot_var_dict['plot_var_1']
-            t_2, dlpc_2, dl_2, a_2, ombar_m_2, gamma_2, ombar_de_2, ombar_m0_2, ombar_de0_2 = plot_var_dict['plot_var_2']
-            t_3, dlpc_3, dl_3, a_3, ombar_m_3, gamma_3, ombar_de_3, ombar_m0_3, ombar_de0_3 = plot_var_dict['plot_var_3']
+    
+    t_1, dlpc_1, dl_1, a_1, ombar_m_1, gamma_1, ombar_de_1, ombar_m0_1, ombar_de0_1 = plot_var_dict['plot_var_1']
+    t_2, dlpc_2, dl_2, a_2, ombar_m_2, gamma_2, ombar_de_2, ombar_m0_2, ombar_de0_2 = plot_var_dict['plot_var_2']
+    t_3, dlpc_3, dl_3, a_3, ombar_m_3, gamma_3, ombar_de_3, ombar_m0_3, ombar_de0_3 = plot_var_dict['plot_var_3']
 
     # Changing time into age
     t_1, t_2, t_3 = -t_1, -t_2, -t_3
@@ -308,12 +300,9 @@ def ivcdmcheck(mag, zpicks, firstderivs_key, plot_var_dict):
     plt.show()
     return
 
-def modelcheck(mag, zpicks, plot_var, firstderivs_key):
+def modelcheck(mag, zpicks, plot_var_1, firstderivs_key):
     
-    if firstderivs_key == 'exotic':
-        t, dlpc, dl, a, ombar_m, ombar_r, gamma, zeta, ombar_de, ombar_m0, ombar_r0, ombar_de0 = plot_var
-    else:
-        t, dlpc, dl, a, ombar_m, gamma, ombar_de, ombar_m0, ombar_de0 = plot_var
+    t, dlpc, dl, a, ombar_m, gamma, ombar_de, ombar_m0, ombar_de0 = plot_var_1
     t = -t
     
     if min(ombar_m) < 0:

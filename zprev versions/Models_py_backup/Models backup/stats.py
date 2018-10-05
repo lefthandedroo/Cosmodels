@@ -43,33 +43,36 @@ def stats(test_params, data_dict, sigma, nsteps,
     mag = data_dict.get('mag',0)
     
     if firstderivs_key == 'exotic':
-        test_params = test_params[:6]
+        pass
     elif firstderivs_key == 'LCDM':
-        test_params = test_params[:4]
+        test_params['gamma'] = 0
+        del test_params['gamma']
+        test_params['zeta'] = 0
+        del test_params['zeta']
     else:
-        test_params = test_params[:5]
+        test_params['zeta'] = 0
+        del test_params['zeta']
     
     # emcee parameters:
     ndim = len(test_params)
     nwalkers = int(ndim * 2)
     
     # Initializing walkers.
-    pos = np.zeros((1, ndim)).flatten()
-    i=0
-    for dic in test_params:
-        for key in dic:
-            pos[i] = dic[key]
-            i+=1
-    pos = [pos + 0.001*np.random.randn(ndim) for i in range(nwalkers)]
+    poslist = list(test_params.values())
+    pos = []
+    for i in poslist:
+        pos.append(i)
+    startpos = np.array(pos)
+    pos = [startpos + 0.001*np.random.randn(ndim) for i in range(nwalkers)]
     
     # Are walkers starting outside of prior?
-    i=0
+    i = 0
     while i < nwalkers:
         theta = pos[i]
         lp = ln.lnprior(theta, firstderivs_key)
         if not np.isfinite(lp):
             print('~~~~~~~pos[%s] (outside of prior) = %s ~~~~~~~'%(i, theta))
-        i+=1
+        i += 1
         
     # Sampler setup.
     times0 = time.time()    # starting sampler timer
@@ -91,7 +94,8 @@ def stats(test_params, data_dict, sigma, nsteps,
     print('_____ sampler end')
     times1=time.time()      # stopping sampler timer
     
-    # Walker steps is lnprob = sampler.flatlnprobability
+    # Walker steps.
+    lnprob = sampler.flatlnprobability
     # Index of best parameters found by emcee.
     bi = np.argmax(sampler.flatlnprobability) # index with highest post prob 
     
@@ -104,33 +108,81 @@ def stats(test_params, data_dict, sigma, nsteps,
     propert = {}
     propert['trace'] = trace
     
-    colours = ['brown', 'berry', 'coral', 'amber', 
-               'apple', 'aquamarine', 'deepblue', 'darkviolet']    
+    colours = ['coral', 'orchid', 'apple', 'orange', 'aquamarine', 'black']
+    
+    def stat(i, sampler, string, test_params, propert):
+        
+        best_output = sampler.flatchain[bi,i]
+        # Input m = e_m(z)/ec(z=0).
+        param_true = test_params.get(string, 0)
+        true.append(param_true)
+        # Output m.
+        output = sampler.flatchain[:,i]
+        # Standard deviation and mean of the m distribution.
+        propert[string+'_sd'] = np.std(output)
+        propert[string+'_mean'] = np.mean(output)
+        propert[string] = sampler.flatchain[bi,i]
+        
+        return best_output, output, param_true, propert
+    
     
     for i in range(ndim):
         
-        for param_key in test_params[i]:
-            param_initial = param_key[0]
-            best = sampler.flatchain[bi,i]
-            # Input m = e_m(z)/ec(z=0).
-            param_true = test_params[i].get(param_key, 0)
-            true.append(param_true)
-            # Output m.
-            output = sampler.flatchain[:,i]
-            # Standard deviation and mean of the m distribution.
-            propert[param_initial+'_sd'] = np.std(output)
-            propert[param_initial+'_mean'] = np.mean(output)
-            propert[param_initial] = sampler.flatchain[bi,i]
+        if i == 0:            
+            best, output, param_true, propert = stat(i, sampler, 'm', test_params, propert)
             
-            plots.stat(colours[i], output, param_true, param_key, 
-                       sampler.flatlnprobability, zpicks, mag, sigma, 
-                       nsteps, nwalkers, save_path, firstderivs_key)
+            plots.stat(colours[i], output, param_true, 'matter', lnprob, zpicks, 
+                       mag, sigma, nsteps, nwalkers, save_path, firstderivs_key)
             
             thetabest[i] = best
-            parambest[param_initial] = best
+            parambest['m'] = best
+                        
+        elif i == 1:            
+            best, output, param_true, propert = stat(i, sampler, 'M', test_params, propert)
             
+            plots.stat(colours[i], output, param_true, 'Mcorr', lnprob, zpicks, 
+                       mag, sigma, nsteps, nwalkers, save_path, firstderivs_key)
+            
+            thetabest[i] = best
+            parambest['M'] = best
+                        
+        elif i == 2:
+            best, output, param_true, propert = stat(i, sampler, 'a', test_params, propert)
+            
+            plots.stat(colours[i], output, param_true, 'alpha', lnprob, zpicks, 
+                       mag, sigma, nsteps, nwalkers, save_path, firstderivs_key)
+            
+            thetabest[i] = best
+            parambest['alpha'] = best
+            
+        elif i == 3:
+            best, output, param_true, propert = stat(i, sampler, 'b', test_params, propert)
+            
+            plots.stat(colours[i], output, param_true, 'beta', lnprob, zpicks, 
+                       mag, sigma, nsteps, nwalkers, save_path, firstderivs_key)
+            
+            thetabest[i] = best
+            parambest['beta'] = best
+                    
+        elif i == 4:
+            best, output, param_true, propert = stat(i, sampler, 'g', test_params, propert)
+            
+            plots.stat(colours[i], output, param_true, 'gamma', lnprob, zpicks, 
+                       mag, sigma, nsteps, nwalkers, save_path, firstderivs_key)
+            
+            thetabest[i] = best
+            parambest['gamma'] = best
+            
+        elif i == 5:
+            best, output, param_true, propert = stat(i, sampler, 'z', test_params, propert)
+            
+            plots.stat(colours[i], output, param_true, 'zeta', lnprob, zpicks, 
+                       mag, sigma, nsteps, nwalkers, save_path, firstderivs_key)
+            
+            thetabest[i] = best
+            parambest['zeta'] = best            
+
     # Checking if best found parameters are within prior.
-    print(type(thetabest))
     lp = ln.lnprior(thetabest, firstderivs_key)
     if not np.isfinite(lp):
         print('')
@@ -155,7 +207,7 @@ def stats(test_params, data_dict, sigma, nsteps,
     filename = os.path.join(save_path, filename)
     plt.savefig(filename)
     plt.show(block=False)
-    
+
     # Corner plot (walkers' walk + histogram).
     import corner
 #    samples = sampler.chain[:, burnin:, :].reshape((-1, ndim))
@@ -168,7 +220,7 @@ def stats(test_params, data_dict, sigma, nsteps,
         print('@@@@@@@@@@@@@@@@@')
         print('best index =',str(bi))
         print('@@@@@@@@@@@@@@@@@')
-    print('max likelihood params =',str(parambest))
+    print('best parameters =',str(parambest))
     print('m.a.f.:', np.mean(sampler.acceptance_fraction))
     print('nsteps:', str(nsteps))
     print('sigma:', str(sigma))
