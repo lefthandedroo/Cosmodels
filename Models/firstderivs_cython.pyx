@@ -32,7 +32,7 @@ cdef double w_r = 1/3     # radiation
 cdef double w_m = 0.0     # matter
 cdef double w_de = -1.0   # cosmological constant (dark energy?)
 
-def exotic(double[:] v, redshifts, double gamma, double zeta, double H0):
+def exotic(double[:] v, redshifts, in_terms, double H0):
     """    
     matter decays into radiation, that decays into dark energy
     Takes in:
@@ -46,6 +46,7 @@ def exotic(double[:] v, redshifts, double gamma, double zeta, double H0):
                                 d(z)/dz,
                                 d(dl)/dz]
     """
+    
     cdef double t = v[0]
     cdef double a = v[1]
     cdef double ombar_m = v[2]
@@ -53,6 +54,8 @@ def exotic(double[:] v, redshifts, double gamma, double zeta, double H0):
     cdef double ombar_de = v[4]
     cdef double z = v[5]
     cdef double dl = v[6]
+    cdef double gamma = in_terms[0]
+    cdef double zeta = in_terms[1]
         
     cdef double Hz = H0 * (ombar_m + ombar_de + ombar_r)**(0.5)
         
@@ -81,7 +84,7 @@ def exotic(double[:] v, redshifts, double gamma, double zeta, double H0):
     return f
 
 
-def late_intxde(double[:] v, redshifts, double gamma, double H0):
+def late_intxde(double[:] v, redshifts, in_terms, double H0):
     """
     Takes in:
         v = values at z=0;
@@ -99,6 +102,7 @@ def late_intxde(double[:] v, redshifts, double gamma, double H0):
     cdef double ombar_de = v[3]
     cdef double z = v[4]
     cdef double dl = v[5]
+    cdef double gamma = in_terms[0]
         
     cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
         
@@ -127,7 +131,7 @@ def late_intxde(double[:] v, redshifts, double gamma, double H0):
     
     return f
 
-def heaviside_late_int(double[:] v, redshifts, double gamma, double H0):
+def heaviside_late_int(double[:] v, redshifts, in_terms, double H0):
     """
     Takes in:
         v = values at z=0;
@@ -145,6 +149,7 @@ def heaviside_late_int(double[:] v, redshifts, double gamma, double H0):
     cdef double ombar_de = v[3]
     cdef double z = v[4]
     cdef double dl = v[5]
+    cdef double gamma = in_terms[0]
         
     cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
         
@@ -170,7 +175,7 @@ def heaviside_late_int(double[:] v, redshifts, double gamma, double H0):
     
     return f
 
-def late_int(double[:] v, redshifts, double gamma, double H0):
+def late_int(double[:] v, redshifts, in_terms, double H0):
     """
     Takes in:
         v = values at z=0;
@@ -188,6 +193,7 @@ def late_int(double[:] v, redshifts, double gamma, double H0):
     cdef double ombar_de = v[3]
     cdef double z = v[4]
     cdef double dl = v[5]
+    cdef double gamma = in_terms[0]
         
     cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
         
@@ -216,7 +222,7 @@ def late_int(double[:] v, redshifts, double gamma, double H0):
     
     return f
 
-def expgamma(double[:] v, redshifts, double gamma, double H0):
+def expgamma(double[:] v, redshifts, in_terms, double H0):
     """
     Takes in:
         v = values at z=0;
@@ -234,6 +240,7 @@ def expgamma(double[:] v, redshifts, double gamma, double H0):
     cdef double ombar_de = v[3]
     cdef double z = v[4]
     cdef double dl = v[5]
+    cdef double gamma = in_terms[0]
         
     cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
         
@@ -259,7 +266,7 @@ def expgamma(double[:] v, redshifts, double gamma, double H0):
     
     return f
 
-def txgamma(double[:] v, redshifts, double gamma, double H0):
+def txgamma(double[:] v, redshifts, in_terms, double H0):
     """
     Takes in:
         v = values at z=0;
@@ -277,7 +284,8 @@ def txgamma(double[:] v, redshifts, double gamma, double H0):
     cdef double ombar_de = v[3]
     cdef double z = v[4]
     cdef double dl = v[5]
-        
+    cdef double gamma = in_terms[0]
+       
     cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
         
     if math.isnan(Hz):
@@ -302,7 +310,7 @@ def txgamma(double[:] v, redshifts, double gamma, double H0):
     
     return f
 
-def zxgamma(double[:] v, redshifts, double gamma, double H0):
+def zxgamma(double[:] v, redshifts, in_terms, double H0):
     """
     Takes in:
         v = values at z=0;
@@ -320,6 +328,7 @@ def zxgamma(double[:] v, redshifts, double gamma, double H0):
     cdef double ombar_de = v[3]
     cdef double z = v[4]
     cdef double dl = v[5]
+    cdef double gamma = in_terms[0]
         
     cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
         
@@ -345,7 +354,7 @@ def zxgamma(double[:] v, redshifts, double gamma, double H0):
     
     return f
 
-def gamma_over_z(double[:] v, redshifts, double gamma, double H0):
+def gamma_over_z(double[:] v, redshifts, in_terms, double H0):
     """
     Takes in:
         v = values at z=0;
@@ -363,6 +372,7 @@ def gamma_over_z(double[:] v, redshifts, double gamma, double H0):
     cdef double ombar_de = v[3]
     cdef double z = v[4]
     cdef double dl = v[5]
+    cdef double gamma = in_terms[0]
         
     cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
         
@@ -388,7 +398,7 @@ def gamma_over_z(double[:] v, redshifts, double gamma, double H0):
     
     return f
 
-def zxxgamma(double[:] v, redshifts, double gamma, double H0):
+def zxxgamma(double[:] v, redshifts, in_terms, double H0):
     """
     Takes in:
         v = values at z=0;
@@ -406,6 +416,7 @@ def zxxgamma(double[:] v, redshifts, double gamma, double H0):
     cdef double ombar_de = v[3]
     cdef double z = v[4]
     cdef double dl = v[5]
+    cdef double gamma = in_terms[0]
         
     cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
     
@@ -433,7 +444,7 @@ def zxxgamma(double[:] v, redshifts, double gamma, double H0):
     
     return f
 
-def gammaxxz(double[:] v, redshifts, double gamma, double H0):
+def gammaxxz(double[:] v, redshifts, in_terms, double H0):
     """
     Takes in:
         v = values at z=0;
@@ -451,6 +462,7 @@ def gammaxxz(double[:] v, redshifts, double gamma, double H0):
     cdef double ombar_de = v[3]
     cdef double z = v[4]
     cdef double dl = v[5]
+    cdef double gamma = in_terms[0]
         
     cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
     
@@ -478,7 +490,7 @@ def gammaxxz(double[:] v, redshifts, double gamma, double H0):
     
     return f
 
-def rdecay_m(double[:] v, redshifts, double gamma, double H0):
+def rdecay_m(double[:] v, redshifts, in_terms, double H0):
     """
     Takes in:
         v = values at z=0;
@@ -496,6 +508,7 @@ def rdecay_m(double[:] v, redshifts, double gamma, double H0):
     cdef double ombar_de = v[3]
     cdef double z = v[4]
     cdef double dl = v[5]
+    cdef double gamma = in_terms[0]
         
     cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
         
@@ -521,7 +534,7 @@ def rdecay_m(double[:] v, redshifts, double gamma, double H0):
     
     return f
 
-def rdecay_de(double[:] v, redshifts, double gamma, double H0):
+def rdecay_de(double[:] v, redshifts, in_terms, double H0):
     """
     Takes in:
         v = values at z=0;
@@ -539,6 +552,7 @@ def rdecay_de(double[:] v, redshifts, double gamma, double H0):
     cdef double ombar_de = v[3]
     cdef double z = v[4]
     cdef double dl = v[5]
+    cdef double gamma = in_terms[0]
         
     cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
         
@@ -564,7 +578,7 @@ def rdecay_de(double[:] v, redshifts, double gamma, double H0):
     
     return f
 
-def rdecay_mxde(double[:] v, redshifts, double gamma, double H0):
+def rdecay_mxde(double[:] v, redshifts, in_terms, double H0):
     """
     Takes in:
         v = values at z=0;
@@ -582,7 +596,8 @@ def rdecay_mxde(double[:] v, redshifts, double gamma, double H0):
     cdef double ombar_de = v[3]
     cdef double z = v[4]
     cdef double dl = v[5]
-        
+    cdef double gamma = in_terms[0]
+       
     cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
         
     if math.isnan(Hz):
@@ -607,7 +622,7 @@ def rdecay_mxde(double[:] v, redshifts, double gamma, double H0):
     
     return f
 
-def rdecay(double[:] v, redshifts, double gamma, double H0):
+def rdecay(double[:] v, redshifts, in_terms, double H0):
     """
     Takes in:
         v = values at z=0;
@@ -625,6 +640,7 @@ def rdecay(double[:] v, redshifts, double gamma, double H0):
     cdef double ombar_de = v[3]
     cdef double z = v[4]
     cdef double dl = v[5]
+    cdef double gamma = in_terms[0]
         
     cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
         
@@ -650,7 +666,7 @@ def rdecay(double[:] v, redshifts, double gamma, double H0):
     
     return f
 
-def interacting(double[:] v, redshifts, double gamma, double H0):
+def interacting(double[:] v, redshifts, in_terms, double H0):
     """
     UNPHYSICAL FOR |gamma| > 0.1 BEFORE z = 2
     
@@ -670,6 +686,7 @@ def interacting(double[:] v, redshifts, double gamma, double H0):
     cdef double ombar_de = v[3]
     cdef double z = v[4]
     cdef double dl = v[5]
+    cdef double gamma = in_terms[0]
         
     cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
         
@@ -695,7 +712,7 @@ def interacting(double[:] v, redshifts, double gamma, double H0):
     
     return f
 
-def LCDM(double[:] v, redshifts, double gamma, double H0):
+def LCDM(double[:] v, redshifts, in_terms, double H0):
     """
     Takes in:
         v = values at z=0;

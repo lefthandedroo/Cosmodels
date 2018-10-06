@@ -13,7 +13,7 @@ import zodesolve
 import tools
 import datasim
 import results
-#datasim
+#datasim.py
 
 def magn(params, data, firstderivs_key, plot_key=False):
     """
@@ -100,7 +100,20 @@ def magn(params, data, firstderivs_key, plot_key=False):
 #            magnitude = 5 * math.log10(dlpc[i]/10) + M
 #        mag.append(magnitude)
     
-#evaluator
+#evaluator.py
+    
+dataname = 'mag_z_LCDM_1000_sigma_'+str(sigma)
+
+# Number of datapoints to be simulated
+npoints = 1000
+zmax = 2
+
+#    Making data (mag and z)
+#dataname = 'mag_z_'+data_key+'_'+str(npoints)+'_sigma_'+str(sigma)
+#datasim.makensavemagnz(m_true, g_true, mu, sigma, zpicks, data_key, dataname)
+
+#    Making redshifts to use in this script.
+#zpicks = datasim.redshift_picks(0.005, zmax, npoints)
 
 def errorvsdatasize():
     
@@ -276,3 +289,220 @@ def errorvsdatasize():
     return
 
 #errorvsdatasize()
+    
+
+#ln.py
+    
+#def lnlike(theta, data, sigma, firstderivs_key, ndim):
+#    '''
+#    Finding matter density m, interaction gamma.
+#    '''
+#    mag = data['mag']
+#    
+#    params = {}
+#    if ndim == 1:
+#        params = {'m':theta}
+#    elif ndim == 2:
+#        params = {'m':theta[0],'gamma':theta[1]}
+#    
+#    model = magn(params, data, firstderivs_key)
+#    var = sigma**2
+#    return -0.5*np.sum((mag-model)**2 /var +0.5*np.log(2*np.pi*var))
+
+
+#def lnlike(theta, data, sigma, firstderivs_key, ndim):
+#    '''
+#    Finding matter density m, corrected absolute mag M, interaction gamma.
+#    '''    
+#    mag = data['mag']
+#    
+#    params = {}
+#    if ndim == 2:
+#        params = {'m':theta[0], 'M':theta[1]}
+#    elif ndim == 3:
+#        params = {'m':theta[0],'M':theta[1], 'gamma':theta[2]}
+#    
+#    model = magn(params, data, firstderivs_key)
+#    var = sigma**2
+#    return -0.5*np.sum((mag-model)**2 /var +0.5*np.log(2*np.pi*var))
+    
+#def lnprior(theta, key):
+#    '''
+#    Finding matter density m, interaction gamma.
+#    '''
+#    
+#    if key == 'LCDM':
+#        m = theta
+#        if 0 < m < 1 or m == 1:
+#            return 0.0
+#    elif key == 'late_int' or 'heaviside_late_int' or 'late_intxde':
+#        m, gamma = theta
+#        if (0 < m < 1 or m == 1) and -1.45 < gamma < 0.2:
+#            return 0.0       
+#    elif key == 'rdecay':
+#        m, gamma = theta
+#        if (0 < m < 1 or m == 1) and -10 < gamma < 0:
+#            return 0.0
+#    elif key == 'interacting':
+#        m, gamma = theta
+#        if (0 < m < 1 or m == 1) and abs(gamma) < 1.45:
+#            return 0.0
+#    elif key == 'expgamma':
+#        m, gamma = theta
+#        if (0 < m < 1 or m == 1) and abs(gamma) < 25:
+#            return 0.0
+#    elif key == 'zxxgamma' or 'gammaxxz':
+#        m, gamma = theta
+#        if (0 < m < 1 or m == 1) and 0 < gamma < 10:
+#            return 0.0        
+#    else:
+#        m, gamma = theta
+#        if (0 < m < 1 or m == 1) and abs(gamma) < 10:
+#            return 0.0
+#        
+#    return -np.inf
+#    
+#
+#def lnprior(theta, key):
+#    '''
+#    Finding matter density m, corrected absolute mag M, interaction gamma.
+#    '''  
+#    
+#    Mmin = -20
+#    
+#    Mmax = -18
+#    
+#    if key == 'LCDM':
+#        m, M = theta
+#        if (0 < m < 1 or m == 1) and Mmin < M < Mmax:
+#            return 0.0
+#    elif key == 'late_int' or 'heaviside_late_int' or 'late_intxde':
+#        m, M, gamma = theta
+#        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and -1.45 < gamma < 0.2:
+#            return 0.0       
+#    elif key == 'rdecay':
+#        m, M, gamma = theta
+#        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and -10 < gamma < 0 :
+#            return 0.0
+#    elif key == 'interacting':
+#        m, M, gamma = theta
+#        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and abs(gamma) < 1.45:
+#            return 0.0
+#    elif key == 'expgamma':
+#        m, M, gamma = theta
+#        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and abs(gamma) < 25 :
+#            return 0.0
+#    elif key == 'zxxgamma' or 'gammaxxz':
+#        m, M, gamma = theta
+#        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and 0 < gamma < 10:
+#            return 0.0        
+#    else:
+#        m, M, gamma = theta
+#        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and abs(gamma) < 10:
+#            return 0.0
+#        
+#    return -np.inf
+#    
+#
+#def lnprior(theta, key):
+#    '''
+#    Finding matter density m, absolute M, alpha, beta, interaction gamma.
+#    '''  
+#    
+#    Mmin, Mmax = -20, -18
+#    amax = 5
+#    bmax = 5
+#    
+#    print('key ln prior gets is = ',key)
+#    
+#    if key == 'LCDM':
+#        m, M, alpha, beta = theta
+#        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and abs(alpha) < amax and abs(beta) < bmax:
+#            return 0.0
+#    elif key == 'late_int' or key == 'heaviside_late_int' or key == 'late_intxde':
+#        m, M, alpha, beta, gamma = theta
+#        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and abs(alpha) < amax and abs(beta) < bmax and -1.45 < gamma < 0.2:
+#            return 0.0       
+#    elif key == 'rdecay':
+#        m, M, alpha, beta, gamma = theta
+#        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and abs(alpha) < amax and abs(beta) < bmax and -10 < gamma < 0 :
+#            return 0.0
+#    elif key == 'interacting':
+#        m, M, alpha, beta, gamma = theta
+#        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and abs(alpha) < amax and abs(beta) < bmax and abs(gamma) < 1.45:
+#            return 0.0
+#    elif key == 'expgamma':
+#        m, M, alpha, beta, gamma = theta
+#        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and abs(alpha) < amax and abs(beta) < bmax and abs(gamma) < 25 :
+#            return 0.0
+#    elif key == 'zxxgamma' or key == 'gammaxxz':
+#        m, M, alpha, beta, gamma = theta
+#        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and abs(alpha) < amax and abs(beta) < bmax and 0 < gamma < 10:
+#            return 0.0
+#    elif key == 'exotic':
+#        m, M, alpha, beta, gamma, zeta = theta
+#        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and abs(alpha) < amax and abs(beta) < bmax and 0 < gamma < 10 and 0 < zeta < 10:
+#            return 0.0
+#    else:
+#        m, M, alpha, beta, gamma = theta
+#        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and abs(alpha) < amax and abs(beta) < bmax and abs(gamma) < 10:
+#            return 0.0
+#        
+#    return -np.inf
+    
+# zodesolve.py
+
+#def odesolve(params, zpicks, firstderivs_key):
+#    """
+#    Takes in:
+#        gamma = interaction constant;
+#        m = e_m(t)/ec(t0) at t=t0;
+##        de = e_de(t)/ec(t0) at t=t0.
+#    Returns: 
+#        z = numpoints number of redshifts zmin<z<zmax;
+#        dlpc = luminosity distance in pc.
+#    
+#    """
+##    print('@@ zodesolve has been called')
+#
+#    # Inserting 0 at the front of redshifts to allow initial conditions.
+#    zpicks = [0.0] + zpicks
+#    
+#    # Standard cosmological parameters.
+#    H0 = 1
+#    c_over_H0 = 4167 * 10**6    # c/H0 in parsecs
+#    
+#    # Initial conditions at z = 0 (now).
+#    dl0 = 0             # luminosity distance
+#    rho_c0 = H0**2      # critical density
+#    ombar_m0 = params.get('m', 0)                        # e_m(z)/ec(z=0)
+#    gamma = params.get('gamma',0)
+#    ombar_de0 = params.get('de', rho_c0/rho_c0 -ombar_m0)# e_de(z)/ec(z=0)
+#    
+#    # ODE solver parameters:
+#    abserr = 1.0e-8
+#    relerr = 1.0e-6
+#    
+#    # Pack up the initial conditions and eq of state parameters.
+#    v0 = [ombar_m0, ombar_de0, dl0]
+#    
+#    # Extracting the parsed mode of interaction.
+#    firstderivs_function = firstderivs_functions.get(firstderivs_key,0)
+#    if firstderivs_function == 0:
+#        print("firstderivs_functions dict didn't have the key zodeosolve asked for")
+#    
+#    # Call the ODE solver.
+#    vsol = odeint(firstderivs_function, v0, zpicks, args=(gamma,H0), 
+#                  atol=abserr, rtol=relerr)
+#            
+#    # Separate results into their own arrays:
+#    z = np.asarray(zpicks)
+#    z = z[1:]
+#    ombar_m = vsol[1:,0]
+#    ombar_de = vsol[1:,1]
+#    dl = vsol[1:,2] * (1+z)  # in units of dl*(H0/c)
+#    dlpc = dl * c_over_H0    # dl in parsecs (= vsol[dl] * c/H0)
+#    
+#    plot_var = dlpc, dl, ombar_m, gamma, ombar_de, ombar_m0, ombar_de0
+#    
+#    return dlpc, plot_var

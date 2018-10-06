@@ -14,37 +14,48 @@ import tools
 import datasim
 import stats
 
-
-# Number of datapoints to be simulated and number of emcee steps.
-npoints, nsteps = 1000, 1000
-zmax = 2
+# Number of emcee steps.
+nsteps = 1000
 
 # Statistical parameteres of noise:
 mu = 0.0            # mean
 sigma = 0.07      # standard deviation
 
-dataname = 'mag_z_LCDM_1000_sigma_'+str(sigma)
+# Pantheon data:
+dataname = './data/lcparam_full_long.txt'
+pantheon = pd.read_csv(dataname, sep=" ")
 
-#    Making data (mag and z)
-#dataname = 'mag_z_'+data_key+'_'+str(npoints)+'_sigma_'+str(sigma)
-#datasim.makensavemagnz(m_true, g_true, mu, sigma, zpicks, data_key, dataname)
+# Reading each txt file column of interest as numpy.ndarray
+mag = pantheon.mb.values
+x1 = pantheon.x1.values
+colour = pantheon.color.values
+zpicks = pantheon.zhel.values
 
-#    Making redshifts to use in this script.
-zpicks = datasim.redshift_picks(0.005, zmax, npoints)
+# Stacking them together and sorting by accending redshift.
+data = np.stack((mag,x1,colour,zpicks), axis=0)
+data.sort(axis=-1)
 
-#    Plots for one model with multiple gamma or zeta.
-#datasim.model_comparison({'m':0.3,'gamma':0.7}, zpicks, 'expgamma', gamma_list = [-0.3, 0, 0.6])
+mag = data[0]
+x1 = data[1]
+colour = data[2]
+zpicks = data[3]
+zpicks = zpicks.tolist()
+data_dict = {'mag':mag, 'x1':x1, 'colour':colour, 'zpicks':zpicks}
 
-#   Plots of various models on the same plot. 
-#   To check if models overlap, put the two of interest last.
-firstderivs_list = ['expgamma', 'exotic', 'rdecay']
-datasim.model_comparison({'m':0.3, 'gamma':-0.1}, zpicks, firstderivs_list)
+#        Plots for one model with multiple gamma or zeta.
+datasim.model_comparison([{'matter':0.3},{'Mcorr':-19.3},{'gamma':0.7}],
+                             zpicks, 'expgamma', gamma_list = [-0.3, 0, 0.6])
+#    
+##       Plots of various models on the same plot. 
+##       To check if models overlap, put the two of interest last.
+#firstderivs_list = ['expgamma', 'exotic', 'rdecay']
+#datasim.model_comparison({'m':0.3, 'gamma':-0.1}, zpicks, firstderivs_list)
 
 firstderivs_functions = [None
             ,'exotic'
 #            ,'late_intxde'
 #            ,'heaviside_late_int'
-#            ,'late_int'
+            ,'late_int'
 #            ,'expgamma'
 #            ,'txgamma'         # doesn't converge
 #            ,'zxgamma'
@@ -56,63 +67,26 @@ firstderivs_functions = [None
 #            ,'rdecay_mxde'
 #            ,'rdecay'               
 #            ,'interacting'
-#            ,'LCDM'
+            ,'LCDM'
              ]
 
-def all_modelcheck():
-    print('@@@@@@@ all_modelcheck @@@@@@@')
-    
-    dataname = './data/lcparam_full_long.txt'
-    pantheon = pd.read_csv(dataname, sep=" ")
-    
-    # Reading each txt file column of interest as numpy.ndarray
-    mag = pantheon.mb.values
-    x1 = pantheon.x1.values
-    colour = pantheon.color.values
-    zpicks = pantheon.zhel.values
-    
-    # Stacking them together and sorting by accending redshift.
-    data = np.stack((mag,x1,colour,zpicks), axis=0)
-    data.sort(axis=-1)
-    
-    mag = data[0]
-    x1 = data[1]
-    colour = data[2]
-    zpicks = data[3]
-    zpicks = zpicks.tolist()
-    data_dict = {'mag':mag, 'x1':x1, 'colour':colour, 'zpicks':zpicks}
-    test_params = {'m':0.3,'M':-19.3,'alpha':0,'beta':0,'gamma':0,'zeta':0}
+def all_modelcheck():    
+    test_params = [{'matter':0.3}, {'Mcorr':-19.3}, {'alpha':0}, 
+                   {'beta':0}, {'gamma':0.1}, {'zeta':0.2}]
     
     for test_key in firstderivs_functions:
         if test_key:
-            datasim.magn(test_params, data_dict, test_key, plot_key=True)    
+            datasim.magn(test_params, data_dict, test_key, plot_key=True)
     return
 
 #all_modelcheck()
 
     
-def Mcor_emcee():
+def emcee():
     print('@@@@@@@ Mcor_emcee @@@@@@@')
-    dataname = './data/lcparam_full_long.txt'
-    pantheon = pd.read_csv(dataname, sep=" ")
-    
-    # Reading each txt file column of interest as numpy.ndarray
-    mag = pantheon.mb.values
-    x1 = pantheon.x1.values
-    colour = pantheon.color.values
-    zpicks = pantheon.zhel.values
-    
-    # Stacking them together and sorting by accending redshift.
-    data = np.stack((mag,x1,colour,zpicks), axis=0)
-    data.sort(axis=-1)
-    
-    mag = data[0]
-    x1 = data[1]
-    colour = data[2]
-    zpicks = data[3]
-    zpicks = zpicks.tolist()
-    data_dict = {'mag':mag, 'x1':x1, 'colour':colour, 'zpicks':zpicks}
-    test_params = [{'matter':0.3},{'Mcorr':-19.3},{'alpha':0},{'beta':0},{'gamma':0},{'zeta':0}]
+
+    test_params = [{'matter':0.3},{'Mcorr':-19.3},{'alpha':0},
+                   {'beta':0},{'gamma':0},{'zeta':0}]
 
     for test_key in firstderivs_functions:
         if test_key:
@@ -139,4 +113,4 @@ def Mcor_emcee():
 
     return
 
-#Mcor_emcee()
+emcee()

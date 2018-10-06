@@ -19,7 +19,6 @@ def redshift_picks(zmin, zmax, n):
     Returns:
         zpicks = list of randomly selected redshifts between zmin and zmax.
     """
-#    print('-zpicks has been called')
     zinterval = (zmax - zmin) / (n*2)
     z_opts = tools.flist(zmin, zmax, zinterval)
     zpicks = random.sample(z_opts, n)
@@ -49,15 +48,10 @@ def magn(params, data, firstderivs_key, plot_key=False):
     Returns:
         mag = np.ndarray of apparent mag corresponding to input redshits.
     """
-#    print('@@@ magn has been called')
-    if firstderivs_key == 'LCDM':
-        params['gamma'] = 0
-        del params['gamma']
-    
     zpicks = data['zpicks']
     
     # Absolute brightness of supernovae.
-    M = params['M']
+    M = params[1]['Mcorr']
     
     dlpc, plot_var = zodesolve.zodesolve(params, zpicks, firstderivs_key)
     
@@ -66,13 +60,14 @@ def magn(params, data, firstderivs_key, plot_key=False):
     mag = 5 * np.log10(dlpc/10) + M
 
     if plot_key:
-        # Checking evolution of the model.
+        # Plotting evolution of parameters in the model.
         import plots
         plots.modelcheck(mag, zpicks, plot_var, firstderivs_key)
         
     return mag
     
-def model_comparison(params, zpicks, firstderivs_key, gamma_list=False, zeta_list = False):
+def model_comparison(params, zpicks, firstderivs_key, 
+                     gamma_list=False, zeta_list = False):
     """
     Takes in:
             params = dictionary with true parameters;
@@ -98,7 +93,8 @@ def model_comparison(params, zpicks, firstderivs_key, gamma_list=False, zeta_lis
         print('firstderivs_key is',firstderivs_key)
         for gamma in gamma_list:
             params['gamma'] = gamma
-            dlpc, plot_var = zodesolve.zodesolve(params, zpicks, firstderivs_key)
+            dlpc, plot_var = zodesolve.zodesolve(params, zpicks, 
+                                                 firstderivs_key)
         
             # Calculating apparent magnitudes of supernovae at the simulated
             # luminosity distances using the distance modulus formula.
@@ -117,7 +113,8 @@ def model_comparison(params, zpicks, firstderivs_key, gamma_list=False, zeta_lis
         print('firstderivs_key is',firstderivs_key)
         for zeta in zeta_list:
             params['zeta'] = zeta
-            dlpc, plot_var = zodesolve.zodesolve(params, zpicks, firstderivs_key)
+            dlpc, plot_var = zodesolve.zodesolve(params, zpicks, 
+                                                 firstderivs_key)
         
             # Calculating apparent magnitudes of supernovae at the simulated
             # luminosity distances using the distance modulus formula.
@@ -154,7 +151,6 @@ def gnoise(mag, mu, sigma):
        mag = mag, each point offset by unique Gaussian noise;
        noise = Gaussian noise.
     """
-#    print('               -gnoise has been called')
     n = len(mag)
     noise = np.random.normal(mu,sigma,n)
     mag = mag + noise

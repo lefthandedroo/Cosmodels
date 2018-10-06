@@ -20,24 +20,27 @@ def stats(test_params, data_dict, sigma, nsteps,
           save_path, firstderivs_key):
     """
     Takes in:
-            test_params = dictionary of parameters to be emcee fitted
-                'm':int/float = e_m(t)/ec(t0) at t=t0;
-                'gamma':int/float = interaction term;
-                'zeta':int/float = interaction term;
-                'alpha':int/float = SN peak mag correlation parameter;
-                'beta' :int/float = SN peak mag correlation parameter;
-            data_dict = dictionary of parameters from data
-                'colour': numpy.ndarray = SN colour;
-                'x1': numpy.ndarray = SN stretch correction as;
-                'zpicks':list of redshifts sorted in accending order;
-                'mag':list of apparent magnitudes;
-            sigma = standard deviation of error on the data;
-            nsteps = int, steps to be taken by each emcee walker;
-            save_path = string, directory for saving output;
-            firstderivs_key = string, name of IVCDM model to use for model mag.
+        test_params = list of dictionaries {string:value} of names and 
+        starting values of parameters to be emcee fitted:
+            {'matter':int/float} = e_m(t)/ec(t0) at t=t0;
+            {'Mcorr':int/float} = corrected absolute mag M;
+            {'alpha':int/float} = SN peak mag correlation parameter;
+            {'beta' :int/float} = SN peak mag correlation parameter;
+            {'gamma':int/float} = interaction term;
+            {'zeta':int/float} = interaction term;
+            ... (more)
+        data_dict = dictionary of parameters from data:
+            {'colour': numpy.ndarray} = SN colour;
+            {'x1': numpy.ndarray} = SN stretch correction as;
+            {'zpicks':list} = redshifts sorted in accending order;
+            {'mag':list} = apparent magnitudes;
+        sigma = standard deviation of error on the data;
+        nsteps = int, steps to be taken by each emcee walker;
+        save_path = string, directory for saving output;
+        firstderivs_key = string, name of model to use for model mag.
     Returns:
+        propert, sampler
     """
-#    print('-stats has been called')
     
     zpicks = data_dict.get('zpicks',0)
     mag = data_dict.get('mag',0)
@@ -55,26 +58,23 @@ def stats(test_params, data_dict, sigma, nsteps,
     
     # Initializing walkers.
     pos = np.zeros((1, ndim)).flatten()
-    i=0
-    for dic in test_params:
+    for i in range(ndim):
+        dic = test_params[i]
         for key in dic:
             pos[i] = dic[key]
-            i+=1
     pos = [pos + 0.001*np.random.randn(ndim) for i in range(nwalkers)]
     
     # Are walkers starting outside of prior?
-    i=0
-    while i < nwalkers:
+    for i in range(nwalkers):
         theta = pos[i]
         lp = ln.lnprior(theta, firstderivs_key)
         if not np.isfinite(lp):
             print('~~~~~~~pos[%s] (outside of prior) = %s ~~~~~~~'%(i, theta))
-        i+=1
         
     # Sampler setup.
     times0 = time.time()    # starting sampler timer
     sampler = EnsembleSampler(nwalkers, ndim, ln.lnprob, 
-                                    args=(data_dict, sigma, firstderivs_key, ndim))
+                              args=(data_dict, sigma, firstderivs_key, ndim, test_params))
     
     # Burnin.
     burnin = int(nsteps/4)  # steps to discard
@@ -92,54 +92,52 @@ def stats(test_params, data_dict, sigma, nsteps,
     times1=time.time()      # stopping sampler timer
     
     # Walker steps is lnprob = sampler.flatlnprobability
-    # Index of best parameters found by emcee.
-    bi = np.argmax(sampler.flatlnprobability) # index with highest post prob 
-    
-    trace = sampler.chain[:, burnin:, :].reshape(-1, ndim)
+    # Index of parameter values with highest post prob found by emcee.
+    bi = np.argmax(sampler.flatlnprobability)
     
     # Extracting results:
     thetabest = np.zeros(ndim)
-    parambest = {}
     true = []
+    truth_names = []
     propert = {}
-    propert['trace'] = trace
+    propert['trace'] = sampler.chain[:, burnin:, :].reshape(-1, ndim) #trace
     
     colours = ['brown', 'berry', 'coral', 'amber', 
                'apple', 'aquamarine', 'deepblue', 'darkviolet']    
     
+    best_params = test_params
+    
     for i in range(ndim):
         
-        for param_key in test_params[i]:
-            param_initial = param_key[0]
+        for key in test_params[i]:
+            truth_names.append(key)
+            param_initial = key[0]
             best = sampler.flatchain[bi,i]
-            # Input m = e_m(z)/ec(z=0).
-            param_true = test_params[i].get(param_key, 0)
+            # Input parameter.
+            param_true = test_params[i].get(key, 0)
             true.append(param_true)
-            # Output m.
+            # Output parameter.
             output = sampler.flatchain[:,i]
-            # Standard deviation and mean of the m distribution.
+            # Standard deviation and mean of the emcee found distribution.
             propert[param_initial+'_sd'] = np.std(output)
             propert[param_initial+'_mean'] = np.mean(output)
             propert[param_initial] = sampler.flatchain[bi,i]
             
-            plots.stat(colours[i], output, param_true, param_key, 
+            plots.stat(colours[i], output, param_true, key, 
                        sampler.flatlnprobability, zpicks, mag, sigma, 
                        nsteps, nwalkers, save_path, firstderivs_key)
             
             thetabest[i] = best
-            parambest[param_initial] = best
+            best_params[i][key] = best
             
     # Checking if best found parameters are within prior.
-    print(type(thetabest))
     lp = ln.lnprior(thetabest, firstderivs_key)
     if not np.isfinite(lp):
-        print('')
-        print('best emcee parameters outside of prior (magbest calculation)')
-        print('')
+        print('~~~~~~~thetabest outside of prior at magbest~~~~~~~')
 
     # Plot of data mag and redshifts, overlayed with
     # mag simulated using emcee best parameters and data redshifts.
-    magbest = datasim.magn(parambest, data_dict, firstderivs_key)
+    magbest = datasim.magn(best_params, data_dict, firstderivs_key)
     plt.figure()
     plt.title('model: '+firstderivs_key
               +'\n Evolution of magnitude with redshift \n nsteps: '
@@ -154,21 +152,19 @@ def stats(test_params, data_dict, sigma, nsteps,
     +str(nwalkers)+'_noise_'+str(sigma)+'_numpoints_'+str(len(zpicks))+'.png'
     filename = os.path.join(save_path, filename)
     plt.savefig(filename)
-    plt.show(block=False)
     
     # Corner plot (walkers' walk + histogram).
     import corner
-#    samples = sampler.chain[:, burnin:, :].reshape((-1, ndim))
     samples = sampler.chain[:, :, :].reshape((-1, ndim))
-    corner.corner(samples, labels=["$m$", "$M$", "$alpha$", "$beta$", "$g$", "$z$"], 
-                        truths=true)
+    corner.corner(samples, labels=truth_names, truths=true)
+    plt.show(block=False)
     
     # Results getting printed:
     if bi == 0: 
         print('@@@@@@@@@@@@@@@@@')
         print('best index =',str(bi))
         print('@@@@@@@@@@@@@@@@@')
-    print('max likelihood params =',str(parambest))
+    print('max likelihood params =',str(best_params))
     print('m.a.f.:', np.mean(sampler.acceptance_fraction))
     print('nsteps:', str(nsteps))
     print('sigma:', str(sigma))
