@@ -17,7 +17,7 @@ import ln
 import plots
 
 def stats(test_params, data_dict, sigma, nsteps, 
-          save_path, firstderivs_key):
+          save_path, firstderivs_key, plot=False):
     """
     Takes in:
         test_params = list of dictionaries {string:value} of names and 
@@ -123,9 +123,10 @@ def stats(test_params, data_dict, sigma, nsteps,
             propert[param_initial+'_mean'] = np.mean(output)
             propert[param_initial] = sampler.flatchain[bi,i]
             
-            plots.stat(colours[i], output, param_true, key, 
-                       sampler.flatlnprobability, zpicks, mag, sigma, 
-                       nsteps, nwalkers, save_path, firstderivs_key)
+            if plot:
+                plots.stat(colours[i], output, param_true, key, 
+                           sampler.flatlnprobability, zpicks, mag, sigma,
+                           nsteps, nwalkers, save_path, firstderivs_key)
             
             thetabest[i] = best
             best_params[i][key] = best
@@ -135,29 +136,30 @@ def stats(test_params, data_dict, sigma, nsteps,
     if not np.isfinite(lp):
         print('~~~~~~~thetabest outside of prior at magbest~~~~~~~')
 
-    # Plot of data mag and redshifts, overlayed with
-    # mag simulated using emcee best parameters and data redshifts.
-    magbest = datasim.magn(best_params, data_dict, firstderivs_key)
-    plt.figure()
-    plt.title('model: '+firstderivs_key
-              +'\n Evolution of magnitude with redshift \n nsteps: '
-          +str(nsteps)+', noise: '+str(sigma)+', npoints: '+str(len(zpicks)))
-    data = plt.errorbar(zpicks, mag, yerr=sigma, fmt='.', alpha=0.3)
-    best_fit = plt.scatter(zpicks, magbest, lw='1', c='xkcd:tomato')
-    plt.ylabel('magnitude')
-    plt.xlabel('z')
-    plt.legend([data, best_fit], ['LCDM', firstderivs_key])
-    stamp = str(int(time.time()))
-    filename = str(stamp)+'____magz__nsteps_'+str(nsteps)+'_nwalkers_' \
-    +str(nwalkers)+'_noise_'+str(sigma)+'_numpoints_'+str(len(zpicks))+'.png'
-    filename = os.path.join(save_path, filename)
-    plt.savefig(filename)
+    if plot:
+        # Plot of data mag and redshifts, overlayed with
+        # mag simulated using emcee best parameters and data redshifts.
+        magbest = datasim.magn(best_params, data_dict, firstderivs_key)
+        plt.figure()
+        plt.title('model: '+firstderivs_key
+                  +'\n Evolution of magnitude with redshift \n nsteps: '
+              +str(nsteps)+', noise: '+str(sigma)+', npoints: '+str(len(zpicks)))
+        data = plt.errorbar(zpicks, mag, yerr=sigma, fmt='.', alpha=0.3)
+        best_fit = plt.scatter(zpicks, magbest, lw='1', c='xkcd:tomato')
+        plt.ylabel('magnitude')
+        plt.xlabel('z')
+        plt.legend([data, best_fit], ['LCDM', firstderivs_key])
+        stamp = str(int(time.time()))
+        filename = str(stamp)+'____magz__nsteps_'+str(nsteps)+'_nwalkers_' \
+        +str(nwalkers)+'_noise_'+str(sigma)+'_numpoints_'+str(len(zpicks))+'.png'
+        filename = os.path.join(save_path, filename)
+        plt.savefig(filename)
     
-    # Corner plot (walkers' walk + histogram).
-    import corner
-    samples = sampler.chain[:, :, :].reshape((-1, ndim))
-    corner.corner(samples, labels=truth_names, truths=true)
-    plt.show(block=False)
+        # Corner plot (walkers' walk + histogram).
+        import corner
+        samples = sampler.chain[:, :, :].reshape((-1, ndim))
+        corner.corner(samples, labels=truth_names, truths=true)
+        plt.show(block=False)
     
     # Results getting printed:
     if bi == 0: 

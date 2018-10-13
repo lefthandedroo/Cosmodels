@@ -57,9 +57,7 @@ def runcount(sigma, sigma_max, sigma_step,
             npoints += npoints_step
             run += 1
         sigma += sigma_step
-
-    print('Iterations to come:',run)
-    return
+    return run
 
 def path():
     # Folder for saving output.

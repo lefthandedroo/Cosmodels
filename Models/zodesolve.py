@@ -64,7 +64,7 @@ def zodesolve(params, zpicks, firstderivs_key):
     int_terms = []
     for i in range(4,len(params)):
         for key in params[i]:
-            int_terms.append(params[i][key])
+            int_terms.append(params[i].get(key,0))
             plot_var[key] = params[i][key]
         
     # Extracting the parsed mode of interaction.

@@ -5,6 +5,7 @@ Created on Wed Apr 18 21:45:40 2018
 
 @author: BallBlueMeercat
 """
+import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import time
@@ -15,7 +16,7 @@ import datasim
 import stats
 
 # Number of emcee steps.
-nsteps = 1000
+nsteps = 10000
 
 # Statistical parameteres of noise:
 mu = 0.0            # mean
@@ -40,16 +41,19 @@ x1 = data[1]
 colour = data[2]
 zpicks = data[3]
 zpicks = zpicks.tolist()
-data_dict = {'mag':mag, 'x1':x1, 'colour':colour, 'zpicks':zpicks}
+data_dic = {'mag':mag, 'x1':x1, 'colour':colour, 'zpicks':zpicks}
 
-#        Plots for one model with multiple gamma or zeta.
-datasim.model_comparison([{'matter':0.3},{'Mcorr':-19.3},{'gamma':0.7}],
-                             zpicks, 'expgamma', gamma_list = [-0.3, 0, 0.6])
-#    
-##       Plots of various models on the same plot. 
-##       To check if models overlap, put the two of interest last.
-#firstderivs_list = ['expgamma', 'exotic', 'rdecay']
-#datasim.model_comparison({'m':0.3, 'gamma':-0.1}, zpicks, firstderivs_list)
+#g1, g2, g3 = 0.0, 0.2, 0.3
+#z1, z2, z3 = 0.0, -0.2, -0.4
+## Compare param evolution for 3 models, plotting on the same axis.
+#p1 = [{'matter':0.3},{'Mcorr':-19.3},{'alpha':0},{'beta':0},{'gamma':g1},{'zeta':z1}]
+#p2 = [{'matter':0.3},{'Mcorr':-19.3},{'alpha':0},{'beta':0},{'gamma':g2},{'zeta':z2}]
+#p3 = [{'matter':0.3},{'Mcorr':-19.3},{'alpha':0},{'beta':0},{'gamma':g3},{'zeta':z3}]
+#
+#datasim.multi_modelcheck([p1, p2, p3], zpicks, ['LCDM', 'late_int', 'exotic'],
+#    ['$\gamma$='+str(g1)+' $\zeta$='+str(z1), 
+#     '$\gamma$='+str(g2)+' $\zeta$='+str(z2), 
+#     '$\gamma$='+str(g3)+' $\zeta$='+str(z3)])
 
 firstderivs_functions = [None
             ,'exotic'
@@ -70,22 +74,22 @@ firstderivs_functions = [None
             ,'LCDM'
              ]
 
-def all_modelcheck():    
-    test_params = [{'matter':0.3}, {'Mcorr':-19.3}, {'alpha':0}, 
+def modelcheck():    
+    params_dic = [{'matter':0.3}, {'Mcorr':-19.3}, {'alpha':0}, 
                    {'beta':0}, {'gamma':0.1}, {'zeta':0.2}]
     
     for test_key in firstderivs_functions:
         if test_key:
-            datasim.magn(test_params, data_dict, test_key, plot_key=True)
+            datasim.magn(params_dic, data_dic, test_key, plot_key=True)
     return
 
-#all_modelcheck()
+#modelcheck()
 
     
 def emcee():
     print('@@@@@@@ Mcor_emcee @@@@@@@')
 
-    test_params = [{'matter':0.3},{'Mcorr':-19.3},{'alpha':0},
+    params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'alpha':0},
                    {'beta':0},{'gamma':0},{'zeta':0}]
 
     for test_key in firstderivs_functions:
@@ -100,8 +104,8 @@ def emcee():
             timet0 = time.time()            
             
             # emcee parameter search.
-            propert, sampler = stats.stats(test_params, data_dict, sigma, 
-                                           nsteps, save_path, test_key)        
+            propert, sampler = stats.stats(params_dic, data_dic, sigma, 
+                                           nsteps, save_path, test_key, plot=1)        
             # Time taken by script. 
             timet1=time.time()
             tools.timer('script', timet0, timet1)
@@ -113,4 +117,159 @@ def emcee():
 
     return
 
-emcee()
+#emcee()
+
+def errorvsdatasize():
+    
+    test_key = 'late_int'
+    params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'alpha':0},
+                   {'beta':0},{'gamma':0.0}]    
+    # Script timer.
+    timet0 = time.time()
+    
+    sigma = 0.5
+    sigma_max = 0.8
+    sigma_step = 0.3
+    npoints_min = 1000
+    npoints_max = 3000
+    npoints_step = 800
+    
+    # How many iterations have I signed up for?
+    N = tools.runcount(sigma, sigma_max, sigma_step,
+                   npoints_min, npoints_max, npoints_step)
+    
+    if input('Happy with '+str(N)+' iterations? (enter=yes) '):
+        return
+    
+    # Folder for saving output.
+    directory = str(int(time.time()))
+    # Relative path of output folder.
+    save_path = './results_emcee/'+directory
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+    
+    run = 0
+    
+    sd_list = []
+    mean_list = []
+    vc_list = []
+    
+    sigma_list = []
+    npoints_list = []
+    sampler_list = []
+    
+    while sigma < sigma_max:
+
+        npoints = npoints_min
+        
+        while npoints < npoints_max:
+            print('_____________________ run number',run)
+            
+            zpicks = datasim.redshift_picks(0.005, 2.0, npoints)
+            data_dic = {'zpicks':zpicks}
+            
+            # Magnitudes corresponding to simulated redshifts:
+            mag = datasim.noisy_mag(mu, sigma, params_dic, data_dic, 'LCDM')            
+            
+            data_dic['mag']=mag
+            
+            propert, sampler = stats.stats(params_dic, data_dic, sigma, 
+                                           nsteps, save_path, test_key, plot=1)
+            
+            for key in propert:
+                if 'sd' in key:
+                    sd = propert.get(key,0)
+                    sd_list.append([key, sd])
+                elif 'mean' in key:
+                    mean = propert.get(key,0)
+                    mean_list.append([key, mean])
+                    if mean != 0:
+                        vc = sd/mean * 100
+                        vc_list.append([key[0]+'_vc', vc])
+            
+            sigma_list.append(sigma)
+            npoints_list.append(npoints)
+            sampler_list.append(sampler)
+            
+            npoints += npoints_step
+            run += 1
+        
+        sigma += sigma_step
+
+    for j in range(len(params_dic)):
+        sd = []
+        mean = []
+        vc = []
+        for i in range(N):
+            index = i*len(params_dic)+j
+            
+            sd_name = sd_list[index][0]
+            sd_initial = sd_name[0]
+            sd.append(sd_list[index][1])
+            
+            mean_name = mean_list[index][0]
+            mean_initial = mean_name[0]
+            mean.append(mean_list[index][1])
+            
+            vc_name = vc_list[index][0]
+            vc_initial = vc_name[0]
+            vc.append(vc_list[index][1])            
+            
+            i+=1
+        
+        plt.figure()
+        plt.xlabel('Dataset size')
+        plt.ylabel('s.d. of a marginalised distribution')
+        plt.title('Standard deviation of '+sd_initial+' vs dataset size'+
+                  '\n s.d. of noise used = '+ str(sigma_list))
+        plt.scatter(npoints_list, sd, c='m')        
+        stamp = str(int(time.time()))
+        filename = str(stamp)+'_sd_of_'+sd_initial+'_.png'
+        filename = os.path.join(save_path, filename)
+        plt.savefig(filename)
+        
+        plt.figure()
+        plt.xlabel('Dataset size')
+        plt.ylabel('Mean of a marginalised distribution')
+        plt.title('Mean of '+mean_initial+' vs dataset size'+
+                  '\n s.d. of noise used = '+str(sigma_list))
+        plt.scatter(npoints_list, mean, c='c')        
+        stamp = str(int(time.time()))
+        filename = str(stamp)+'_mean_of_'+mean_initial+'_.png'
+        filename = os.path.join(save_path, filename)
+        plt.savefig(filename)
+        
+        if len(vc) == N:
+            plt.figure()
+            plt.xlabel('Dataset size')
+            plt.ylabel('s.d. / mean of a marginalised distribution')
+            plt.title('Variance coefficient of '+vc_initial+' vs dataset size'+
+                      '\n s.d. of noise used = '+str(sigma_list))
+            plt.scatter(npoints_list, vc, c='coral')        
+            stamp = str(int(time.time()))
+            filename = str(stamp)+'_vc_of_'+vc_initial+'_.png'
+            filename = os.path.join(save_path, filename)
+            plt.savefig(filename)
+        
+        j+=1
+    
+    plt.show()
+        
+#     Saving results to directory.
+    results.save(save_path, 'vc_list', vc_list)
+    results.save(save_path, 'sd_list', sd_list)
+    results.save(save_path, 'mean_list', mean_list)
+    
+    results.save(save_path, 'sigma', sigma_list)
+    results.save(save_path, 'npoints', npoints_list)
+    results.save(save_path, 'sampler', sampler_list)
+    
+    print('directory:',directory)
+    
+    # Time taken by script. 
+    timet1=time.time()
+    tools.timer('errorvsdatasize', timet0, timet1)
+    
+    return
+
+errorvsdatasize()

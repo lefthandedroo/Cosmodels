@@ -13,42 +13,44 @@ import zodesolve
 import tools
 import datasim
 import results
-#datasim.py
 
-def magn(params, data, firstderivs_key, plot_key=False):
-    """
-    Finding matter density m, interaction gamma.
-    
-    Takes in:
-            params = dictionary with true parameters;
-            zpicks = list of redshifts to integrate over, in accending order;
-            firstderivs_key = string, indicates which firstderivs to integrate;
-            plot_key = Boolean, to plot or not to plot model figures;
-    Returns:
-        mag = np.ndarray of apparent mag corresponding to input redshits.
-    """
-#    print('@@@ magn has been called')
-    if firstderivs_key == 'LCDM':
-        params['gamma'] = 0
-        del params['gamma']
-    
-    zpicks = data['zpicks']
-    
-    # Absolute brightness of supernovae.
-    M = -19
-    
-    dlpc, plot_var = zodesolve.zodesolve(params, zpicks, firstderivs_key)
-    
-    # Calculating apparent magnitudes of supernovae at the simulated
-    # luminosity distances using the distance modulus formula.
-    mag = 5 * np.log10(dlpc/10) + M
 
-    if plot_key:
-        # Checking evolution of the model.
-        import plots
-        plots.modelcheck(mag, zpicks, plot_var, firstderivs_key)
-        
-    return mag
+datasim.py
+
+#def magn(params, data, firstderivs_key, plot_key=False):
+#    """
+#    Finding matter density m, interaction gamma.
+#    
+#    Takes in:
+#            params = dictionary with true parameters;
+#            zpicks = list of redshifts to integrate over, in accending order;
+#            firstderivs_key = string, indicates which firstderivs to integrate;
+#            plot_key = Boolean, to plot or not to plot model figures;
+#    Returns:
+#        mag = np.ndarray of apparent mag corresponding to input redshits.
+#    """
+##    print('@@@ magn has been called')
+#    if firstderivs_key == 'LCDM':
+#        params['gamma'] = 0
+#        del params['gamma']
+#    
+#    zpicks = data['zpicks']
+#    
+#    # Absolute brightness of supernovae.
+#    M = -19
+#    
+#    dlpc, plot_var = zodesolve.zodesolve(params, zpicks, firstderivs_key)
+#    
+#    # Calculating apparent magnitudes of supernovae at the simulated
+#    # luminosity distances using the distance modulus formula.
+#    mag = 5 * np.log10(dlpc/10) + M
+#
+#    if plot_key:
+#        # Checking evolution of the model.
+#        import plots
+#        plots.modelcheck(mag, zpicks, plot_var, firstderivs_key)
+#        
+#    return mag
 
 #def magn(params, data, firstderivs_key, plot_key=False):
 #    """
@@ -100,13 +102,13 @@ def magn(params, data, firstderivs_key, plot_key=False):
 #            magnitude = 5 * math.log10(dlpc[i]/10) + M
 #        mag.append(magnitude)
     
-#evaluator.py
+evaluator.py
     
-dataname = 'mag_z_LCDM_1000_sigma_'+str(sigma)
+#dataname = 'mag_z_LCDM_1000_sigma_'+str(sigma)
 
 # Number of datapoints to be simulated
-npoints = 1000
-zmax = 2
+#npoints = 1000
+#zmax = 2
 
 #    Making data (mag and z)
 #dataname = 'mag_z_'+data_key+'_'+str(npoints)+'_sigma_'+str(sigma)
@@ -114,184 +116,9 @@ zmax = 2
 
 #    Making redshifts to use in this script.
 #zpicks = datasim.redshift_picks(0.005, zmax, npoints)
-
-def errorvsdatasize():
-    
-    data_key = 'LCDM'
-    test_key = 'late_int'
-    
-    data_params = {'m':0.3, 'gamma':0}
-    test_params = {'m':0.3, 'gamma':0}
-    
-    # Script timer.
-    timet0 = time.time()
-    
-    sigma = 0.02
-    sigma_max = 0.03
-    sigma_step = 0.05
-    npoints_min = 1000
-    npoints_max = 1100
-    npoints_step = 3000
-    
-    # How many iterations have I signed up for?
-    tools.runcount(sigma, sigma_max, sigma_step,
-              npoints_min, npoints_max, npoints_step)
-    
-    decision = input('Happy with the number of iterations? (enter=yes) ')
-    if  decision:
-        return
-    
-    # Folder for saving output.
-    directory = str(int(time.time()))
-    # Relative path of output folder.
-    save_path = './emcee_results/'+directory
-    if not os.path.exists(save_path):
-        os.makedirs(save_path)
-    
-    run = 0
-    
-    m_sd_l = []
-    m_mean_l = []
-    m_vc_l = []    
-
-    g_sd_l = []
-    g_mean_l = []
-    g_vc_l = [] 
-    
-    sigma_l = []
-    npoints_l = []
-    sampler_l = []
-    
-    while sigma < sigma_max:
-
-        npoints = npoints_min 
-        
-        # Data to be used:
-        mag = datasim.noisy_mag(mu, sigma, npoints, data_params, data_key)
-        
-        while npoints < npoints_max:
-            print('_____________________ run number',run)
-          
-            propert, sampler = stats.stats(test_params, zpicks, mag, 
-                                           sigma, nsteps, save_path, test_key)
-            
-            m_sd = propert.get('m_sd',0)
-            m_mean = propert.get('m_mean', 0)
-            m_vc = m_sd/m_mean * 100
-            m_vc_l.append(m_vc)
-            m_sd_l.append(m_sd)
-            m_mean_l.append(m_mean)
-            
-            g_sd = propert.get('gamma_sd', 0)
-            g_mean = propert.get('gamma_mean', 0)
-            g_vc = g_sd/g_mean * 100
-            g_vc_l.append(g_vc)
-            g_sd_l.append(g_sd)
-            g_mean_l.append(g_mean)                        
-            
-            sigma_l.append(sigma)
-            npoints_l.append(npoints)
-            sampler_l.append(sampler)
-            
-            npoints += npoints_step
-            run += 1
-        
-        sigma += sigma_step
-        
-    # Saving plots to run directory.
-    # m
-    plt.figure()
-    plt.xlabel('size of dataset')
-    plt.ylabel('standard deviation of marginalised m distribution')
-    plt.title('sd of m vs size of dataset, sd of noise = %s'%(sigma))
-    plt.scatter(npoints_l, m_sd_l, c='m')        
-    stamp = str(int(time.time()))
-    filename = str(stamp)+'_sd_of_m_.pdf'
-    filename = os.path.join(save_path, filename)
-    plt.savefig(filename)
-    plt.show()
-    
-    plt.figure()
-    plt.xlabel('size of dataset')
-    plt.ylabel('mean of marginalised m distribution')
-    plt.title('mean of m vs size of dataset, sd of noise = %s'%(sigma))
-    plt.scatter(npoints_l, m_mean_l, c='c')        
-    stamp = str(int(time.time()))
-    filename = str(stamp)+'_mean_of_m_.pdf'
-    filename = os.path.join(save_path, filename)
-    plt.savefig(filename)
-    plt.show()
-    
-    plt.figure()
-    plt.xlabel('size of dataset')
-    plt.ylabel('variance coefficient in %')
-    plt.title('sd/mean of m vs size of dataset, sd of noise = %s'%(sigma))
-    plt.scatter(npoints_l, m_vc_l, c='coral')        
-    stamp = str(int(time.time()))
-    filename = str(stamp)+'_cv_of_m_.pdf'
-    filename = os.path.join(save_path, filename)
-    plt.savefig(filename)
-    plt.show()
-
-    # gamma
-    plt.figure()
-    plt.xlabel('size of dataset')
-    plt.ylabel('standard deviation of marginalised gamma distribution')
-    plt.title('sd of gamma vs size of dataset, sd of noise = %s'%(sigma))
-    plt.scatter(npoints_l, g_sd_l, c='m')        
-    stamp = str(int(time.time()))
-    filename = str(stamp)+'_sd_of_g_.pdf'
-    filename = os.path.join(save_path, filename)
-    plt.savefig(filename)
-    plt.show()
-    
-    plt.figure()
-    plt.xlabel('size of dataset')
-    plt.ylabel('mean of marginalised gamma distribution')
-    plt.title('mean of gamma vs size of dataset, sd of noise = %s'%(sigma))
-    plt.scatter(npoints_l, g_mean_l, c='c')        
-    stamp = str(int(time.time()))
-    filename = str(stamp)+'_mean_of_g_.pdf'
-    filename = os.path.join(save_path, filename)
-    plt.savefig(filename)
-    plt.show()
-    
-#    plt.figure()
-#    plt.xlabel('size of dataset')
-#    plt.ylabel('variance coefficient in %')
-#    plt.title('sd/mean of gamma vs size of dataset, sd of noise = %s'%(sigma))
-#    plt.scatter(npoints_l, g_vc_l, c='coral')        
-#    plt.stamp = str(int(time.time()))
-#    plt.filename = str(stamp)+'_cv_of_g_.pdf'
-#    plt.filename = os.path.join(save_path, filename)
-#    plt.savefig(filename)
-#    plt.show()
-        
-    # Saving results to directory.
-    results.save(save_path, 'm_vc', m_vc_l)
-    results.save(save_path, 'm_sd', m_sd_l)
-    results.save(save_path, 'm_mean', m_mean_l)
-
-    results.save(save_path, 'g_vc', g_vc_l)
-    results.save(save_path, 'g_sd', g_sd_l)
-    results.save(save_path, 'g_mean', g_mean_l)
-    
-    results.save(save_path, 'sigma', sigma_l)
-    results.save(save_path, 'npoints', npoints_l)
-    results.save(save_path, 'sampler', sampler_l)
-    
-    print('directory:',directory)
-    
-    # Time taken by evaluator. 
-    timet1=time.time()
-    tools.timer('evaluator', timet0, timet1)
-    
-    return
-
-#errorvsdatasize()
     
 
-#ln.py
+ln.py
     
 #def lnlike(theta, data, sigma, firstderivs_key, ndim):
 #    '''
@@ -450,7 +277,7 @@ def errorvsdatasize():
 #        
 #    return -np.inf
     
-# zodesolve.py
+zodesolve.py
 
 #def odesolve(params, zpicks, firstderivs_key):
 #    """
@@ -506,3 +333,91 @@ def errorvsdatasize():
 #    plot_var = dlpc, dl, ombar_m, gamma, ombar_de, ombar_m0, ombar_de0
 #    
 #    return dlpc, plot_var
+
+Bfactor.py
+
+#import six
+#import sys
+## Run the postprocessing to get marginal likelihood and generate posterior 
+#samples logZdnest4, infogaindnest4, plot = dnest4.postprocess()
+#
+#postsamples = np.loadtxt('posterior_sample.txt')
+#
+#print(six.u('Marginalised evidence is {}'.format(logZdnest4)))
+#
+#print('Number of posterior samples is {}'.format(postsamples.shape[0]))
+#
+## plot posterior samples (if corner.py is installed)
+#try:
+#    import matplotlib as mpl
+#    mpl.use("Agg") # force Matplotlib backend to Agg
+#    import corner # import corner.py
+#except ImportError:
+#    sys.exit(1)
+#
+#m = 0.3
+#g=0
+#fig = corner.corner(postsamples, labels=[r"$m$", r"$c$"], truths=[m, g])
+#fig.savefig('DNest4.png')
+
+# LCDM
+#log(Z) = -1622866.8534441872
+#Information = 14.078678027261049 nats.
+#Effective sample size = 129.22232212112772
+#time 297min 50s
+
+#log(Z) = -1622866.790641218
+#Information = 13.905435690656304 nats.
+#Effective sample size = 167.73507536834273
+#time 34 min
+
+#rdecay
+#log(Z) = -1622866.8177826053
+#Information = 13.970533838961273 nats.
+#Effective sample size = 85.54638980461822
+#Sampling time:   37min 5s
+
+############ 0.01 sigma data
+#Hdecay
+#Sampling time:   38min 57s
+#log(Z) = -1158842.6212481956
+#Information = 26.434626991627738 nats.
+#Effective sample size = 116.96489141639181
+
+#edecay
+#Sampling time:   45min 57s
+#log(Z) = -49925.259544267705
+#Information = 19.683044903278642 nats.
+#Effective sample size = 162.7283801030449
+
+#LCDM
+#Sampling time:   31min 52s
+#log(Z) = -1622866.7230921672
+#Information = 13.870062695583329 nats.
+#Effective sample size = 178.67158154325102
+
+############ 0.1 sigma data
+
+#Hdecay
+#Sampling time:   26min 26s
+#data = mag_z_LCDM_1000_sigma_0.1
+#sigma = 0.1
+#log(Z) = -11392.938034458695
+#Information = 16.85219457607309 nats.
+#Effective sample size = 216.9365844057018
+
+#rdecay
+#Sampling time:   25min 4s
+#data = mag_z_LCDM_1000_sigma_0.1
+#sigma = 0.1
+#log(Z) = -16069.573635539238
+#Information = 8.730470507740392 nats.
+#Effective sample size = 172.4071834775586
+
+#LCDM
+#Sampling time:   23min 45s
+#data = mag_z_LCDM_1000_sigma_0.1
+#sigma = 0.1
+#log(Z) = -16070.356294581907
+#Information = 9.449718869756907 nats.
+#Effective sample size = 142.47418654118337
