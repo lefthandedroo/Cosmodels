@@ -1,0 +1,7 @@
+Bfactor time:  7min 6s
+model = LCDM
+data = ./data/lcparam_full_long.txt
+sigma = 0.07
+log(Z) = 757.1066309323677
+Information = 9.240074579500401
+speed = 2

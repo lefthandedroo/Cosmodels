@@ -10,6 +10,7 @@ import dnest4
 import numpy as np
 import pandas as pd
 import numpy.random as rng
+import matplotlib.pyplot as plt
 import pickle
 #from numba import jitclass, int32
 import datasim
@@ -18,7 +19,7 @@ import tools
 #from scipy.special import erf
 
 # from prior = 0, short = 1, medium = 2, long = 3
-speed = 0
+speed = 2
 
 # Sigma of the noise on data.
 sigma = 0.07
@@ -157,7 +158,7 @@ class Model(object):
 
 firstderivs_functions = [None
             ,'exotic'
-            ,'late_intxde'
+#            ,'late_intxde'
 #            ,'heaviside_late_int'
 #            ,'late_int'
 #            ,'expgamma'
@@ -177,7 +178,7 @@ firstderivs_functions = [None
 for key in firstderivs_functions:
     if key:
         if key == 'exotic':
-            int_lim = [[-2, 0.1],[-1.5, 3.5]]
+            int_lim = [[-2, 0.1],[-1.5, 2.5]]
             
         elif key == 'late_intxde':
             int_lim = [[-2, 0.1]]
@@ -272,6 +273,36 @@ for key in firstderivs_functions:
         print('testing =',key)
         print('data =', dataname)
         print('sigma =', sigma)
+        
+        # Histogram of parameters found by DNest4.
+        array = np.loadtxt('sample.txt')
+
+        plt.figure()
+        plt.title('matter')
+        plt.hist(array[:,0])
+    
+        plt.figure()
+        plt.title('Mcorr')
+        plt.hist(array[:,1])
+        
+        plt.figure()
+        plt.title('alpha')
+        plt.hist(array[:,2])
+        
+        plt.figure()
+        plt.title('beta')
+        plt.hist(array[:,3])
+           
+        if key != 'LCDM':                
+            plt.figure()
+            plt.title('gamma')
+            plt.hist(array[:,4])
+            
+            if key == 'exotic':
+                plt.figure()
+                plt.title('zeta')
+                plt.hist(array[:,5])
+        plt.show()
            
         # Run the postprocessing
         info = dnest4.postprocess()
@@ -302,33 +333,3 @@ for key in firstderivs_functions:
             results.relocate('plot_2.pdf', speed, key)
             results.relocate('plot_3.pdf', speed, key)
             
-        # Histogram of parameters found by DNest4.
-        array = np.loadtxt('sample.txt')
-        import matplotlib.pyplot as plt
-
-        plt.figure()
-        plt.title('matter')
-        plt.hist(array[:,0])
-    
-        plt.figure()
-        plt.title('Mcorr')
-        plt.hist(array[:,1])
-        
-        plt.figure()
-        plt.title('alpha')
-        plt.hist(array[:,2])
-        
-        plt.figure()
-        plt.title('beta')
-        plt.hist(array[:,3])
-           
-        if key != 'LCDM':                
-            plt.figure()
-            plt.title('gamma')
-            plt.hist(array[:,4])
-            
-            if key == 'exotic':
-                plt.figure()
-                plt.title('zeta')
-                plt.hist(array[:,5])
-        plt.show()
