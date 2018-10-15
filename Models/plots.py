@@ -12,7 +12,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import time
-import collections
 
 from results import load
 
@@ -21,7 +20,7 @@ def stat(hue, var, var_true, var_name, slnprob, zpicks,
           mag, sigma, nsteps, nwalkers, save_path, firstderivs_key):
     
     initial = var_name.lower()[:1]
-    name_true = initial + '_true'
+    name_true = var_name[:1] + '_true'
     hue_name = hue
     hue = 'xkcd:'+hue
     

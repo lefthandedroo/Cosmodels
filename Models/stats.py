@@ -24,8 +24,6 @@ def stats(test_params, data_dict, sigma, nsteps,
         starting values of parameters to be emcee fitted:
             {'matter':int/float} = e_m(t)/ec(t0) at t=t0;
             {'Mcorr':int/float} = corrected absolute mag M;
-            {'alpha':int/float} = SN peak mag correlation parameter;
-            {'beta' :int/float} = SN peak mag correlation parameter;
             {'gamma':int/float} = interaction term;
             {'zeta':int/float} = interaction term;
             ... (more)
@@ -46,11 +44,11 @@ def stats(test_params, data_dict, sigma, nsteps,
     mag = data_dict.get('mag',0)
     
     if firstderivs_key == 'exotic':
-        test_params = test_params[:6]
-    elif firstderivs_key == 'LCDM':
         test_params = test_params[:4]
+    elif firstderivs_key == 'LCDM':
+        test_params = test_params[:2]
     else:
-        test_params = test_params[:5]
+        test_params = test_params[:3]
     
     # emcee parameters:
     ndim = len(test_params)
@@ -102,7 +100,7 @@ def stats(test_params, data_dict, sigma, nsteps,
     propert = {}
     propert['trace'] = sampler.chain[:, burnin:, :].reshape(-1, ndim) #trace
     
-    colours = ['brown', 'berry', 'coral', 'amber', 
+    colours = ['berry', 'coral', 'amber', 
                'apple', 'aquamarine', 'deepblue', 'darkviolet']    
     
     best_params = test_params

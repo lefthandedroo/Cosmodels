@@ -16,11 +16,11 @@ import datasim
 import stats
 
 # Number of emcee steps.
-nsteps = 10000
+nsteps = 1000
 
 # Statistical parameteres of noise:
 mu = 0.0            # mean
-sigma = 0.07      # standard deviation
+sigma = 0.07        # standard deviation
 
 # Pantheon data:
 dataname = './data/lcparam_full_long.txt'
@@ -75,8 +75,7 @@ firstderivs_functions = [None
              ]
 
 def modelcheck():    
-    params_dic = [{'matter':0.3}, {'Mcorr':-19.3}, {'alpha':0}, 
-                   {'beta':0}, {'gamma':0.1}, {'zeta':0.2}]
+    params_dic = [{'matter':0.3}, {'Mcorr':-19.3}, {'gamma':0.1}, {'zeta':0.2}]
     
     for test_key in firstderivs_functions:
         if test_key:
@@ -89,8 +88,7 @@ def modelcheck():
 def emcee():
     print('@@@@@@@ Mcor_emcee @@@@@@@')
 
-    params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'alpha':0},
-                   {'beta':0},{'gamma':0},{'zeta':0}]
+    params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'gamma':0},{'zeta':0}]
 
     for test_key in firstderivs_functions:
         if test_key:
@@ -121,17 +119,16 @@ def emcee():
 
 def errorvsdatasize():
     
-    test_key = 'late_int'
-    params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'alpha':0},
-                   {'beta':0},{'gamma':0.0}]    
+    test_key = 'exotic'
+    params_dic = [{'matter':0.3},{'Mcorr':-19.3}, {'gamma':0.0}, {'zeta':0.0}]    
     # Script timer.
     timet0 = time.time()
     
-    sigma = 0.5
-    sigma_max = 0.8
-    sigma_step = 0.3
+    sigma = 0.3
+    sigma_max = 1
+    sigma_step = 0.5
     npoints_min = 1000
-    npoints_max = 3000
+    npoints_max = 2000
     npoints_step = 800
     
     # How many iterations have I signed up for?
@@ -174,7 +171,7 @@ def errorvsdatasize():
             data_dic['mag']=mag
             
             propert, sampler = stats.stats(params_dic, data_dic, sigma, 
-                                           nsteps, save_path, test_key, plot=1)
+                                           nsteps, save_path, test_key, plot=False)
             
             for key in propert:
                 if 'sd' in key:
@@ -217,35 +214,51 @@ def errorvsdatasize():
             
             i+=1
         
-        plt.figure()
+        fig, ax = plt.subplots()
+        ax.scatter(npoints_list, sd, c='r')
+        
+        # Plotting SD vs dataset size.
+        for i, txt in enumerate(sigma_list):
+            txt = 'sd = '+ str(txt)
+            ax.annotate(txt, (npoints_list[i], sd[i]))
+            
         plt.xlabel('Dataset size')
         plt.ylabel('s.d. of a marginalised distribution')
         plt.title('Standard deviation of '+sd_initial+' vs dataset size'+
                   '\n s.d. of noise used = '+ str(sigma_list))
-        plt.scatter(npoints_list, sd, c='m')        
         stamp = str(int(time.time()))
         filename = str(stamp)+'_sd_of_'+sd_initial+'_.png'
         filename = os.path.join(save_path, filename)
         plt.savefig(filename)
         
-        plt.figure()
+        # Plotting mean vs dataset size.
+        fig, ax = plt.subplots()
+        ax.scatter(npoints_list, mean, c='c')
+        for i, txt in enumerate(sigma_list):
+            txt = 'sd = '+ str(txt)
+            ax.annotate(txt, (npoints_list[i], mean[i]))
+            
         plt.xlabel('Dataset size')
         plt.ylabel('Mean of a marginalised distribution')
         plt.title('Mean of '+mean_initial+' vs dataset size'+
                   '\n s.d. of noise used = '+str(sigma_list))
-        plt.scatter(npoints_list, mean, c='c')        
         stamp = str(int(time.time()))
         filename = str(stamp)+'_mean_of_'+mean_initial+'_.png'
         filename = os.path.join(save_path, filename)
         plt.savefig(filename)
         
+        # Plotting variance coefficient vs dataset size.
         if len(vc) == N:
-            plt.figure()
+            fig, ax = plt.subplots()
+            ax.scatter(npoints_list, vc, c='g')
+            for i, txt in enumerate(sigma_list):
+                txt = 'sd = '+ str(txt)
+                ax.annotate(txt, (npoints_list[i], vc[i]))
+            
             plt.xlabel('Dataset size')
             plt.ylabel('s.d. / mean of a marginalised distribution')
             plt.title('Variance coefficient of '+vc_initial+' vs dataset size'+
                       '\n s.d. of noise used = '+str(sigma_list))
-            plt.scatter(npoints_list, vc, c='coral')        
             stamp = str(int(time.time()))
             filename = str(stamp)+'_vc_of_'+vc_initial+'_.png'
             filename = os.path.join(save_path, filename)

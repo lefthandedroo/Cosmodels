@@ -51,14 +51,12 @@ def magn(params, data, firstderivs_key, plot_key=False):
     Finding matter density m, corrected absolute mag M, interaction gamma.
     
     Takes in:
-        tparams = list of dictionaries {string:value} of names and 
+        params = list of dictionaries {string:value} of names and 
         starting values of parameters to be emcee fitted:
-            {'matter':int/float} = e_m(t)/ec(t0) at t=t0;
+            [{'matter':int/float} = e_m(t)/ec(t0) at t=t0;
             {'Mcorr':int/float} = corrected absolute mag M;
-            {'alpha':int/float} = SN peak mag correlation parameter;
-            {'beta' :int/float} = SN peak mag correlation parameter;
             {'gamma':int/float} = interaction term;
-            {'zeta':int/float} = interaction term;
+            {'zeta':int/float}] = interaction term;
             ... (more)
         data = dictionary w/
             'colour': numpy.ndarray = SN colour;
@@ -66,8 +64,8 @@ def magn(params, data, firstderivs_key, plot_key=False):
             'zpicks':list of redshifts sorted in accending order;
             'mag':list of apparent magnitudes;
                 
-            firstderivs_key = string, indicates which firstderivs to integrate;
-            plot_key = Boolean, to plot or not to plot model figures;
+        firstderivs_key = string, indicates which firstderivs to integrate;
+        plot_key = Boolean, to plot or not to plot model figures;
     Returns:
         mag = np.ndarray of apparent mag corresponding to input redshits.
     """

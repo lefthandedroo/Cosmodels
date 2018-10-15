@@ -19,7 +19,8 @@ import tools
 #from scipy.special import erf
 
 # from prior = 0, short = 1, medium = 2, long = 3
-speed = 2
+speed = 3
+timed = False
 
 # Sigma of the noise on data.
 sigma = 0.07
@@ -58,10 +59,6 @@ class Model(object):
         """
         self.M_min = -20
         self.M_max = -18
-        self.a_min = -20
-        self.a_max = 20
-        self.b_min = -20
-        self.b_max = 20
         
         if int_lim != None:
             self.g_min = int_lim[0][0]
@@ -78,19 +75,15 @@ class Model(object):
         m = rng.rand()
         M = 1E3*rng.rand()
         M = dnest4.wrap(M, self.M_min, self.M_max)
-        a = 1E3*rng.rand()
-        a = dnest4.wrap(a, self.a_min, self.a_max)
-        b = 1E3*rng.rand()
-        b = dnest4.wrap(b, self.b_min, self.b_max)
         if int_lim != None:
             g = 1E3*rng.rand()
             g = dnest4.wrap(g, self.g_min, self.g_max)
             if len(int_lim) == 2:
                 z = 1E3*rng.rand()
                 z = dnest4.wrap(z, self.z_min, self.z_max)
-                return np.array([m, M, a, b, g, z])
-            return np.array([m, M, a, b, g])                
-        return np.array([m, M, a, b])
+                return np.array([m, M, g, z])
+            return np.array([m, M, g])                
+        return np.array([m, M])
 
     def perturb(self, params):
         """
@@ -107,17 +100,11 @@ class Model(object):
             params[which] = dnest4.wrap(params[which], 0.0, 1.0)
         elif which == 1:
             params[which] += dnest4.randh()
-            params[which] = dnest4.wrap(params[which], self.M_min, self.M_max)
+            params[which] = dnest4.wrap(params[which], self.M_min, self.M_max)            
         elif which == 2:
             params[which] += dnest4.randh()
-            params[which] = dnest4.wrap(params[which], self.a_min, self.a_max)
-        elif which == 3:
-            params[which] += dnest4.randh()
-            params[which] = dnest4.wrap(params[which], self.b_min, self.b_max)            
-        elif which == 4:
-            params[which] += dnest4.randh()
             params[which] = dnest4.wrap(params[which], self.g_min, self.g_max)
-        elif which == 5:
+        elif which == 3:
             params[which] += dnest4.randh()
             params[which] = dnest4.wrap(params[which], self.z_min, self.z_max)
         return logH
@@ -126,15 +113,15 @@ class Model(object):
         """
         Gaussian sampling distribution.
         """
-        if len(params) == 6:
-            m, M, a, b, g, z = params
-            theta = [{'matter':m}, {'Mcorr':M}, {'alpha':a}, {'beta':b}, {'gamma':g}, {'zeta':z}]
-        elif len(params) == 5:
-            m, M, a, b, g = params
-            theta = [{'matter':m}, {'Mcorr':M}, {'alpha':a}, {'beta':b}, {'gamma':g}]
+        if len(params) == 4:
+            m, M, g, z = params
+            theta = [{'matter':m}, {'Mcorr':M}, {'gamma':g}, {'zeta':z}]
+        elif len(params) == 3:
+            m, M, g = params
+            theta = [{'matter':m}, {'Mcorr':M}, {'gamma':g}]
         else:
-            m, M, a, b = params
-            theta = [{'matter':m}, {'Mcorr':M}, {'alpha':a}, {'beta':b}]
+            m, M = params
+            theta = [{'matter':m}, {'Mcorr':M}]
         
         model = datasim.magn(theta, data_dict, key)
         
@@ -158,7 +145,7 @@ class Model(object):
 
 firstderivs_functions = [None
             ,'exotic'
-#            ,'late_intxde'
+            ,'late_intxde'
 #            ,'heaviside_late_int'
 #            ,'late_int'
 #            ,'expgamma'
@@ -249,10 +236,11 @@ for key in firstderivs_functions:
                                  new_level_interval=100, num_per_step=100, 
                                  thread_steps=10, num_particles=5, 
                                  lam=10, beta=100, seed=1234)    
-        
-        import cProfile, pstats, io
-        pr = cProfile.Profile()
-        pr.enable()
+
+        if timed:       
+            import cProfile, pstats, io
+            pr = cProfile.Profile()
+            pr.enable()
         
         ti = time.time()
         # Do the sampling (one iteration here = one particle save)
@@ -261,12 +249,13 @@ for key in firstderivs_functions:
             pass
         tf = time.time()
         
-        pr.disable()
-        s = io.StringIO()
-        sortby = 'cumulative'
-        ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-        ps.print_stats()
-        print (s.getvalue())
+        if timed:
+            pr.disable()
+            s = io.StringIO()
+            sortby = 'cumulative'
+            ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+            ps.print_stats()
+            print (s.getvalue())
         
         dnest_time = tools.timer('Bfactor', ti, tf)
         
@@ -284,29 +273,21 @@ for key in firstderivs_functions:
         plt.figure()
         plt.title('Mcorr')
         plt.hist(array[:,1])
-        
-        plt.figure()
-        plt.title('alpha')
-        plt.hist(array[:,2])
-        
-        plt.figure()
-        plt.title('beta')
-        plt.hist(array[:,3])
            
         if key != 'LCDM':                
             plt.figure()
             plt.title('gamma')
-            plt.hist(array[:,4])
+            plt.hist(array[:,2])
             
             if key == 'exotic':
                 plt.figure()
                 plt.title('zeta')
-                plt.hist(array[:,5])
-        plt.show()
+                plt.hist(array[:,3])
+        plt.show() 
            
         # Run the postprocessing
         info = dnest4.postprocess()
-            
+        
         if speed > 1:
             
             f = open('brief.txt','w')

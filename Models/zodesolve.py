@@ -32,9 +32,11 @@ firstderivs_functions = {
 def zodesolve(params, zpicks, firstderivs_key):
     """
     Takes in:
-        params = dictionary w/ key:value
-            'gamma':int/float = interaction constant;
-            'm':int/float = e_m(t)/ec(t0) at t=t0;
+        params = list of dictionaries {string:value} of names and 
+        starting values of parameters to be emcee fitted:
+            [{'m':int/float} = e_m(t)/ec(t0) at t=t0;
+            {'Mcorr':int/float} = Corrected magnitude for SN;
+            {'gamma':int/float}] = interaction constant;
         zpicks = list of redshifts ;
         firstderivs_key = string, name of IVCDM model to use for model mag.
     
@@ -62,7 +64,7 @@ def zodesolve(params, zpicks, firstderivs_key):
   
     # Packing up interaction terms:
     int_terms = []
-    for i in range(4,len(params)):
+    for i in range(2,len(params)):
         for key in params[i]:
             int_terms.append(params[i].get(key,0))
             plot_var[key] = params[i][key]
