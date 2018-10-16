@@ -76,50 +76,88 @@ def stat(hue, var, var_true, var_name, slnprob, zpicks,
 
 firstderivs_key = 'exotic'
 params_dic = [{'matter':0.3},{'Mcorr':-19.3}, {'gamma':0.0}, {'zeta':0.0}]
-N = 2
-def onepercent():
-    
+def p_percent(p):
+    '''
+    Takes in:
+        p = int/float, percent, precision to which you want parameters;
+        firstderivs_key = string, model used;
+        params_dic = parameters searched for.
+    '''
     
     directory = os.path.join('./results_error_vs_data/'+firstderivs_key)
     
-    print(directory)
-#    vc_list = []
+    vc_list = []
     sd_list = []
     mean_list = []
     sigma_list = []
     npoints_list = []
     
-    for folder in os.walk(directory):
-        print('folder',folder)
-        sd_list += load(folder, 'sd_list')
-        print('sd_list',sd_list)
-        mean_list += load(folder, 'mean_list')
-        sigma_list += load(folder, 'sigma_list')
-        npoints_list += load(folder, 'npoints_list')
+    folders = []
+    for d in os.walk(directory):
+        folders.append(d[0])
+    folders.pop(0)
+        
+    for folder in folders:
+        vc_list += load(folder, 'vc_list.p')
+        sd_list += load(folder, 'sd_list.p')
+        mean_list += load(folder, 'mean_list.p')
+        sigma_list += load(folder, 'sigma_list.p')
+        npoints_list += load(folder, 'npoints_list.p')
     
-    print('final sd_list',sd_list)
+    n_param = len(params_dic)
+    n_inter = int(len(sd_list) / len(params_dic))
     
-#    for j in range(len(params_dic)):
-#        sd = []
-#        mean = []
-##        vc = []
-#        for i in range(N):
-#            index = i*len(params_dic)+j
-#            
-#            sd_name = sd_list[index][0]
+    for j in range(n_param):
+        sd = []
+        mean = []
+        vc = []
+        for i in range(n_inter):
+            index = i*len(params_dic)+j
+            
+            sd_name = sd_list[index][0]
 #            sd_initial = sd_name[0]
-#            sd.append(sd_list[index][1])
-#            
+            sd.append(sd_list[index][1])
+            
 #            mean_name = mean_list[index][0]
 #            mean_initial = mean_name[0]
-#            mean.append(mean_list[index][1])
-#            
-##            vc_name = vc_list[index][0]
-##            vc_initial = vc_name[0]
-##            vc.append(vc_list[index][1])            
-#            
-#            i+=1
-#
+            mean.append(mean_list[index][1])
+            
+#            vc_name = vc_list[index][0]
+#            vc_initial = vc_name[0]
+            vc.append(vc_list[index][1])            
+            
+            i+=1
+        
+        # Narrowing down to points with variance coefficient below p%
+        vc = np.asarray(vc)
+        sigma = np.asarray(sigma_list)
+        npoints = np.asarray(npoints_list)
+        
+        p1_index = np.where(vc < p)   # Indicies of rows with vc < p%.
+        p1_npoints = npoints[p1_index]
+        p1_sigma = sigma[p1_index]
+        # Removing doubles of nsteps.
+        p1_snpoints = []  
+        p1_ssigma = []
+        
+        for i in range(len(p1_npoints)):
+            if p1_npoints[i] in p1_snpoints:
+               index = np.where(p1_snpoints == p1_npoints[i])
+               index = int(index[0])
+               if p1_sigma[i] > p1_ssigma[index]:
+                  p1_ssigma[index] = p1_sigma[i]
+            else:
+                p1_snpoints.append(p1_npoints[i])
+                p1_ssigma.append(p1_sigma[i])
+
+        plt.figure()
+        plt.xlabel('Dataset size')
+        plt.ylabel('Sigma of noise added to data')
+        plt.title('Noisiest runs where %s was found within %s'%(sd_name, p))       
+        plt.scatter(p1_snpoints, p1_ssigma, c='m', label='1% sd')
+        plt.scatter(p1_snpoints, sigma, c='c', marker='x', label='all runs')
+        plt.legend()
+        
 #        fig, ax = plt.subplots()
 #        ax.scatter(npoints_list, sd, c='r')
 #        
@@ -130,10 +168,10 @@ def onepercent():
 #            
 #        plt.xlabel('Dataset size')
 #        plt.ylabel('s.d. of a marginalised distribution')
-#        plt.title('Standard deviation of '+sd_name+' vs dataset size'+
+#        plt.title(sd_name+' vs dataset size'+
 #                  '\n s.d. of noise labeled, model '+firstderivs_key)
-#        stamp = str(int(time.time()))
-#        filename = str(stamp)+'_sd_of_'+sd_initial+'_.png'
+##        stamp = str(int(time.time()))
+##        filename = str(stamp)+'_sd_of_'+sd_initial+'_.png'
 ##        filename = os.path.join(save_path, filename)
 ##        plt.savefig(filename)
 #        
@@ -146,37 +184,37 @@ def onepercent():
 #            
 #        plt.xlabel('Dataset size')
 #        plt.ylabel('Mean of a marginalised distribution')
-#        plt.title('Mean of '+mean_name+' vs dataset size'+
+#        plt.title(mean_name+' vs dataset size'+
 #                  '\n s.d. of noise labeled, model '+firstderivs_key)
-#        stamp = str(int(time.time()))
-#        filename = str(stamp)+'_mean_of_'+mean_initial+'_.png'
+##        stamp = str(int(time.time()))
+##        filename = str(stamp)+'_mean_of_'+mean_initial+'_.png'
 ##        filename = os.path.join(save_path, filename)
 ##        plt.savefig(filename)
 #        
 #        # Plotting variance coefficient vs dataset size.
-##        if len(vc) == N:
-##            fig, ax = plt.subplots()
-##            ax.scatter(npoints_list, vc, c='g')
-##            for i, txt in enumerate(sigma_list):
-##                txt = 'sd = '+ str(txt)
-##                ax.annotate(txt, (npoints_list[i], vc[i]))
-##            
-##            plt.xlabel('Dataset size')
-##            plt.ylabel('s.d. / mean of a marginalised distribution')
-##            plt.title('Variance coefficient of '+vc_name+' vs dataset size'+
-##                      '\n s.d. of noise labeled, model '+firstderivs_key)
+#        if len(vc) == n_inter:
+#            fig, ax = plt.subplots()
+#            ax.scatter(npoints_list, vc, c='g')
+#            for i, txt in enumerate(sigma_list):
+#                txt = 'sd = '+ str(txt)
+#                ax.annotate(txt, (npoints_list[i], vc[i]))
+#            
+#            plt.xlabel('Dataset size')
+#            plt.ylabel('s.d. / mean of a marginalised distribution')
+#            plt.title(vc_name+' vs dataset size'+
+#                      '\n s.d. of noise labeled, model '+firstderivs_key)
 ##            stamp = str(int(time.time()))
 ##            filename = str(stamp)+'_vc_of_'+vc_initial+'_.png'
 ##            filename = os.path.join(save_path, filename)
 ##            plt.savefig(filename)
-#            
-#        j+=1
-#    
-#    plt.show()
+            
+        j+=1
+    
+    plt.show()
     
     return
 
-onepercent()
+p_percent(2)
 
 def onepercentt():
     

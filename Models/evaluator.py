@@ -227,7 +227,7 @@ def errorvsdatasize():
             
         plt.xlabel('Dataset size')
         plt.ylabel('s.d. of a marginalised distribution')
-        plt.title('Standard deviation of '+sd_name+' vs dataset size'+
+        plt.title(sd_name+' vs dataset size'+
                   '\n s.d. of noise labeled, model '+test_key)
         stamp = str(int(time.time()))
         filename = str(stamp)+'_sd_of_'+sd_initial+'_.png'
@@ -243,7 +243,7 @@ def errorvsdatasize():
             
         plt.xlabel('Dataset size')
         plt.ylabel('Mean of a marginalised distribution')
-        plt.title('Mean of '+mean_name+' vs dataset size'+
+        plt.title(mean_name+' vs dataset size'+
                   '\n s.d. of noise labeled, model '+test_key)
         stamp = str(int(time.time()))
         filename = str(stamp)+'_mean_of_'+mean_initial+'_.png'
@@ -260,7 +260,7 @@ def errorvsdatasize():
             
             plt.xlabel('Dataset size')
             plt.ylabel('s.d. / mean of a marginalised distribution')
-            plt.title('Variance coefficient of '+vc_name+' vs dataset size'+
+            plt.title(vc_name+' vs dataset size'+
                       '\n s.d. of noise labeled, model '+test_key)
             stamp = str(int(time.time()))
             filename = str(stamp)+'_vc_of_'+vc_initial+'_.png'

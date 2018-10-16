@@ -23,6 +23,11 @@ def save(save_path, output_name, output):
 
 
 def load(save_path, filename):
+    
+    if filename[-2:] != '.p':
+        print('.p added to',filename,'in',save_path,'- assuming binary file...')
+        filename += '.p'
+    
     # Opening files with name=filename from given directory=save_path    
     load_path = os.path.join(save_path, filename)    
     content = []
