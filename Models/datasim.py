@@ -128,7 +128,7 @@ def model_comparison(params, zpicks, firstderivs_key, label):
     return 
 
 
-def makensavemagnz(m_true, g_true, mu, sigma, zpicks, data_key, filename):
+def makensavemagnz(params, data, firstderivs_key, mu, sigma, filename):
     '''
     Takes in:
     
@@ -155,13 +155,9 @@ def makensavemagnz(m_true, g_true, mu, sigma, zpicks, data_key, filename):
         to the model specified by data_key) offset by Gaussian noise, 
         saves them into a binary file called filename in the working directory.
     '''
-    
-    if data_key == 'LCDM':
-        data_params = {'m':m_true}
-    else:
-        data_params = {'m':m_true, 'gamma':g_true}
-    
-    mag = noisy_mag(zpicks, mu, sigma, data_params, data_key)
+    zpicks = data['zpicks']
+
+    mag = noisy_mag(mu, sigma, params, data, firstderivs_key)
     
     output = mag, zpicks
     

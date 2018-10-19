@@ -128,6 +128,10 @@ def p_percent(p):
             
             i+=1
         
+        print('sd',sd)
+        print('mean',mean)
+        print('vc',vc)
+        
         # Narrowing down to points with variance coefficient below p%
         vc = np.asarray(vc)
         sigma = np.asarray(sigma_list)

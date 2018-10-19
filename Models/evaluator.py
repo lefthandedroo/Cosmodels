@@ -259,7 +259,7 @@ def errorvsdatasize():
                 ax.annotate(txt, (npoints_list[i], vc[i]))
             
             plt.xlabel('Dataset size')
-            plt.ylabel('s.d. / mean of a marginalised distribution')
+            plt.ylabel('s.d. /mean x100 of a marginalised distribution')
             plt.title(vc_name+' vs dataset size'+
                       '\n s.d. of noise labeled, model '+test_key)
             stamp = str(int(time.time()))
@@ -288,4 +288,4 @@ def errorvsdatasize():
     
     return vc_list, sd_list, mean_list, sigma_list, npoints_list, sampler_list
 
-vc, sd, mean, sigma, npoints, sampler = errorvsdatasize()
+#vc, sd, mean, sigma, npoints, sampler = errorvsdatasize()
