@@ -7,12 +7,10 @@ Created on Tue Feb 27 12:40:48 2018
 
 
 """
-
 import matplotlib.pyplot as plt
 import numpy as np
 import os
 import time
-
 from results import load
 
 
@@ -74,233 +72,168 @@ def stat(hue, var, var_true, var_name, slnprob, zpicks,
     
     return
 
-firstderivs_key = 'exotic'
-params_dic = [{'matter':0.3},{'Mcorr':-19.3}, {'gamma':0.0}, {'zeta':0.0}]
-def p_percent(p):
+
+def precise_runs(firstderivs_key, params_dic, p, x):
     '''
     Takes in:
-        p = int/float, percent, precision to which you want parameters;
-        firstderivs_key = string, model used;
-        params_dic = parameters searched for.
+        firstderivs_key = string, model tested;
+        params_dic = list of dicts, parameters used to generate 'LCDM' data;
+        p = flot/int, cutoff precision in % for vc (params with mean !=0);
+        x = flot/int, cutoff precision for s.d.
     '''
     
-    directory = os.path.join('./results_error_vs_data/'+firstderivs_key)
     
-    vc_list = []
+    # Results folder to search through.
+    directory = os.path.join('./results_error_vs_data/'+firstderivs_key) 
+    
+    # Lists to be populated with contents of results folders. 
     sd_list = []
     mean_list = []
+    vc_list = []
     sigma_list = []
     npoints_list = []
     
+    # Creating a list of folders for each run that the model was tested. 
     folders = []
     for d in os.walk(directory):
         folders.append(d[0])
     folders.pop(0)
-        
+    
+    # Colecting sd, mean, vc of marginalised distributions for all parameters, and 
+    # the dataset properties such as sigma of noise added and number of points used.
     for folder in folders:
-        vc_list += load(folder, 'vc_list.p')
         sd_list += load(folder, 'sd_list.p')
         mean_list += load(folder, 'mean_list.p')
+        vc_list += load(folder, 'vc_list.p')
         sigma_list += load(folder, 'sigma_list.p')
         npoints_list += load(folder, 'npoints_list.p')
     
-    n_param = len(params_dic)
-    n_inter = int(len(sd_list) / len(params_dic))
+    n_param = len(params_dic)   # How many parameters were fitted.
+    n_run = int(len(vc_list) / n_param)   # How many runs were recorded.
     
+    # For each parameter:
     for j in range(n_param):
+        initial = vc_list[j][0][0] # First letter of the parameter fitted.
+        
         sd = []
         mean = []
         vc = []
-        for i in range(n_inter):
-            index = i*len(params_dic)+j
+        # Results recorded for each run:
+        for i in range(n_run):
+            index = i*n_param+j # index of current parameter's results, 
+                                # given number of parameters fitted
             
-            sd_name = sd_list[index][0]
-#            sd_initial = sd_name[0]
             sd.append(sd_list[index][1])
-            
-#            mean_name = mean_list[index][0]
-#            mean_initial = mean_name[0]
             mean.append(mean_list[index][1])
-            
-#            vc_name = vc_list[index][0]
-#            vc_initial = vc_name[0]
             vc.append(vc_list[index][1])            
             
-            i+=1
+            i+=1 # Onto the next run.
         
-        print('sd',sd)
-        print('mean',mean)
-        print('vc',vc)
-        
-        # Narrowing down to points with variance coefficient below p%
+        # Converting to np.ndarrays to find & remove rows with repeating npoints.
+        sd = np.array(sd)
         vc = np.asarray(vc)
         sigma = np.asarray(sigma_list)
         npoints = np.asarray(npoints_list)
-        
-        p1_index = np.where(vc < p)   # Indicies of rows with vc < p%.
-        p1_npoints = npoints[p1_index]
-        p1_sigma = sigma[p1_index]
-        # Removing doubles of nsteps.
-        p1_snpoints = []  
-        p1_ssigma = []
-        
-        for i in range(len(p1_npoints)):
-            if p1_npoints[i] in p1_snpoints:
-               index = np.where(p1_snpoints == p1_npoints[i])
-               index = int(index[0])
-               if p1_sigma[i] > p1_ssigma[index]:
-                  p1_ssigma[index] = p1_sigma[i]
-            else:
-                p1_snpoints.append(p1_npoints[i])
-                p1_ssigma.append(p1_sigma[i])
-
-        plt.figure()
-        plt.xlabel('Dataset size')
-        plt.ylabel('Sigma of noise added to data')
-        plt.title('Noisiest runs where %s was found within %s'%(sd_name, p))       
-        plt.scatter(p1_snpoints, p1_ssigma, c='m', label='1% sd')
-        plt.scatter(p1_snpoints, sigma, c='c', marker='x', label='all runs')
-        plt.legend()
-        
-#        fig, ax = plt.subplots()
-#        ax.scatter(npoints_list, sd, c='r')
-#        
-#        # Plotting SD vs dataset size.
-#        for i, txt in enumerate(sigma_list):
-#            txt = 'sd = '+ str(txt)
-#            ax.annotate(txt, (npoints_list[i], sd[i]))
-#            
-#        plt.xlabel('Dataset size')
-#        plt.ylabel('s.d. of a marginalised distribution')
-#        plt.title(sd_name+' vs dataset size'+
-#                  '\n s.d. of noise labeled, model '+firstderivs_key)
-##        stamp = str(int(time.time()))
-##        filename = str(stamp)+'_sd_of_'+sd_initial+'_.png'
-##        filename = os.path.join(save_path, filename)
-##        plt.savefig(filename)
-#        
-#        # Plotting mean vs dataset size.
-#        fig, ax = plt.subplots()
-#        ax.scatter(npoints_list, mean, c='c')
-#        for i, txt in enumerate(sigma_list):
-#            txt = 'sd = '+ str(txt)
-#            ax.annotate(txt, (npoints_list[i], mean[i]))
-#            
-#        plt.xlabel('Dataset size')
-#        plt.ylabel('Mean of a marginalised distribution')
-#        plt.title(mean_name+' vs dataset size'+
-#                  '\n s.d. of noise labeled, model '+firstderivs_key)
-##        stamp = str(int(time.time()))
-##        filename = str(stamp)+'_mean_of_'+mean_initial+'_.png'
-##        filename = os.path.join(save_path, filename)
-##        plt.savefig(filename)
-#        
-#        # Plotting variance coefficient vs dataset size.
-#        if len(vc) == n_inter:
-#            fig, ax = plt.subplots()
-#            ax.scatter(npoints_list, vc, c='g')
-#            for i, txt in enumerate(sigma_list):
-#                txt = 'sd = '+ str(txt)
-#                ax.annotate(txt, (npoints_list[i], vc[i]))
-#            
-#            plt.xlabel('Dataset size')
-#            plt.ylabel('s.d. / mean of a marginalised distribution')
-#            plt.title(vc_name+' vs dataset size'+
-#                      '\n s.d. of noise labeled, model '+firstderivs_key)
-##            stamp = str(int(time.time()))
-##            filename = str(stamp)+'_vc_of_'+vc_initial+'_.png'
-##            filename = os.path.join(save_path, filename)
-##            plt.savefig(filename)
+    
+        # Since input m and M are !=0, fitted m and M are unlikely to have mean=0, 
+        # so precision can be based on the variance coefficient vc=sd/mean*100.
+        if initial == 'm' or initial == 'M':
+            # Indicies of rows with vc > p%.
+            vc_above_p_index = np.where(abs(vc) > p)
+            # Eliminating parameters found with precision > p%.
+            p_stack = np.stack((npoints, sigma, vc), axis=1)
+            p_stack = np.delete(p_stack, vc_above_p_index, 0)
             
-        j+=1
+            # Removing all but the noisiest run for each dataset size.
+            for l in range(len(p_stack)-1):
+                k = l+1 # next line
+                npoints_l = p_stack[l][0] # Size of dataset on run l.
+                npints_k = p_stack[k][0]  # Size of dataset on run k.
+                if npoints_l == npints_k:   # If dataset sizes are the same, then
+                    sigma_l = p_stack[l][1]   # compare sd of noise added to data.
+                    sigma_k = p_stack[k][1]   # and leave the noisier run results.
+                    if sigma_l > sigma_k:
+                        p_stack = np.delete(p_stack, k, 0)
+                    elif sigma_l < sigma_k:
+                        p_stack = np.delete(p_stack, l, 0)
+                l+=1
+    
+            # Splitting npoints, sigma added to data and variance 
+            # coefficient into one dimentional np.arrays.        
+            p_npoints, p_sigma, p_vc= np.hsplit(p_stack, 3)
+            p_npoints = p_npoints.flatten()
+            p_sigma = p_sigma.flatten()
+            p_vc = p_vc.flatten()
+            
+            # Plotting dataset size vs noise added to data for all runs, and runs 
+            # where parameters were found withing precision p, with vc annotated.
+            fig, ax = plt.subplots()
+            ax.scatter(npoints, sigma, c='c', label=('all runs')) 
+            ax.scatter(p_npoints, p_sigma, c='m', label=('vc < %s%%'%(p)))
+            # Annotating vc.
+            for i, txt in enumerate(p_vc):
+                txt = str(round(txt,2))
+                ax.annotate(txt, (p_npoints[i], p_sigma[i]))
+              
+            plt.xlabel('Dataset size')
+            plt.ylabel('Sigma of noise added to data')
+            plt.title('Runs where '+initial+' was recovered within '+
+                      str(p)+' percent. \n Variance coefficients annotated.')  
+            plt.legend()      
+            
+        # Since input interaction terms are 0, recovered terms often have mean=0, 
+        # hence precision is based on stadard deviation to avoid division by 0 
+        # when calculating a variance coefficient.
+        else:
+            # Indicies of rows with sd > x.
+            sd_above_x_index = np.where(abs(sd) > x)
+            
+            # Eliminating parameters found outside of sd < x.
+            x_stack = np.stack((npoints, sigma, sd), axis=1)
+            x_stack = np.delete(x_stack, sd_above_x_index, 0)
+    
+            # Removing all but the noisiest run for each dataset size.
+            for l in range(len(x_stack)-1):
+                k = l+1 # next line
+                npoints_l = x_stack[l][0] # Size of dataset on run l.
+                npints_k = x_stack[k][0]  # Size of dataset on run k.
+                if npoints_l == npints_k:   # If dataset sizes are the same, then
+                    sigma_l = x_stack[l][1]   # compare sd of noise added to data.
+                    sigma_k = x_stack[k][1]   # and leave the noisier run results.
+                    if sigma_l > sigma_k:
+                        x_stack = np.delete(x_stack, k, 0)
+                    elif sigma_l < sigma_k:
+                        x_stack = np.delete(x_stack, l, 0)
+                l+=1
+    
+            # Splitting npoints, sigma added to data and standard 
+            # deviation into one dimentional np.arrays.        
+            x_npoints, x_sigma, x_sd= np.hsplit(x_stack, 3)
+            x_npoints = x_npoints.flatten()
+            x_sigma = x_sigma.flatten()
+            x_sd = x_sd.flatten()        
+            
+            # Plotting dataset size vs noise added to data for all runs, and runs 
+            # where parameters were found with s.d. < x, with s.d. annotated.
+            fig, ax = plt.subplots()
+            ax.scatter(npoints, sigma, c='c', label=('all runs')) 
+            ax.scatter(x_npoints, x_sigma, c='m', label=('s.d. < %s'%(x)))
+            # Annotating vc.
+            for i, txt in enumerate(x_sd):
+                txt = str(round(txt,2))
+                ax.annotate(txt, (x_npoints[i], x_sigma[i]))
+              
+            plt.xlabel('Dataset size')
+            plt.ylabel('Sigma of noise added to data')
+            plt.title('Runs where '+initial+' was recovered with s.d. < '+
+                      str(x)+'. \n Standard deviations annotated.')  
+            plt.legend()      
+            
+        j+=1    # Onto the next parameter.
     
     plt.show()
     
     return
-
-p_percent(2)
-
-def onepercentt():
-    
-    direclist = []
-    for d in os.walk('./results/'):
-        direclist.append(d[0])
-    direclist.pop(0)
-    
-    m_vc = []
-    g_vc = []
-    sigma =[]
-    npoints = []
-    for directory in direclist:
-            m_vc += load(directory, 'm_vc.p')
-            g_vc += load(directory, 'g_vc.p')
-            sigma += load(directory, 'sigma.p')
-            npoints += load(directory, 'npoints.p')
-
-    m_vc = np.asarray(m_vc)
-    g_vc = np.asarray(g_vc)
-    sigma = np.asarray(sigma)
-    npoints = np.asarray(npoints)
-      
-    m_pi = np.where(m_vc < 1)   # Indicies of rows with m_vc < 1%.
-    m_pinpoints = npoints[m_pi]
-    m_pisigma = sigma[m_pi]
-
-    g_pi = np.where(g_vc < 1.5)   # Indicies of rows with g_vc < 1%.
-    g_pinpoints = npoints[g_pi]
-    g_pisigma = sigma[g_pi]
-    
-    m_sinpoints = []  # Single results, removing doubles of nsteps.
-    m_sisigma = []
-    
-    g_sinpoints = []  # Single results, removing doubles of nsteps.
-    g_sisigma = []
-    
-    for i in range(len(m_pinpoints)):
-        if m_pinpoints[i] in m_sinpoints:
-           index = np.where(m_sinpoints == m_pinpoints[i])
-           index = int(index[0])
-           if m_pisigma[i] > m_sisigma[index]:
-              m_sisigma[index] = m_pisigma[i]
-        else:
-            m_sinpoints.append(m_pinpoints[i])
-            m_sisigma.append(m_pisigma[i])
-
-    for i in range(len(g_pinpoints)):
-        if g_pinpoints[i] in g_sinpoints:
-           index = np.where(g_sinpoints == g_pinpoints[i])
-           index = int(index[0])
-           if g_pisigma[i] > g_sisigma[index]:
-              g_sisigma[index] = g_pisigma[i]
-
-        else:
-            g_sinpoints.append(g_pinpoints[i])
-            g_sisigma.append(g_pisigma[i])
-    
-#    ind = np.ones((10,), bool)
-#    ind[n] = False
-#    A1 = A[ind,:]
-    plt.figure()
-    plt.xlabel('dataset size')
-    plt.ylabel('sigma of noise added to data')
-    plt.title('noisiest runs where m was found within 1%')       
-    plt.scatter(m_sinpoints, m_sisigma, c='m', label='1% sd on m')
-    plt.scatter(npoints, sigma, c='c', marker='x', label='all runs')
-    plt.legend()
-    
-    plt.figure()
-    plt.xlabel('dataset size')
-    plt.ylabel('sigma of noise added to data')
-    plt.title('noisiest runs where gamma was found within 1.5%')       
-    plt.scatter(g_sinpoints, g_sisigma, c='g', label='sd on gamma')
-    plt.scatter(npoints, sigma, c='c', marker='x', label='all runs')
-    plt.legend()
-    
-    plt.show()
-    
-    return m_vc, g_vc, sigma, npoints
-
-#m_vc, g_vc, sigma, npoints = onepercent()
       
 
 def modelcheck(mag, zpicks, plot_var, firstderivs_key):
@@ -427,6 +360,7 @@ def modelcheck(mag, zpicks, plot_var, firstderivs_key):
     plt.show()
     return
 
+
 def multi_modelcheck(zpicks, firstderivs_key, plot_var_list, label):
     
     mag = []
@@ -499,7 +433,8 @@ def multi_modelcheck(zpicks, firstderivs_key, plot_var_list, label):
         ax.plot(zpicks, ombar_de[0], 'm-.', label='de')
         ax.plot(zpicks, ombar_de[1], 'k-.', label='de')
         ax.plot(zpicks, ombar_de[2], 'c-.', label='de')
-        plt.title(r'$\bar \Omega_{m}$, $\bar \Omega_{DE}$ evolution, model = %s'%(firstderivs_key))
+        plt.title(r'$\bar \Omega_{m}$, $\bar \Omega_{DE}$ evolution, model = %s'
+                  %(firstderivs_key))
         ax.legend()
     
         # ombar_m, ombar_de vs redshift log x axis.
@@ -513,7 +448,8 @@ def multi_modelcheck(zpicks, firstderivs_key, plot_var_list, label):
         ax.semilogx(zpicks, ombar_de[0], 'm-.', label='de')
         ax.semilogx(zpicks, ombar_de[1], 'k-.', label='de')
         ax.semilogx(zpicks, ombar_de[2], 'c-.', label='de')
-        plt.title(r'$\bar \Omega_{m}$, $\bar \Omega_{DE}$ evolution, model = %s'%(firstderivs_key))
+        plt.title(r'$\bar \Omega_{m}$, $\bar \Omega_{DE}$ evolution, model = %s'
+                  %(firstderivs_key))
         ax.legend()
 
     else:        
@@ -531,7 +467,8 @@ def multi_modelcheck(zpicks, firstderivs_key, plot_var_list, label):
         ax.plot(zpicks, ombar_de[0], 'm-', label='de')
         ax.plot(zpicks, ombar_de[1], 'k-', label='de')
         ax.plot(zpicks, ombar_de[2], 'c-', label='de')
-        plt.title(r'$\bar \Omega_{r}$, $\bar \Omega_{m}$, $\bar \Omega_{DE}$ evolution, model = %s'%(firstderivs_key))
+        plt.title(r'$\bar \Omega_{r}$, $\bar \Omega_{m}$, $\bar \Omega_{DE}$ evolution, model = %s'
+                  %(firstderivs_key))
         ax.legend()
     
         # ombar_r, ombar_m, ombar_de vs redshift log x axis.

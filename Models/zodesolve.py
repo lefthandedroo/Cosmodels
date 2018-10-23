@@ -57,11 +57,11 @@ def zodesolve(params, zpicks, firstderivs_key):
     dl0 = 0.0             # luminosity distance
     rho_c0 = H0**2        # critical density
     ombar_r0 = 0.0        # e_r(z)/ec(z=0)
-    for key in params[0]:
+    for key in params[0]: # there is only one key here, m
         ombar_m0 = params[0].get(key, 0)    # e_m(z)/ec(z=0)
         plot_var['ombar_m0'] = ombar_m0
     ombar_de0 = rho_c0/rho_c0 - ombar_m0    # e_de(z)/ec(z=0)
-  
+    
     # Packing up interaction terms:
     int_terms = []
     for i in range(2,len(params)):
@@ -79,6 +79,9 @@ def zodesolve(params, zpicks, firstderivs_key):
     # Pack up the initial conditions and eq of state parameters.
     if firstderivs_key == 'exotic':
         v0 = [t0, a0, ombar_m0, ombar_r0, ombar_de0, z0, dl0]
+    elif firstderivs_key == 'rainbow':
+        v0 = [t0, a0, ombar_m0, ombar_r0, ombar_de0, z0, dl0, 
+              0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     else:
         v0 = [t0, a0, ombar_m0, ombar_de0, z0, dl0]
     

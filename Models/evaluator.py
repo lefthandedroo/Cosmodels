@@ -14,6 +14,7 @@ import results
 import tools
 import datasim
 import stats
+import plots
 
 # Number of emcee steps.
 nsteps = 10000
@@ -286,6 +287,9 @@ def errorvsdatasize():
     timet1=time.time()
     tools.timer('errorvsdatasize', timet0, timet1)
     
+    plots.precise_runs(test_key, params_dic, 9, 1.2)
+    
     return vc_list, sd_list, mean_list, sigma_list, npoints_list, sampler_list
 
 #vc, sd, mean, sigma, npoints, sampler = errorvsdatasize()
+

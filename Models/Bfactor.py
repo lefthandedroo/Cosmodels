@@ -19,7 +19,7 @@ import tools
 #from scipy.special import erf
 
 # from prior = 0, short = 1, medium = 2, long = 3
-speed = 3
+speed = 1
 timed = False
 
 # Sigma of the noise on data.
@@ -145,7 +145,7 @@ class Model(object):
 
 firstderivs_functions = [None
             ,'exotic'
-            ,'late_intxde'
+#            ,'late_intxde'
 #            ,'heaviside_late_int'
 #            ,'late_int'
 #            ,'expgamma'
@@ -159,7 +159,7 @@ firstderivs_functions = [None
 #            ,'rdecay_mxde'
 #            ,'rdecay'               
 #            ,'interacting'
-            ,'LCDM'
+#            ,'LCDM'
              ]
 
 for key in firstderivs_functions:
