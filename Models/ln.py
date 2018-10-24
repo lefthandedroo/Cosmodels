@@ -19,7 +19,7 @@ def lnlike(theta, data, sigma, firstderivs_key, ndim, params):
         dic = params[i]
         for key in dic:
             dic[key] = theta[i]
-    
+#    print('lnlike params',params)
     model = magn(params, data, firstderivs_key)
     var = sigma**2
     return -0.5*np.sum((mag-model)**2 /var +0.5*np.log(2*np.pi*var))
@@ -29,15 +29,16 @@ def lnprior(theta, key):
     Finding matter density m, absolute M, alpha, beta, interaction gamma.
     '''      
     Mcorr_min, Mcorr_max = -20, -18
-#    alpha_lim = 5
-#    beta_lim = 5
      
     if (0 < theta[0] < 1 or theta[0] == 1):
         if Mcorr_min < theta[1] < Mcorr_max:
-#            if abs(theta[2]) < alpha_lim:
-#                if abs(theta[3]) < beta_lim:
+            
+            if key == 'rainbow' or key == 'waterfall':
+                if 0 < theta[2] < 1 and 0 < theta[3] < 1 and 0 < theta[4] < 1:
+                    if 0 < theta[5] < 1:
+                        return 0.0
                     
-            if key == 'exotic':
+            elif key == 'exotic':
                 if -2 < theta[2] < 0.1 and -1.5 < abs(theta[3]) < 3.5:
                     return 0.0
                 

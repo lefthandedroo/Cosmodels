@@ -43,7 +43,9 @@ def stats(test_params, data_dict, sigma, nsteps,
     zpicks = data_dict.get('zpicks',0)
     mag = data_dict.get('mag',0)
     
-    if firstderivs_key == 'exotic':
+    if firstderivs_key == 'rainbow' or firstderivs_key == 'waterfall':
+        test_params = test_params
+    elif firstderivs_key == 'exotic':
         test_params = test_params[:4]
     elif firstderivs_key == 'LCDM':
         test_params = test_params[:2]

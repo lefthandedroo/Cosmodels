@@ -57,6 +57,8 @@ data_dic = {'mag':mag, 'x1':x1, 'colour':colour, 'zpicks':zpicks}
 #     '$\gamma$='+str(g3)+' $\zeta$='+str(z3)])
 
 firstderivs_functions = [None
+            ,'waterfall'
+#            ,'rainbow'
             ,'exotic'
 #            ,'late_intxde'
 #            ,'heaviside_late_int'
@@ -89,11 +91,29 @@ def modelcheck():
 def emcee():
     print('@@@@@@@ Mcor_emcee @@@@@@@')
 
-    params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'gamma':0},{'zeta':0}]
-
     for test_key in firstderivs_functions:
+            
         if test_key:
             print('---',test_key)
+            if test_key == 'waterfall':
+                params_dic = [{'matter':0.3},{'Mcorr':-19.3},
+                              {'radiation':0.025},{'ombar_a':0.0},
+                              {'ombar_b':0.0},{'ombar_c':0.0},{'in_a':0.0},
+                              {'in_b':0.0},{'in_c':0.0},{'in_d':0.0},{'in_e':0.0}]
+            elif test_key == 'rainbow':
+                params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'radiation':0.025},
+                              {'ombar_a':0.0},{'ombar_b':0.0},{'ombar_c':0.0},
+                              {'ombar_d':0.0},{'ombar_e':0.0},{'ombar_f':0.0},
+                              {'ombar_g':0.0},{'ombar_h':0.0},{'ombar_i':0.0},
+                              {'in_a':0.0},{'in_b':0.0},{'in_c':0.0},{'in_d':0.0},
+                              {'in_e':0.0},{'in_f':0.0},{'in_g':0.0},{'in_h':0.0},
+                              {'in_i':0.0},{'in_j':0.0}]
+            elif test_key == 'exotic':
+                params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'gamma':0},{'zeta':0}]
+            else:
+                params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'gamma':0},{'zeta':0}]
+                
+            
             # Creating a folder for saving output.
             save_path = './results_emcee/'+str(int(time.time()))+'_'+test_key
             if not os.path.exists(save_path):
@@ -116,7 +136,7 @@ def emcee():
 
     return
 
-#emcee()
+emcee()
 
 def errorvsdatasize():
     

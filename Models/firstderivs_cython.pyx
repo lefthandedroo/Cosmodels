@@ -32,6 +32,71 @@ cdef double w_r = 1/3     # radiation
 cdef double w_m = 0.0     # matter
 cdef double w_de = -1.0   # cosmological constant (dark energy?)
 
+def waterfall(double[:] v, redshifts, in_terms, double H0):
+    """    
+    Takes in:
+        v = list, values at z=0;
+        redshifts = list, redshifts to integrate over;
+        in_terms = list, rates of interaction;
+                
+    Returns a function f =     [dt/dz, d(a)/dz, 
+                                d(e'_m)/dz, d(e'_de)/dz, 
+                                d(z)/dz,
+                                d(dl)/dz]
+    """
+    
+    cdef double t = v[0]
+    cdef double a = v[1]
+    cdef double ombar_m = v[2]
+    cdef double ombar_r = v[3]
+    cdef double ombar_a = v[4]
+    cdef double ombar_b = v[5]
+    cdef double ombar_c = v[6]
+    cdef double ombar_de = v[7]
+    cdef double z = v[8]
+    cdef double dl = v[9]
+    
+    cdef double in_a = in_terms[0]
+    cdef double in_b = in_terms[1]
+    cdef double in_c = in_terms[2]
+    cdef double in_d = in_terms[3]
+    cdef double in_e = in_terms[4]
+        
+    cdef double Hz = H0 * (ombar_r + ombar_m 
+                           + ombar_a + ombar_b + ombar_c 
+                           + ombar_de)**(0.5)
+        
+    if math.isnan(Hz):
+        print('waterfall')
+        print('z = %s, Hz = %s, in_terms = %s'% (z, Hz, in_terms))
+        print('ombar_r = ',ombar_r,'ombar_m = ',ombar_m,
+              'ombar_a = ',ombar_a,'ombar_b = ',ombar_b,
+              'ombar_c = ',ombar_c,'ombar_de = ',ombar_de)
+    
+    cdef double dtdz = -1.0/((1.0+z) * Hz)
+    cdef double dadz = -(1.0+z)**(-2.0)
+    cdef double domdz = 3.0*ombar_m /(1.0+z) +in_a * ombar_m * ombar_r /(1.0+z) /Hz                                         # w = 0
+    cdef double dordz = 4.0*ombar_r /(1.0+z) -in_a * ombar_m * ombar_r /(1.0+z) /Hz +in_b * ombar_r * ombar_a /(1.0+z) /Hz  # w = 1/3
+    cdef double doadz = 2.7*ombar_a /(1.0+z) -in_b * ombar_r * ombar_a /(1.0+z) /Hz +in_c * ombar_a * ombar_b /(1.0+z) /Hz  # w = -0.1
+    cdef double dobdz = 1.5*ombar_b /(1.0+z) -in_c * ombar_a * ombar_b /(1.0+z) /Hz +in_d * ombar_b * ombar_c /(1.0+z) /Hz  # w = -0.5
+    cdef double docdz = 0.6*ombar_c /(1.0+z) -in_d * ombar_b * ombar_c /(1.0+z) /Hz +in_e * ombar_c * ombar_de /(1.0+z) /Hz # w = -0.8
+    cdef double dodedz = -in_e * ombar_c * ombar_de /(1.0+z) /Hz                                                            # w = -1
+    cdef double ddldz = 1.0/Hz
+    
+    # first derivatives of functions I want to find:
+    f = [dtdz,# dt/dz (= f.d wrt z of time)
+         dadz,# d(a)/dz (= f.d wrt z of scale factor)
+         domdz,# w = 0, d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
+         dordz,# w = 1/3, d(ombar_r)/dz   (= f.d wrt z of density_r(t) / crit density(t0))
+         doadz,# w = -0.1
+         dobdz,# w = -0.5
+         docdz,# w = -0.8
+         dodedz,# w = -1, d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit density(t0))
+         1.0,# d(z)/dz (= f.d wrt z of redshift)
+         ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
+    
+    return f
+
 def rainbow(double[:] v, redshifts, in_terms, double H0):
     """    
     matter decays into radiation, that decays into dark energy
@@ -51,18 +116,18 @@ def rainbow(double[:] v, redshifts, in_terms, double H0):
     cdef double a = v[1]
     cdef double ombar_m = v[2]
     cdef double ombar_r = v[3]
-    cdef double ombar_de = v[4]
-    cdef double z = v[5]
-    cdef double dl = v[6]
-    cdef double ombar_a = v[7]
-    cdef double ombar_b = v[8]
-    cdef double ombar_c = v[9]
-    cdef double ombar_d = v[10]
-    cdef double ombar_e = v[11]
-    cdef double ombar_f = v[12]
-    cdef double ombar_g = v[13]
-    cdef double ombar_h = v[14]
-    cdef double ombar_i = v[15]
+    cdef double ombar_a = v[4]
+    cdef double ombar_b = v[5]
+    cdef double ombar_c = v[6]
+    cdef double ombar_d = v[7]
+    cdef double ombar_e = v[8]
+    cdef double ombar_f = v[9]
+    cdef double ombar_g = v[10]
+    cdef double ombar_h = v[11]
+    cdef double ombar_i = v[12]
+    cdef double ombar_de = v[13]
+    cdef double z = v[14]
+    cdef double dl = v[15]
     
     cdef double in_a = in_terms[0]
     cdef double in_b = in_terms[1]
@@ -77,7 +142,7 @@ def rainbow(double[:] v, redshifts, in_terms, double H0):
 
         
     cdef double Hz = H0 * (ombar_r + ombar_m + ombar_a + ombar_b + ombar_c 
-                           ombar_d + ombar_e + ombar_f + ombar_g + ombar_h
+                           + ombar_d + ombar_e + ombar_f + ombar_g + ombar_h
                            + ombar_i + ombar_de)**(0.5)
         
     if math.isnan(Hz):
@@ -105,8 +170,8 @@ def rainbow(double[:] v, redshifts, in_terms, double H0):
     # first derivatives of functions I want to find:
     f = [dtdz,# dt/dz (= f.d wrt z of time)
          dadz,# d(a)/dz (= f.d wrt z of scale factor)
-         domdz,# d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
-         dordz,# d(ombar_r)/dz   (= f.d wrt z of density_r(t) / crit density(t0))
+         domdz,# dw = 0, (ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
+         dordz,# w = 1/3, d(ombar_r)/dz   (= f.d wrt z of density_r(t) / crit density(t0))
          doadz,# w = -0.1
          dobdz,# w = -0.2
          docdz,# w = -0.3
@@ -116,7 +181,7 @@ def rainbow(double[:] v, redshifts, in_terms, double H0):
          dogdz,# w = -0.7
          dohdz,# w = -0.8
          doidz,# w = -0.9
-         dodedz,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
+         dodedz,# w = -1, d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit density(t0))
          1.0,# d(z)/dz (= f.d wrt z of redshift)
          ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
     
@@ -167,7 +232,7 @@ def exotic(double[:] v, redshifts, in_terms, double H0):
          dadz,# d(a)/dz (= f.d wrt z of scale factor)
          domdz,# d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
          dordz,# d(ombar_r)/dz   (= f.d wrt z of density_r(t) / crit density(t0))
-         dodedz,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
+         dodedz,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit density(t0))
          1.0,# d(z)/dz (= f.d wrt z of redshift)
          ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
     
@@ -203,7 +268,7 @@ def late_intxde(double[:] v, redshifts, in_terms, double H0):
     irate = 0.0
 
     if z < 0.9:
-        irate = ombar_de * gamma/(1.0+z)/Hz        
+        irate = ombar_de * ombar_m * gamma/(1.0+z)/Hz    
     
     cdef double dtdz = -1.0/((1.0+z) * Hz)
     cdef double dadz = -(1.0+z)**(-2.0)
@@ -214,7 +279,7 @@ def late_intxde(double[:] v, redshifts, in_terms, double H0):
     f = [dtdz,# dt/dz (= f.d wrt z of time)
          dadz,# d(a)/dz (= f.d wrt z of scale factor)
          domdz,# d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
-         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
+         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit density(t0))
          1.0,# d(z)/dz (= f.d wrt z of redshift)
          ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
     
@@ -258,7 +323,7 @@ def heaviside_late_int(double[:] v, redshifts, in_terms, double H0):
     f = [dtdz,# dt/dz (= f.d wrt z of time)
          dadz,# d(a)/dz (= f.d wrt z of scale factor)
          domdz,# d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
-         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
+         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit density(t0))
          1.0,# d(z)/dz (= f.d wrt z of redshift)
          ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
     
@@ -305,7 +370,7 @@ def late_int(double[:] v, redshifts, in_terms, double H0):
     f = [dtdz,# dt/dz (= f.d wrt z of time)
          dadz,# d(a)/dz (= f.d wrt z of scale factor)
          domdz,# d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
-         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
+         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit density(t0))
          1.0,# d(z)/dz (= f.d wrt z of redshift)
          ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
     
@@ -349,7 +414,7 @@ def expgamma(double[:] v, redshifts, in_terms, double H0):
     f = [dtdz,# dt/dz (= f.d wrt z of time)
          dadz,# d(a)/dz (= f.d wrt z of scale factor)
          domdz,# d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
-         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
+         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit density(t0))
          1.0,# d(z)/dz (= f.d wrt z of redshift)
          ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
     
@@ -393,7 +458,7 @@ def txgamma(double[:] v, redshifts, in_terms, double H0):
     f = [dtdz,# dt/dz (= f.d wrt z of time)
          dadz,# d(a)/dz (= f.d wrt z of scale factor)
          domdz,# d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
-         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
+         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit density(t0))
          1.0,# d(z)/dz (= f.d wrt z of redshift)
          ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
     
@@ -437,7 +502,7 @@ def zxgamma(double[:] v, redshifts, in_terms, double H0):
     f = [dtdz,# dt/dz (= f.d wrt z of time)
          dadz,# d(a)/dz (= f.d wrt z of scale factor)
          domdz,# d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
-         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
+         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit density(t0))
          1.0,# d(z)/dz (= f.d wrt z of redshift)
          ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
     
@@ -481,7 +546,7 @@ def gamma_over_z(double[:] v, redshifts, in_terms, double H0):
     f = [dtdz,# dt/dz (= f.d wrt z of time)
          dadz,# d(a)/dz (= f.d wrt z of scale factor)
          domdz,# d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
-         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
+         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit density(t0))
          1.0,# d(z)/dz (= f.d wrt z of redshift)
          ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
     
@@ -527,7 +592,7 @@ def zxxgamma(double[:] v, redshifts, in_terms, double H0):
     f = [dtdz,# dt/dz (= f.d wrt z of time)
          dadz,# d(a)/dz (= f.d wrt z of scale factor)
          domdz,# d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
-         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
+         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit density(t0))
          1.0,# d(z)/dz (= f.d wrt z of redshift)
          ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
     
@@ -573,7 +638,7 @@ def gammaxxz(double[:] v, redshifts, in_terms, double H0):
     f = [dtdz,# dt/dz (= f.d wrt z of time)
          dadz,# d(a)/dz (= f.d wrt z of scale factor)
          domdz,# d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
-         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
+         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit density(t0))
          1.0,# d(z)/dz (= f.d wrt z of redshift)
          ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
     
@@ -617,7 +682,7 @@ def rdecay_m(double[:] v, redshifts, in_terms, double H0):
     f = [dtdz,# dt/dz (= f.d wrt z of time)
          dadz,# d(a)/dz (= f.d wrt z of scale factor)
          domdz,# d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
-         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
+         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit density(t0))
          1.0,# d(z)/dz (= f.d wrt z of redshift)
          ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
     
@@ -661,7 +726,7 @@ def rdecay_de(double[:] v, redshifts, in_terms, double H0):
     f = [dtdz,# dt/dz (= f.d wrt z of time)
          dadz,# d(a)/dz (= f.d wrt z of scale factor)
          domdz,# d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
-         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
+         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit density(t0))
          1.0,# d(z)/dz (= f.d wrt z of redshift)
          ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
     
@@ -705,7 +770,7 @@ def rdecay_mxde(double[:] v, redshifts, in_terms, double H0):
     f = [dtdz,# dt/dz (= f.d wrt z of time)
          dadz,# d(a)/dz (= f.d wrt z of scale factor)
          domdz,# d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
-         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
+         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit density(t0))
          1.0,# d(z)/dz (= f.d wrt z of redshift)
          ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
     
@@ -749,7 +814,7 @@ def rdecay(double[:] v, redshifts, in_terms, double H0):
     f = [dtdz,# dt/dz (= f.d wrt z of time)
          dadz,# d(a)/dz (= f.d wrt z of scale factor)
          domdz,# d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
-         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
+         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit density(t0))
          1.0,# d(z)/dz (= f.d wrt z of redshift)
          ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
     
@@ -795,7 +860,7 @@ def interacting(double[:] v, redshifts, in_terms, double H0):
     f = [dtdz,# dt/dz (= f.d wrt z of time)
          dadz,# d(a)/dz (= f.d wrt z of scale factor)
          domdz,# d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
-         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
+         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit density(t0))
          1.0,# d(z)/dz (= f.d wrt z of redshift)
          ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
     
@@ -836,7 +901,7 @@ def LCDM(double[:] v, redshifts, in_terms, double H0):
     f = [dtdz,# dt/dz (= f.d wrt z of time)
          dadz,# d(a)/dz (= f.d wrt z of scale factor)
          domdz,# d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
-         0.0,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit desnity(t0))
+         0.0,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit density(t0))
          1.0,# d(z)/dz (= f.d wrt z of redshift)
          ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
         

@@ -11,6 +11,8 @@ import firstderivs_cython as f
 
 
 firstderivs_functions = {
+        'waterfall':f.waterfall,
+        'rainbow':f.rainbow,
         'exotic':f.exotic,
         'late_intxde':f.late_intxde,
         'heaviside_late_int':f.heaviside_late_int,
@@ -56,32 +58,65 @@ def zodesolve(params, zpicks, firstderivs_key):
     z0 = 0.0              # redshift
     dl0 = 0.0             # luminosity distance
     rho_c0 = H0**2        # critical density
-    ombar_r0 = 0.0        # e_r(z)/ec(z=0)
-    for key in params[0]: # there is only one key here, m
-        ombar_m0 = params[0].get(key, 0)    # e_m(z)/ec(z=0)
-        plot_var['ombar_m0'] = ombar_m0
-    ombar_de0 = rho_c0/rho_c0 - ombar_m0    # e_de(z)/ec(z=0)
-    
+    ombar_m0 = params[0].get('matter', 0.0)    # e_m(z)/ec(z=0)
+    plot_var['ombar_m0'] = ombar_m0
+    if firstderivs_key != 'LCDM':
+        ombar_r0 = params[2].get('radiation', 0.0)
+        
+        if firstderivs_key == 'rainbow':
+            ombar_a = params[3].get('ombar_a', 0)
+            ombar_b = params[4].get('ombar_b', 0)
+            ombar_c = params[5].get('ombar_c', 0)
+            ombar_d = params[6].get('ombar_d', 0)
+            ombar_e = params[7].get('ombar_e', 0)
+            ombar_f = params[8].get('ombar_f', 0)
+            ombar_g = params[9].get('ombar_g', 0)
+            ombar_h = params[10].get('ombar_h', 0)
+            ombar_i = params[11].get('ombar_i', 0)
+            ombar_de0 = rho_c0/rho_c0 -ombar_m0 -ombar_r0 -ombar_a -ombar_b 
+            ombar_de0 = ombar_de0 -ombar_c -ombar_d -ombar_e -ombar_f -ombar_g
+            ombar_de0 = ombar_de0 -ombar_h - ombar_i
+        elif firstderivs_key == 'waterfall':
+            ombar_a = params[3].get('ombar_a', 0)
+            ombar_b = params[4].get('ombar_b', 0)
+            ombar_c = params[5].get('ombar_c', 0)
+            ombar_de0 = rho_c0/rho_c0 -ombar_m0 -ombar_r0 -ombar_a -ombar_b -ombar_c
+    else:
+        ombar_de0 = rho_c0/rho_c0 - ombar_m0
+
     # Packing up interaction terms:
     int_terms = []
-    for i in range(2,len(params)):
-        for key in params[i]:
-            int_terms.append(params[i].get(key,0))
-            plot_var[key] = params[i][key]
+    if firstderivs_key == 'rainbow':
+         for i in range(12,len(params)):
+            for key in params[i]:
+                int_terms.append(params[i].get(key,0))
+                plot_var[key] = params[i][key]     
+    elif firstderivs_key == 'waterfall':
+         for i in range(6,len(params)):
+            for key in params[i]:
+                int_terms.append(params[i].get(key,0))
+                plot_var[key] = params[i][key]         
+    else:
+        for i in range(2,len(params)):
+            for key in params[i]:
+                int_terms.append(params[i].get(key,0))
+                plot_var[key] = params[i][key]
         
     # Extracting the parsed mode of interaction.
     firstderivs_function = firstderivs_functions.get(firstderivs_key,0)
     if firstderivs_function == 0:
-        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-        print("firstderivs_functions didn't have the key zodeosolve parsed")
-        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+        raise ValueError("zodesolve doesn't have this firstderivs_key at the top")
     
     # Pack up the initial conditions and eq of state parameters.
     if firstderivs_key == 'exotic':
         v0 = [t0, a0, ombar_m0, ombar_r0, ombar_de0, z0, dl0]
     elif firstderivs_key == 'rainbow':
         v0 = [t0, a0, ombar_m0, ombar_r0, ombar_de0, z0, dl0, 
-              0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+              ombar_a, ombar_b, ombar_c, ombar_d, ombar_e, ombar_f, ombar_g, 
+              ombar_h, ombar_i]
+    elif firstderivs_key == 'waterfall':
+        v0 = [t0, a0, ombar_m0, ombar_r0, ombar_a, ombar_b, ombar_c, 
+              ombar_de0, z0, dl0]        
     else:
         v0 = [t0, a0, ombar_m0, ombar_de0, z0, dl0]
     
@@ -92,18 +127,16 @@ def zodesolve(params, zpicks, firstderivs_key):
     # Separate results into their own arrays:
     plot_var['t'] = vsol[1:,0]
     plot_var['a'] = vsol[1:,1]
-    plot_var['ombar_m'] = vsol[1:,2]
-    if firstderivs_key == 'exotic':  
+    plot_var['ombar_m'] = vsol[1:,2]        
+    if firstderivs_key == 'exotic' or firstderivs_key == 'rainbow' or firstderivs_key == 'waterfall':  
         plot_var['ombar_r'] = vsol[1:,3]
-        plot_var['ombar_de'] = vsol[1:,4]
-        plot_var['z'] = vsol[1:,5]    
-        plot_var['dl'] = vsol[1:,6] * (1+plot_var['z'])  # in units of dl*(H0/c)
-    else:
-        plot_var['ombar_de'] = vsol[1:,3]
-        plot_var['z'] = vsol[1:,4]    
-        plot_var['dl'] = vsol[1:,5] * (1+plot_var['z'])  # in units of dl*(H0/c)
+        plot_var['ombar_r0'] = ombar_r0
+
+    plot_var['ombar_de0'] = ombar_de0
+    plot_var['ombar_de'] = vsol[1:,-3]          
+    plot_var['z'] = vsol[1:,-2]    
+    plot_var['dl'] = vsol[1:,-1] * (1+plot_var['z'])  # in units of dl*(H0/c)
     dlpc = plot_var['dl'] * c_over_H0    # dl in parsecs (= vsol[dl] * c/H0)
-    plot_var['ombar_r0'] = ombar_r0
-    plot_var['ombar_de0'] = ombar_de0     
+   
     
     return dlpc, plot_var
