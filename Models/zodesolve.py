@@ -60,6 +60,7 @@ def zodesolve(params, zpicks, firstderivs_key):
     rho_c0 = H0**2        # critical density
     ombar_m0 = params[0].get('matter', 0.0)    # e_m(z)/ec(z=0)
     plot_var['ombar_m0'] = ombar_m0
+    ombar_de0 = rho_c0/rho_c0 - ombar_m0
     if firstderivs_key != 'LCDM':
         ombar_r0 = params[2].get('radiation', 0.0)
         
@@ -81,8 +82,6 @@ def zodesolve(params, zpicks, firstderivs_key):
             ombar_b = params[4].get('ombar_b', 0)
             ombar_c = params[5].get('ombar_c', 0)
             ombar_de0 = rho_c0/rho_c0 -ombar_m0 -ombar_r0 -ombar_a -ombar_b -ombar_c
-    else:
-        ombar_de0 = rho_c0/rho_c0 - ombar_m0
 
     # Packing up interaction terms:
     int_terms = []

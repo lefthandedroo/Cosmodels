@@ -74,7 +74,7 @@ def stats(test_params, data_dict, sigma, nsteps,
     # Sampler setup.
     times0 = time.time()    # starting sampler timer
     sampler = EnsembleSampler(nwalkers, ndim, ln.lnprob, 
-                              args=(data_dict, sigma, firstderivs_key, ndim, test_params))
+                              args=(data_dict, sigma, firstderivs_key, test_params))
     
     # Burnin.
     burnin = int(nsteps/4)  # steps to discard

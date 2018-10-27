@@ -17,7 +17,7 @@ import stats
 import plots
 
 # Number of emcee steps.
-nsteps = 10000
+nsteps = 1000
 
 # Statistical parameteres of noise:
 mu = 0.0            # mean
@@ -38,11 +38,11 @@ data = np.stack((mag,x1,colour,zpicks), axis=0)
 data.sort(axis=-1)
 
 mag = data[0]
-x1 = data[1]
-colour = data[2]
+#x1 = data[1]
+#colour = data[2]
 zpicks = data[3]
 zpicks = zpicks.tolist()
-data_dic = {'mag':mag, 'x1':x1, 'colour':colour, 'zpicks':zpicks}
+data_dic = {'mag':mag, 'zpicks':zpicks}
 
 #g1, g2, g3 = 0.0, 0.2, 0.3
 #z1, z2, z3 = 0.0, -0.2, -0.4
@@ -57,7 +57,7 @@ data_dic = {'mag':mag, 'x1':x1, 'colour':colour, 'zpicks':zpicks}
 #     '$\gamma$='+str(g3)+' $\zeta$='+str(z3)])
 
 firstderivs_functions = [None
-            ,'waterfall'
+#            ,'waterfall'
 #            ,'rainbow'
             ,'exotic'
 #            ,'late_intxde'

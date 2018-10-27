@@ -9,25 +9,44 @@ Created on Thu Feb 15 13:52:36 2018
 import numpy as np
 from datasim import magn
 
-def lnlike(theta, data, sigma, firstderivs_key, ndim, params):
+def lnlike(theta, data, sigma, firstderivs_key, params):
     '''
-    Finding matter density m, absolute M, alpha, beta, interaction gamma.
+    Takes in:
+        theta = numpy.ndarray, guessed values for parameters;
+        data = dictionary, {'mag':mag, 'zpicks':zpicks};
+        sigma = int/float, error on data;
+        firstderivs_key = string, model being tested;
+        params = list of dictionaries {string:value} of names and 
+        current guessed values of parameters being emcee fitted:
+            [{'matter':float} = e_m(t)/ec(t0) at t=t0;
+            {'Mcorr':float} = corrected absolute mag M;
+            {'gamma':float} = interaction term;
+            {'zeta':float} = interaction term;
+            ... {'parameter':value})].
+    Returns:
+        float, likelihood for firstderivs_key model with theta parameters.
     '''
     mag = data['mag']
     
-    for i in range(ndim):
-        dic = params[i]
-        for key in dic:
-            dic[key] = theta[i]
-#    print('lnlike params',params)
-    model = magn(params, data, firstderivs_key)
+    for i in range(len(theta)): # for each parameter
+        dic = params[i]         # take the appropriate dic in params
+        for key in dic:         # only one key in each
+            dic[key] = theta[i] # replace value with the one being guessed
+    model = magn(params, data, firstderivs_key) # mag, but with theta params
     var = sigma**2
-    return -0.5*np.sum((mag-model)**2 /var +0.5*np.log(2*np.pi*var))
+    likelihood = -0.5*np.sum((mag-model)**2 /var +0.5*np.log(2*np.pi*var))
+    return likelihood
 
 def lnprior(theta, key):
     '''
-    Finding matter density m, absolute M, alpha, beta, interaction gamma.
-    '''      
+    Takes in:
+        theta = numpy.ndarray, guessed values for parameters;
+        
+    Returns:
+        0.0 if all conditions on theta values are met;
+        -np.inf if theta values are outside of prior.
+    '''
+    
     Mcorr_min, Mcorr_max = -20, -18
      
     if (0 < theta[0] < 1 or theta[0] == 1):
@@ -91,10 +110,10 @@ def lnprior(theta, key):
         
     return -np.inf
 
-def lnprob(theta, data, sigma, firstderivs_key, ndim, test_params):
+def lnprob(theta, data, sigma, firstderivs_key, test_params):
 
     lp = lnprior(theta, firstderivs_key)
     if not np.isfinite(lp):
         return -np.inf
     
-    return lp + lnlike(theta, data, sigma, firstderivs_key, ndim, test_params)
+    return lp + lnlike(theta, data, sigma, firstderivs_key, test_params)
