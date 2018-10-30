@@ -102,8 +102,9 @@ def stats(test_params, data_dict, sigma, nsteps,
     propert = {}
     propert['trace'] = sampler.chain[:, burnin:, :].reshape(-1, ndim) #trace
     
-    colours = ['berry', 'coral', 'amber', 
-               'apple', 'aquamarine', 'deepblue', 'darkviolet']    
+    colours = ['light red', 'berry', 'coral', 'amber', 
+               'apple', 'aquamarine', 'raspberry', 'green blue', 'deep blue',
+               'emerald', 'blue violet', 'dark violet', 'yellow orange']    
     
     best_params = test_params
     
@@ -124,7 +125,7 @@ def stats(test_params, data_dict, sigma, nsteps,
             propert[param_initial] = sampler.flatchain[bi,i]
             
             if plot:
-                plots.stat(colours[i], output, param_true, key, 
+                plots.stat_emcee(colours[i], output, param_true, key, 
                            sampler.flatlnprobability, zpicks, mag, sigma,
                            nsteps, nwalkers, save_path, firstderivs_key)
             

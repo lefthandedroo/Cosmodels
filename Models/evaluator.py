@@ -57,12 +57,12 @@ data_dic = {'mag':mag, 'zpicks':zpicks}
 #     '$\gamma$='+str(g3)+' $\zeta$='+str(z3)])
 
 firstderivs_functions = [None
-#            ,'waterfall'
+            ,'waterfall'
 #            ,'rainbow'
             ,'exotic'
-#            ,'late_intxde'
+            ,'late_intxde'
 #            ,'heaviside_late_int'
-            ,'late_int'
+#            ,'late_int'
 #            ,'expgamma'
 #            ,'txgamma'         # doesn't converge
 #            ,'zxgamma'
@@ -97,21 +97,21 @@ def emcee():
             print('---',test_key)
             if test_key == 'waterfall':
                 params_dic = [{'matter':0.3},{'Mcorr':-19.3},
-                              {'radiation':0.025},{'ombar_a':0.0},
-                              {'ombar_b':0.0},{'ombar_c':0.0},{'in_a':0.0},
-                              {'in_b':0.0},{'in_c':0.0},{'in_d':0.0},{'in_e':0.0}]
+                              {'radiation':0.025},{'a_ombar':0.1},
+                              {'b_ombar':0.1},{'c_ombar':0.1},
+                              {'v_in':0.0},{'w_in':0.0},{'x_in':0.0},
+                              {'y_in':0.0},{'z_in':0.0}]
             elif test_key == 'rainbow':
                 params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'radiation':0.025},
-                              {'ombar_a':0.0},{'ombar_b':0.0},{'ombar_c':0.0},
-                              {'ombar_d':0.0},{'ombar_e':0.0},{'ombar_f':0.0},
-                              {'ombar_g':0.0},{'ombar_h':0.0},{'ombar_i':0.0},
-                              {'in_a':0.0},{'in_b':0.0},{'in_c':0.0},{'in_d':0.0},
-                              {'in_e':0.0},{'in_f':0.0},{'in_g':0.0},{'in_h':0.0},
-                              {'in_i':0.0},{'in_j':0.0}]
+                              {'a_ombar':0.0},{'b_ombar':0.0},{'c_ombar':0.0},
+                              {'d_ombar':0.0},{'e_ombar':0.0},{'f_ombar':0.0},
+                              {'g_ombar':0.0},{'h_ombar':0.0},{'i_ombar':0.0},
+                              {'q_in':0.0},{'r_in':0.0},{'s_in':0.0},{'t_in':0.0},
+                              {'u_in':0.0}]
             elif test_key == 'exotic':
                 params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'gamma':0},{'zeta':0}]
             else:
-                params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'gamma':0},{'zeta':0}]
+                params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'gamma':0}]
                 
             
             # Creating a folder for saving output.

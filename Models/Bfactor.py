@@ -21,7 +21,7 @@ import tools
 # from prior = 0, short = 1, medium = 2, long = 3
 speed = 1
 timed = False
-
+plot = True
 # Sigma of the noise on data.
 sigma = 0.07
 
@@ -46,24 +46,37 @@ mag = data[0]
 zpicks = data[3]
 zpicks = zpicks.tolist()
 data_dict = {'mag':mag, 'zpicks':zpicks}
+ombar_names = ['matter', 'radiation', 'de', 'a', 'b', 'c', 'd', 'e', 'f']
+int_names = ['p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
 
 class Model(object):
     """
     Specify the model in Python.
     """
-    def __init__(self, int_lim=None):
+    def __init__(self, int_lim=False, ombar_lim=False):
         """
         Parameter values *are not* stored inside the class
         """
         self.M_min = -20
         self.M_max = -18
-        
-        if int_lim != None:
-            self.g_min = int_lim[0][0]
-            self.g_max = int_lim[0][1]
-            if len(int_lim) == 2:
-                self.z_min = int_lim[1][0]
-                self.z_max = int_lim[1][1]                
+        self.ombar_lim = ombar_lim
+        if int_lim:
+            for i in range(len(int_lim)):
+                if i == 1:
+                    self.v_min = int_lim[i][0]
+                    self.v_max = int_lim[i][1]
+                    if i == 2:
+                        self.w_min = int_lim[i][0]
+                        self.w_max = int_lim[i][1]
+                        if i == 3:
+                            self.x_min = int_lim[i][0]
+                            self.x_max = int_lim[i][1]
+                            if i == 3:
+                                self.y_min = int_lim[i][0]
+                                self.y_max = int_lim[i][1]
+                                if i == 4:
+                                    self.z_min = int_lim[i][0]
+                                    self.z_max = int_lim[i][1]
 #        pass
 
     def from_prior(self):
@@ -73,14 +86,30 @@ class Model(object):
         m = rng.rand()
         M = 1E3*rng.rand()
         M = dnest4.wrap(M, self.M_min, self.M_max)
-        if int_lim != None:
+
+        if self.ombar_lim:
+            radiation = rng.rand()
+            a_ombar = rng.rand()
+            b_ombar = rng.rand()
+            c_ombar = rng.rand()
+                         
+        if int_lim:
+            
+            if len(int_lim) == 1:
             g = 1E3*rng.rand()
             g = dnest4.wrap(g, self.g_min, self.g_max)
+            return np.array([m, M, g])
+        
             if len(int_lim) == 2:
                 z = 1E3*rng.rand()
                 z = dnest4.wrap(z, self.z_min, self.z_max)
                 return np.array([m, M, g, z])
-            return np.array([m, M, g])                
+            
+            elif len(int_lim) == 5:
+                z = 1E3*rng.rand()
+                z = dnest4.wrap(z, self.z_min, self.z_max)
+                return np.array([m, M, g, z])
+                          
         return np.array([m, M])
 
     def perturb(self, params):
@@ -111,7 +140,13 @@ class Model(object):
         """
         Gaussian sampling distribution.
         """
-        if len(params) == 4:
+        if len(params) == 11:
+            m, M, r, a, b, c, v, w, x, y, z = params
+            theta = [{'matter':m},{'Mcorr':M},{'radiation':r},
+                          {'a_ombar':a},{'b_ombar':b},{'c_ombar':c},
+                          {'v_in':v},{'w_in':w},{'x_in':x},{'y_in':y},
+                          {'z_in':z}]
+        elif len(params) == 4:
             m, M, g, z = params
             theta = [{'matter':m}, {'Mcorr':M}, {'gamma':g}, {'zeta':z}]
         elif len(params) == 3:
@@ -142,6 +177,7 @@ class Model(object):
 
 
 firstderivs_functions = [None
+#            ,'waterfall'
             ,'exotic'
 #            ,'late_intxde'
 #            ,'heaviside_late_int'
@@ -162,50 +198,56 @@ firstderivs_functions = [None
 
 for key in firstderivs_functions:
     if key:
-        if key == 'exotic':
+        if key =='waterfall':
+            params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'radiation':0.025},
+                          {'a_ombar':0.1},{'b_ombar':0.1},{'c_ombar':0.1},
+                          {'v_in':0.0},{'w_in':0.0},{'x_in':0.0},
+                          {'y_in':0.0},{'z_in':0.0}]
+        elif key == 'exotic':
             int_lim = [[-2, 0.1],[-1.5, 2.5]]
-            
+            params_dic = [{'matter':0.3},{'Mcorr':-19.3},
+                          {'gamma':0},{'zeta':0}]
         elif key == 'late_intxde':
             int_lim = [[-2, 0.1]]
-            
+            params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'gamma':0}]
         elif key == 'heaviside_late_int':
             int_lim = [[-1.45, 0.1]]
-            
+            params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'gamma':0}]
         elif key == 'late_int':
             int_lim = [[-15, 0.1]]
-            
+            params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'gamma':0}]
         elif key == 'expgamma':
             int_lim = [[-0.1, 1.5]]
-            
+            params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'gamma':0}]
         elif key == 'txgamma':
             int_lim = [[-0.5, 0.1]]
-            
+            params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'gamma':0}]
         elif key == 'zxgamma':
             int_lim = [[-10, 0.1]]
-            
+            params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'gamma':0}]
         elif key == 'zxxgamma':
             int_lim = [[-0.1, 12]]
-            
+            params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'gamma':0}]
         elif key == 'gammaxxz':
             int_lim = [[-1, 1]]
-            
+            params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'gamma':0}]
         elif key == 'rdecay_m':
             int_lim = [[-3, 0]]
-            
+            params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'gamma':0}]
         elif key == 'rdecay':
             int_lim = [[-2, 0]]
-            
+            params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'gamma':0}]
         elif key == 'interacting':
             int_lim = [[-1.5, 0.1]]
-            
+            params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'gamma':0}]
         elif key == 'LCDM':
             int_lim = None
-        
+            params_dic = [{'matter':0.3},{'Mcorr':-19.3}]
         else:
             int_lim = [[-10,10]]
         
         # Create a model object and a sampler
-        model = Model(int_lim)
+        model = Model(int_lim, ombar_lim)
         sampler = dnest4.DNest4Sampler(model,
                                        backend=dnest4.backends.CSVBackend(".",
                                                                       sep=" "))
@@ -241,6 +283,7 @@ for key in firstderivs_functions:
             pr.enable()
         
         ti = time.time()
+        
         # Do the sampling (one iteration here = one particle save)
         for i, sample in enumerate(gen):
 #            print("# Saved {k} particles.".format(k=(i+1)))
@@ -263,26 +306,26 @@ for key in firstderivs_functions:
         
         # Histogram of parameters found by DNest4.
         array = np.loadtxt('sample.txt')
+        
+        DNest_distr = {}
+        
+        if plot:
+            hue = ['light red', 'berry', 'coral', 'amber', 'apple', 
+                        'aquamarine', 'raspberry', 'green blue', 'deep blue',
+                        'emerald', 'blue violet', 'dark violet', 'yellow orange']              
+            ndim = len(array[0,:])            
+            for i in range(ndim):
+                for key in params_dic[i]:
+                    plt.figure()
+                    plt.title(key)
+                    plt.hist(array[:,i], color='xkcd:'+hue[i])
+                    distribution = array[:,i]
+                    # Standard deviation and mean of the DNest distribution.
+                    DNest_distr[key+'_sd'] = np.std(distribution)
+                    DNest_distr[key+'_mean'] = np.mean(distribution)
+                    DNest_distr[key] = array[:,i]
+        plt.show()
 
-        plt.figure()
-        plt.title('matter')
-        plt.hist(array[:,0])
-    
-        plt.figure()
-        plt.title('Mcorr')
-        plt.hist(array[:,1])
-           
-        if key != 'LCDM':                
-            plt.figure()
-            plt.title('gamma')
-            plt.hist(array[:,2])
-            
-            if key == 'exotic':
-                plt.figure()
-                plt.title('zeta')
-                plt.hist(array[:,3])
-        plt.show() 
-           
         # Run the postprocessing
         info = dnest4.postprocess()
         

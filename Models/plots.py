@@ -14,7 +14,7 @@ import time
 from results import load
 
 
-def stat(hue, var, var_true, var_name, slnprob, zpicks, 
+def stat_emcee(hue, var, var_true, var_name, slnprob, zpicks, 
           mag, sigma, nsteps, nwalkers, save_path, firstderivs_key):
     
     initial = var_name.lower()[:1]
@@ -72,6 +72,63 @@ def stat(hue, var, var_true, var_name, slnprob, zpicks,
     
     return
 
+def stat_DNest(hue, var, var_true, var_name, slnprob, zpicks, 
+          mag, sigma, nsteps, nwalkers, save_path, firstderivs_key):
+    
+    initial = var_name.lower()[:1]
+    name_true = var_name[:1] + '_true'
+    hue_name = hue
+    hue = 'xkcd:'+hue
+    
+    # Marginalised distribution histogram.
+    plt.figure()
+#    plt.xlabel(r'$\{}$'.format(name_l))
+    plt.xlabel(var_name)
+    plt.title('model: '+firstderivs_key+'\n Marginalised distribution of '
+              +var_name+' \n nsteps: '+str(nsteps)+', noise: '+str(sigma)
+              +', npoints: '+str(len(zpicks))+' '+firstderivs_key)
+    plt.hist(var, 50, facecolor=hue)
+    stamp = str(int(time.time()))
+    filename = str(stamp)+'_'+initial+'_mhist__nsteps_'+str(nsteps) \
+    +'_nwalkers_'+str(nwalkers)+'_noise_'+str(sigma) \
+    +'_numpoints_'+str(len(zpicks))+'.png'
+    filename = os.path.join(save_path, filename)
+    plt.savefig(filename)
+    
+    # Walker steps.
+    plt.figure()
+    plt.xlabel(var_name)
+    plt.title('model: '+firstderivs_key+'\n lnprobability of '+var_name
+              +' \n nsteps: '+str(nsteps)+', noise: '+str(sigma)
+              +', npoints: '+str(len(zpicks)))
+    plt.plot(var, slnprob, '.', color=hue)
+    stamp = str(int(time.time()))
+    filename = str(stamp)+'_'+initial+'_steps__nsteps_'+str(nsteps) \
+    +'_nwalkers_'+str(nwalkers)+'_noise_'+str(sigma) \
+    +'_numpoints_'+str(len(zpicks))+'.png'
+    filename = os.path.join(save_path, filename)
+    plt.savefig(filename)
+    
+    # Chains.
+    plt.figure()
+    plt.xlabel('step number')
+#    plt.ylabel(r'$\{}$'.format(name_l))
+    plt.ylabel(var_name)
+    plt.title('model: '+firstderivs_key+'\n flatchains, '+name_true+
+              ' in '+hue_name+' \n nsteps: '+str(nsteps)+', noise: '
+              +str(sigma)+', npoints: '+str(len(zpicks)))
+    plt.plot(var.T, '-', color='k', alpha=0.3)
+    plt.axhline(var_true, color=hue)
+    stamp = str(int(time.time()))
+    filename = str(stamp)+'_'+initial+'_chain__nsteps_'+str(nsteps) \
+    +'_nwalkers_'+str(nwalkers)+'_noise_'+str(sigma) \
+    +'_numpoints_'+str(len(zpicks))+'.png'
+    filename = os.path.join(save_path, filename)
+    plt.savefig(filename)
+    
+    plt.show(block=False)
+    
+    return
 
 def precise_runs(firstderivs_key, params_dic, p, x):
     '''
