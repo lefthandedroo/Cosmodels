@@ -46,7 +46,6 @@ def lnprior(theta, key):
         0.0 if all conditions on theta values are met;
         -np.inf if theta values are outside of prior.
     '''
-    
     Mcorr_min, Mcorr_max = -20, -18
      
     if (0 < theta[0] < 1 or theta[0] == 1):

@@ -43,11 +43,9 @@ data = np.stack((mag,x1,colour,zpicks), axis=0)
 data.sort(axis=-1)
 
 mag = data[0]
-x1 = data[1]
-colour = data[2]
 zpicks = data[3]
 zpicks = zpicks.tolist()
-data_dict = {'mag':mag, 'x1':x1, 'colour':colour, 'zpicks':zpicks}
+data_dict = {'mag':mag, 'zpicks':zpicks}
 
 class Model(object):
     """

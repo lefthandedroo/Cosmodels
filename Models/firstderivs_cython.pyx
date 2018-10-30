@@ -65,7 +65,7 @@ def waterfall(double[:] v, redshifts, in_terms, double H0):
     cdef double Hz = H0 * (ombar_r + ombar_m 
                            + ombar_a + ombar_b + ombar_c 
                            + ombar_de)**(0.5)
-        
+
     if math.isnan(Hz):
         print('waterfall')
         print('z = %s, Hz = %s, in_terms = %s'% (z, Hz, in_terms))
