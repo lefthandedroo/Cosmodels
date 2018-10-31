@@ -17,11 +17,11 @@ import stats
 import plots
 
 # Number of emcee steps.
-nsteps = 1000
+nsteps = 10000
 
 # Statistical parameteres of noise:
 mu = 0.0            # mean
-sigma = 0.07        # standard deviation
+sigma = 0.07        # standard deviation 0.07
 
 # Pantheon data:
 dataname = './data/lcparam_full_long.txt'
@@ -44,6 +44,18 @@ zpicks = data[3]
 zpicks = zpicks.tolist()
 data_dic = {'mag':mag, 'zpicks':zpicks}
 
+# Plot one model.
+zpicks[-1] = 10
+params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'radiation':0.025},
+              {'a_ombar':0.0},{'b_ombar':0.0},{'c_ombar':0.0},
+              {'v_in':0},{'w_in':0},{'x_in':0},{'y_in':0},{'z_in':0}]
+#params_dic = [{'matter':0.155},{'Mcorr':-19.3},{'radiation':0.004},
+#              {'a_ombar':0.06},{'b_ombar':0.59},{'c_ombar':0.56},
+#              {'v_in':-377},{'w_in':-2478509},{'x_in':-68248},
+#              {'y_in':1872123},{'z_in':338677}]
+
+datasim.magn_plot(params_dic, data_dic, 'waterfall')
+
 #g1, g2, g3 = 0.0, 0.2, 0.3
 #z1, z2, z3 = 0.0, -0.2, -0.4
 ## Compare param evolution for 3 models, plotting on the same axis.
@@ -59,8 +71,8 @@ data_dic = {'mag':mag, 'zpicks':zpicks}
 firstderivs_functions = [None
             ,'waterfall'
 #            ,'rainbow'
-            ,'exotic'
-            ,'late_intxde'
+#            ,'exotic'
+#            ,'late_intxde'
 #            ,'heaviside_late_int'
 #            ,'late_int'
 #            ,'expgamma'
@@ -74,7 +86,7 @@ firstderivs_functions = [None
 #            ,'rdecay_mxde'
 #            ,'rdecay'               
 #            ,'interacting'
-            ,'LCDM'
+#            ,'LCDM'
              ]
 
 def modelcheck():    
@@ -136,7 +148,7 @@ def emcee():
 
     return
 
-emcee()
+#emcee()
 
 def errorvsdatasize():
     

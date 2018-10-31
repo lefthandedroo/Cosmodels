@@ -9,7 +9,7 @@ import random
 import numpy as np
 import zodesolve
 import tools
-
+import matplotlib.pyplot as plt
 
 def redshift_picks(zmin, zmax, n):
     """
@@ -168,3 +168,80 @@ def makensavemagnz(params, data, firstderivs_key, mu, sigma, filename):
     pickle.dump(output, open(save_path, 'wb'))
     
     return
+
+def magn_plot(params, data, firstderivs_key, plot_key=False):
+    """
+    Finding matter density m, corrected absolute mag M, interaction gamma.
+    
+    Takes in:
+        params = list of dictionaries {string:value} of names and 
+        starting values of parameters to be emcee fitted:
+            [{'matter':int/float} = e_m(t)/ec(t0) at t=t0;
+            {'Mcorr':int/float} = corrected absolute mag M;
+            {'gamma':int/float} = interaction term;
+            {'zeta':int/float}] = interaction term;
+            ... (more)
+        data = dictionary w/
+            'colour': numpy.ndarray = SN colour;
+            'x1': numpy.ndarray = SN stretch correction as;
+            'zpicks':list of redshifts sorted in accending order;
+            'mag':list of apparent magnitudes;
+                
+        firstderivs_key = string, indicates which firstderivs to integrate;
+        plot_key = Boolean, to plot or not to plot model figures;
+    Returns:
+        mag = np.ndarray of apparent mag corresponding to input redshits.
+    """
+    zpicks = data['zpicks']
+    
+    # Corrected absolute magnitude M of SN.
+    M = params[1]['Mcorr']
+    
+    dlpc, plot_var = zodesolve.zodesolve(params, zpicks, firstderivs_key)
+    
+    # Calculating apparent magnitudes of supernovae at the simulated
+    # luminosity distances using the distance modulus formula.
+    mag = 5 * np.log10(dlpc/10) + M
+    z = plot_var['z']
+    plt.figure()
+    plt.title('ombar_m vs redshift')
+    plt.plot(plot_var['z'], plot_var['ombar_m'])
+    plt.figure()
+    plt.title('ombar_r vs redshift')
+    plt.plot(plot_var['z'], plot_var['ombar_r'])
+    plt.figure()
+    plt.title('a_ombar vs redshift')
+    plt.plot(plot_var['z'], plot_var['a_ombar'])
+    plt.figure()
+    plt.title('b_ombar vs redshift')
+    plt.plot(plot_var['z'], plot_var['b_ombar'])
+    plt.figure()
+    plt.title('c_ombar vs redshift')
+    plt.plot(plot_var['z'], plot_var['c_ombar'])
+    plt.figure()
+    plt.title('ombar_de vs redshift')
+    plt.plot(plot_var['z'], plot_var['ombar_de'])
+    
+    sum_om = plot_var['ombar_m'] + plot_var['ombar_r'] + plot_var['a_ombar']+ plot_var['b_ombar'] + plot_var['c_ombar'] + plot_var['c_ombar'] +plot_var['ombar_de']
+    om_m = plot_var['ombar_m']/sum_om
+    om_r = plot_var['ombar_r']/sum_om
+    om_a = plot_var['a_ombar']/sum_om
+    om_b = plot_var['b_ombar']/sum_om
+    om_c = plot_var['c_ombar']/sum_om
+    om_de = plot_var['ombar_de']/sum_om
+    
+    plt.figure()
+    plt.plot(z, om_m)
+    plt.plot(z, om_r)
+    plt.plot(z, om_a)
+    plt.plot(z, om_b)
+    plt.plot(z, om_c)
+    plt.plot(z, om_de)
+    plt.show()
+    
+    if plot_key:
+        # Plotting evolution of parameters in the model.
+        import plots
+        plots.modelcheck(mag, zpicks, plot_var, firstderivs_key)
+        
+    return mag

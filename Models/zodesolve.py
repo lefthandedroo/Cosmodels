@@ -78,9 +78,9 @@ def zodesolve(params, zpicks, firstderivs_key):
             ombar_de0 = ombar_de0 -ombar_c -ombar_d -ombar_e -ombar_f -ombar_g
             ombar_de0 = ombar_de0 -ombar_h - ombar_i
         elif firstderivs_key == 'waterfall':
-            ombar_a = params[3].get('ombar_a', 0)
-            ombar_b = params[4].get('ombar_b', 0)
-            ombar_c = params[5].get('ombar_c', 0)
+            ombar_a = params[3].get('a_ombar', 0)
+            ombar_b = params[4].get('b_ombar', 0)
+            ombar_c = params[5].get('c_ombar', 0)
             ombar_de0 = rho_c0/rho_c0 -ombar_m0 -ombar_r0 -ombar_a -ombar_b -ombar_c
 
     # Packing up interaction terms:
@@ -119,6 +119,7 @@ def zodesolve(params, zpicks, firstderivs_key):
     else:
         v0 = [t0, a0, ombar_m0, ombar_de0, z0, dl0]
     
+
     # Call the ODE solver. 
     vsol = odeint(firstderivs_function, v0, zpicks, args=(int_terms,H0), 
                   atol=1.0e-8, rtol=1.0e-6)      
@@ -127,10 +128,13 @@ def zodesolve(params, zpicks, firstderivs_key):
     plot_var['t'] = vsol[1:,0]
     plot_var['a'] = vsol[1:,1]
     plot_var['ombar_m'] = vsol[1:,2]        
-    if firstderivs_key == 'exotic' or firstderivs_key == 'rainbow' or firstderivs_key == 'waterfall':  
+    if firstderivs_key == 'exotic' or firstderivs_key == 'waterfall':  
         plot_var['ombar_r'] = vsol[1:,3]
         plot_var['ombar_r0'] = ombar_r0
-
+        if firstderivs_key == 'waterfall':
+            plot_var['a_ombar'] = vsol[1:,4]
+            plot_var['b_ombar'] = vsol[1:,5]
+            plot_var['c_ombar'] = vsol[1:,6]
     plot_var['ombar_de0'] = ombar_de0
     plot_var['ombar_de'] = vsol[1:,-3]          
     plot_var['z'] = vsol[1:,-2]    

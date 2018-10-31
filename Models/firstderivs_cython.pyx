@@ -56,31 +56,31 @@ def waterfall(double[:] v, redshifts, in_terms, double H0):
     cdef double z = v[8]
     cdef double dl = v[9]
     
-    cdef double in_a = in_terms[0]
-    cdef double in_b = in_terms[1]
-    cdef double in_c = in_terms[2]
-    cdef double in_d = in_terms[3]
-    cdef double in_e = in_terms[4]
+    cdef double in_v = in_terms[0]
+    cdef double in_w = in_terms[1]
+    cdef double in_x = in_terms[2]
+    cdef double in_y = in_terms[3]
+    cdef double in_z = in_terms[4]
         
     cdef double Hz = H0 * (ombar_r + ombar_m 
                            + ombar_a + ombar_b + ombar_c 
                            + ombar_de)**(0.5)
 
-    if math.isnan(Hz):
-        print('waterfall')
-        print('z = %s, Hz = %s, in_terms = %s'% (z, Hz, in_terms))
-        print('ombar_r = ',ombar_r,'ombar_m = ',ombar_m,
-              'ombar_a = ',ombar_a,'ombar_b = ',ombar_b,
-              'ombar_c = ',ombar_c,'ombar_de = ',ombar_de)
+#    if math.isnan(Hz):
+    print('waterfall')
+    print('z = %s, Hz = %s, in_terms = %s'% (z, Hz, in_terms))
+    print('ombar_r = ',ombar_r,'ombar_m = ',ombar_m,
+          'ombar_a = ',ombar_a,'ombar_b = ',ombar_b,
+          'ombar_c = ',ombar_c,'ombar_de = ',ombar_de)
     
     cdef double dtdz = -1.0/((1.0+z) * Hz)
     cdef double dadz = -(1.0+z)**(-2.0)
-    cdef double domdz = 3.0*ombar_m /(1.0+z) +in_a * ombar_m * ombar_r /(1.0+z) /Hz                                         # w = 0
-    cdef double dordz = 4.0*ombar_r /(1.0+z) -in_a * ombar_m * ombar_r /(1.0+z) /Hz +in_b * ombar_r * ombar_a /(1.0+z) /Hz  # w = 1/3
-    cdef double doadz = 2.7*ombar_a /(1.0+z) -in_b * ombar_r * ombar_a /(1.0+z) /Hz +in_c * ombar_a * ombar_b /(1.0+z) /Hz  # w = -0.1
-    cdef double dobdz = 1.5*ombar_b /(1.0+z) -in_c * ombar_a * ombar_b /(1.0+z) /Hz +in_d * ombar_b * ombar_c /(1.0+z) /Hz  # w = -0.5
-    cdef double docdz = 0.6*ombar_c /(1.0+z) -in_d * ombar_b * ombar_c /(1.0+z) /Hz +in_e * ombar_c * ombar_de /(1.0+z) /Hz # w = -0.8
-    cdef double dodedz = -in_e * ombar_c * ombar_de /(1.0+z) /Hz                                                            # w = -1
+    cdef double domdz = 3.0*ombar_m /(1.0+z) +in_v * ombar_m * ombar_r /(1.0+z) /Hz                                         # w = 0
+    cdef double dordz = 4.0*ombar_r /(1.0+z) -in_v * ombar_m * ombar_r /(1.0+z) /Hz +in_w * ombar_r * ombar_a /(1.0+z) /Hz  # w = 1/3
+    cdef double doadz = 2.7*ombar_a /(1.0+z) -in_w * ombar_r * ombar_a /(1.0+z) /Hz +in_x * ombar_a * ombar_b /(1.0+z) /Hz  # w = -0.1
+    cdef double dobdz = 1.5*ombar_b /(1.0+z) -in_x * ombar_a * ombar_b /(1.0+z) /Hz +in_y * ombar_b * ombar_c /(1.0+z) /Hz  # w = -0.5
+    cdef double docdz = 0.6*ombar_c /(1.0+z) -in_y * ombar_b * ombar_c /(1.0+z) /Hz +in_z * ombar_c * ombar_de /(1.0+z) /Hz # w = -0.8
+    cdef double dodedz = -in_z * ombar_c * ombar_de /(1.0+z) /Hz                                                            # w = -1
     cdef double ddldz = 1.0/Hz
     
     # first derivatives of functions I want to find:

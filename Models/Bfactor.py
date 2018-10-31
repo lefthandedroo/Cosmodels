@@ -94,22 +94,22 @@ class Model(object):
             c_ombar = rng.rand()
                          
         if int_lim:
-            
-            if len(int_lim) == 1:
-            g = 1E3*rng.rand()
-            g = dnest4.wrap(g, self.g_min, self.g_max)
-            return np.array([m, M, g])
-        
-            if len(int_lim) == 2:
-                z = 1E3*rng.rand()
-                z = dnest4.wrap(z, self.z_min, self.z_max)
-                return np.array([m, M, g, z])
-            
-            elif len(int_lim) == 5:
-                z = 1E3*rng.rand()
-                z = dnest4.wrap(z, self.z_min, self.z_max)
-                return np.array([m, M, g, z])
-                          
+            for i in range (len(int_lim)):
+                if i == 1:
+                    g = 1E3*rng.rand()
+                    g = dnest4.wrap(g, self.g_min, self.g_max)
+                    return np.array([m, M, radiation, a_ombar, b_ombar, c_ombar, g])
+                
+                    if len(int_lim) == 2:
+                        z = 1E3*rng.rand()
+                        z = dnest4.wrap(z, self.z_min, self.z_max)
+                        return np.array([m, M, g, z])
+                    
+                    elif len(int_lim) == 5:
+                        z = 1E3*rng.rand()
+                        z = dnest4.wrap(z, self.z_min, self.z_max)
+                        return np.array([m, M, g, z])
+                              
         return np.array([m, M])
 
     def perturb(self, params):
