@@ -115,6 +115,12 @@ def emcee():
         if test_key:
             print('---',test_key)
             if test_key == 'waterfall':
+                miss = {'Mcorr':-19.3}
+                fluids = {'matter':0.3, 'radiation':0.025,
+                          'a_ombar':0.1, 'b_ombar':0.1, 'c_ombar':0.1}
+                terms = {'v_in':0.0, 'w_in':0.0, 'x_in':0.0,
+                         'y_in':0.0,'z_in':0.0}
+
                 params_dic = [{'matter':0.3},{'Mcorr':-19.3},
                               {'radiation':0.025},{'a_ombar':0.1},
                               {'b_ombar':0.1},{'c_ombar':0.1},
