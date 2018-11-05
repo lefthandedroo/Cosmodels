@@ -79,8 +79,8 @@ data_dic = {'mag':mag, 'zpicks':zpicks}
 #    ['no interaction','$\gamma$='+str(g2),'$\gamma$='+str(g3)+' $\zeta$='+str(z3)])
 
 firstderivs_functions = [None
-            ,'waterfall'
-            ,'exotic'
+#            ,'waterfall'
+#            ,'exotic'
 #            ,'late_intxde'
 #            ,'heaviside_late_int'
 #            ,'late_int'
@@ -94,7 +94,7 @@ firstderivs_functions = [None
 #            ,'rdecay_de'
 #            ,'rdecay_mxde'
 #            ,'rdecay'
-            ,'interacting'
+#            ,'interacting'
             ,'LCDM'
              ]
 
