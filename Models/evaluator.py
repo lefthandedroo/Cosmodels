@@ -21,7 +21,7 @@ nsteps = 10000
 
 # Statistical parameteres of noise:
 # mean, standard deviation
-mu, sigma = 0.0, 0.0
+mu, sigma = 0.0, 0.07 # sigma != 0
 
 # Pantheon data:
 dataname = './data/lcparam_full_long.txt'
@@ -79,9 +79,9 @@ data_dic = {'mag':mag, 'zpicks':zpicks}
 #    ['no interaction','$\gamma$='+str(g2),'$\gamma$='+str(g3)+' $\zeta$='+str(z3)])
 
 firstderivs_functions = [None
-#            ,'waterfall'
-#            ,'exotic'
-#            ,'late_intxde'
+            ,'waterfall'
+            ,'exotic'
+            ,'late_intxde'
 #            ,'heaviside_late_int'
 #            ,'late_int'
 #            ,'expgamma'
