@@ -46,7 +46,7 @@ def gnoise(mag, mu, sigma):
     return mag
 
 
-def magn(names, values, data, model_key, plot_key=False):
+def magn(params, data, firstderivs_key, plot_key=False):
     """
     Finding matter density m, corrected absolute mag M, interaction gamma.
 
@@ -64,16 +64,17 @@ def magn(names, values, data, model_key, plot_key=False):
             'zpicks':list of redshifts sorted in accending order;
             'mag':list of apparent magnitudes;
 
-        model = string, indicates which firstderivs to integrate;
+        firstderivs_key = string, indicates which firstderivs to integrate;
         plot_key = Boolean, to plot or not to plot model figures;
     Returns:
         mag = np.ndarray of apparent mag corresponding to input redshits.
     """
     zpicks = data['zpicks']
-    # Corrected absolute magnitude M of SN.
-    M = values[0]
 
-    dlpc, plot_var = zodesolve.zodesolve(names, values, zpicks, model_key)
+    # Corrected absolute magnitude M of SN.
+    M = params[1]['Mcorr']
+
+    dlpc, plot_var = zodesolve.zodesolve(params, zpicks, firstderivs_key)
 
     # Calculating apparent magnitudes of supernovae at the simulated
     # luminosity distances using the distance modulus formula.
@@ -82,26 +83,26 @@ def magn(names, values, data, model_key, plot_key=False):
     if plot_key:
         # Plotting evolution of parameters in the model.
         import plots
-        plots.modelcheck(mag, zpicks, plot_var, model_key)
+        plots.modelcheck(mag, zpicks, plot_var, firstderivs_key)
 
     return mag
 
 
-def noisy_mag(mu, sigma, params, data, model_key):
+def noisy_mag(mu, sigma, params, data, firstderivs_key):
 
-    model = magn(params, data, model_key)
+    model = magn(params, data, firstderivs_key)
     model = np.asarray(model)
     mag = gnoise(model, mu, sigma)
 
     return mag
 
 
-def model_comparison(params, zpicks, model_key, label):
+def model_comparison(params, zpicks, firstderivs_key, label):
     """
     Takes in:
             params = list of 3 lists of dictionaries with model parameters;
             zpicks = list of redshifts to integrate over, in accending order;
-            model_key = list of 3 strings, firstderivs for each params;
+            firstderivs_key = list of 3 strings, firstderivs for each params;
     Action:
         Plots parameter evolution for different params/models specified.
 
@@ -111,12 +112,10 @@ def model_comparison(params, zpicks, model_key, label):
     plot_var_list = []
 
     for i in range(3):
-        names, values = params[i]
-
-        dlpc, plot_var = zodesolve.zodesolve(names, values, zpicks, model_key[i])
+        dlpc, plot_var = zodesolve.zodesolve(params[i], zpicks, firstderivs_key[i])
 
         # Corrected absolute magnitude M of SN.
-        M = values[0]
+        M = params[i][1]['Mcorr']
 
         # Apparent mags of SN at the luminosity
         # distances using the distance modulus formula.
@@ -125,11 +124,11 @@ def model_comparison(params, zpicks, model_key, label):
         plot_var['mag'] = mag
         plot_var_list.append(plot_var)
 
-    plots.multi_modelcheck(zpicks, model_key, plot_var_list, label)
+    plots.multi_model_plot(zpicks, firstderivs_key, plot_var_list, label)
     return
 
 
-def makensavemagnz(params, data, model_key, mu, sigma, filename):
+def makensavemagnz(params, data, firstderivs_key, mu, sigma, filename):
     '''
     Takes in:
 
@@ -158,7 +157,7 @@ def makensavemagnz(params, data, model_key, mu, sigma, filename):
     '''
     zpicks = data['zpicks']
 
-    mag = noisy_mag(mu, sigma, params, data, model_key)
+    mag = noisy_mag(mu, sigma, params, data, firstderivs_key)
 
     output = mag, zpicks
 
@@ -170,7 +169,7 @@ def makensavemagnz(params, data, model_key, mu, sigma, filename):
 
     return
 
-def magn_plot(names, values, data, model_key, plot_key=False):
+def magn_plot(params, data, firstderivs_key, plot_key=False):
     """
     Finding matter density m, corrected absolute mag M, interaction gamma.
 
@@ -196,15 +195,15 @@ def magn_plot(names, values, data, model_key, plot_key=False):
     zpicks = data['zpicks']
 
     # Corrected absolute magnitude M of SN.
-    M = values[0]
+    M = params[1]['Mcorr']
 
-    dlpc, plot_var = zodesolve.zodesolve(names, values, zpicks, model_key)
+    dlpc, plot_var = zodesolve.zodesolve(params, zpicks, firstderivs_key)
 
     # Calculating apparent magnitudes of supernovae at the simulated
     # luminosity distances using the distance modulus formula.
     mag = 5 * np.log10(dlpc/10) + M
     z = plot_var['z']
-    if model_key == 'waterfall':
+    if firstderivs_key == 'waterfall':
         plt.figure()
         plt.title(r'$\bar \Omega$ evolution in waterfall')
         plt.xlabel('redshift')
@@ -238,7 +237,7 @@ def magn_plot(names, values, data, model_key, plot_key=False):
         plt.legend()
         plt.show()
 
-    elif model_key == 'LCDM':
+    elif firstderivs_key == 'LCDM':
         plt.figure()
         plt.title(r'$\bar \Omega$ evolution in LCDM')
         plt.xlabel('redshift')
@@ -260,34 +259,9 @@ def magn_plot(names, values, data, model_key, plot_key=False):
         plt.legend()
         plt.show()
 
-    elif model_key == 'exotic':
-        plt.figure()
-        plt.title(r'$\bar \Omega$ evolution in LCDM')
-        plt.xlabel('redshift')
-        plt.ylabel(r'$\bar \Omega$')
-        plt.plot(z, plot_var['ombar_m'], label='ombar_m vs redshift')
-        plt.plot(z, plot_var['ombar_r'], label='ombar_r vs redshift')
-        plt.plot(z, plot_var['ombar_de'], label='ombar_de vs redshift')
-        plt.legend()
-
-        sum_om = plot_var['ombar_m'] + plot_var['ombar_r'] + plot_var['ombar_de']
-        om_m = plot_var['ombar_m']/sum_om
-        om_r = plot_var['ombar_r']/sum_om
-        om_de = plot_var['ombar_de']/sum_om
-
-        plt.figure()
-        plt.title(r'$\Omega$ evolution in LCDM')
-        plt.xlabel('redshift')
-        plt.ylabel(r'$\Omega$')
-        plt.plot(z, om_m, label = 'om_m')
-        plt.plot(z, om_r, label = 'om_r')
-        plt.plot(z, om_de, label = 'om_de')
-        plt.legend()
-        plt.show()
-
     if plot_key:
         # Plotting evolution of parameters in the model.
         import plots
-        plots.modelcheck(mag, zpicks, plot_var, model_key)
+        plots.modelcheck(mag, zpicks, plot_var, firstderivs_key)
 
     return mag

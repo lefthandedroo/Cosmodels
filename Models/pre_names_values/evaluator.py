@@ -20,8 +20,8 @@ import plots
 nsteps = 10000
 
 # Statistical parameteres of noise:
-# mean, standard deviation
-mu, sigma = 0.0, 0.0
+mu = 0.0            # mean
+sigma = 0.07        # standard deviation 0.07
 
 # Pantheon data:
 dataname = './data/lcparam_full_long.txt'
@@ -33,7 +33,7 @@ x1 = pantheon.x1.values
 colour = pantheon.color.values
 zpicks = pantheon.zhel.values
 
-# Stacking arrays together and sorting by accending redshift.
+# Stacking them together and sorting by accending redshift.
 data = np.stack((mag,x1,colour,zpicks), axis=0)
 data.sort(axis=-1)
 
@@ -44,43 +44,41 @@ zpicks = data[3]
 zpicks = zpicks.tolist()
 data_dic = {'mag':mag, 'zpicks':zpicks}
 
-# Plotting one model.
+# Plot one model.
 #zpicks[-6] = 5
 #zpicks[-5] = 6
 #zpicks[-4] = 7
 #zpicks[-3] = 8
 #zpicks[-2] = 9
 #zpicks[-1] = 10
-#names = ['Mcorr',
-#         'matter', 'radiation', 'a_ombar', 'b_ombar', 'c_ombar',
-#         'v_in', 'w_in', 'x_in', 'y_in', 'z_in']
-#values = np.array([-19.3,
-#                   0.3, 0.025, 0.1, 0.1, 0.1,
-#                   0.0, 0.0, 0.0, 0.0, 0.0])
-#datasim.magn_plot(names, values, data_dic, 'waterfall')
+params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'radiation':0.025},
+              {'a_ombar':0.1},{'b_ombar':0.1},{'c_ombar':0.1},
+              {'v_in':0.5},{'w_in':0.4},{'x_in':0.3},{'y_in':0.2},{'z_in':0.1}]
 
-#names = ['Mcorr',
-#         'matter', 'radiation',
-#         'gamma', 'zeta']
-#values = np.array([-19.3,
-#                   0.3, 0.025, 0.0, 0.0])
-#datasim.magn_plot(names, values, data_dic, 'exotic')
+#params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'radiation':0.0},
+#              {'a_ombar':0},{'b_ombar':0},{'c_ombar':0},
+#              {'v_in':0},{'w_in':0},{'x_in':0},{'y_in':0},{'z_in':0}]
+datasim.magn_plot(params_dic, data_dic, 'waterfall')
+
+params_dic = [{'matter':0.3},{'Mcorr':-19.3}]
+datasim.magn_plot(params_dic, data_dic, 'LCDM')
+
+#g1, g2, g3 = 0.0, 0.2, 0.3
+#z1, z2, z3 = 0.0, -0.2, -0.4
+## Compare param evolution for 3 models, plotting on the same axis.
+#p1 = [{'matter':0.3},{'Mcorr':-19.3},{'alpha':0},{'beta':0},{'gamma':g1},{'zeta':z1}]
+#p2 = [{'matter':0.3},{'Mcorr':-19.3},{'alpha':0},{'beta':0},{'gamma':g2},{'zeta':z2}]
+#p3 = [{'matter':0.3},{'Mcorr':-19.3},{'alpha':0},{'beta':0},{'gamma':g3},{'zeta':z3}]
 #
-#names = ['Mcorr', 'matter']
-#values = np.array([-19.3, 0.3])
-#datasim.magn_plot(names, values, data_dic, 'LCDM')
-
-# Compare param evolution for 3 models, plotting on the same axis.
-#g2, g3, z3 = 0.0, 0.0, 0.0
-#p1 = ['Mcorr', 'matter',], np.array([-19.3, 0.0])
-#p2 = ['Mcorr', 'matter','gamma'], np.array([-19.3, 0.3, g2])
-#p3 = ['Mcorr', 'matter', 'radiation', 'gamma', 'zeta'], np.array([-19.3, 0.3, 0.0, g3, z3])
-#datasim.model_comparison([p1, p2, p3], zpicks, ['LCDM', 'late_int', 'exotic'],
-#    ['no interaction','$\gamma$='+str(g2),'$\gamma$='+str(g3)+' $\zeta$='+str(z3)])
+#datasim.multi_modelcheck([p1, p2, p3], zpicks, ['LCDM', 'late_int', 'exotic'],
+#    ['$\gamma$='+str(g1)+' $\zeta$='+str(z1),
+#     '$\gamma$='+str(g2)+' $\zeta$='+str(z2),
+#     '$\gamma$='+str(g3)+' $\zeta$='+str(z3)])
 
 firstderivs_functions = [None
             ,'waterfall'
-            ,'exotic'
+#            ,'rainbow'
+#            ,'exotic'
 #            ,'late_intxde'
 #            ,'heaviside_late_int'
 #            ,'late_int'
@@ -94,36 +92,16 @@ firstderivs_functions = [None
 #            ,'rdecay_de'
 #            ,'rdecay_mxde'
 #            ,'rdecay'
-            ,'interacting'
-            ,'LCDM'
+#            ,'interacting'
+#            ,'LCDM'
              ]
 
 def modelcheck():
+    params_dic = [{'matter':0.3}, {'Mcorr':-19.3}, {'gamma':0.1}, {'zeta':0.2}]
 
     for test_key in firstderivs_functions:
         if test_key:
-            print('---',test_key)
-            if test_key == 'waterfall':
-                names = ['Mcorr',
-                         'matter', 'radiation', 'a_ombar', 'b_ombar', 'c_ombar',
-                         'v_in', 'w_in', 'x_in', 'y_in', 'z_in']
-                values = np.array([-19.3,
-                                   0.3, 0.025, 0.1, 0.1, 0.1,
-                                   0.0, 0.0, 0.0, 0.0, 0.0])
-            elif test_key == 'exotic':
-                names = ['Mcorr', 'matter', 'radiation', 'gamma', 'zeta']
-                values = np.array([-19.3, 0.3, 0.025, 0.0, 0.0])
-            elif test_key == 'LCDM':
-                names = ['Mcorr', 'matter']
-                values = np.array([-19.3, 0.3])
-            else:
-                names = ['Mcorr', 'matter','gamma']
-                values = np.array([-19.3, 0.3, 0.0])
-
-            # Making sure number of parameters matches number of names given:
-            if len(names) != len(values):
-                raise ValueError('len(names) != len(values)')
-            datasim.magn(names, values, data_dic, test_key, plot_key=True)
+            datasim.magn(params_dic, data_dic, test_key, plot_key=True)
     return
 
 #modelcheck()
@@ -137,25 +115,29 @@ def emcee():
         if test_key:
             print('---',test_key)
             if test_key == 'waterfall':
-                names = ['Mcorr',
-                         'matter', 'radiation', 'a_ombar', 'b_ombar', 'c_ombar',
-                         'v_in', 'w_in', 'x_in', 'y_in', 'z_in']
-                values = np.array([-19.3,
-                                   0.3, 0.025, 0.1, 0.1, 0.1,
-                                   0.0, 0.0, 0.0, 0.0, 0.0])
-            elif test_key == 'exotic':
-                names = ['Mcorr', 'matter', 'radiation', 'gamma', 'zeta']
-                values = np.array([-19.3, 0.3, 0.025, 0.0, 0.0])
-            elif test_key == 'LCDM':
-                names = ['Mcorr', 'matter']
-                values = np.array([-19.3, 0.3])
-            else:
-                names = ['Mcorr', 'matter','gamma']
-                values = np.array([-19.3, 0.3, 0.0])
+#                misc = {'Mcorr':-19.3}
+#                fluids = {'matter':0.3, 'radiation':0.025,
+#                          'a_ombar':0.1, 'b_ombar':0.1, 'c_ombar':0.1}
+#                terms = {'v_in':0.0, 'w_in':0.0, 'x_in':0.0,
+#                         'y_in':0.0,'z_in':0.0}
 
-            # Making sure number of parameters matches number of names given:
-            if len(names) != len(values):
-                raise ValueError('len of parameters names and values are not matching')
+                params_dic = [{'matter':0.3},{'Mcorr':-19.3},
+                              {'radiation':0.025},{'a_ombar':0.1},
+                              {'b_ombar':0.1},{'c_ombar':0.1},
+                              {'v_in':0.0},{'w_in':0.0},{'x_in':0.0},
+                              {'y_in':0.0},{'z_in':0.0}]
+            elif test_key == 'rainbow':
+                params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'radiation':0.025},
+                              {'a_ombar':0.0},{'b_ombar':0.0},{'c_ombar':0.0},
+                              {'d_ombar':0.0},{'e_ombar':0.0},{'f_ombar':0.0},
+                              {'g_ombar':0.0},{'h_ombar':0.0},{'i_ombar':0.0},
+                              {'q_in':0.0},{'r_in':0.0},{'s_in':0.0},{'t_in':0.0},
+                              {'u_in':0.0}]
+            elif test_key == 'exotic':
+                params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'gamma':0},{'zeta':0}]
+            else:
+                params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'gamma':0}]
+
 
             # Creating a folder for saving output.
             save_path = './results_emcee/'+str(int(time.time()))+'_'+test_key
@@ -166,7 +148,7 @@ def emcee():
             timet0 = time.time()
 
             # emcee parameter search.
-            propert, sampler = stats.stats(names, values, data_dic, sigma,
+            propert, sampler = stats.stats(params_dic, data_dic, sigma,
                                            nsteps, save_path, test_key, plot=1)
             # Time taken by script.
             timet1=time.time()
@@ -179,7 +161,7 @@ def emcee():
 
     return
 
-emcee()
+#emcee()
 
 def errorvsdatasize():
 
