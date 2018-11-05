@@ -30,7 +30,7 @@ firstderivs_functions = {
         'LCDM':f.LCDM
         }
 
-def zodesolve(names, values, zpicks, model):
+def zodesolve(names, values, zpicks, model, plot_key):
     """
     Takes in:
         names = list of strings, names of parameters to be fitted;
@@ -39,7 +39,6 @@ def zodesolve(names, values, zpicks, model):
         model = string, name of model being tested.
 
     """
-    plot_var = {}
 
     # Inserting 0 at the front of redshifts to use initial conditions.
     zpicks = [0.0] + zpicks
@@ -67,9 +66,6 @@ def zodesolve(names, values, zpicks, model):
     else:
         index = 2
 
-    for i in range(index,len(values)):
-        plot_var[names[i]] = values[i]
-
     int_terms = values[index:]
     fluids = values[1:index]
     ombar_de0 = rho_c0/rho_c0 - np.sum(fluids)
@@ -87,23 +83,29 @@ def zodesolve(names, values, zpicks, model):
     # Call the ODE solver.
     vsol = odeint(firstderivs_function, v0, zpicks, args=(int_terms,H0),
                   atol=1.0e-8, rtol=1.0e-6)
+    z = vsol[1:,-2]
+    dl = vsol[1:,-1] * (1+z)  # in units of dl*(H0/c)
+    dlpc = dl * c_over_H0    # dl in parsecs (= vsol[dl] * c/H0)
 
-    # Separate results into their own arrays:
-    plot_var['t'] = vsol[1:,0]
-    plot_var['a'] = vsol[1:,1]
-    plot_var['ombar_m'] = vsol[1:,2]
-    if model == 'exotic' or model == 'waterfall':
-        plot_var['ombar_r'] = vsol[1:,3]
-        plot_var['ombar_r0'] = values[2]
-        if model == 'waterfall':
-            plot_var['a_ombar'] = vsol[1:,4]
-            plot_var['b_ombar'] = vsol[1:,5]
-            plot_var['c_ombar'] = vsol[1:,6]
-    plot_var['ombar_de0'] = ombar_de0
-    plot_var['ombar_de'] = vsol[1:,-3]
-    plot_var['z'] = vsol[1:,-2]
-    plot_var['dl'] = vsol[1:,-1] * (1+plot_var['z'])  # in units of dl*(H0/c)
-    dlpc = plot_var['dl'] * c_over_H0    # dl in parsecs (= vsol[dl] * c/H0)
+    plot_var = {}
+    if plot_key:
+        for i in range(index,len(values)):
+            plot_var[names[i]] = values[i]
+        # Separate results into their own arrays:
+        plot_var['t'] = vsol[1:,0]
+        plot_var['a'] = vsol[1:,1]
+        plot_var['ombar_m'] = vsol[1:,2]
+        if model == 'exotic' or model == 'waterfall':
+            plot_var['ombar_r'] = vsol[1:,3]
+            plot_var['ombar_r0'] = values[2]
+            if model == 'waterfall':
+                plot_var['a_ombar'] = vsol[1:,4]
+                plot_var['b_ombar'] = vsol[1:,5]
+                plot_var['c_ombar'] = vsol[1:,6]
+        plot_var['ombar_de0'] = ombar_de0
+        plot_var['ombar_de'] = vsol[1:,-3]
+        plot_var['z'] = vsol[1:,-2]
+        plot_var['dl'] = vsol[1:,-1] * (1+z)
 
 
     return dlpc, plot_var

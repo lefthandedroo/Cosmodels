@@ -73,7 +73,7 @@ def magn(names, values, data, model_key, plot_key=False):
     # Corrected absolute magnitude M of SN.
     M = values[0]
 
-    dlpc, plot_var = zodesolve.zodesolve(names, values, zpicks, model_key)
+    dlpc, plot_var = zodesolve.zodesolve(names, values, zpicks, model_key, plot_key)
 
     # Calculating apparent magnitudes of supernovae at the simulated
     # luminosity distances using the distance modulus formula.
@@ -96,7 +96,7 @@ def noisy_mag(mu, sigma, params, data, model_key):
     return mag
 
 
-def model_comparison(params, zpicks, model_key, label):
+def model_comparison(params, zpicks, model_key, label, plot_key=False):
     """
     Takes in:
             params = list of 3 lists of dictionaries with model parameters;
@@ -113,7 +113,7 @@ def model_comparison(params, zpicks, model_key, label):
     for i in range(3):
         names, values = params[i]
 
-        dlpc, plot_var = zodesolve.zodesolve(names, values, zpicks, model_key[i])
+        dlpc, plot_var = zodesolve.zodesolve(names, values, zpicks, model_key[i], plot_key)
 
         # Corrected absolute magnitude M of SN.
         M = values[0]
@@ -198,7 +198,7 @@ def magn_plot(names, values, data, model_key, plot_key=False):
     # Corrected absolute magnitude M of SN.
     M = values[0]
 
-    dlpc, plot_var = zodesolve.zodesolve(names, values, zpicks, model_key)
+    dlpc, plot_var = zodesolve.zodesolve(names, values, zpicks, model_key, plot_key)
 
     # Calculating apparent magnitudes of supernovae at the simulated
     # luminosity distances using the distance modulus formula.

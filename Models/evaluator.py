@@ -19,8 +19,7 @@ import plots
 # Number of emcee steps.
 nsteps = 10000
 
-# Statistical parameteres of noise:
-# mean, standard deviation
+# Statistical parameteres of noise: mean, standard deviation.
 mu, sigma = 0.0, 0.07 # sigma != 0
 
 # Pantheon data:
@@ -51,30 +50,24 @@ data_dic = {'mag':mag, 'zpicks':zpicks}
 #zpicks[-3] = 8
 #zpicks[-2] = 9
 #zpicks[-1] = 10
-#names = ['Mcorr',
-#         'matter', 'radiation', 'a_ombar', 'b_ombar', 'c_ombar',
-#         'v_in', 'w_in', 'x_in', 'y_in', 'z_in']
-#values = np.array([-19.3,
-#                   0.3, 0.025, 0.1, 0.1, 0.1,
-#                   0.0, 0.0, 0.0, 0.0, 0.0])
+names = ['Mcorr','matter', 'radiation', 'a_ombar', 'b_ombar', 'c_ombar',
+         'v_in', 'w_in', 'x_in', 'y_in', 'z_in']
+values = np.array([-19.3,0.3, 0.025, 0.1, 0.1, 0.1,0.0, 0.0, 0.0, 0.0, 0.0])
 #datasim.magn_plot(names, values, data_dic, 'waterfall')
 
-#names = ['Mcorr',
-#         'matter', 'radiation',
-#         'gamma', 'zeta']
-#values = np.array([-19.3,
-#                   0.3, 0.025, 0.0, 0.0])
+names = ['Mcorr','matter', 'radiation','gamma', 'zeta']
+values = np.array([-19.3,0.3, 0.025, 0.0, 0.0])
 #datasim.magn_plot(names, values, data_dic, 'exotic')
-#
-#names = ['Mcorr', 'matter']
-#values = np.array([-19.3, 0.3])
+
+names = ['Mcorr', 'matter']
+values = np.array([-19.3, 0.3])
 #datasim.magn_plot(names, values, data_dic, 'LCDM')
 
 # Compare param evolution for 3 models, plotting on the same axis.
-#g2, g3, z3 = 0.0, 0.0, 0.0
-#p1 = ['Mcorr', 'matter',], np.array([-19.3, 0.0])
-#p2 = ['Mcorr', 'matter','gamma'], np.array([-19.3, 0.3, g2])
-#p3 = ['Mcorr', 'matter', 'radiation', 'gamma', 'zeta'], np.array([-19.3, 0.3, 0.0, g3, z3])
+g2, g3, z3 = 0.0, 0.0, 0.0
+p1 = ['Mcorr', 'matter',], np.array([-19.3, 0.0])
+p2 = ['Mcorr', 'matter','gamma'], np.array([-19.3, 0.3, g2])
+p3 = ['Mcorr', 'matter', 'radiation', 'gamma', 'zeta'], np.array([-19.3, 0.3, 0.0, g3, z3])
 #datasim.model_comparison([p1, p2, p3], zpicks, ['LCDM', 'late_int', 'exotic'],
 #    ['no interaction','$\gamma$='+str(g2),'$\gamma$='+str(g3)+' $\zeta$='+str(z3)])
 
