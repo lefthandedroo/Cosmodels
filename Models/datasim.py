@@ -87,9 +87,9 @@ def magn(names, values, data, model_key, plot_key=False):
     return mag
 
 
-def noisy_mag(mu, sigma, params, data, model_key):
+def noisy_mag(mu, sigma, names, values, data, model_key):
 
-    model = magn(params, data, model_key)
+    model = magn(names, values, data, model_key)
     model = np.asarray(model)
     mag = gnoise(model, mu, sigma)
 

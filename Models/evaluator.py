@@ -41,7 +41,17 @@ mag = data[0]
 #colour = data[2]
 zpicks = data[3]
 zpicks = zpicks.tolist()
+
+import pickle
+with open('data/mag_z_LCDM_1000_sigma_0.07','rb') as rfp:
+    mag, zpicks = pickle.load(rfp)
 data_dic = {'mag':mag, 'zpicks':zpicks}
+#plt.figure()
+#plt.title('Data')
+#plt.ylabel('Mag')
+#plt.xlabel('redshift')
+#plt.plot(zpicks, mag)
+#plt.show()
 
 # Plotting one model.
 #zpicks[-6] = 5
@@ -50,10 +60,93 @@ data_dic = {'mag':mag, 'zpicks':zpicks}
 #zpicks[-3] = 8
 #zpicks[-2] = 9
 #zpicks[-1] = 10
+
+names = ['Mcorr', 'matter']
+values = np.array([-19.3, 0.3])
+mag = datasim.noisy_mag(mu, sigma, names, values, data_dic, 'LCDM')
+data_dic = {'mag':mag, 'zpicks':zpicks}
+names = ['Mcorr', 'matter']
+values = np.array([-19.3, 0.3])
+mag0 = datasim.magn(names, values, data_dic, 'LCDM', plot_key=False)
+
 names = ['Mcorr','matter', 'radiation', 'a_ombar', 'b_ombar', 'c_ombar',
          'v_in', 'w_in', 'x_in', 'y_in', 'z_in']
-values = np.array([-19.3,0.3, 0.025, 0.1, 0.1, 0.1,0.0, 0.0, 0.0, 0.0, 0.0])
-#datasim.magn_plot(names, values, data_dic, 'waterfall')
+values = np.array([-19.3, 0.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+mag1 = datasim.magn(names, values, data_dic, 'waterfall', plot_key=False)
+
+values = np.array([-19.3,0.3, 0.025, 0.1, 0.1, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0])
+mag2 = datasim.magn(names, values, data_dic, 'waterfall', plot_key=False)
+
+values = np.array([-1.92909680e+01,  1.78825776e-01,  2.02521574e-03,  1.42448757e-01,
+  1.70446386e-02,  1.30902546e-02,  7.34102056e-01, -2.14308242e-01,
+ -2.80120810e-01, -4.38970169e-02,  5.26935858e-01])
+mag3 = datasim.magn(names, values, data_dic, 'waterfall', plot_key=False)
+
+
+with open('results_emcee/1541470181_waterfall/sampler.p','rb') as rfp:
+    sampler = pickle.load(rfp)
+bi = np.argmax(sampler.flatlnprobability)
+# Reading each txt file column of interest as numpy.ndarray
+flatlnprobability = sampler.flatlnprobability
+flatchain_M = sampler.flatchain[:,0]
+flatchain_m = sampler.flatchain[:,1]
+flatchain_r = sampler.flatchain[:,2]
+flatchain_a = sampler.flatchain[:,3]
+flatchain_b = sampler.flatchain[:,4]
+flatchain_c = sampler.flatchain[:,5]
+flatchain_v = sampler.flatchain[:,6]
+flatchain_w = sampler.flatchain[:,7]
+flatchain_x = sampler.flatchain[:,8]
+flatchain_y = sampler.flatchain[:,9]
+flatchain_z = sampler.flatchain[:,10]
+# Stacking them together and sorting by accending redshift.
+flat_sorted = np.stack((flatchain_M, flatchain_m, flatchain_r,
+                        flatchain_a, flatchain_b, flatchain_c,
+                        flatchain_v, flatchain_w, flatchain_x,
+                        flatchain_y, flatchain_z,flatlnprobability), axis=0)
+flat_sorted.sort(axis=-1)
+
+
+second_best=[]
+for i in range(len(values)):
+    second_best.append(sampler.flatchain[2,i])
+values = np.asarray(second_best)
+mag4 = datasim.magn(names, values, data_dic, 'waterfall', plot_key=False)
+
+second_worst=[]
+for i in range(len(values)):
+    second_worst.append(sampler.flatchain[-2,i])
+values = np.asarray(second_worst)
+mag5 = datasim.magn(names, values, data_dic, 'waterfall', plot_key=False)
+
+plt.figure()
+plt.title('Data')
+plt.ylabel('Mag')
+plt.xlabel('redshift')
+plt.plot(zpicks, mag, label='LCDM data')
+plt.plot(zpicks, mag1, label='waterfall 0.0')
+plt.plot(zpicks, mag2, label='waterfall 1')
+plt.plot(zpicks, mag3, label='waterfall different best')
+plt.plot(zpicks, mag4, label='waterfall different second best')
+plt.plot(zpicks, mag5, label='waterfall different second worst')
+plt.legend()
+plt.show()
+
+data_diff = mag-mag0
+model_diff = mag0 - mag2
+inter_diff = mag0 - mag3
+second_best_diff = mag0- mag4
+second_worst_diff = mag0-mag5
+
+plt.figure()
+plt.scatter(zpicks, data_diff)
+plt.scatter(zpicks, model_diff)
+plt.scatter(zpicks, inter_diff, label='emcee fit')
+plt.scatter(zpicks, second_best_diff, label='emcee fit second best')
+plt.scatter(zpicks, second_worst_diff, label='emcee fit second worst')
+plt.legend()
+plt.show
+
 
 names = ['Mcorr','matter', 'radiation','gamma', 'zeta']
 values = np.array([-19.3,0.3, 0.025, 0.0, 0.0])
@@ -61,20 +154,22 @@ values = np.array([-19.3,0.3, 0.025, 0.0, 0.0])
 
 names = ['Mcorr', 'matter']
 values = np.array([-19.3, 0.3])
-#datasim.magn_plot(names, values, data_dic, 'LCDM')
+#datasim.magn_plot(names, values, data_dic, 'LCDM', True)
+
+
 
 # Compare param evolution for 3 models, plotting on the same axis.
-g2, g3, z3 = 0.0, 0.0, 0.0
-p1 = ['Mcorr', 'matter',], np.array([-19.3, 0.0])
-p2 = ['Mcorr', 'matter','gamma'], np.array([-19.3, 0.3, g2])
-p3 = ['Mcorr', 'matter', 'radiation', 'gamma', 'zeta'], np.array([-19.3, 0.3, 0.0, g3, z3])
+#g2, g3, z3 = 0.0, 0.0, 0.0
+#p1 = ['Mcorr', 'matter',], np.array([-19.3, 0.0])
+#p2 = ['Mcorr', 'matter','gamma'], np.array([-19.3, 0.3, g2])
+#p3 = ['Mcorr', 'matter', 'radiation', 'gamma', 'zeta'], np.array([-19.3, 0.3, 0.0, g3, z3])
 #datasim.model_comparison([p1, p2, p3], zpicks, ['LCDM', 'late_int', 'exotic'],
 #    ['no interaction','$\gamma$='+str(g2),'$\gamma$='+str(g3)+' $\zeta$='+str(z3)])
 
 firstderivs_functions = [None
             ,'waterfall'
-            ,'exotic'
-            ,'late_intxde'
+#            ,'exotic'
+#            ,'late_intxde'
 #            ,'heaviside_late_int'
 #            ,'late_int'
 #            ,'expgamma'
@@ -88,7 +183,7 @@ firstderivs_functions = [None
 #            ,'rdecay_mxde'
 #            ,'rdecay'
 #            ,'interacting'
-            ,'LCDM'
+#            ,'LCDM'
              ]
 
 def modelcheck():
@@ -172,7 +267,7 @@ def emcee():
 
     return
 
-emcee()
+#emcee()
 
 def errorvsdatasize():
 
