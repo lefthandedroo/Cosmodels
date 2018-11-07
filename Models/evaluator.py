@@ -19,7 +19,7 @@ import plots
 
 
 # Number of emcee steps.
-nsteps = 100000
+nsteps = 1000
 
 # Statistical parameteres of noise: mean, standard deviation.
 mu, sigma = 0.0, 0.07 # sigma != 0
@@ -82,7 +82,7 @@ values = np.array([-19.3,0.3, 0.025, 0.1, 0.1, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0])
 mag2 = datasim.magn(names, values, data_dic, 'waterfall', plot_key=False)
 
 # Sampler from chosen waterfall run.
-with open('results_emcee/1541558044_waterfall/sampler.p','rb') as rfp:
+with open('results_emcee/1541470181_waterfall/sampler.p','rb') as rfp:
     sampler = pickle.load(rfp)
 
 # Mag from parameters with highest likelihood.
@@ -271,7 +271,7 @@ def emcee():
 
     return
 
-#emcee()
+emcee()
 
 def errorvsdatasize():
 
