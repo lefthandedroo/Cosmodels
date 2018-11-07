@@ -136,6 +136,12 @@ def stats(names, values, data_dict, sigma, nsteps,
         import corner
         samples = sampler.chain[:, :, :].reshape((-1, ndim))
         corner.corner(samples, labels=names, truths=values)
+        stamp = str(int(time.time()))
+        filename = str(stamp)+'____corn__nsteps_'+str(nsteps)+'_nwalkers_' \
+        +str(nwalkers)+'_noise_'+str(sigma)+'_numpoints_'+str(len(zpicks))+'.png'
+        filename = os.path.join(save_path, filename)
+        plt.savefig(filename)
+
         plt.show(block=False)
 
     # Results getting printed:

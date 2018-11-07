@@ -10,14 +10,16 @@ import pandas as pd
 import numpy as np
 import time
 import os.path
+import pickle
 import results
 import tools
 import datasim
 import stats
 import plots
 
+
 # Number of emcee steps.
-nsteps = 10000
+nsteps = 100000
 
 # Statistical parameteres of noise: mean, standard deviation.
 mu, sigma = 0.0, 0.07 # sigma != 0
@@ -42,16 +44,13 @@ mag = data[0]
 zpicks = data[3]
 zpicks = zpicks.tolist()
 
-import pickle
-with open('data/mag_z_LCDM_1000_sigma_0.07','rb') as rfp:
-    mag, zpicks = pickle.load(rfp)
+# Pantheon data.
 data_dic = {'mag':mag, 'zpicks':zpicks}
-#plt.figure()
-#plt.title('Data')
-#plt.ylabel('Mag')
-#plt.xlabel('redshift')
-#plt.plot(zpicks, mag)
-#plt.show()
+plt.figure()
+plt.title('Pantheon')
+plt.ylabel('Mag')
+plt.xlabel('redshift')
+plt.scatter(zpicks, mag)
 
 # Plotting one model.
 #zpicks[-6] = 5
@@ -61,32 +60,37 @@ data_dic = {'mag':mag, 'zpicks':zpicks}
 #zpicks[-2] = 9
 #zpicks[-1] = 10
 
-names = ['Mcorr', 'matter']
-values = np.array([-19.3, 0.3])
-mag = datasim.noisy_mag(mu, sigma, names, values, data_dic, 'LCDM')
-data_dic = {'mag':mag, 'zpicks':zpicks}
+## Creating LCDM data.
+#names = ['Mcorr', 'matter']
+#values = np.array([-19.3, 0.3])
+#mag = datasim.noisy_mag(mu, sigma, names, values, data_dic, 'LCDM')
+#data_dic = {'mag':mag, 'zpicks':zpicks}
+
+# Mag for LCDM.
 names = ['Mcorr', 'matter']
 values = np.array([-19.3, 0.3])
 mag0 = datasim.magn(names, values, data_dic, 'LCDM', plot_key=False)
 
+# Mag for waterfall in LCDM mode.
 names = ['Mcorr','matter', 'radiation', 'a_ombar', 'b_ombar', 'c_ombar',
          'v_in', 'w_in', 'x_in', 'y_in', 'z_in']
 values = np.array([-19.3, 0.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 mag1 = datasim.magn(names, values, data_dic, 'waterfall', plot_key=False)
 
+# Mag for waterfall wirg fluids but no interaction.
 values = np.array([-19.3,0.3, 0.025, 0.1, 0.1, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0])
 mag2 = datasim.magn(names, values, data_dic, 'waterfall', plot_key=False)
 
-values = np.array([-1.92909680e+01,  1.78825776e-01,  2.02521574e-03,  1.42448757e-01,
-  1.70446386e-02,  1.30902546e-02,  7.34102056e-01, -2.14308242e-01,
- -2.80120810e-01, -4.38970169e-02,  5.26935858e-01])
+# Sampler from chosen waterfall run.
+with open('results_emcee/1541558044_waterfall/sampler.p','rb') as rfp:
+    sampler = pickle.load(rfp)
+
+# Mag from parameters with highest likelihood.
+bi = np.argmax(sampler.flatlnprobability)
+values = sampler.flatchain[bi,:]
 mag3 = datasim.magn(names, values, data_dic, 'waterfall', plot_key=False)
 
-
-with open('results_emcee/1541470181_waterfall/sampler.p','rb') as rfp:
-    sampler = pickle.load(rfp)
-bi = np.argmax(sampler.flatlnprobability)
-# Reading each txt file column of interest as numpy.ndarray
+# Parameters with x best likelihood.
 flatlnprobability = sampler.flatlnprobability
 flatchain_M = sampler.flatchain[:,0]
 flatchain_m = sampler.flatchain[:,1]
@@ -106,46 +110,46 @@ flat_sorted = np.stack((flatchain_M, flatchain_m, flatchain_r,
                         flatchain_y, flatchain_z,flatlnprobability), axis=0)
 flat_sorted.sort(axis=-1)
 
-
+# Mag from parameters with second highest likelihood.
 second_best=[]
 for i in range(len(values)):
     second_best.append(sampler.flatchain[2,i])
 values = np.asarray(second_best)
 mag4 = datasim.magn(names, values, data_dic, 'waterfall', plot_key=False)
 
-second_worst=[]
+# Mag from parameters with lowest likelihood.
+worst=[]
 for i in range(len(values)):
-    second_worst.append(sampler.flatchain[-2,i])
-values = np.asarray(second_worst)
+    worst.append(sampler.flatchain[-2,i])
+values = np.asarray(worst)
 mag5 = datasim.magn(names, values, data_dic, 'waterfall', plot_key=False)
 
 plt.figure()
-plt.title('Data')
+plt.title('SN Ia magnitudes')
 plt.ylabel('Mag')
 plt.xlabel('redshift')
-plt.plot(zpicks, mag, label='LCDM data')
-plt.plot(zpicks, mag1, label='waterfall 0.0')
-plt.plot(zpicks, mag2, label='waterfall 1')
-plt.plot(zpicks, mag3, label='waterfall different best')
-plt.plot(zpicks, mag4, label='waterfall different second best')
-plt.plot(zpicks, mag5, label='waterfall different second worst')
+plt.scatter(zpicks, mag, label='Pantheon set', marker=',', s=1)
+plt.plot(zpicks, mag0, label='LCDM')
+plt.plot(zpicks, mag1, label='waterfall in LCDM mode')
+plt.plot(zpicks, mag2, label='waterfall with fluids')
+plt.plot(zpicks, mag3, label='waterfall highest likelihood')
+plt.plot(zpicks, mag4, label='waterfall second highest likelihood')
+plt.plot(zpicks, mag5, label='waterfall lowest likelihood')
 plt.legend()
-plt.show()
 
-data_diff = mag-mag0
-model_diff = mag0 - mag2
-inter_diff = mag0 - mag3
-second_best_diff = mag0- mag4
-second_worst_diff = mag0-mag5
+data_diff = mag - mag0
+best_diff = mag0 - mag3
+second_best_diff = mag0 - mag4
+worst_diff = mag0 - mag5
 
 plt.figure()
-plt.scatter(zpicks, data_diff)
-plt.scatter(zpicks, model_diff)
-plt.scatter(zpicks, inter_diff, label='emcee fit')
-plt.scatter(zpicks, second_best_diff, label='emcee fit second best')
-plt.scatter(zpicks, second_worst_diff, label='emcee fit second worst')
+plt.title('Residuals')
+plt.scatter(zpicks, data_diff, label='data-LCDM', marker=',', s=1)
+plt.plot(zpicks, best_diff, label='LCDM - best emcee fit')
+plt.plot(zpicks, second_best_diff, label='LCDM - 2nd best emcee fit')
+plt.plot(zpicks, worst_diff, label='LCDM - worst emcee fit')
 plt.legend()
-plt.show
+
 
 
 names = ['Mcorr','matter', 'radiation','gamma', 'zeta']
