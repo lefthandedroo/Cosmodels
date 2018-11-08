@@ -53,30 +53,33 @@ class Model(object):
     """
     Specify the model in Python.
     """
-    def __init__(self, int_lim=False, ombar_lim=False):
+    def __init__(self, fluids, names, values, int_lim=False):
         """
         Parameter values *are not* stored inside the class
         """
+        self.fluids = fluids
+        self.names = names
+        self.values = values
         self.M_min = -20
         self.M_max = -18
-        self.ombar_lim = ombar_lim
         if int_lim:
-            for i in range(len(int_lim)):
-                if i == 1:
-                    self.v_min = int_lim[i][0]
-                    self.v_max = int_lim[i][1]
-                    if i == 2:
-                        self.w_min = int_lim[i][0]
-                        self.w_max = int_lim[i][1]
-                        if i == 3:
-                            self.x_min = int_lim[i][0]
-                            self.x_max = int_lim[i][1]
-                            if i == 3:
-                                self.y_min = int_lim[i][0]
-                                self.y_max = int_lim[i][1]
-                                if i == 4:
-                                    self.z_min = int_lim[i][0]
-                                    self.z_max = int_lim[i][1]
+            self.int_lim = int_lim
+#            for i in range(len(int_lim)):
+#                if i == 1:
+#                    self.v_min = int_lim[i][0]
+#                    self.v_max = int_lim[i][1]
+#                    if i == 2:
+#                        self.w_min = int_lim[i][0]
+#                        self.w_max = int_lim[i][1]
+#                        if i == 3:
+#                            self.x_min = int_lim[i][0]
+#                            self.x_max = int_lim[i][1]
+#                            if i == 3:
+#                                self.y_min = int_lim[i][0]
+#                                self.y_max = int_lim[i][1]
+#                                if i == 4:
+#                                    self.z_min = int_lim[i][0]
+#                                    self.z_max = int_lim[i][1]
 #        pass
 
     def from_prior(self):
@@ -86,7 +89,9 @@ class Model(object):
         m = rng.rand()
         M = 1E3*rng.rand()
         M = dnest4.wrap(M, self.M_min, self.M_max)
-
+        
+        
+        
         if self.ombar_lim:
             radiation = rng.rand()
             a_ombar = rng.rand()
@@ -140,23 +145,23 @@ class Model(object):
         """
         Gaussian sampling distribution.
         """
-        if len(params) == 11:
-            m, M, r, a, b, c, v, w, x, y, z = params
-            theta = [{'matter':m},{'Mcorr':M},{'radiation':r},
-                          {'a_ombar':a},{'b_ombar':b},{'c_ombar':c},
-                          {'v_in':v},{'w_in':w},{'x_in':x},{'y_in':y},
-                          {'z_in':z}]
-        elif len(params) == 4:
-            m, M, g, z = params
-            theta = [{'matter':m}, {'Mcorr':M}, {'gamma':g}, {'zeta':z}]
-        elif len(params) == 3:
-            m, M, g = params
-            theta = [{'matter':m}, {'Mcorr':M}, {'gamma':g}]
-        else:
-            m, M = params
-            theta = [{'matter':m}, {'Mcorr':M}]
+#        if len(params) == 11:
+#            m, M, r, a, b, c, v, w, x, y, z = params
+#            theta = [{'matter':m},{'Mcorr':M},{'radiation':r},
+#                          {'a_ombar':a},{'b_ombar':b},{'c_ombar':c},
+#                          {'v_in':v},{'w_in':w},{'x_in':x},{'y_in':y},
+#                          {'z_in':z}]
+#        elif len(params) == 4:
+#            m, M, g, z = params
+#            theta = [{'matter':m}, {'Mcorr':M}, {'gamma':g}, {'zeta':z}]
+#        elif len(params) == 3:
+#            m, M, g = params
+#            theta = [{'matter':m}, {'Mcorr':M}, {'gamma':g}]
+#        else:
+#            m, M = params
+#            theta = [{'matter':m}, {'Mcorr':M}]
         
-        model = datasim.magn(theta, data_dict, key)
+        model = datasim.magn(self.names, params, data_dict, key)
         
         var = sigma**2.0
         return -0.5*np.sum((mag-model)**2.0 /var +0.5*np.log(2.0*np.pi*var))
@@ -177,8 +182,8 @@ class Model(object):
 
 
 firstderivs_functions = [None
-#            ,'waterfall'
-            ,'exotic'
+            ,'waterfall'
+#            ,'exotic'
 #            ,'late_intxde'
 #            ,'heaviside_late_int'
 #            ,'late_int'
@@ -193,61 +198,65 @@ firstderivs_functions = [None
 #            ,'rdecay_mxde'
 #            ,'rdecay'               
 #            ,'interacting'
-#            ,'LCDM'
+            ,'LCDM'
              ]
+
 
 for key in firstderivs_functions:
     if key:
         if key =='waterfall':
-            params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'radiation':0.025},
-                          {'a_ombar':0.1},{'b_ombar':0.1},{'c_ombar':0.1},
-                          {'v_in':0.0},{'w_in':0.0},{'x_in':0.0},
-                          {'y_in':0.0},{'z_in':0.0}]
+            names = ['Mcorr',
+                     'matter', 'radiation', 'a_ombar', 'b_ombar', 'c_ombar',
+                     'v_in', 'w_in', 'x_in', 'y_in', 'z_in']
+            values = np.array([-19.3,0.3, 0.025, 0.1, 0.1, 0.1,0.0, 0.0, 0.0, 0.0, 0.0])
+            fluids = 5
+            
         elif key == 'exotic':
             int_lim = [[-2, 0.1],[-1.5, 2.5]]
-            params_dic = [{'matter':0.3},{'Mcorr':-19.3},
-                          {'gamma':0},{'zeta':0}]
-        elif key == 'late_intxde':
-            int_lim = [[-2, 0.1]]
-            params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'gamma':0}]
-        elif key == 'heaviside_late_int':
-            int_lim = [[-1.45, 0.1]]
-            params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'gamma':0}]
-        elif key == 'late_int':
-            int_lim = [[-15, 0.1]]
-            params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'gamma':0}]
-        elif key == 'expgamma':
-            int_lim = [[-0.1, 1.5]]
-            params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'gamma':0}]
-        elif key == 'txgamma':
-            int_lim = [[-0.5, 0.1]]
-            params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'gamma':0}]
-        elif key == 'zxgamma':
-            int_lim = [[-10, 0.1]]
-            params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'gamma':0}]
-        elif key == 'zxxgamma':
-            int_lim = [[-0.1, 12]]
-            params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'gamma':0}]
-        elif key == 'gammaxxz':
-            int_lim = [[-1, 1]]
-            params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'gamma':0}]
-        elif key == 'rdecay_m':
-            int_lim = [[-3, 0]]
-            params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'gamma':0}]
-        elif key == 'rdecay':
-            int_lim = [[-2, 0]]
-            params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'gamma':0}]
-        elif key == 'interacting':
-            int_lim = [[-1.5, 0.1]]
-            params_dic = [{'matter':0.3},{'Mcorr':-19.3},{'gamma':0}]
+            names = ['Mcorr', 'matter', 'radiation', 'gamma', 'zeta']
+            values = np.array([-19.3, 0.3, 0.025, 0.0, 0.0])
+            fluids = 2
+            
         elif key == 'LCDM':
             int_lim = None
-            params_dic = [{'matter':0.3},{'Mcorr':-19.3}]
+            names = ['Mcorr', 'matter']
+            values = np.array([0.0, 0.0])
+            fluids = 1
+            
         else:
-            int_lim = [[-10,10]]
+            names = ['Mcorr', 'matter','gamma']
+            values = np.array([-19.3, 0.3, 0.0])
+            fluids = 1
+            
+            if  key == 'late_intxde':
+                int_lim = [[-2, 0.1]]
+            elif key == 'heaviside_late_int':
+                int_lim = [[-1.45, 0.1]]
+            elif key == 'late_int':
+                int_lim = [[-15, 0.1]]
+            elif key == 'expgamma':
+                int_lim = [[-0.1, 1.5]]
+            elif key == 'txgamma':
+                int_lim = [[-0.5, 0.1]]
+            elif key == 'zxgamma':
+                int_lim = [[-10, 0.1]]
+            elif key == 'zxxgamma':
+                int_lim = [[-0.1, 12]]
+            elif key == 'gammaxxz':
+                int_lim = [[-1, 1]]
+            elif key == 'rdecay_m':
+                int_lim = [[-3, 0]]
+            elif key == 'rdecay':
+                int_lim = [[-2, 0]]
+            elif key == 'interacting':
+                int_lim = [[-1.5, 0.1]]
+            else:
+                int_lim = [[-10,10]]
+        
+        values = np.zeros[(len(names))]
         
         # Create a model object and a sampler
-        model = Model(int_lim, ombar_lim)
+        model = Model(fluids, names, values, int_lim)
         sampler = dnest4.DNest4Sampler(model,
                                        backend=dnest4.backends.CSVBackend(".",
                                                                       sep=" "))
