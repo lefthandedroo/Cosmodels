@@ -336,6 +336,20 @@ zodesolve.py
 
 Bfactor.py
 
+#    def randh(self):
+#        """
+#        Generate from the heavy-tailed distribution.
+#        """
+#        a = np.random.randn()
+#        b = np.random.rand()
+#        t = a/np.sqrt(-np.log(b))
+#        n = np.random.randn()
+#        return 10.0**(1.5 - 3*np.abs(t))*n
+#
+#    def wrap(self, x, a, b):
+#        assert b > a
+#        return (x - a)%(b - a) + a
+
 #import six
 #import sys
 ## Run the postprocessing to get marginal likelihood and generate posterior 

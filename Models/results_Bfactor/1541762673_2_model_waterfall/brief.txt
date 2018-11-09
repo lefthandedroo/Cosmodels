@@ -1,0 +1,7 @@
+Bfactor time:  8min 49s
+model = waterfall
+data = ./data/lcparam_full_long.txt
+sigma = 0.07
+log(Z) = 758.5938286647512
+Information = 19.870750137342384
+speed = 2
