@@ -19,27 +19,27 @@ import tools
 speed = 2       # From prior = 0, short = 1, medium = 2, long = 3.
 timed = False
 plot = True
-sigma = 0.07    # Standard deviation of the noise on the data.
+mu, sigma = 0.0, 0.07    # Mean and standard deviation of the noise on the data.
 
-# Loading data:
-#dataname = 'mag_z_LCDM_1000_sigma_'+str(sigma)
-#mag, zpicks = results.load('./data', dataname)
-
+# Loading pantheon SNIa data:
 dataname = './data/lcparam_full_long.txt'
 pantheon = pd.read_csv(dataname, sep=" ")
-
 # Reading each txt file column of interest as numpy.ndarray.
 mag = pantheon.mb.values
 zpicks = pantheon.zhel.values
-
 # Stacking np.arrays together and sorting by accending redshift.
 data = np.stack((mag,zpicks), axis=0)
 data.sort(axis=-1)
-
 mag = data[0]
 zpicks = data[-1]
 zpicks = zpicks.tolist()
-data_dict = {'mag':mag, 'zpicks':zpicks}
+data_dic = {'mag':mag, 'zpicks':zpicks}
+
+# Generating LCDM data.
+names = ['Mcorr', 'matter']
+values = np.array([-19.3, 0.3])
+mag = datasim.noisy_mag(mu, sigma, names, values, data_dic, 'LCDM')
+data_dic = {'mag':mag, 'zpicks':zpicks}
 
 class Model(object):
     """
@@ -102,7 +102,7 @@ class Model(object):
         """
         Gaussian sampling distribution.
         """        
-        model = datasim.magn(self.names, theta, data_dict, key)        
+        model = datasim.magn(self.names, theta, data_dic, key)        
         var = sigma**2.0
         return -0.5*np.sum((mag-model)**2.0 /var +0.5*np.log(2.0*np.pi*var))
 

@@ -171,7 +171,8 @@ values = np.array([-19.3, 0.3])
 #    ['no interaction','$\gamma$='+str(g2),'$\gamma$='+str(g3)+' $\zeta$='+str(z3)])
 
 firstderivs_functions = [None
-            ,'waterfall'
+            ,'dlLCDM'             
+#            ,'waterfall'
 #            ,'exotic'
 #            ,'late_intxde'
 #            ,'heaviside_late_int'
@@ -205,7 +206,7 @@ def modelcheck():
             elif test_key == 'exotic':
                 names = ['Mcorr', 'matter', 'radiation', 'gamma', 'zeta']
                 values = np.array([-19.3, 0.3, 0.025, 0.0, 0.0])
-            elif test_key == 'LCDM':
+            elif test_key == 'LCDM' or test_key == 'dlLCDM':
                 names = ['Mcorr', 'matter']
                 values = np.array([-19.3, 0.3])
             else:
@@ -218,7 +219,7 @@ def modelcheck():
             datasim.magn(names, values, data_dic, test_key, plot_key=True)
     return
 
-#modelcheck()
+modelcheck()
 
 
 def emcee():

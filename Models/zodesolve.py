@@ -10,6 +10,7 @@ import firstderivs_cython as f
 import numpy as np
 
 firstderivs_functions = {
+        'dlLCDM':f.dlLCDM,
         'waterfall':f.waterfall,
         'rainbow':f.rainbow,
         'exotic':f.exotic,
