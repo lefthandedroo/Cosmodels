@@ -8,9 +8,9 @@ Created on Thu Feb 15 13:38:48 2018
 from scipy.integrate import odeint
 import firstderivs_cython as f
 import numpy as np
+import matplotlib.pyplot as plt
 
 firstderivs_functions = {
-        'dlLCDM':f.dlLCDM,
         'waterfall':f.waterfall,
         'rainbow':f.rainbow,
         'exotic':f.exotic,
@@ -108,5 +108,11 @@ def zodesolve(names, values, zpicks, model, plot_key):
         plot_var['z'] = vsol[1:,-2]
         plot_var['dl'] = vsol[1:,-1] * (1+z)
 
-
+        da = (dlpc/10**6) * (1.0+z)**(-2.0)
+        plt.figure()
+        plt.title('Angular diameter distance vs redshift')
+        plt.xlabel('z')
+        plt.ylabel('D_A / Mpc')
+        plt.plot(z, da)
+        plt.show()
     return dlpc, plot_var

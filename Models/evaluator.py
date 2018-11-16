@@ -46,11 +46,11 @@ zpicks = zpicks.tolist()
 
 # Pantheon data.
 data_dic = {'mag':mag, 'zpicks':zpicks}
-plt.figure()
-plt.title('Pantheon')
-plt.ylabel('Mag')
-plt.xlabel('redshift')
-plt.scatter(zpicks, mag)
+#plt.figure()
+#plt.title('Pantheon')
+#plt.ylabel('Mag')
+#plt.xlabel('redshift')
+#plt.scatter(zpicks, mag)
 
 # Plotting one model.
 #zpicks[-6] = 5
@@ -124,40 +124,40 @@ for i in range(len(values)):
 values = np.asarray(worst)
 mag5 = datasim.magn(names, values, data_dic, 'waterfall', plot_key=False)
 
-plt.figure()
-plt.title('SN Ia magnitudes')
-plt.ylabel('Mag')
-plt.xlabel('redshift')
-plt.scatter(zpicks, mag, label='Pantheon set', marker=',', s=1)
-plt.plot(zpicks, mag0, label='LCDM')
-plt.plot(zpicks, mag1, label='waterfall in LCDM mode')
-plt.plot(zpicks, mag2, label='waterfall with fluids')
-plt.plot(zpicks, mag3, label='waterfall highest likelihood')
-plt.plot(zpicks, mag4, label='waterfall second highest likelihood')
-plt.plot(zpicks, mag5, label='waterfall lowest likelihood')
-plt.legend()
+#plt.figure()
+#plt.title('SN Ia magnitudes')
+#plt.ylabel('Mag')
+#plt.xlabel('redshift')
+#plt.scatter(zpicks, mag, label='Pantheon set', marker=',', s=1)
+#plt.plot(zpicks, mag0, label='LCDM')
+#plt.plot(zpicks, mag1, label='waterfall in LCDM mode')
+#plt.plot(zpicks, mag2, label='waterfall with fluids')
+#plt.plot(zpicks, mag3, label='waterfall highest likelihood')
+#plt.plot(zpicks, mag4, label='waterfall second highest likelihood')
+#plt.plot(zpicks, mag5, label='waterfall lowest likelihood')
+#plt.legend()
 
 data_diff = mag - mag0
 best_diff = mag0 - mag3
 second_best_diff = mag0 - mag4
 worst_diff = mag0 - mag5
 
-plt.figure()
-plt.title('Residuals')
-plt.scatter(zpicks, data_diff, label='data-LCDM', marker=',', s=1)
-plt.plot(zpicks, best_diff, label='LCDM - best emcee fit')
-plt.plot(zpicks, second_best_diff, label='LCDM - 2nd best emcee fit')
-plt.plot(zpicks, worst_diff, label='LCDM - worst emcee fit')
-plt.legend()
+#plt.figure()
+#plt.title('Residuals')
+#plt.scatter(zpicks, data_diff, label='data-LCDM', marker=',', s=1)
+#plt.plot(zpicks, best_diff, label='LCDM - best emcee fit')
+#plt.plot(zpicks, second_best_diff, label='LCDM - 2nd best emcee fit')
+#plt.plot(zpicks, worst_diff, label='LCDM - worst emcee fit')
+#plt.legend()
 
 
 
-names = ['Mcorr','matter', 'radiation','gamma', 'zeta']
-values = np.array([-19.3,0.3, 0.025, 0.0, 0.0])
+#names = ['Mcorr','matter', 'radiation','gamma', 'zeta']
+#values = np.array([-19.3,0.3, 0.025, 0.0, 0.0])
 #datasim.magn_plot(names, values, data_dic, 'exotic')
-
-names = ['Mcorr', 'matter']
-values = np.array([-19.3, 0.3])
+#
+#names = ['Mcorr', 'matter']
+#values = np.array([-19.3, 0.3])
 #datasim.magn_plot(names, values, data_dic, 'LCDM', True)
 
 
@@ -171,8 +171,7 @@ values = np.array([-19.3, 0.3])
 #    ['no interaction','$\gamma$='+str(g2),'$\gamma$='+str(g3)+' $\zeta$='+str(z3)])
 
 firstderivs_functions = [None
-            ,'dlLCDM'             
-#            ,'waterfall'
+            ,'waterfall'
 #            ,'exotic'
 #            ,'late_intxde'
 #            ,'heaviside_late_int'
@@ -188,7 +187,7 @@ firstderivs_functions = [None
 #            ,'rdecay_mxde'
 #            ,'rdecay'
 #            ,'interacting'
-#            ,'LCDM'
+            ,'LCDM'
              ]
 
 def modelcheck():
@@ -217,10 +216,9 @@ def modelcheck():
             if len(names) != len(values):
                 raise ValueError('len(names) != len(values)')
             datasim.magn(names, values, data_dic, test_key, plot_key=True)
-    return
+    return 
 
 modelcheck()
-
 
 def emcee():
     print('@@@@@@@ Mcor_emcee @@@@@@@')
@@ -272,7 +270,7 @@ def emcee():
 
     return
 
-emcee()
+#emcee()
 
 def errorvsdatasize():
 
