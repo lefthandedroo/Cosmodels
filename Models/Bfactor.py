@@ -32,7 +32,7 @@ data = np.stack((mag,zpicks), axis=0)
 data.sort(axis=-1)
 mag = data[0]
 zpicks = data[-1]
-zpicks = zpicks.tolist()
+#zpicks = zpicks.tolist()
 data_dic = {'mag':mag, 'zpicks':zpicks}
 
 # Generating LCDM data.
@@ -102,9 +102,9 @@ class Model(object):
         """
         Gaussian sampling distribution.
         """
-        model = datasim.magn(self.names, theta, data_dic, key)
+        model_mag, model_da = datasim.magn(self.names, theta, data_dic, key)
         var = sigma**2.0
-        return -0.5*np.sum((mag-model)**2.0 /var +0.5*np.log(2.0*np.pi*var))
+        return -0.5*np.sum((mag-model_mag)**2.0 /var +0.5*np.log(2.0*np.pi*var))
 
 
 firstderivs_functions = [None

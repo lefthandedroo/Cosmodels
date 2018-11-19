@@ -11,6 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 firstderivs_functions = {
+        'stepfall':f.stepfall,
         'waterfall':f.waterfall,
         'rainbow':f.rainbow,
         'exotic':f.exotic,
@@ -36,13 +37,13 @@ def zodesolve(names, values, zpicks, model, plot_key):
     Takes in:
         names = list of strings, names of parameters to be fitted;
         values = np.array, values of parameters;
-        zpicks = list of redshifts ;
+        zpicks = np.ndarray of redshifts ;
         model = string, name of model being tested.
 
     """
 
     # Inserting 0 at the front of redshifts to use initial conditions.
-    zpicks = [0.0] + zpicks
+    zpicks = np.insert(zpicks, 0, 0.0)
 
     # Standard cosmological parameters.
     H0 = 1.0
@@ -60,6 +61,8 @@ def zodesolve(names, values, zpicks, model, plot_key):
 
     if model == 'waterfall':
         index = 6
+    elif model == 'stepfall':
+        index = 4
     elif model == 'exotic':
         index = 3
     elif model == 'LCDM':
@@ -115,4 +118,5 @@ def zodesolve(names, values, zpicks, model, plot_key):
         plt.ylabel('D_A / Mpc')
         plt.plot(z, da)
         plt.show()
+
     return dlpc, plot_var

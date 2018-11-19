@@ -33,6 +33,64 @@ cdef double w_m = 0.0     # matter
 cdef double w_de = -1.0   # dark energy
 
 
+def stepfall(double[:] v, redshifts, in_terms, double H0):
+    """
+    One extra w < 0 fluid between m and de.
+
+    Takes in:
+        v = list, values at z=0;
+        redshifts = list, redshifts to integrate over;
+        in_terms = list, rates of interaction;
+
+    Returns a function f = [dt/dz, d(a)/dz, d(ombar_matter)/dz,
+                            d(ombar_radiation)/dz, d(ombar_a)/dz,
+                            d(ombar_b)/dz, d(ombar_c)/dz,
+                            d(ombar_de)/dz, d(z)/dz, d(dl)/dz]
+    """
+
+    cdef double t = v[0]
+    cdef double a = v[1]
+    # ombar_i = rho_i(t) / rho_crit(t0)
+    cdef double ombar_m = v[2]
+    cdef double ombar_r = v[3]
+    cdef double ombar_a = v[4]
+    cdef double ombar_de = v[5]
+    cdef double z = v[6]
+    cdef double dl = v[7]
+
+    cdef double in_v = in_terms[0]
+    cdef double in_w = in_terms[1]
+    cdef double in_x = in_terms[2]
+
+    cdef double Hz = H0 * (ombar_m +ombar_r +ombar_a +ombar_de)**(0.5)
+
+    if math.isnan(Hz):
+        print('stepfall')
+        print('z = %s, Hz = %s, in_terms = %s'% (z, Hz, in_terms))
+        print('ombar_m = ',ombar_m,'ombar_r = ',ombar_r,
+              'ombar_a = ',ombar_a,'ombar_de = ',ombar_de)
+
+    cdef double dtdz = -1.0/((1.0+z) * Hz)
+    cdef double dadz = -(1.0+z)**(-2.0)
+    # d(ombar_i)/dz
+    cdef double domdz = (3.0*ombar_m +in_v*ombar_m*ombar_r/Hz)/(1.0+z)                          # w = 0
+    cdef double dordz = (4.0*ombar_r -in_v*ombar_m*ombar_r/Hz +in_w*ombar_r*ombar_a/Hz)/(1.0+z) # w = 1/3
+    cdef double doadz = (2.7*ombar_a -in_w*ombar_r*ombar_a/Hz +in_x*ombar_a*ombar_de/Hz)/(1.0+z) # w = -0.1
+    cdef double dodedz = -in_x*ombar_a*ombar_de/(1.0+z)/Hz                                      # w = -1
+    cdef double ddldz = 1.0/Hz
+
+    # first derivatives of functions I want to find:
+    f = [dtdz,  # time
+         dadz,  # scale factor
+         domdz, # w = 0
+         dordz, # w = 1/3
+         doadz, # w = -0.1
+         dodedz,# w = -1
+         1.0,   # redshift
+         ddldz] # luminosty distance
+
+    return f
+
 def waterfall(double[:] v, redshifts, in_terms, double H0):
     """
     Takes in:
@@ -232,9 +290,9 @@ def exotic(double[:] v, redshifts, in_terms, double H0):
     # first derivatives of functions I want to find:
     f = [dtdz,# dt/dz (= f.d wrt z of time)
          dadz,# d(a)/dz (= f.d wrt z of scale factor)
-         domdz,# d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
-         dordz,# d(ombar_r)/dz   (= f.d wrt z of density_r(t) / crit density(t0))
-         dodedz,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit density(t0))
+         domdz,# dw = 0, (ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
+         dordz,# w = 1/3, d(ombar_r)/dz   (= f.d wrt z of density_r(t) / crit density(t0))
+         dodedz,# w = -1, d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit density(t0))
          1.0,# d(z)/dz (= f.d wrt z of redshift)
          ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
 

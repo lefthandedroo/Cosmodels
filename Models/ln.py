@@ -27,9 +27,9 @@ def lnlike(theta, data, sigma, firstderivs_key, names):
         float, likelihood for firstderivs_key model with theta parameters.
     '''
     mag = data['mag']
-    model = magn(names, theta, data, firstderivs_key) # mag, but with theta params
+    model_mag, model_da = magn(names, theta, data, firstderivs_key) # mag, but with theta params
     var = sigma**2
-    likelihood = -0.5*np.sum((mag-model)**2 /var +0.5*np.log(2*np.pi*var))
+    likelihood = -0.5*np.sum((mag-model_mag)**2 /var +0.5*np.log(2*np.pi*var))
     return likelihood
 
 def lnprior(th, key):
@@ -55,6 +55,14 @@ def lnprior(th, key):
                         if abs(th[6]) < l and abs(th[7]) < l and abs(th[8]) < l:
                             if abs(th[9]) < l and abs(th[10]) < l:
                                 return 0.0
+
+            elif key == 'stepfall':
+                # radiation, a_ombar
+                if 0 < th[2] < 1 and 0 < th[3] < 1:
+                    # v_in, w_in, x_in
+                    l = 1
+                    if abs(th[4]) < l and abs(th[5]) < l and abs(th[6]) < l:
+                        return 0.0
 
             elif key == 'exotic':
                 # radiation

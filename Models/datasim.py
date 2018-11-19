@@ -27,7 +27,7 @@ def redshift_picks(zmin, zmax, n):
     return zpicks
 
 
-def gnoise(mag, mu, sigma):
+def gnoise(mag, da, mu, sigma):
     """
    Returns:
        mag = mag, each point offset by unique Gaussian noise;
@@ -36,14 +36,14 @@ def gnoise(mag, mu, sigma):
     n = len(mag)
     noise = np.random.normal(mu,sigma,n)
     mag = mag + noise
-
+    da = da + noise
 #    import matplotlib.pyplot as pl
 #    from pylab import figure
 #    figure()
 #    pl.title('Noise distribution')
 #    pl.hist(noise, 100)
 #    pl.show()
-    return mag
+    return mag, da
 
 
 def magn(names, values, data, model_key, plot_key=False):
@@ -79,21 +79,30 @@ def magn(names, values, data, model_key, plot_key=False):
     # luminosity distances using the distance modulus formula.
     mag = 5 * np.log10(dlpc/10) + M
 
+    dl = dlpc / (4167 * 10**6)
+    da = dl * (1.0+zpicks)**(-2.0)
+#    plt.figure()
+#    plt.title('Angular diameter distance vs redshift')
+#    plt.xlabel('z')
+#    plt.ylabel('D_A / Mpc')
+#    plt.plot(zpicks, da)
+#    plt.show()
+
     if plot_key:
         # Plotting evolution of parameters in the model.
         import plots
         plots.modelcheck(mag, zpicks, plot_var, model_key)
 
-    return mag
+    return mag, da
 
 
 def noisy_mag(mu, sigma, names, values, data, model_key):
 
-    model = magn(names, values, data, model_key)
-    model = np.asarray(model)
-    mag = gnoise(model, mu, sigma)
+    model_mag, model_da = magn(names, values, data, model_key)
 
-    return mag
+    mag, da = gnoise(model_mag, model_da, mu, sigma)
+
+    return mag, da
 
 
 def model_comparison(params, zpicks, model_key, label, plot_key=False):

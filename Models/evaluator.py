@@ -10,7 +10,6 @@ import pandas as pd
 import numpy as np
 import time
 import os.path
-import pickle
 import results
 import tools
 import datasim
@@ -19,7 +18,7 @@ import plots
 
 
 # Number of emcee steps.
-nsteps = 1000
+nsteps = 10000
 
 # Statistical parameteres of noise: mean, standard deviation.
 mu, sigma = 0.0, 0.07 # sigma != 0
@@ -42,125 +41,15 @@ mag = data[0]
 #x1 = data[1]
 #colour = data[2]
 zpicks = data[3]
-zpicks = zpicks.tolist()
 
 # Pantheon data.
 data_dic = {'mag':mag, 'zpicks':zpicks}
-#plt.figure()
-#plt.title('Pantheon')
-#plt.ylabel('Mag')
-#plt.xlabel('redshift')
-#plt.scatter(zpicks, mag)
-
-# Plotting one model.
-#zpicks[-6] = 5
-#zpicks[-5] = 6
-#zpicks[-4] = 7
-#zpicks[-3] = 8
-#zpicks[-2] = 9
-#zpicks[-1] = 10
 
 ## Creating LCDM data.
 #names = ['Mcorr', 'matter']
 #values = np.array([-19.3, 0.3])
 #mag = datasim.noisy_mag(mu, sigma, names, values, data_dic, 'LCDM')
 #data_dic = {'mag':mag, 'zpicks':zpicks}
-
-# Mag for LCDM.
-names = ['Mcorr', 'matter']
-values = np.array([-19.3, 0.3])
-mag0 = datasim.magn(names, values, data_dic, 'LCDM', plot_key=False)
-
-# Mag for waterfall in LCDM mode.
-names = ['Mcorr','matter', 'radiation', 'a_ombar', 'b_ombar', 'c_ombar',
-         'v_in', 'w_in', 'x_in', 'y_in', 'z_in']
-values = np.array([-19.3, 0.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
-mag1 = datasim.magn(names, values, data_dic, 'waterfall', plot_key=False)
-
-# Mag for waterfall wirg fluids but no interaction.
-values = np.array([-19.3,0.3, 0.025, 0.1, 0.1, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0])
-mag2 = datasim.magn(names, values, data_dic, 'waterfall', plot_key=False)
-
-# Sampler from chosen waterfall run.
-with open('results_emcee/1541470181_waterfall/sampler.p','rb') as rfp:
-    sampler = pickle.load(rfp)
-
-# Mag from parameters with highest likelihood.
-bi = np.argmax(sampler.flatlnprobability)
-values = sampler.flatchain[bi,:]
-mag3 = datasim.magn(names, values, data_dic, 'waterfall', plot_key=False)
-
-# Parameters with x best likelihood.
-flatlnprobability = sampler.flatlnprobability
-flatchain_M = sampler.flatchain[:,0]
-flatchain_m = sampler.flatchain[:,1]
-flatchain_r = sampler.flatchain[:,2]
-flatchain_a = sampler.flatchain[:,3]
-flatchain_b = sampler.flatchain[:,4]
-flatchain_c = sampler.flatchain[:,5]
-flatchain_v = sampler.flatchain[:,6]
-flatchain_w = sampler.flatchain[:,7]
-flatchain_x = sampler.flatchain[:,8]
-flatchain_y = sampler.flatchain[:,9]
-flatchain_z = sampler.flatchain[:,10]
-# Stacking them together and sorting by accending redshift.
-flat_sorted = np.stack((flatchain_M, flatchain_m, flatchain_r,
-                        flatchain_a, flatchain_b, flatchain_c,
-                        flatchain_v, flatchain_w, flatchain_x,
-                        flatchain_y, flatchain_z,flatlnprobability), axis=0)
-flat_sorted.sort(axis=-1)
-
-# Mag from parameters with second highest likelihood.
-second_best=[]
-for i in range(len(values)):
-    second_best.append(sampler.flatchain[2,i])
-values = np.asarray(second_best)
-mag4 = datasim.magn(names, values, data_dic, 'waterfall', plot_key=False)
-
-# Mag from parameters with lowest likelihood.
-worst=[]
-for i in range(len(values)):
-    worst.append(sampler.flatchain[-2,i])
-values = np.asarray(worst)
-mag5 = datasim.magn(names, values, data_dic, 'waterfall', plot_key=False)
-
-#plt.figure()
-#plt.title('SN Ia magnitudes')
-#plt.ylabel('Mag')
-#plt.xlabel('redshift')
-#plt.scatter(zpicks, mag, label='Pantheon set', marker=',', s=1)
-#plt.plot(zpicks, mag0, label='LCDM')
-#plt.plot(zpicks, mag1, label='waterfall in LCDM mode')
-#plt.plot(zpicks, mag2, label='waterfall with fluids')
-#plt.plot(zpicks, mag3, label='waterfall highest likelihood')
-#plt.plot(zpicks, mag4, label='waterfall second highest likelihood')
-#plt.plot(zpicks, mag5, label='waterfall lowest likelihood')
-#plt.legend()
-
-data_diff = mag - mag0
-best_diff = mag0 - mag3
-second_best_diff = mag0 - mag4
-worst_diff = mag0 - mag5
-
-#plt.figure()
-#plt.title('Residuals')
-#plt.scatter(zpicks, data_diff, label='data-LCDM', marker=',', s=1)
-#plt.plot(zpicks, best_diff, label='LCDM - best emcee fit')
-#plt.plot(zpicks, second_best_diff, label='LCDM - 2nd best emcee fit')
-#plt.plot(zpicks, worst_diff, label='LCDM - worst emcee fit')
-#plt.legend()
-
-
-
-#names = ['Mcorr','matter', 'radiation','gamma', 'zeta']
-#values = np.array([-19.3,0.3, 0.025, 0.0, 0.0])
-#datasim.magn_plot(names, values, data_dic, 'exotic')
-#
-#names = ['Mcorr', 'matter']
-#values = np.array([-19.3, 0.3])
-#datasim.magn_plot(names, values, data_dic, 'LCDM', True)
-
-
 
 # Compare param evolution for 3 models, plotting on the same axis.
 #g2, g3, z3 = 0.0, 0.0, 0.0
@@ -171,7 +60,8 @@ worst_diff = mag0 - mag5
 #    ['no interaction','$\gamma$='+str(g2),'$\gamma$='+str(g3)+' $\zeta$='+str(z3)])
 
 firstderivs_functions = [None
-            ,'waterfall'
+            ,'stepfall'
+#            ,'waterfall'
 #            ,'exotic'
 #            ,'late_intxde'
 #            ,'heaviside_late_int'
@@ -187,7 +77,7 @@ firstderivs_functions = [None
 #            ,'rdecay_mxde'
 #            ,'rdecay'
 #            ,'interacting'
-            ,'LCDM'
+#            ,'LCDM'
              ]
 
 def modelcheck():
@@ -202,6 +92,10 @@ def modelcheck():
                 values = np.array([-19.3,
                                    0.3, 0.025, 0.1, 0.1, 0.1,
                                    0.0, 0.0, 0.0, 0.0, 0.0])
+            elif test_key == 'stepfall':
+                names = ['Mcorr', 'matter', 'radiation', 'a_ombar',
+                         'v_in', 'w_in', 'x_in']
+                values = np.array([-19.3, 0.3, 0.025, 0.1, 0.0, 0.0, 0.0])
             elif test_key == 'exotic':
                 names = ['Mcorr', 'matter', 'radiation', 'gamma', 'zeta']
                 values = np.array([-19.3, 0.3, 0.025, 0.0, 0.0])
@@ -234,6 +128,10 @@ def emcee():
                 values = np.array([-19.3,
                                    0.3, 0.025, 0.1, 0.1, 0.1,
                                    0.0, 0.0, 0.0, 0.0, 0.0])
+            elif test_key == 'stepfall':
+                names = ['Mcorr', 'matter', 'radiation', 'a_ombar',
+                         'v_in', 'w_in', 'x_in']
+                values = np.array([-19.3, 0.3, 0.025, 0.1, 0.0, 0.0, 0.0])
             elif test_key == 'exotic':
                 names = ['Mcorr', 'matter', 'radiation', 'gamma', 'zeta']
                 values = np.array([-19.3, 0.3, 0.025, 0.0, 0.0])

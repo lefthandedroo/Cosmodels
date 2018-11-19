@@ -116,7 +116,7 @@ def stats(names, values, data_dict, sigma, nsteps,
     if plot:
         # Plot of data mag and redshifts, overlayed with
         # mag simulated using emcee best parameters and data redshifts.
-        magbest = datasim.magn(names, thetabest, data_dict, model_key)
+        magbest, dabest = datasim.magn(names, thetabest, data_dict, model_key)
         plt.figure()
         plt.title('model: '+model_key
             +'\n Evolution of magnitude with redshift \n nsteps: '
