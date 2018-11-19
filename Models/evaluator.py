@@ -216,9 +216,9 @@ def modelcheck():
             if len(names) != len(values):
                 raise ValueError('len(names) != len(values)')
             datasim.magn(names, values, data_dic, test_key, plot_key=True)
-    return 
+    return
 
-modelcheck()
+#modelcheck()
 
 def emcee():
     print('@@@@@@@ Mcor_emcee @@@@@@@')
@@ -270,7 +270,7 @@ def emcee():
 
     return
 
-#emcee()
+emcee()
 
 def errorvsdatasize():
 
