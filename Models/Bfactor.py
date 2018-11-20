@@ -16,7 +16,7 @@ import datasim
 import results
 import tools
 
-speed = 0       # From prior = 0, short = 1, medium = 2, long = 3.
+speed = 1       # From prior = 0, short = 1, medium = 2, long = 3.
 timed = False
 plot = True
 mu, sigma = 0.0, 0.07    # Mean and standard deviation of the noise on the data.
@@ -108,7 +108,8 @@ class Model(object):
 
 
 firstderivs_functions = [None
-            ,'waterfall'
+            ,'stepfall'
+#            ,'waterfall'
 #            ,'exotic'
 #            ,'late_intxde'
 #            ,'heaviside_late_int'
@@ -130,7 +131,11 @@ firstderivs_functions = [None
 
 for key in firstderivs_functions:
     if key:
-        if key =='waterfall':
+        if key == 'stepfall':
+            int_lim = [[-1, 1], [-1, 1], [-1, 1]]
+            names = ['Mcorr','matter','radiation','a_ombar',
+                     'v_in','w_in','x_in']            
+        elif key =='waterfall':
             int_lim = [[-1, 1], [-1, 1], [-1, 1],[-1, 1], [-1, 1]]
             names = ['Mcorr','matter','radiation','a_ombar','b_ombar','c_ombar',
                      'v_in','w_in','x_in','y_in','z_in']

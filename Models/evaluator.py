@@ -18,7 +18,7 @@ import plots
 
 
 # Number of emcee steps.
-nsteps = 10000
+nsteps = 1000
 
 # Statistical parameteres of noise: mean, standard deviation.
 mu, sigma = 0.0, 0.07 # sigma != 0
@@ -51,18 +51,16 @@ data_dic = {'mag':mag, 'zpicks':zpicks}
 #mag = datasim.noisy_mag(mu, sigma, names, values, data_dic, 'LCDM')
 #data_dic = {'mag':mag, 'zpicks':zpicks}
 
-# Compare param evolution for 3 models, plotting on the same axis.
-#g2, g3, z3 = 0.0, 0.0, 0.0
-#p1 = ['Mcorr', 'matter',], np.array([-19.3, 0.0])
-#p2 = ['Mcorr', 'matter','gamma'], np.array([-19.3, 0.3, g2])
-#p3 = ['Mcorr', 'matter', 'radiation', 'gamma', 'zeta'], np.array([-19.3, 0.3, 0.0, g3, z3])
-#datasim.model_comparison([p1, p2, p3], zpicks, ['LCDM', 'late_int', 'exotic'],
-#    ['no interaction','$\gamma$='+str(g2),'$\gamma$='+str(g3)+' $\zeta$='+str(z3)])
+## Plot param evolutions for multiple models on the same axis.
+#p1 = ['Mcorr', 'm_ombar'], np.array([-19.3, 0.0])
+#p2 = ['Mcorr', 'm_ombar', 'r_ombar', 'a_ombar','v_in', 'w_in', 'x_in'], np.array([-19.3, 0.3, 0.025, 0.1, 0.0, 0.0, 0.0])
+#datasim.model_comparison([p1, p2], zpicks, ['LCDM', 'stepfall'], plot_key=True)
+
 
 firstderivs_functions = [None
-#            ,'stepfall'
+            ,'stepfall'
 #            ,'waterfall'
-            ,'exotic'
+#            ,'exotic'
 #            ,'late_intxde'
 #            ,'heaviside_late_int'
 #            ,'late_int'
@@ -77,7 +75,7 @@ firstderivs_functions = [None
 #            ,'rdecay_mxde'
 #            ,'rdecay'
 #            ,'interacting'
-#            ,'LCDM'
+            ,'LCDM'
              ]
 
 def modelcheck():
@@ -87,23 +85,23 @@ def modelcheck():
             print('---',test_key)
             if test_key == 'waterfall':
                 names = ['Mcorr',
-                         'matter', 'radiation', 'a_ombar', 'b_ombar', 'c_ombar',
+                         'm_ombar', 'r_ombar', 'a_ombar', 'b_ombar', 'c_ombar',
                          'v_in', 'w_in', 'x_in', 'y_in', 'z_in']
                 values = np.array([-19.3,
                                    0.3, 0.025, 0.1, 0.1, 0.1,
                                    0.0, 0.0, 0.0, 0.0, 0.0])
             elif test_key == 'stepfall':
-                names = ['Mcorr', 'matter', 'radiation', 'a_ombar',
+                names = ['Mcorr', 'm_ombar', 'r_ombar', 'a_ombar',
                          'v_in', 'w_in', 'x_in']
                 values = np.array([-19.3, 0.3, 0.025, 0.1, 0.0, 0.0, 0.0])
             elif test_key == 'exotic':
-                names = ['Mcorr', 'matter', 'radiation', 'gamma', 'zeta']
+                names = ['Mcorr', 'm_ombar', 'r_ombar', 'gamma', 'zeta']
                 values = np.array([-19.3, 0.3, 0.025, 0.0, 0.0])
             elif test_key == 'LCDM':
-                names = ['Mcorr', 'matter']
+                names = ['Mcorr', 'm_ombar']
                 values = np.array([-19.3, 0.3])
             else:
-                names = ['Mcorr', 'matter','gamma']
+                names = ['Mcorr', 'm_ombar','gamma']
                 values = np.array([-19.3, 0.3, 0.0])
 
             # Making sure number of parameters matches number of names given:
@@ -123,23 +121,23 @@ def emcee():
             print('---',test_key)
             if test_key == 'waterfall':
                 names = ['Mcorr',
-                         'matter', 'radiation', 'a_ombar', 'b_ombar', 'c_ombar',
+                         'm_ombar', 'r_ombar', 'a_ombar', 'b_ombar', 'c_ombar',
                          'v_in', 'w_in', 'x_in', 'y_in', 'z_in']
                 values = np.array([-19.3,
                                    0.3, 0.025, 0.1, 0.1, 0.1,
                                    0.0, 0.0, 0.0, 0.0, 0.0])
             elif test_key == 'stepfall':
-                names = ['Mcorr', 'matter', 'radiation', 'a_ombar',
+                names = ['Mcorr', 'm_ombar', 'r_ombar', 'a_ombar',
                          'v_in', 'w_in', 'x_in']
                 values = np.array([-19.3, 0.3, 0.025, 0.1, 0.0, 0.0, 0.0])
             elif test_key == 'exotic':
-                names = ['Mcorr', 'matter', 'radiation', 'gamma', 'zeta']
+                names = ['Mcorr', 'm_ombar', 'r_ombar', 'gamma', 'zeta']
                 values = np.array([-19.3, 0.3, 0.025, 0.0, 0.0])
             elif test_key == 'LCDM':
-                names = ['Mcorr', 'matter']
+                names = ['Mcorr', 'm_ombar']
                 values = np.array([-19.3, 0.3])
             else:
-                names = ['Mcorr', 'matter','gamma']
+                names = ['Mcorr', 'm_ombar','gamma']
                 values = np.array([-19.3, 0.3, 0.0])
 
             # Making sure number of parameters matches number of names given:

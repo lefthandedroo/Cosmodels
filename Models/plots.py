@@ -298,104 +298,81 @@ def modelcheck(mag, zpicks, plot_var, firstderivs_key):
     t = plot_var.get('t')
     dl = plot_var.get('dl')
     a = plot_var.get('a')
-    ombar_m = plot_var.get('ombar_m')
-    ombar_r = plot_var.get('ombar_r')
-    gamma = plot_var.get('gamma')
-    zeta = plot_var.get('zeta')
-    ombar_de = plot_var.get('ombar_de')
+    Hz = plot_var.get('Hz')
+    fluid_names = plot_var.get('fluid_names')
+    fluid_arr = plot_var.get('fluid_arr')
+    int_terms = plot_var.get('int_terms')
+    da = plot_var.get('da')
+    dv = plot_var.get('dv')
     
     t = -t
     
-    if min(ombar_m) < 0:
-        print('unphysical ombar_m', str(min(ombar_m)))
-    elif min(ombar_de) < 0:
-        print('unphysical ombar_de', str(min(ombar_de)))    
+    # Evolution of the angular diameter distance.
+    plt.figure()
+    plt.title('Angular diameter distance evolution'+'\n Model: %s, int_terms = %s'
+              %(firstderivs_key, int_terms))
+    plt.xlabel('z')
+    plt.ylabel(r'$ \left( \frac{H_0}{c} \right) d_A $', fontsize=15, labelpad=10)
+    plt.plot(zpicks, da)
+    
+    # Evolution of dv.
+    plt.figure()
+    plt.title(r'$D_v$ evolution'+'\n Model: %s, int_terms = %s'
+              %(firstderivs_key, int_terms))
+    plt.xlabel('z')
+    plt.ylabel(r'$ D_v (z)$ [Mpc]')
+    plt.plot(zpicks, dv)    
     
     # Scale factor vs redshift.
     plt.figure()
-    plt.xlabel('redshift $z$')
+    plt.xlabel('$z$')
     plt.ylabel('a')
     plt.grid(True)
     plt.plot(zpicks, a, 'xkcd:crimson', lw=1)
-    plt.title('Scale factor evolution, model = %s, $\gamma$ = %s, $\zeta$ = %s'
-              %(firstderivs_key, gamma, zeta))
+    plt.title('Scale factor evolution'+'\n Model: %s, int_terms = %s'
+              %(firstderivs_key, int_terms))
     
-    Hz = []
-    for i in range(len(ombar_m)):
-        H = (ombar_m[i] + ombar_de[i])**(1/2)
-        if np.isnan(H):
-            print('plots.modelcheck got NaN value for H')
-        Hz.append(H)
+    if np.isnan(Hz).any():
+        print('plots.modelcheck got NaN value for H')
 
     # H vs redshift.
     plt.figure()
-    plt.xlabel('redshift $z$')
+    plt.xlabel('$z$')
     plt.ylabel('H')
     plt.grid(True)
     plt.plot(zpicks, Hz, color='xkcd:blue', lw=1)
-    plt.title(r'H evolution, model = %s, $\gamma$ = %s, $\zeta$ = %s'
-              %(firstderivs_key, gamma, zeta))
-    
-    if ombar_r is None:
-        # ombar_m, ombar_de vs redshift.
-        plt.figure()
-        plt.xlabel('redshift $z$')
-        plt.ylabel(r'$\bar \Omega $')
-        plt.grid(True)
-        plt.plot(zpicks, ombar_m, label=r'$\bar \Omega_{m}$', 
-                 color='xkcd:coral', linestyle=':')
-        plt.plot(zpicks, ombar_de, label=r'$\bar \Omega_{DE}$', 
-                 color='xkcd:aquamarine')
-        plt.legend()
-        plt.title(r'$\bar \Omega_{m}$, $\bar \Omega_{DE}$ evolution, model = %s, $\gamma$ = %s'
-              %(firstderivs_key, gamma))
-        
-        # ombar_m, ombar_de vs redshift log x axis.
-        plt.figure()
-        plt.xlabel('redshift $z$')
-        plt.ylabel(r'$\bar \Omega $')
-        plt.grid(True)
-        plt.semilogx(zpicks, ombar_m, label=r'$\bar \Omega_{m}$', 
-                     color='xkcd:coral', linestyle=':')
-        plt.semilogx(zpicks, ombar_de, label=r'$\bar \Omega_{DE}$', 
-                     color='xkcd:aquamarine')
-        plt.legend()
-        plt.title(r'$\bar \Omega_{m}$, $\bar \Omega_{DE}$ evolution, model = %s, $\gamma$ = %s'
-              %(firstderivs_key, gamma))
-        
-    else:
-        # ombar_m, ombar_de, ombar_r evolution
-        plt.figure()
-        plt.xlabel('redshift $z$')
-        plt.ylabel(r'$\bar \Omega $')
-        plt.grid(True)
-        plt.plot(zpicks, ombar_m, label=r'$\bar \Omega_{m}$', 
-                 color='xkcd:coral', linestyle=':')
-        plt.plot(zpicks, ombar_de, label=r'$\bar \Omega_{DE}$', 
-                 color='xkcd:aquamarine')
-        plt.plot(zpicks, ombar_r, label=r'$\bar \Omega_{r}$', 
-                 color='xkcd:black')
-        plt.legend()
-        plt.title(r'$\bar \Omega_{r}$ evolution, model = %s, $\gamma$ = %s, $\zeta$ = %s'
-              %(firstderivs_key, gamma, zeta)) 
+    plt.title(r'H evolution'+'\n Model: %s, int_terms = %s'
+              %(firstderivs_key, int_terms))
+
+    # Fluid evolution.
+    plt.figure()
+    plt.xlabel('$z$')
+    plt.ylabel(r'$\bar \Omega $')
+    plt.grid(True)
+    for i in range(len(fluid_arr)):
+        plt.plot(zpicks, fluid_arr[i], label=fluid_names[i])
+    plt.legend()
+    plt.title(r'$\bar \Omega_{X}$ evolution'+'\n Model: %s, int_terms = %s'
+          %(firstderivs_key, int_terms)) 
+
 
     # Luminosity distance vs redshift.
     plt.figure()
-    plt.xlabel('redshift $z$')
+    plt.xlabel('$z$')
     plt.ylabel('$d_L$*($H_0$/c)')
     plt.grid(True)     
     plt.plot(zpicks, dl, 'xkcd:lightgreen', lw=1)
-    plt.title('$d_L$ evolution, model = %s, $\gamma$ = %s, $\zeta$ = %s'
-              %(firstderivs_key, gamma, zeta))
+    plt.title('$d_L$ evolution'+'\n Model: %s, int_terms = %s'
+              %(firstderivs_key, int_terms))
 
     # Redshift vs -time.
     plt.figure()
     plt.xlabel('age')
-    plt.ylabel('redshift $z$')
+    plt.ylabel('$z$')
     plt.grid(True)
     plt.plot(t, zpicks, 'm', lw=1)
-    plt.title('Redshift evolution, model = %s, $\gamma$ = %s, $\zeta$ = %s'
-          %(firstderivs_key, gamma, zeta))
+    plt.title('Redshift evolution'+'\n Model: %s, int_terms = %s'
+          %(firstderivs_key, int_terms))
 
     # Scale factor vs -time.
     plt.figure()
@@ -403,201 +380,154 @@ def modelcheck(mag, zpicks, plot_var, firstderivs_key):
     plt.ylabel('a')
     plt.grid(True)
     plt.plot(t, a, color='xkcd:crimson', lw=1)
-    plt.title('Scale factor evolution, model = %s, $\gamma$ = %s, $\zeta$ = %s'
-          %(firstderivs_key, gamma, zeta))
+    plt.title('Scale factor evolution'+'\n Model: %s, int_terms = %s'
+          %(firstderivs_key, int_terms))
     
     # Magnitude vs redshift.
     plt.figure()
-    plt.xlabel('redshift $z$')
+    plt.xlabel('$z$')
     plt.ylabel('magnitude')
-    plt.title('Magnitude evolution, model = %s, $\gamma$ = %s, $\zeta$ = %s'
-          %(firstderivs_key, gamma, zeta))
+    plt.title('Magnitude evolution'+'\n Model: %s, int_terms = %s'
+          %(firstderivs_key, int_terms))
     plt.scatter(zpicks, mag, marker='.', lw='1', c='xkcd:tomato')
 
     plt.show()
     return
 
 
-def multi_modelcheck(zpicks, firstderivs_key, plot_var_list, label):
+def multi_modelcheck(zpicks, keys, plot_var_list):
     
     mag = []
     t = []
     dl = []
     a = []
-    ombar_m = []
-    ombar_r = []
-    ombar_de = []
-    ombar_m0 = []
-    ombar_r0 = []
-    ombar_de0 = []
-    gamma = []
-    zeta = []
+    Hz = []
+    da = []
+    dv = []
+    fluid_names = []
+    fluid_arr = []
+    int_terms = []
     
-    for i in range(len(plot_var_list)):
-        for plot_var in plot_var_list:
-            mag.append(plot_var.get('mag'))
-            t.append(plot_var.get('t'))
-            dl.append(plot_var.get('dl'))
-            a.append(plot_var.get('a'))
-            ombar_m.append(plot_var.get('ombar_m'))
-            ombar_r.append(plot_var.get('ombar_r'))
-            ombar_de.append(plot_var.get('ombar_de'))
-            ombar_m0.append(plot_var.get('ombar_m0'))
-            ombar_r0.append(plot_var.get('ombar_r0'))
-            ombar_de0.append(plot_var.get('ombar_de0'))
-            gamma.append(plot_var.get('gamma'))
-            zeta.append(plot_var.get('zeta'))
+    for plot_var in plot_var_list:
+        mag.append(plot_var.get('mag'))
+        t.append(plot_var.get('t'))
+        dl.append(plot_var.get('dl'))
+        a.append(plot_var.get('a'))
+        Hz.append(plot_var.get('Hz'))
+        da.append(plot_var.get('da'))
+        dv.append(plot_var.get('dv'))
+        fluid_names.append(plot_var.get('fluid_names'))
+        fluid_arr.append(plot_var.get('fluid_arr'))
+        int_terms.append(plot_var.get('int_terms'))
     
-    # Changing time into age
-    t[0], t[1], t[2] = -t[0], -t[1], -t[2]
-    
+    # Changing time t into age
+    age=[]
+    for item in t:
+        item = -item
+        age.append(item)
+     
+        
+    # Evolution of the angular diameter distance.
+    plt.figure()
+    plt.title('Angular diameter distance evolution, models: %s'%(keys))
+    plt.xlabel('z')
+    plt.ylabel(r'$ \left( \frac{H_0}{c} \right) d_A $', fontsize=15, labelpad=10)
+    for i in range(len(da)):
+        plt.plot(zpicks, da[i], label=int_terms[i])
+    plt.legend()
+
+     # Evolution of dv.
+    plt.figure()
+    plt.title(r'$D_v$ evolution, models: %s'%(keys))
+    plt.xlabel('z')
+    plt.ylabel(r'$ D_v (z)$ [Mpc]')
+    for i in range(len(dv)):
+        plt.plot(zpicks, dv[i], label=int_terms[i])
+    plt.legend()
+       
     # Scale factor vs redshift.
-    fig, ax = plt.subplots()
-    plt.xlabel('redshift $z$')
+    plt.figure()
+    plt.xlabel('$z$')
     plt.ylabel('a')
     plt.grid(True)
-    ax.plot(zpicks, a[0], 'r-', label=label[0])
-    ax.plot(zpicks, a[1], 'g-.', label=label[1])
-    ax.plot(zpicks, a[2], 'b:', label=label[2])
-    plt.title('Scale factor evolution, model = %s'%(firstderivs_key))
-    ax.legend()
+    for i in range(len(a)):
+        plt.plot(zpicks, a[0], label=int_terms[i])
+    plt.title('Scale factor evolution, models: %s'%(keys))
+    plt.legend()
     
-    # H vs redshift.
-    Hz_1 = (ombar_m[0] + ombar_de[0])**(1/2)
-    Hz_2 = (ombar_m[1] + ombar_de[1])**(1/2)
-    Hz_3 = (ombar_m[2] + ombar_de[2])**(1/2)
-    
-    fig, ax = plt.subplots()
-    plt.xlabel('redshift $z$')
+    # H vs redshift.    
+    plt.figure()
+    plt.xlabel('$z$')
     plt.ylabel('H')
     plt.grid(True)
-    ax.plot(zpicks, Hz_1, 'r-', label=label[0])
-    ax.plot(zpicks, Hz_2, 'g-.', label=label[1])
-    ax.plot(zpicks, Hz_3, 'b:', label=label[2])
-    plt.title('H evolution, model = %s'%(firstderivs_key))
-    ax.legend()
+    for i in range(len(Hz)):
+        plt.plot(zpicks, Hz[i], label=int_terms[i])
+    plt.title('H evolution, models: %s'%(keys))
+    plt.legend()
 
-    if ombar_r[0] is None:
-        
-        # ombar_m, ombar_de vs redshift.
-        fig, ax = plt.subplots()
-        plt.xlabel('redshift $z$')
-        plt.ylabel(r'$\bar \Omega $')
-        plt.grid(True)
-        ax.plot(zpicks, ombar_m[0], 'r:', label='m')
-        ax.plot(zpicks, ombar_m[1], 'g:', label='m')
-        ax.plot(zpicks, ombar_m[2], 'b:', label='m')
-        ax.plot(zpicks, ombar_de[0], 'm-.', label='de')
-        ax.plot(zpicks, ombar_de[1], 'k-.', label='de')
-        ax.plot(zpicks, ombar_de[2], 'c-.', label='de')
-        plt.title(r'$\bar \Omega_{m}$, $\bar \Omega_{DE}$ evolution, model = %s'
-                  %(firstderivs_key))
-        ax.legend()
-    
-        # ombar_m, ombar_de vs redshift log x axis.
-        fig, ax = plt.subplots()
-        plt.xlabel('redshift $z$')
-        plt.ylabel(r'$\bar \Omega $')
-        plt.grid(True)
-        ax.semilogx(zpicks, ombar_m[0], 'r:', label='m')
-        ax.semilogx(zpicks, ombar_m[1], 'g:', label='m')
-        ax.semilogx(zpicks, ombar_m[2], 'b:', label='m')
-        ax.semilogx(zpicks, ombar_de[0], 'm-.', label='de')
-        ax.semilogx(zpicks, ombar_de[1], 'k-.', label='de')
-        ax.semilogx(zpicks, ombar_de[2], 'c-.', label='de')
-        plt.title(r'$\bar \Omega_{m}$, $\bar \Omega_{DE}$ evolution, model = %s'
-                  %(firstderivs_key))
-        ax.legend()
 
-    else:        
-        # ombar_r, ombar_m, ombar_de vs redshift.
-        fig, ax = plt.subplots()
-        plt.xlabel('redshift $z$')
-        plt.ylabel(r'$\bar \Omega $')
-        plt.grid(True)
-        ax.plot(zpicks, ombar_r[0], 'r:', label='r')
-        ax.plot(zpicks, ombar_r[1], 'g:', label='r')
-        ax.plot(zpicks, ombar_r[2], 'b:', label='r')
-        ax.plot(zpicks, ombar_m[0], 'r-.', label='m')
-        ax.plot(zpicks, ombar_m[1], 'g-.', label='m')
-        ax.plot(zpicks, ombar_m[2], 'b-.', label='m')
-        ax.plot(zpicks, ombar_de[0], 'm-', label='de')
-        ax.plot(zpicks, ombar_de[1], 'k-', label='de')
-        ax.plot(zpicks, ombar_de[2], 'c-', label='de')
-        plt.title(r'$\bar \Omega_{r}$, $\bar \Omega_{m}$, $\bar \Omega_{DE}$ evolution, model = %s'
-                  %(firstderivs_key))
-        ax.legend()
-    
-        # ombar_r, ombar_m, ombar_de vs redshift log x axis.
-        fig, ax = plt.subplots()
-        plt.xlabel('redshift $z$')
-        plt.ylabel(r'$\bar \Omega $')
-        plt.grid(True)
-        ax.semilogx(zpicks, ombar_r[0], 'r:', label='r')
-        ax.semilogx(zpicks, ombar_r[1], 'g:', label='r')
-        ax.semilogx(zpicks, ombar_r[2], 'b:', label='r')        
-        ax.semilogx(zpicks, ombar_m[0], 'r-.', label='m')
-        ax.semilogx(zpicks, ombar_m[1], 'g-.', label='m')
-        ax.semilogx(zpicks, ombar_m[2], 'b-.', label='m')
-        ax.semilogx(zpicks, ombar_de[0], 'm-', label='de')
-        ax.semilogx(zpicks, ombar_de[1], 'k-', label='de')
-        ax.semilogx(zpicks, ombar_de[2], 'c-', label='de')
-        plt.title(r'$\bar \Omega_{m}$, $\bar \Omega_{DE}$ evolution, model = %s'%(firstderivs_key))
-        ax.legend()
-    
-        # ombar_r vs redshift.
-        fig, ax = plt.subplots()
-        plt.xlabel('redshift $z$')
-        plt.ylabel('$\Omega_{m}$')
-        plt.grid(True)
-        ax.plot(zpicks, ombar_r[0], 'r-', label=label[0])
-        ax.plot(zpicks, ombar_r[1], 'g-.', label=label[1])
-        ax.plot(zpicks, ombar_r[2], 'b:', label=label[2])
-        plt.title('$\Omega_{m}$ evolution, model = %s'%(firstderivs_key))
-        ax.legend()
+    # Fluid evolution.   
+    plt.figure()
+    plt.xlabel('$z$')
+    plt.ylabel(r'$\bar \Omega $')
+    plt.grid(True)
+    for i in range(len(fluid_arr)):
+        for j in range(len(fluid_arr[i])):
+            plt.plot(zpicks, fluid_arr[i][j], label=fluid_names[i][j]+' '+keys[i])
+    plt.title(r'$\bar \Omega_{X}$, models: %s'%(keys))
+    plt.legend()
+
+    # Fluid evolution vs redshift log x axis.
+    plt.figure()
+    plt.xlabel('$z$')
+    plt.ylabel(r'$\bar \Omega $')
+    plt.grid(True)
+    for i in range(len(fluid_arr)):
+        for j in range(len(fluid_arr[i])):
+            plt.semilogx(zpicks, fluid_arr[i][j], label=fluid_names[i][j]+' '+keys[i])
+    plt.title(r'$\bar \Omega_{X}$, models: %s'%(keys))
+
+    plt.legend()
+
 	
     # Luminosity distance vs redshift.
-    fig, ax = plt.subplots()
-    plt.xlabel('redshift $z$')
+    plt.figure()
+    plt.xlabel('$z$')
     plt.ylabel('$d_L$*($H_0$/c)')
     plt.grid(True)
-    ax.plot(zpicks, dl[0], 'r-', label=label[0])
-    ax.plot(zpicks, dl[1], 'g-.', label=label[1])
-    ax.plot(zpicks, dl[2], 'b:', label=label[2])
-    plt.title('$d_L$ evolution, model = %s'%(firstderivs_key))
-    ax.legend()
+    for i in range(len(dl)):
+        plt.plot(zpicks, dl[0], label=int_terms[i])
+    plt.title('$d_L$ evolution, models: %s'%(keys))
+    plt.legend()
 
     # Redshift vs age.
-    fig, ax = plt.subplots()
+    plt.figure()
     plt.xlabel('age')
-    plt.ylabel('redshift $z$')
+    plt.ylabel('$z$')
     plt.grid(True)
-    ax.plot(t[0], zpicks, 'r-', label=label[0])
-    ax.plot(t[1], zpicks, 'g-.', label=label[1])
-    ax.plot(t[2], zpicks, 'b:', label=label[2])
-    plt.title('Redshift evolution, model = %s'%(firstderivs_key))
-    ax.legend()
+    for i in range(len(age)):
+        plt.plot(age[i], zpicks, label=int_terms[i])
+    plt.title('Redshift evolution, models: %s'%(keys))
+    plt.legend()
     
     # Scale factor vs -time.
-    fig, ax = plt.subplots()
+    plt.figure()
     plt.xlabel('age')
     plt.ylabel('a')
     plt.grid(True)
-    ax.plot(t[0], a[0], 'r-', label=label[0])
-    ax.plot(t[1], a[1], 'g-.', label=label[1])
-    ax.plot(t[2], a[2], 'b:', label=label[2])
-    plt.title('Scale factor evolution, model = %s'%(firstderivs_key))
-    ax.legend()
+    for i in range(len(age)):
+        plt.plot(age[i], a[i], label=int_terms[i])
+    plt.title('Scale factor evolution, models: %s'%(keys))
+    plt.legend()
 
     # Magnitude vs redshift.
-    fig, ax = plt.subplots()
-    plt.xlabel('redshift $z$')
+    plt.figure()
+    plt.xlabel('$z$')
     plt.ylabel('magnitude')
-    plt.scatter(zpicks, mag[0], c='r', marker='.', lw=0.1, label=label[0])
-    plt.scatter(zpicks, mag[1], c='g', marker='.', lw=0.1,  label=label[1])
-    plt.scatter(zpicks, mag[2], c='b', marker='.', lw=0.2, label=label[2])
-    plt.title('Magnitude evolution, model = %s'%(firstderivs_key))
-    ax.legend()
+    for i in range(len(mag)):
+        plt.scatter(zpicks, mag[i], marker='.', lw=0.1, label=int_terms[i])
+    plt.title('Magnitude evolution, models: %s'%(keys))
+    plt.legend()
     
     plt.show()
     return

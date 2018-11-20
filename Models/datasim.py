@@ -105,7 +105,7 @@ def noisy_mag(mu, sigma, names, values, data, model_key):
     return mag, da
 
 
-def model_comparison(params, zpicks, model_key, label, plot_key=False):
+def model_comparison(params, zpicks, model_key, plot_key=False):
     """
     Takes in:
             params = list of 3 lists of dictionaries with model parameters;
@@ -119,7 +119,7 @@ def model_comparison(params, zpicks, model_key, label, plot_key=False):
 
     plot_var_list = []
 
-    for i in range(3):
+    for i in range(len(params)):
         names, values = params[i]
 
         dlpc, plot_var = zodesolve.zodesolve(names, values, zpicks, model_key[i], plot_key)
@@ -133,8 +133,8 @@ def model_comparison(params, zpicks, model_key, label, plot_key=False):
 
         plot_var['mag'] = mag
         plot_var_list.append(plot_var)
-
-    plots.multi_modelcheck(zpicks, model_key, plot_var_list, label)
+    
+    plots.multi_modelcheck(zpicks, model_key, plot_var_list)
     return
 
 

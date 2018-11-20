@@ -122,7 +122,7 @@ def waterfall(double[:] v, redshifts, in_terms, double H0):
     cdef double in_y = in_terms[3]
     cdef double in_z = in_terms[4]
 
-    cdef double Hz = H0 * (ombar_r +ombar_m +ombar_a
+    cdef double Hz = H0 * (ombar_m +ombar_r +ombar_a
                            +ombar_b +ombar_c +ombar_de)**(0.5)
 
     if math.isnan(Hz):
@@ -201,9 +201,9 @@ def rainbow(double[:] v, redshifts, in_terms, double H0):
     cdef double in_j = in_terms[9]
 
 
-    cdef double Hz = H0 * (ombar_r + ombar_m + ombar_a + ombar_b + ombar_c
-                           + ombar_d + ombar_e + ombar_f + ombar_g + ombar_h
-                           + ombar_i + ombar_de)**(0.5)
+    cdef double Hz = H0 * (ombar_m +ombar_r  +ombar_a +ombar_b +ombar_c
+                           +ombar_d +ombar_e +ombar_f +ombar_g +ombar_h
+                           +ombar_i +ombar_de)**(0.5)
 
     if math.isnan(Hz):
         print('rainbow')
@@ -272,7 +272,7 @@ def exotic(double[:] v, redshifts, in_terms, double H0):
     cdef double gamma = in_terms[0]
     cdef double zeta = in_terms[1]
 
-    cdef double Hz = H0 * (ombar_m + ombar_de + ombar_r)**(0.5)
+    cdef double Hz = H0 * (ombar_m +ombar_r +ombar_de)**(0.5)
 
     if math.isnan(Hz):
         print('exotic')

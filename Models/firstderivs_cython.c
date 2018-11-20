@@ -3511,7 +3511,7 @@ static PyObject *__pyx_pf_18firstderivs_cython_2waterfall(CYTHON_UNUSED PyObject
  *     cdef double in_y = in_terms[3]
  *     cdef double in_z = in_terms[4]             # <<<<<<<<<<<<<<
  * 
- *     cdef double Hz = H0 * (ombar_r +ombar_m +ombar_a
+ *     cdef double Hz = H0 * (ombar_m +ombar_r +ombar_a
  */
   __pyx_t_12 = __Pyx_GetItemInt(__pyx_v_in_terms, 4, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 123, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_12);
@@ -3522,11 +3522,11 @@ static PyObject *__pyx_pf_18firstderivs_cython_2waterfall(CYTHON_UNUSED PyObject
   /* "firstderivs_cython.pyx":125
  *     cdef double in_z = in_terms[4]
  * 
- *     cdef double Hz = H0 * (ombar_r +ombar_m +ombar_a             # <<<<<<<<<<<<<<
+ *     cdef double Hz = H0 * (ombar_m +ombar_r +ombar_a             # <<<<<<<<<<<<<<
  *                            +ombar_b +ombar_c +ombar_de)**(0.5)
  * 
  */
-  __pyx_v_Hz = (__pyx_v_H0 * pow((((((__pyx_v_ombar_r + __pyx_v_ombar_m) + __pyx_v_ombar_a) + __pyx_v_ombar_b) + __pyx_v_ombar_c) + __pyx_v_ombar_de), 0.5));
+  __pyx_v_Hz = (__pyx_v_H0 * pow((((((__pyx_v_ombar_m + __pyx_v_ombar_r) + __pyx_v_ombar_a) + __pyx_v_ombar_b) + __pyx_v_ombar_c) + __pyx_v_ombar_de), 0.5));
 
   /* "firstderivs_cython.pyx":128
  *                            +ombar_b +ombar_c +ombar_de)**(0.5)
@@ -4689,14 +4689,14 @@ static PyObject *__pyx_pf_18firstderivs_cython_4rainbow(CYTHON_UNUSED PyObject *
   /* "firstderivs_cython.pyx":204
  * 
  * 
- *     cdef double Hz = H0 * (ombar_r + ombar_m + ombar_a + ombar_b + ombar_c             # <<<<<<<<<<<<<<
- *                            + ombar_d + ombar_e + ombar_f + ombar_g + ombar_h
- *                            + ombar_i + ombar_de)**(0.5)
+ *     cdef double Hz = H0 * (ombar_m +ombar_r  +ombar_a +ombar_b +ombar_c             # <<<<<<<<<<<<<<
+ *                            +ombar_d +ombar_e +ombar_f +ombar_g +ombar_h
+ *                            +ombar_i +ombar_de)**(0.5)
  */
-  __pyx_v_Hz = (__pyx_v_H0 * pow((((((((((((__pyx_v_ombar_r + __pyx_v_ombar_m) + __pyx_v_ombar_a) + __pyx_v_ombar_b) + __pyx_v_ombar_c) + __pyx_v_ombar_d) + __pyx_v_ombar_e) + __pyx_v_ombar_f) + __pyx_v_ombar_g) + __pyx_v_ombar_h) + __pyx_v_ombar_i) + __pyx_v_ombar_de), 0.5));
+  __pyx_v_Hz = (__pyx_v_H0 * pow((((((((((((__pyx_v_ombar_m + __pyx_v_ombar_r) + __pyx_v_ombar_a) + __pyx_v_ombar_b) + __pyx_v_ombar_c) + __pyx_v_ombar_d) + __pyx_v_ombar_e) + __pyx_v_ombar_f) + __pyx_v_ombar_g) + __pyx_v_ombar_h) + __pyx_v_ombar_i) + __pyx_v_ombar_de), 0.5));
 
   /* "firstderivs_cython.pyx":208
- *                            + ombar_i + ombar_de)**(0.5)
+ *                            +ombar_i +ombar_de)**(0.5)
  * 
  *     if math.isnan(Hz):             # <<<<<<<<<<<<<<
  *         print('rainbow')
@@ -4827,7 +4827,7 @@ static PyObject *__pyx_pf_18firstderivs_cython_4rainbow(CYTHON_UNUSED PyObject *
     __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
 
     /* "firstderivs_cython.pyx":208
- *                            + ombar_i + ombar_de)**(0.5)
+ *                            +ombar_i +ombar_de)**(0.5)
  * 
  *     if math.isnan(Hz):             # <<<<<<<<<<<<<<
  *         print('rainbow')
@@ -5713,7 +5713,7 @@ static PyObject *__pyx_pf_18firstderivs_cython_6exotic(CYTHON_UNUSED PyObject *_
  *     cdef double gamma = in_terms[0]
  *     cdef double zeta = in_terms[1]             # <<<<<<<<<<<<<<
  * 
- *     cdef double Hz = H0 * (ombar_m + ombar_de + ombar_r)**(0.5)
+ *     cdef double Hz = H0 * (ombar_m +ombar_r +ombar_de)**(0.5)
  */
   __pyx_t_9 = __Pyx_GetItemInt(__pyx_v_in_terms, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 273, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
@@ -5724,14 +5724,14 @@ static PyObject *__pyx_pf_18firstderivs_cython_6exotic(CYTHON_UNUSED PyObject *_
   /* "firstderivs_cython.pyx":275
  *     cdef double zeta = in_terms[1]
  * 
- *     cdef double Hz = H0 * (ombar_m + ombar_de + ombar_r)**(0.5)             # <<<<<<<<<<<<<<
+ *     cdef double Hz = H0 * (ombar_m +ombar_r +ombar_de)**(0.5)             # <<<<<<<<<<<<<<
  * 
  *     if math.isnan(Hz):
  */
-  __pyx_v_Hz = (__pyx_v_H0 * pow(((__pyx_v_ombar_m + __pyx_v_ombar_de) + __pyx_v_ombar_r), 0.5));
+  __pyx_v_Hz = (__pyx_v_H0 * pow(((__pyx_v_ombar_m + __pyx_v_ombar_r) + __pyx_v_ombar_de), 0.5));
 
   /* "firstderivs_cython.pyx":277
- *     cdef double Hz = H0 * (ombar_m + ombar_de + ombar_r)**(0.5)
+ *     cdef double Hz = H0 * (ombar_m +ombar_r +ombar_de)**(0.5)
  * 
  *     if math.isnan(Hz):             # <<<<<<<<<<<<<<
  *         print('exotic')
@@ -5869,7 +5869,7 @@ static PyObject *__pyx_pf_18firstderivs_cython_6exotic(CYTHON_UNUSED PyObject *_
     __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
     /* "firstderivs_cython.pyx":277
- *     cdef double Hz = H0 * (ombar_m + ombar_de + ombar_r)**(0.5)
+ *     cdef double Hz = H0 * (ombar_m +ombar_r +ombar_de)**(0.5)
  * 
  *     if math.isnan(Hz):             # <<<<<<<<<<<<<<
  *         print('exotic')

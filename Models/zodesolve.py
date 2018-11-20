@@ -47,6 +47,7 @@ def zodesolve(names, values, zpicks, model, plot_key):
 
     # Standard cosmological parameters.
     H0 = 1.0
+    c = 1.0
     c_over_H0 = 4167 * 10**6    # c/H0 in parsecs
 
     # Initial conditions at z = 0 (now).
@@ -93,30 +94,45 @@ def zodesolve(names, values, zpicks, model, plot_key):
 
     plot_var = {}
     if plot_key:
-        for i in range(index,len(values)):
-            plot_var[names[i]] = values[i]
         # Separate results into their own arrays:
         plot_var['t'] = vsol[1:,0]
         plot_var['a'] = vsol[1:,1]
-        plot_var['ombar_m'] = vsol[1:,2]
-        if model == 'exotic' or model == 'waterfall':
-            plot_var['ombar_r'] = vsol[1:,3]
-            plot_var['ombar_r0'] = values[2]
-            if model == 'waterfall':
-                plot_var['a_ombar'] = vsol[1:,4]
-                plot_var['b_ombar'] = vsol[1:,5]
-                plot_var['c_ombar'] = vsol[1:,6]
-        plot_var['ombar_de0'] = ombar_de0
-        plot_var['ombar_de'] = vsol[1:,-3]
+        
+        # Collecting fluids and their names for plotting:
+        fluid_arr = np.zeros(((index), (len(zpicks)-1)))
+        fluid_names = []
+        for i in range((index-1)):
+            fluid_names.append(names[i+1])
+            fluid_arr[i] = vsol[1:,(i+2)]
+        fluid_names.append('de_ombar')
+        fluid_arr[-1] = vsol[1:,-3]
+        plot_var['fluid_names'] = fluid_names
+        plot_var['fluid_arr'] = fluid_arr
+        
         plot_var['z'] = vsol[1:,-2]
         plot_var['dl'] = vsol[1:,-1] * (1+z)
-
-        da = (dlpc/10**6) * (1.0+z)**(-2.0)
-        plt.figure()
-        plt.title('Angular diameter distance vs redshift')
-        plt.xlabel('z')
-        plt.ylabel('D_A / Mpc')
-        plt.plot(z, da)
+        plot_var['int_terms'] = int_terms
+        
+        da = dl * (1.0+z)**(-2.0)
+        plot_var['da'] = da        
+#        plt.figure()
+#        plt.title('Angular diameter distance evolution')
+#        plt.xlabel('z')
+#        plt.ylabel(r'$ \left( \frac{H_0}{c} \right) d_A $', fontsize=15, labelpad=10)
+#        plt.plot(z, da)
+        
+        Hz = H0 * (np.sum(fluid_arr, axis=0))**(0.5)
+        plot_var['Hz'] = Hz
+        
+        da = dlpc/10**6 * (1.0+z)**(-2.0)
+        dv = ((1+z)**2 * da**2 * c*z/Hz)**(1/3)        
+        plot_var['dv'] = dv
+#        plt.figure()
+#        plt.title(r'$D_v$ evolution')
+#        plt.xlabel('z')
+#        plt.ylabel(r'$ D_v (z)$ [Mpc]')
+#        plt.plot(z, dv)
+        
         plt.show()
 
     return dlpc, plot_var
