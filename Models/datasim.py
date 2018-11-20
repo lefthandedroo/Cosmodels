@@ -84,7 +84,7 @@ def magn(names, values, data, model_key, plot_key=False):
 #    plt.figure()
 #    plt.title('Angular diameter distance vs redshift')
 #    plt.xlabel('z')
-#    plt.ylabel('D_A / Mpc')
+#    plt.ylabel('D_A')
 #    plt.plot(zpicks, da)
 #    plt.show()
 

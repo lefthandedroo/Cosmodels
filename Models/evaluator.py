@@ -60,9 +60,9 @@ data_dic = {'mag':mag, 'zpicks':zpicks}
 #    ['no interaction','$\gamma$='+str(g2),'$\gamma$='+str(g3)+' $\zeta$='+str(z3)])
 
 firstderivs_functions = [None
-            ,'stepfall'
+#            ,'stepfall'
 #            ,'waterfall'
-#            ,'exotic'
+            ,'exotic'
 #            ,'late_intxde'
 #            ,'heaviside_late_int'
 #            ,'late_int'
@@ -99,7 +99,7 @@ def modelcheck():
             elif test_key == 'exotic':
                 names = ['Mcorr', 'matter', 'radiation', 'gamma', 'zeta']
                 values = np.array([-19.3, 0.3, 0.025, 0.0, 0.0])
-            elif test_key == 'LCDM' or test_key == 'dlLCDM':
+            elif test_key == 'LCDM':
                 names = ['Mcorr', 'matter']
                 values = np.array([-19.3, 0.3])
             else:
