@@ -37,10 +37,10 @@ mu, sigma = 0.0, 0.07 # sigma != 0
 #plt.xlabel('redshift')
 #plt.scatter(zpicks, mag)
 
-test_key = 'stepfall'
+test_key = 'LCDM'
 
 # Generating redshifts.
-zpicks = np.random.uniform(low=0.0, high=100, size=(1000,))
+zpicks = np.random.uniform(low=0.0, high=1100, size=(1000,))
 zpicks = np.sort(zpicks, axis=None)
 data_dic = {'mag':None, 'zpicks':zpicks}
 
@@ -77,6 +77,10 @@ plt.scatter(zpicks, da, label='noisy LCDM data', marker=',', s=1)
 plt.plot(zpicks, da0, label='LCDM model', color='orange')
 #plt.plot(zpicks, da1, label='test_key in LCDM mode')
 plt.legend()
+
+index = np.argmax(zpicks>1000)
+print(da[index])
+print(zpicks[index])
 
 # Mag for test_key with fluids but no interaction.
 if test_key == 'waterfall':

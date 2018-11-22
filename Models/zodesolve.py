@@ -60,19 +60,23 @@ def zodesolve(names, values, zpicks, model, plot_key):
     # Pack up the initial conditions and interaction terms.
     int_terms = []
 
-    if model == 'waterfall':
-        index = 6
-    elif model == 'stepfall':
-        index = 4
-    elif model == 'exotic':
-        index = 3
-    elif model == 'LCDM':
-        index = len(values)
-    else:
-        index = 2
+#    fluid_in = index[0]
+#    int_in = index[1] 
 
-    int_terms = values[index:]
-    fluids = values[1:index]
+    if model == 'waterfall':
+        int_in = 6
+    elif model == 'stepfall':
+        int_in = 4
+    elif model == 'exotic':
+        int_in = 3
+    elif model == 'LCDM':
+        int_in = len(values)
+    else:
+        int_in = 2
+
+    int_terms = values[int_in:]
+#    fluids = values[fluid_in:int_in]
+    fluids = values[1:int_in]
     ombar_de0 = rho_c0/rho_c0 - np.sum(fluids)
 
     t0a0 = np.array([t0, a0])
@@ -99,9 +103,9 @@ def zodesolve(names, values, zpicks, model, plot_key):
         plot_var['a'] = vsol[1:,1]
         
         # Collecting fluids and their names for plotting:
-        fluid_arr = np.zeros(((index), (len(zpicks)-1)))
+        fluid_arr = np.zeros(((int_in), (len(zpicks)-1)))
         fluid_names = []
-        for i in range((index-1)):
+        for i in range((int_in-1)):
             fluid_names.append(names[i+1])
             fluid_arr[i] = vsol[1:,(i+2)]
         fluid_names.append('de_ombar')
@@ -109,11 +113,11 @@ def zodesolve(names, values, zpicks, model, plot_key):
         plot_var['fluid_names'] = fluid_names
         plot_var['fluid_arr'] = fluid_arr
         
-        plot_var['z'] = vsol[1:,-2]
-        plot_var['dl'] = vsol[1:,-1] * (1+z)
+        plot_var['z'] = z
+        plot_var['dl'] = dl # in units of dl*(H0/c)
         plot_var['int_terms'] = int_terms
         
-        da = dl * (1.0+z)**(-2.0)
+        da = dl * (1.0+z)**(-2.0) # in units of dl*(H0/c)
         plot_var['da'] = da        
 #        plt.figure()
 #        plt.title('Angular diameter distance evolution')
@@ -124,15 +128,37 @@ def zodesolve(names, values, zpicks, model, plot_key):
         Hz = H0 * (np.sum(fluid_arr, axis=0))**(0.5)
         plot_var['Hz'] = Hz
         
-        da = dlpc/10**6 * (1.0+z)**(-2.0)
-        dv = ((1+z)**2 * da**2 * c*z/Hz)**(1/3)        
-        plot_var['dv'] = dv
+        daMpc = dlpc/10**6 * (1.0+z)**(-2.0) # in units of dl in Mpc*(H0/c)
+        dV = (daMpc**2 * c*z/Hz)**(1/3) # combines radial and transverse dilation 
+        plot_var['dV'] = dV
+#        plt.figure()
+#        plt.title(r'$d_V$ evolution')
+#        plt.xlabel('z')
+#        plt.ylabel(r'$ d_V (z)$ [Mpc]')
+#        plt.grid(True)
+#        plt.plot(z, dV)
+        
+        
+#        Dv = ((1+z)**2 * daMpc**2 * c*z/Hz)**(1/3)
 #        plt.figure()
 #        plt.title(r'$D_v$ evolution')
 #        plt.xlabel('z')
 #        plt.ylabel(r'$ D_v (z)$ [Mpc]')
-#        plt.plot(z, dv)
+#        plt.grid(True)
+#        plt.plot(z, Dv)
         
-        plt.show()
-
+        # Calculating the sound horizon
+        ombar_m = vsol[1:,2]
+        ombar_baryon =  ombar_m*0.04 #0.0125
+#        ombar_baryon = values[(fluid_in-1)]
+        s = 44.5 * np.log(9.83 / ombar_m) / (1 +10 * ombar_baryon**(3/4))**(1/2)
+        plt.figure()
+        plt.title('Sound horizon')
+        plt.xlabel(r'$z$')
+        plt.ylabel('Physical length in Mpc')
+        plt.grid(True)
+        plt.plot(z, s, label=r'$s_H$')
+        plt.legend()
+                
+        plt.show()        
     return dlpc, plot_var

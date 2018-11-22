@@ -58,7 +58,7 @@ data_dic = {'mag':mag, 'zpicks':zpicks}
 
 
 firstderivs_functions = [None
-            ,'stepfall'
+#            ,'stepfall'
 #            ,'waterfall'
 #            ,'exotic'
 #            ,'late_intxde'
@@ -110,7 +110,7 @@ def modelcheck():
             datasim.magn(names, values, data_dic, test_key, plot_key=True)
     return
 
-#modelcheck()
+modelcheck()
 
 def emcee():
     print('@@@@@@@ Mcor_emcee @@@@@@@')
@@ -119,6 +119,7 @@ def emcee():
 
         if test_key:
             print('---',test_key)
+            
             if test_key == 'waterfall':
                 names = ['Mcorr',
                          'm_ombar', 'r_ombar', 'a_ombar', 'b_ombar', 'c_ombar',
@@ -136,6 +137,8 @@ def emcee():
             elif test_key == 'LCDM':
                 names = ['Mcorr', 'm_ombar']
                 values = np.array([-19.3, 0.3])
+                 index = 1, 6            
+
             else:
                 names = ['Mcorr', 'm_ombar','gamma']
                 values = np.array([-19.3, 0.3, 0.0])
@@ -153,7 +156,7 @@ def emcee():
             timet0 = time.time()
 
             # emcee parameter search.
-            propert, sampler = stats.stats(names, values, data_dic, sigma,
+            propert, sampler = stats.stats(names, values, index, data_dic, sigma,
                                            nsteps, save_path, test_key, plot=1)
             # Time taken by script.
             timet1=time.time()
@@ -166,7 +169,7 @@ def emcee():
 
     return
 
-emcee()
+#emcee()
 
 def errorvsdatasize():
 
