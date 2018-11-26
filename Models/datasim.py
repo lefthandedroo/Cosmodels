@@ -73,14 +73,13 @@ def magn(names, values, data, model_key, plot_key=False):
     # Corrected absolute magnitude M of SN.
     M = values[0]
 
-    dlpc, plot_var = zodesolve.zodesolve(names, values, zpicks, model_key, plot_key)
+    dlpc, da, plot_var = zodesolve.zodesolve(names, values, zpicks, model_key, plot_key)
 
     # Calculating apparent magnitudes of supernovae at the simulated
     # luminosity distances using the distance modulus formula.
     mag = 5 * np.log10(dlpc/10) + M
 
-    dl = dlpc / (4167 * 10**6)
-    da = dl * (1.0+zpicks)**(-2.0)
+    print(model_key,'redshift = ',zpicks[-1],'da =',da[-1])
 #    plt.figure()
 #    plt.title('Angular diameter distance vs redshift')
 #    plt.xlabel('z')
@@ -122,7 +121,7 @@ def model_comparison(params, zpicks, model_key, plot_key=False):
     for i in range(len(params)):
         names, values = params[i]
 
-        dlpc, plot_var = zodesolve.zodesolve(names, values, zpicks, model_key[i], plot_key)
+        dlpc, da, plot_var = zodesolve.zodesolve(names, values, zpicks, model_key[i], plot_key)
 
         # Corrected absolute magnitude M of SN.
         M = values[0]
@@ -207,7 +206,7 @@ def magn_plot(names, values, data, model_key, plot_key=False):
     # Corrected absolute magnitude M of SN.
     M = values[0]
 
-    dlpc, plot_var = zodesolve.zodesolve(names, values, zpicks, model_key, plot_key)
+    dlpc, da, plot_var = zodesolve.zodesolve(names, values, zpicks, model_key, plot_key)
 
     # Calculating apparent magnitudes of supernovae at the simulated
     # luminosity distances using the distance modulus formula.

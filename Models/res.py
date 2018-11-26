@@ -37,7 +37,7 @@ mu, sigma = 0.0, 0.07 # sigma != 0
 #plt.xlabel('redshift')
 #plt.scatter(zpicks, mag)
 
-test_key = 'LCDM'
+test_key = 'stepfall'
 
 # Generating redshifts.
 zpicks = np.random.uniform(low=0.0, high=1100, size=(1000,))
@@ -49,11 +49,13 @@ names = ['Mcorr', 'matter']
 values = np.array([-19.3, 0.3])
 mag, da = datasim.noisy_mag(mu, sigma, names, values, data_dic, 'LCDM')
 data_dic = {'mag':mag, 'zpicks':zpicks}
+print('smallest da in noisy LCDM da data', da[np.argmin(da)])
 
 # LCDM mag and da.
 names = ['Mcorr', 'matter']
 values = np.array([-19.3, 0.3])
 mag0, da0 = datasim.magn(names, values, data_dic, 'LCDM', plot_key=False)
+print('smallest da in LCDM model da', da0[np.argmin(da0)])
 
 ## Mag and da for test_key in LCDM mode.
 #names = ['Mcorr','matter', 'radiation', 'a_ombar', 'b_ombar', 'c_ombar',
@@ -77,10 +79,6 @@ plt.scatter(zpicks, da, label='noisy LCDM data', marker=',', s=1)
 plt.plot(zpicks, da0, label='LCDM model', color='orange')
 #plt.plot(zpicks, da1, label='test_key in LCDM mode')
 plt.legend()
-
-index = np.argmax(zpicks>1000)
-print(da[index])
-print(zpicks[index])
 
 # Mag for test_key with fluids but no interaction.
 if test_key == 'waterfall':

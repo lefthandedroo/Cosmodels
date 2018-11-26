@@ -18,7 +18,7 @@ import plots
 
 
 # Number of emcee steps.
-nsteps = 1000
+nsteps = 10000
 
 # Statistical parameteres of noise: mean, standard deviation.
 mu, sigma = 0.0, 0.07 # sigma != 0
@@ -43,13 +43,16 @@ mag = data[0]
 zpicks = data[3]
 
 # Pantheon data.
-data_dic = {'mag':mag, 'zpicks':zpicks}
-
-## Creating LCDM data.
-#names = ['Mcorr', 'matter']
-#values = np.array([-19.3, 0.3])
-#mag = datasim.noisy_mag(mu, sigma, names, values, data_dic, 'LCDM')
 #data_dic = {'mag':mag, 'zpicks':zpicks}
+
+# Generating redshifts and LCDM mag and da.
+zpicks = np.random.uniform(low=0.0, high=1101, size=(1000,))
+zpicks = np.sort(zpicks, axis=None)
+data_dic = {'mag':None, 'zpicks':zpicks}
+names = ['Mcorr', 'matter']
+values = np.array([-19.3, 0.3])
+mag = datasim.noisy_mag(mu, sigma, names, values, data_dic, 'LCDM')
+data_dic = {'mag':mag, 'zpicks':zpicks}
 
 ## Plot param evolutions for multiple models on the same axis.
 #p1 = ['Mcorr', 'm_ombar'], np.array([-19.3, 0.0])
@@ -58,9 +61,9 @@ data_dic = {'mag':mag, 'zpicks':zpicks}
 
 
 firstderivs_functions = [None
-#            ,'stepfall'
-#            ,'waterfall'
-#            ,'exotic'
+            ,'stepfall'
+            ,'waterfall'
+            ,'exotic'
 #            ,'late_intxde'
 #            ,'heaviside_late_int'
 #            ,'late_int'
@@ -82,7 +85,7 @@ def modelcheck():
 
     for test_key in firstderivs_functions:
         if test_key:
-            print('---',test_key)
+#            print('---',test_key)
             if test_key == 'waterfall':
                 names = ['Mcorr',
                          'm_ombar', 'r_ombar', 'a_ombar', 'b_ombar', 'c_ombar',
@@ -107,7 +110,7 @@ def modelcheck():
             # Making sure number of parameters matches number of names given:
             if len(names) != len(values):
                 raise ValueError('len(names) != len(values)')
-            datasim.magn(names, values, data_dic, test_key, plot_key=True)
+            datasim.magn(names, values, data_dic, test_key, plot_key=False)
     return
 
 modelcheck()
@@ -137,7 +140,6 @@ def emcee():
             elif test_key == 'LCDM':
                 names = ['Mcorr', 'm_ombar']
                 values = np.array([-19.3, 0.3])
-                 index = 1, 6            
 
             else:
                 names = ['Mcorr', 'm_ombar','gamma']
@@ -156,7 +158,7 @@ def emcee():
             timet0 = time.time()
 
             # emcee parameter search.
-            propert, sampler = stats.stats(names, values, index, data_dic, sigma,
+            propert, sampler = stats.stats(names, values, data_dic, sigma,
                                            nsteps, save_path, test_key, plot=1)
             # Time taken by script.
             timet1=time.time()

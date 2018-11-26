@@ -328,7 +328,13 @@ def modelcheck(mag, zpicks, plot_var, firstderivs_key):
     plt.xlabel('z')
     plt.ylabel(r'$ \left( \frac{H_0}{c} \right) d_A $', fontsize=15, labelpad=10)
     plt.grid(True)
-    plt.plot(zpicks, da)
+    
+    da_index = np.argmin(da)
+    if da[da_index] < 0:
+        plt.plot(zpicks[:,da_index], da[:, da_index], color = 'g')
+        plt.plot(zpicks[da_index, :], da[da_index, :], color = 'r')
+    else:
+        plt.plot(zpicks, da)
     
     # Evolution of dV.
     plt.figure()

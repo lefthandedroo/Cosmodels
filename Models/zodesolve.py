@@ -94,6 +94,7 @@ def zodesolve(names, values, zpicks, model, plot_key):
                   atol=1.0e-8, rtol=1.0e-6)
     z = vsol[1:,-2]
     dl = vsol[1:,-1] * (1+z)  # in units of dl*(H0/c)
+    da = dl * (1.0+z)**(-2.0) # in units of dl*(H0/c)
     dlpc = dl * c_over_H0    # dl in parsecs (= vsol[dl] * c/H0)
 
     plot_var = {}
@@ -117,8 +118,8 @@ def zodesolve(names, values, zpicks, model, plot_key):
         plot_var['dl'] = dl # in units of dl*(H0/c)
         plot_var['int_terms'] = int_terms
         
-        da = dl * (1.0+z)**(-2.0) # in units of dl*(H0/c)
-        plot_var['da'] = da        
+        plot_var['da'] = da
+        
 #        plt.figure()
 #        plt.title('Angular diameter distance evolution')
 #        plt.xlabel('z')
@@ -147,18 +148,18 @@ def zodesolve(names, values, zpicks, model, plot_key):
 #        plt.grid(True)
 #        plt.plot(z, Dv)
         
-        # Calculating the sound horizon
-        ombar_m = vsol[1:,2]
-        ombar_baryon =  ombar_m*0.04 #0.0125
-#        ombar_baryon = values[(fluid_in-1)]
-        s = 44.5 * np.log(9.83 / ombar_m) / (1 +10 * ombar_baryon**(3/4))**(1/2)
-        plt.figure()
-        plt.title('Sound horizon')
-        plt.xlabel(r'$z$')
-        plt.ylabel('Physical length in Mpc')
-        plt.grid(True)
-        plt.plot(z, s, label=r'$s_H$')
-        plt.legend()
+#        # Calculating the sound horizon
+#        ombar_m = vsol[1:,2]
+#        ombar_baryon =  ombar_m*0.04 #0.0125
+##        ombar_baryon = values[(fluid_in-1)]
+#        s = 44.5 * np.log(9.83 / ombar_m) / (1 +10 * ombar_baryon**(3/4))**(1/2)
+#        plt.figure()
+#        plt.title('Sound horizon')
+#        plt.xlabel(r'$z$')
+#        plt.ylabel('Physical length in Mpc')
+#        plt.grid(True)
+#        plt.plot(z, s, label=r'$s_H$')
+#        plt.legend()
                 
         plt.show()        
-    return dlpc, plot_var
+    return dlpc, da, plot_var
