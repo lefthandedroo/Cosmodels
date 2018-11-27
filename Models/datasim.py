@@ -78,15 +78,10 @@ def magn(names, values, data, model_key, plot_key=False):
     # Calculating apparent magnitudes of supernovae at the simulated
     # luminosity distances using the distance modulus formula.
     mag = 5 * np.log10(dlpc/10) + M
+    
+    print('redshift =',zpicks[-1],'da =', da[-1])
 
-    print(model_key,'redshift = ',zpicks[-1],'da =',da[-1])
-#    plt.figure()
-#    plt.title('Angular diameter distance vs redshift')
-#    plt.xlabel('z')
-#    plt.ylabel('D_A')
-#    plt.plot(zpicks, da)
-#    plt.show()
-
+    
     if plot_key:
         # Plotting evolution of parameters in the model.
         import plots

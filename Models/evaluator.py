@@ -49,10 +49,10 @@ zpicks = data[3]
 zpicks = np.random.uniform(low=0.0, high=1101, size=(1000,))
 zpicks = np.sort(zpicks, axis=None)
 data_dic = {'mag':None, 'zpicks':zpicks}
-names = ['Mcorr', 'matter']
-values = np.array([-19.3, 0.3])
-mag = datasim.noisy_mag(mu, sigma, names, values, data_dic, 'LCDM')
-data_dic = {'mag':mag, 'zpicks':zpicks}
+#names = ['Mcorr', 'matter']
+#values = np.array([-19.3, 0.3])
+#mag = datasim.noisy_mag(mu, sigma, names, values, data_dic, 'LCDM')
+#data_dic = {'mag':mag, 'zpicks':zpicks}
 
 ## Plot param evolutions for multiple models on the same axis.
 #p1 = ['Mcorr', 'm_ombar'], np.array([-19.3, 0.0])
@@ -85,7 +85,7 @@ def modelcheck():
 
     for test_key in firstderivs_functions:
         if test_key:
-#            print('---',test_key)
+            print('---',test_key)
             if test_key == 'waterfall':
                 names = ['Mcorr',
                          'm_ombar', 'r_ombar', 'a_ombar', 'b_ombar', 'c_ombar',
@@ -110,7 +110,7 @@ def modelcheck():
             # Making sure number of parameters matches number of names given:
             if len(names) != len(values):
                 raise ValueError('len(names) != len(values)')
-            datasim.magn(names, values, data_dic, test_key, plot_key=False)
+            datasim.magn(names, values, data_dic, test_key, plot_key=True)
     return
 
 modelcheck()

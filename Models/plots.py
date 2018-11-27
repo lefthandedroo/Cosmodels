@@ -336,14 +336,14 @@ def modelcheck(mag, zpicks, plot_var, firstderivs_key):
     else:
         plt.plot(zpicks, da)
     
-    # Evolution of dV.
-    plt.figure()
-    plt.title(r'$d_V$ evolution'+'\n Model: %s, int_terms = %s'
-              %(firstderivs_key, int_terms))
-    plt.xlabel('z')
-    plt.ylabel(r'$ d_V (z)$ [Mpc]')
-    plt.grid(True)
-    plt.plot(zpicks, dV)    
+#    # Evolution of dV.
+#    plt.figure()
+#    plt.title(r'$d_V$ evolution'+'\n Model: %s, int_terms = %s'
+#              %(firstderivs_key, int_terms))
+#    plt.xlabel('z')
+#    plt.ylabel(r'$ d_V (z)$ [Mpc]')
+#    plt.grid(True)
+#    plt.plot(zpicks, dV)    
     
     # Luminosity distance vs redshift.
     plt.figure()
