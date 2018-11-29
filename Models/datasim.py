@@ -27,23 +27,21 @@ def redshift_picks(zmin, zmax, n):
     return zpicks
 
 
-def gnoise(mag, da, mu, sigma):
+def gnoise(array, mu, sigma):
     """
    Returns:
-       mag = mag, each point offset by unique Gaussian noise;
-       noise = Gaussian noise.
+       array with each point offset by unique Gaussian noise;
     """
-    n = len(mag)
+    n = len(array)
     noise = np.random.normal(mu,sigma,n)
-    mag = mag + noise
-    da = da + noise
+    array = array + noise
 #    import matplotlib.pyplot as pl
 #    from pylab import figure
 #    figure()
 #    pl.title('Noise distribution')
 #    pl.hist(noise, 100)
 #    pl.show()
-    return mag, da
+    return array
 
 
 def magn(names, values, data, model_key, plot_key=False):
@@ -90,15 +88,6 @@ def magn(names, values, data, model_key, plot_key=False):
     return mag, da
 
 
-def noisy_mag(mu, sigma, names, values, data, model_key):
-
-    model_mag, model_da = magn(names, values, data, model_key)
-
-    mag, da = gnoise(model_mag, model_da, mu, sigma)
-
-    return mag, da
-
-
 def model_comparison(params, zpicks, model_key, plot_key=False):
     """
     Takes in:
@@ -132,7 +121,7 @@ def model_comparison(params, zpicks, model_key, plot_key=False):
     return
 
 
-def makensavemagnz(params, data, model_key, mu, sigma, filename):
+def makensavemagnz(names, values, data, model_key, mu, sigma, filename):
     '''
     Takes in:
 
@@ -161,7 +150,9 @@ def makensavemagnz(params, data, model_key, mu, sigma, filename):
     '''
     zpicks = data['zpicks']
 
-    mag = noisy_mag(mu, sigma, params, data, model_key)
+    mag = magn(names, values, data, model_key)
+    
+    mag = gnoise(mag, mu, sigma)
 
     output = mag, zpicks
 

@@ -52,7 +52,7 @@ def lnprior(th, key):
                     if 0 < th[4] < 1 and 0 < th[5] < 1:
                         l = 1
                         # v_in, w_in, x_in, y_in, z_in
-                        if abs(th[6]) < l and abs(th[7]) < l and abs(th[8]) < l:
+                        if abs(th[6]) < l and abs(th[7]) < l and -0.5< th[8] < l:
                             if abs(th[9]) < l and abs(th[10]) < l:
                                 return 0.0
 
