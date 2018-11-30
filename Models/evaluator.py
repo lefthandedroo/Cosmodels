@@ -122,7 +122,7 @@ def emcee():
 
         if test_key:
             print('---',test_key)
-            
+
             if test_key == 'waterfall':
                 names = ['Mcorr',
                          'm_ombar', 'r_ombar', 'a_ombar', 'b_ombar', 'c_ombar',
