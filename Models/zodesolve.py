@@ -61,7 +61,7 @@ def zodesolve(names, values, zpicks, model, plot_key):
     int_terms = []
 
 #    fluid_in = index[0]
-#    int_in = index[1] 
+#    int_in = index[1]
 
     if model == 'waterfall':
         int_in = 6
@@ -93,10 +93,11 @@ def zodesolve(names, values, zpicks, model, plot_key):
     vsol = odeint(firstderivs_function, v0, zpicks, args=(int_terms,H0),
                   atol=1.0e-8, rtol=1.0e-6)
     z = vsol[1:,-2]
-    dl = vsol[1:,-1] * (1+z)  # in units of dl*(H0/c)
-    da = dl * (1.0+z)**(-2.0) # in units of dl*(H0/c)
-    dlpc = dl * c_over_H0    # dl in parsecs (= vsol[dl] * c/H0)
-
+    dl = vsol[1:,-1] * (1+z)        # in units of dl*(H0/c)
+    da = dl * (1.0+z)**(-2.0)       # in units of dl*(H0/c)
+    dlpc = dl * c_over_H0           # dl in parsecs (= vsol[dl] * c/H0)
+    dapc = dlpc * (1.0+z)**(-2.0)   # in units of pc
+    dapc = dapc / 10**3             # in units of kpc
 #    theta = dl/da
 #    print('theta',theta[-1])
 #    print(model,'redshift = ',z[-1],'da =',da[-1])
@@ -106,7 +107,7 @@ def zodesolve(names, values, zpicks, model, plot_key):
 #    plt.ylabel('D_A')
 #    plt.plot(z, da, label='da')
 #    plt.legend()
-#    
+#
 #    plt.figure()
 #    plt.title('Angular diameter vs redshift')
 #    plt.xlabel('z')
@@ -120,7 +121,7 @@ def zodesolve(names, values, zpicks, model, plot_key):
         # Separate results into their own arrays:
         plot_var['t'] = vsol[1:,0]
         plot_var['a'] = vsol[1:,1]
-        
+
         # Collecting fluids and their names for plotting:
         fluid_arr = np.zeros(((int_in), (len(zpicks)-1)))
         fluid_names = []
@@ -131,24 +132,24 @@ def zodesolve(names, values, zpicks, model, plot_key):
         fluid_arr[-1] = vsol[1:,-3]
         plot_var['fluid_names'] = fluid_names
         plot_var['fluid_arr'] = fluid_arr
-        
+
         plot_var['z'] = z
         plot_var['dl'] = dl # in units of dl*(H0/c)
         plot_var['int_terms'] = int_terms
-        
+
         plot_var['da'] = da
-        
+
 #        plt.figure()
 #        plt.title('Angular diameter distance evolution')
 #        plt.xlabel('z')
 #        plt.ylabel(r'$ \left( \frac{H_0}{c} \right) d_A $', fontsize=15, labelpad=10)
 #        plt.plot(z, da)
-        
+
         Hz = H0 * (np.sum(fluid_arr, axis=0))**(0.5)
         plot_var['Hz'] = Hz
-        
+
         daMpc = dlpc/10**6 * (1.0+z)**(-2.0) # in units of dl in Mpc*(H0/c)
-        dV = (daMpc**2 * c*z/Hz)**(1/3) # combines radial and transverse dilation 
+        dV = (daMpc**2 * c*z/Hz)**(1/3) # combines radial and transverse dilation
         plot_var['dV'] = dV
 #        plt.figure()
 #        plt.title(r'$d_V$ evolution')
@@ -156,8 +157,8 @@ def zodesolve(names, values, zpicks, model, plot_key):
 #        plt.ylabel(r'$ d_V (z)$ [Mpc]')
 #        plt.grid(True)
 #        plt.plot(z, dV)
-        
-        
+
+
 #        Dv = ((1+z)**2 * daMpc**2 * c*z/Hz)**(1/3)
 #        plt.figure()
 #        plt.title(r'$D_v$ evolution')
@@ -165,7 +166,7 @@ def zodesolve(names, values, zpicks, model, plot_key):
 #        plt.ylabel(r'$ D_v (z)$ [Mpc]')
 #        plt.grid(True)
 #        plt.plot(z, Dv)
-        
+
 #        # Calculating the sound horizon
 #        ombar_m = vsol[1:,2]
 #        ombar_baryon =  ombar_m*0.04 #0.0125
@@ -178,6 +179,6 @@ def zodesolve(names, values, zpicks, model, plot_key):
 #        plt.grid(True)
 #        plt.plot(z, s, label=r'$s_H$')
 #        plt.legend()
-                
-        plt.show()        
+
+        plt.show()
     return dlpc, da, plot_var

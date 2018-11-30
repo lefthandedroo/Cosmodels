@@ -10,199 +10,193 @@ import numpy as np
 import matplotlib.pyplot as plt
 import datasim
 
-# Pantheon data:
-import pandas as pd
-pantheon = pd.read_csv('./data/lcparam_full_long.txt', sep=" ")
-
-# Reading each txt file column of interest as numpy.ndarray
-mag = pantheon.mb.values
-zpicks = pantheon.zhel.values
-
-# Stacking arrays together and sorting by accending redshift.
-data = np.stack((mag,zpicks), axis=0)
-data.sort(axis=-1)
-
-mag_p = data[0]
-zpicks = data[-1]
-data_dic = {'zpicks':zpicks}
-
+## Pantheon data:
+#import pandas as pd
+#pantheon = pd.read_csv('./data/lcparam_full_long.txt', sep=" ")
+## Stacking arrays together and sorting by accending redshift.
+#data = np.stack((pantheon.mb.values,pantheon.zhel.values), axis=0)
+#data.sort(axis=-1)
+#pmag = data[0]
+#zpicks = data[-1]
+#data_dic = {'zpicks':zpicks}
 ## Pantheon data plot.
 #plt.figure()
 #plt.title('Pantheon')
 #plt.ylabel('Mag')
 #plt.xlabel('redshift')
-#plt.scatter(zpicks, mag)
+#plt.scatter(zpicks, pmag, marker=',', s=1)
 
-test_key = 'stepfall'
-
-## Generating redshifts.
-#zpicks = np.random.uniform(low=0.0, high=2.5, size=(1000,))
-#zpicks = np.sort(zpicks, axis=None)
-#data_dic = {'zpicks':zpicks}
+# Generating redshifts.
+zpicks = np.random.uniform(low=0.0, high=1088, size=(1000,))
+zpicks[-1] = 1089
+zpicks = np.sort(zpicks, axis=None)
+data_dic = {'zpicks':zpicks}
 
 # LCDM mag and da.
 names = ['Mcorr', 'matter']
 values = np.array([-19.3, 0.3])
-mag0, da0 = datasim.magn(names, values, data_dic, 'LCDM', plot_key=False)
+mmag, mda = datasim.magn(names, values, data_dic, 'LCDM', plot_key=False)
 
-# Generating noisy LCDM mag and da.
-mag_mu, mag_sd = 0.0, 0.07
-mag = datasim.gnoise(mag0, mag_mu, mag_sd)
-da_mu, da_sd = 0.0, 0.001
-da = datasim.gnoise(da0, da_mu, da_sd)
+# Adding noise to LCDM mag and da.
+mag_mu, mag_sd = 0.0, 0.2
+nmag = datasim.gnoise(mmag, mag_mu, mag_sd)
+
+test_key = 'exotic'
 
 ## Does test_key reduce to LCDM?
 #names = ['Mcorr','matter', 'radiation', 'a_ombar', 'b_ombar', 'c_ombar',
 #         'v_in', 'w_in', 'x_in', 'y_in', 'z_in']
 #values = np.array([-19.3, 0.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+#mag0, da0 = datasim.magn(names, values, data_dic, test_key, plot_key=False)
+
+## Model for test_key with fluids but no interaction.
+#if test_key == 'waterfall':
+#    names = ['Mcorr',
+#             'matter', 'radiation', 'a_ombar', 'b_ombar', 'c_ombar',
+#             'v_in', 'w_in', 'x_in', 'y_in', 'z_in']
+#    values = np.array([-19.3,
+#                       0.3, 0.025, 0.1, 0.1, 0.1,
+#                       0.0, 0.0, 0.0, 0.0, 0.0])
+#elif test_key == 'stepfall':
+#    names = ['Mcorr', 'matter', 'radiation', 'a_ombar',
+#             'v_in', 'w_in', 'x_in']
+#    values = np.array([-19.3, 0.3, 0.025, 0.1, 0.0, 0.0, 0.0])
+#elif test_key == 'exotic':
+#    names = ['Mcorr', 'matter', 'radiation', 'gamma', 'zeta']
+#    values = np.array([-19.3, 0.3, 0.025, 0.0, 0.0])
 #mag1, da1 = datasim.magn(names, values, data_dic, test_key, plot_key=False)
 
-
-# Model for test_key with fluids but no interaction.
-if test_key == 'waterfall':
-    names = ['Mcorr',
-             'matter', 'radiation', 'a_ombar', 'b_ombar', 'c_ombar',
-             'v_in', 'w_in', 'x_in', 'y_in', 'z_in']
-    values = np.array([-19.3,
-                       0.3, 0.025, 0.1, 0.1, 0.1,
-                       0.0, 0.0, 0.0, 0.0, 0.0])
-elif test_key == 'stepfall':
-    names = ['Mcorr', 'matter', 'radiation', 'a_ombar',
-             'v_in', 'w_in', 'x_in']
-    values = np.array([-19.3, 0.3, 0.025, 0.1, 0.0, 0.0, 0.0])
-elif test_key == 'exotic':
-    names = ['Mcorr', 'matter', 'radiation', 'gamma', 'zeta']
-    values = np.array([-19.3, 0.3, 0.025, 0.0, 0.0])
-mag2, da2 = datasim.magn(names, values, data_dic, test_key, plot_key=False)
-
 # Sampler from chosen test_key run.
-with open('results_emcee/long/'+test_key+'/sampler.p','rb') as rfp:
-    sampler = pickle.load(rfp)
+# sd 0.07
+with open('results_emcee/long/0.07_'+test_key+'/sampler.p','rb') as rfp:
+    sampler007 = pickle.load(rfp)
+
+flatlnprobability007 = sampler007.flatlnprobability
+transposed_flatchain = sampler007.flatchain.transpose()
+flat_sorted007 = np.vstack([transposed_flatchain, flatlnprobability007])
+flat_sorted007.sort(axis=-1)
 
 
+# Mag from parameters with max likelihood.
+bi_007 = np.argmax(sampler007.flatlnprobability)
+values = sampler007.flatchain[bi_007,:]
+mag_max_007, da_max_007 = datasim.magn(names, values, data_dic, test_key, plot_key=False)
+
+# Mag from parameters with 2nd highest likelihood.
+values = flat_sorted007[2,:]
+mag_2max_007, da_2max_007 = datasim.magn(names, values, data_dic, test_key, plot_key=False)
+
+## Mag from parameters with lowest likelihood.
+#values = flat_sorted007[-1,:]
+#mag_min_007, da_min_007 = datasim.magn(names, values, data_dic, test_key, plot_key=False)
+
+# sd 0.2
+with open('results_emcee/long/0.2_'+test_key+'/sampler.p','rb') as rfp:
+    sampler02 = pickle.load(rfp)
+
+flatlnprobability02 = sampler02.flatlnprobability
+transposed_flatchain = sampler02.flatchain.transpose()
+flat_sorted02 = np.vstack([transposed_flatchain, flatlnprobability02])
+flat_sorted02.sort(axis=-1)
+
+# Mag from parameters with max likelihood.
+bi_02 = np.argmax(sampler02.flatlnprobability)
+values = sampler02.flatchain[bi_02,:]
+mag_max_02, da_max_02 = datasim.magn(names, values, data_dic, test_key, plot_key=False)
+
+# Mag from parameters with 2nd highest likelihood.
+values = flat_sorted02[2,:]
+mag_2max_02, da_2max_02 = datasim.magn(names, values, data_dic, test_key, plot_key=False)
+
+## Mag from parameters with lowest likelihood.
+#values = flat_sorted02[-1,:]
+#mag_min_02, da_min_02 = datasim.magn(names, values, data_dic, test_key, plot_key=False)
+
+
+# SN Ia plots:
 plt.figure()
-plt.title('Generated SN Ia magnitudes '+'\n Noise parameters: $\mu =$ %s, $\sigma =$ %s'%(mag_mu, mag_sd))
+plt.title('SN Ia magnitudes '+'\n Noise parameters: $\mu =$ %s, $\sigma =$ %s'%(mag_mu, mag_sd))
 plt.xlabel('z')
-plt.scatter(zpicks, mag_p, label='pantheon SN Ia data', marker=',', s=1)
-plt.scatter(zpicks, mag, label='noisy LCDM data', marker=',', s=1)
-plt.plot(zpicks, mag0, label='LCDM model', color='red')
-#plt.plot(zpicks, mag1, label='test_key in LCDM mode')
+#plt.scatter(zpicks, pmag, label='pantheon', marker=',', s=1)
+plt.scatter(zpicks, nmag, label='noisy LCDM', marker=',', s=1)
+plt.plot(zpicks, mmag, label='LCDM', color='red')
+#plt.plot(zpicks, mag0, label=test_key+' in LCDM mode')
+#plt.plot(zpicks, mag1, label=test_key+' w no interaction')
+plt.plot(zpicks, mag_max_007, label= test_key+' max likelihood, $\sigma = 0.07$')
+plt.plot(zpicks, mag_max_02, label= test_key+' max likelihood, $\sigma = 0.2$')
+#plt.plot(zpicks, mag_2max_007, label= test_key+' 2nd highest likelihood, $\sigma = 0.07$')
+#plt.plot(zpicks, mag_2max_02, label= test_key+' 2nd highest likelihood, $\sigma = 0.2$')
+#plt.plot(zpicks, mag_min_007, label= test_key+' lowest likelihood, $\sigma = 0.07$')
+#plt.plot(zpicks, mag_min_02, label= test_key+' lowest likelihood, $\sigma = 0.2$')
+plt.grid(True)
 plt.legend()
 
-# Mag from parameters with highest likelihood.
-bi = np.argmax(sampler.flatlnprobability)
-values = sampler.flatchain[bi,:]
-mag3, da3 = datasim.magn(names, values, data_dic, test_key, plot_key=False)
+#m_p_diff = pmag - mmag                          # pantheon - LCDM
+nmag_diff = nmag - mmag                         # noisy LCDM - LCDM
+mbest_diff_007 = mmag - mag_max_007             # LCDM - max like sd=0.07
+msecond_best_diff_007 = mmag - mag_2max_007     # LCDM - 2 highest like sd=0.07
+#mworst_diff_007 = mmag - mag_min_007            # LCDM - lowest like sd=0.07
+mbest_diff_02 = mmag - mag_max_02               # LCDM - max like sd=0.2
+msecond_best_diff_02 = mmag - mag_2max_02       # LCDM - 2 highest like sd=0.2
+#mworst_diff_02 = mmag - mag_min_02              # LCDM - lowest like sd=0.2
 
-# Mag from mean params from emcee parameter distributions.
-values = np.zeros((len(names)))
-for i in range(len(names)):
-    values[i] = np.mean(sampler.flatchain[:,i])
-#mag_mean, da_mean = datasim.magn(names, values, data_dic, test_key, plot_key=False)
-
-
-# Parameters with X best likelihood.
-flatlnprobability = sampler.flatlnprobability
-flatchain_M = sampler.flatchain[:,0]
-flatchain_m = sampler.flatchain[:,1]
-flatchain_r = sampler.flatchain[:,2]
-flatchain_a = sampler.flatchain[:,3]
-#flatchain_b = sampler.flatchain[:,4]
-#flatchain_c = sampler.flatchain[:,5]
-flatchain_v = sampler.flatchain[:,4]
-flatchain_w = sampler.flatchain[:,5]
-flatchain_x = sampler.flatchain[:,6]
-#flatchain_y = sampler.flatchain[:,9]
-#flatchain_z = sampler.flatchain[:,10]
-# Stacking them together and sorting by accending redshift.
-flat_sorted = np.stack((flatchain_M, flatchain_m, flatchain_r,
-                        flatchain_a, flatchain_v, flatchain_w,
-                        flatchain_x,flatlnprobability), axis=0)
-
-flat_sorted.sort(axis=-1)
-
-# Mag from parameters with second highest likelihood.
-values = flat_sorted[2,:]
-mag4, da4 = datasim.magn(names, values, data_dic, test_key, plot_key=False)
-
-# Mag from parameters with lowest likelihood.
-worst=[]
-for i in range(len(values)):
-    worst.append(flat_sorted[-1,i])
-values = np.asarray(worst)
-mag5, da5 = datasim.magn(names, values, data_dic, test_key, plot_key=False)
-
-plt.figure()
-plt.title('SN Ia magnitudes')
-plt.ylabel('Mag')
-plt.xlabel('z')
-plt.scatter(zpicks, mag, label='noisy LCDM data', marker=',', s=1)
-plt.scatter(zpicks, mag_p, label='pantheon SN Ia data', marker=',', s=1)
-#plt.scatter(zpicks, mag_mean, label='mean emcee parameters', marker=',', s=1)
-#plt.plot(zpicks, mag0, label='LCDM')
-#plt.plot(zpicks, mag2, label= test_key+' no interaction')
-plt.plot(zpicks, mag3, label= test_key+' max likelihood')
-#plt.plot(zpicks, mag4, label= test_key+' 2nd highest likelihood')
-#plt.plot(zpicks, mag5, label= test_key+' lowest likelihood')
-plt.legend()
-
-m_p_diff = mag_p - mag0
-mdata_diff = mag - mag0
-#mmean_diff = mag - mag_mean
-mbest_diff = mag0 - mag3
-msecond_best_diff = mag0 - mag4
-mworst_diff = mag0 - mag5
-
+# Residuals:
 plt.figure()
 plt.title('SN Ia magnitude residuals')
 plt.ylabel('Mag')
 plt.xlabel('z')
-plt.scatter(zpicks, m_p_diff, label='pantheon SN Ia data-LCDM', marker=',', s=1)
-plt.scatter(zpicks, mdata_diff, label='fake LCDM data-LCDM', marker=',', s=1)
-#plt.scatter(zpicks, mmean_diff, label='LCDM - mean emcee parameters', marker=',', s=1)
-plt.plot(zpicks, mbest_diff, label='LCDM - max likelihood')
-#plt.plot(zpicks, msecond_best_diff, label='LCDM - 2nd highest likelihood')
-#plt.plot(zpicks, mworst_diff, label='LCDM - lowest likelihood')
+#plt.scatter(zpicks, m_p_diff, label='pantheon SN Ia data-LCDM', marker=',', s=1)
+plt.scatter(zpicks, nmag_diff, label='noisy LCDM data-LCDM', marker=',', s=1)
+plt.plot(zpicks, mbest_diff_007, label='LCDM - max likelihood, $\sigma = 0.07$')
+#plt.plot(zpicks, msecond_best_diff_007, label='LCDM - 2nd highest likelihood, $\sigma = 0.07$')
+#plt.plot(zpicks, mworst_diff_007, label='LCDM - lowest likelihood, $\sigma = 0.07$')
+plt.plot(zpicks, mbest_diff_02, label='LCDM - max likelihood, $\sigma = 0.2$')
+#plt.plot(zpicks, msecond_best_diff_02, label='LCDM - 2nd highest likelihood, $\sigma = 0.2$')
+#plt.plot(zpicks, mworst_diff_02, label='LCDM - lowest likelihood, $\sigma = 0.2$')
+plt.grid(True)
 plt.legend()
 
 
-plt.figure()
-plt.title('Generated angular diameter distances'+'\n Noise parameters: $\mu =$ %s, $\sigma =$ %s'%(da_mu, da_sd))
-plt.ylabel('$(H_0 /c) * D_A$')
-plt.xlabel('z')
-plt.scatter(zpicks, da, label='noisy LCDM data', marker=',', s=1)
-plt.plot(zpicks, da0, label='LCDM model', color='red')
-#plt.scatter(zpicks, da_mean, label='mean emcee parameters', marker=',', s=1)
-#plt.plot(zpicks, da1, label='test_key in LCDM mode')
-plt.legend()
 
-ddata_diff = da - da0
-#dmean_diff = da - da_mean
-dbest_diff = da0 - da3
-dsecond_best_diff = da0 - da4
-dworst_diff = da0 - da5
 
+
+# Angular diameter distance plots:
 plt.figure()
 plt.title('Angular diameter distances')
 plt.ylabel('$(H_0 /c) * D_A$')
 plt.xlabel('z')
-plt.scatter(zpicks, da, label='noisy LCDM data', marker=',', s=1)
-#plt.plot(zpicks, da0, label='LCDM')
-#plt.plot(zpicks, da2, label= test_key+ ' no interaction')
-plt.plot(zpicks, da3, label= test_key+ ' max likelihood')
-#plt.plot(zpicks, da4, label= test_key+ ' 2nd highest likelihood')
-#plt.plot(zpicks, da5, label= test_key+ ' lowest likelihood')
+plt.plot(zpicks, mda, label='LCDM', color='red')
+#plt.plot(zpicks, da0, label=test_key+' in LCDM mode')
+#plt.plot(zpicks, da1, label=test_key+' w no interaction')
+plt.plot(zpicks, da_max_007, label= test_key+' max likelihood, $\sigma = 0.07$')
+plt.plot(zpicks, da_max_02, label= test_key+' max likelihood, $\sigma = 0.2$')
+#plt.plot(zpicks, da_2max_007, label= test_key+' 2nd highest likelihood, $\sigma = 0.07$')
+#plt.plot(zpicks, da_2max_02, label= test_key+' 2nd highest likelihood, $\sigma = 0.2$')
+#plt.plot(zpicks, da_min_007, label= test_key+' lowest likelihood, $\sigma = 0.07$')
+#plt.plot(zpicks, da_min_02, label= test_key+' lowest likelihood, $\sigma = 0.2$')
+plt.grid(True)
 plt.legend()
 
+dabest_diff_007 = mda - da_max_007             # LCDM - max like sd=0.07
+dasecond_best_diff_007 = mda - da_2max_007     # LCDM - 2 highest like sd=0.07
+#daworst_diff_007 = mda - da_min_007            # LCDM - lowest like sd=0.07
+dabest_diff_02 = mda - da_max_02               # LCDM - max like sd=0.2
+dasecond_best_diff_02 = mda - da_2max_02       # LCDM - 2 highest like sd=0.2
+#daworst_diff_02 = mda - da_min_02              # LCDM - lowest like sd=0.2
+
+# Residuals:
 plt.figure()
 plt.title('Angular diameter distance residuals')
-plt.xlabel('z')
 plt.ylabel('$(H_0 /c) * D_A$')
-plt.scatter(zpicks, ddata_diff, label='fake LCDM data-LCDM', marker=',', s=1)
-#plt.scatter(zpicks, dmean_diff, label='LCDM - mean emcee parameters', marker=',', s=1)
-plt.plot(zpicks, dbest_diff, label='LCDM - max likelihood')
-#plt.plot(zpicks, dsecond_best_diff, label='LCDM - 2nd highest likelihood')
-#plt.plot(zpicks, dworst_diff, label='LCDM - lowest likelihood')
+plt.xlabel('z')
+plt.plot(zpicks, dabest_diff_007, label='LCDM - max likelihood, $\sigma = 0.07$')
+#plt.plot(zpicks, dasecond_best_diff_007, label='LCDM - 2nd highest likelihood, $\sigma = 0.07$')
+#plt.plot(zpicks, daworst_diff_007, label='LCDM - lowest likelihood, $\sigma = 0.07$')
+plt.plot(zpicks, dabest_diff_02, label='LCDM - max likelihood, $\sigma = 0.2$')
+#plt.plot(zpicks, dasecond_best_diff_02, label='LCDM - 2nd highest likelihood, $\sigma = 0.2$')
+#plt.plot(zpicks, daworst_diff_02, label='LCDM - lowest likelihood, $\sigma = 0.2$')
+plt.grid(True)
 plt.legend()
+
 
 plt.show()

@@ -45,9 +45,12 @@ zpicks = data[3]
 # Pantheon data.
 data_dic = {'mag':mag, 'zpicks':zpicks}
 
+
+
 ## Generating redshifts and LCDM mag and da.
-#zpicks = np.random.uniform(low=0.0, high=1101, size=(1000,))
+#zpicks = np.random.uniform(low=0.0, high=1088, size=(1000,))
 #zpicks = np.sort(zpicks, axis=None)
+#zpicks[-1] = 1089
 #data_dic = {'mag':None, 'zpicks':zpicks}
 #names = ['Mcorr', 'matter']
 #values = np.array([-19.3, 0.3])
@@ -62,9 +65,9 @@ data_dic = {'mag':mag, 'zpicks':zpicks}
 
 firstderivs_functions = [None
             ,'stepfall'
-            ,'waterfall'
-            ,'exotic'
-            ,'late_intxde'
+#            ,'waterfall'
+#            ,'exotic'
+#            ,'late_intxde'
 #            ,'heaviside_late_int'
 #            ,'late_int'
 #            ,'expgamma'
@@ -113,7 +116,7 @@ def modelcheck():
             datasim.magn(names, values, data_dic, test_key, plot_key=True)
     return
 
-#modelcheck()
+modelcheck()
 
 def emcee():
     print('@@@@@@@ Mcor_emcee @@@@@@@')
@@ -171,7 +174,7 @@ def emcee():
 
     return
 
-emcee()
+#emcee()
 
 def errorvsdatasize():
 
