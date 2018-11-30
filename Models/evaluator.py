@@ -18,10 +18,10 @@ import plots
 
 
 # Number of emcee steps.
-nsteps = 10000
+nsteps = 100000
 
 # Statistical parameteres of noise: mean, standard deviation.
-mu, sigma = 0.0, 0.07 # sigma != 0
+mu, sigma = 0.0, 0.2 # sigma != 0
 
 # Pantheon data:
 dataname = './data/lcparam_full_long.txt'
@@ -43,12 +43,12 @@ mag = data[0]
 zpicks = data[3]
 
 # Pantheon data.
-#data_dic = {'mag':mag, 'zpicks':zpicks}
+data_dic = {'mag':mag, 'zpicks':zpicks}
 
-# Generating redshifts and LCDM mag and da.
-zpicks = np.random.uniform(low=0.0, high=1101, size=(1000,))
-zpicks = np.sort(zpicks, axis=None)
-data_dic = {'mag':None, 'zpicks':zpicks}
+## Generating redshifts and LCDM mag and da.
+#zpicks = np.random.uniform(low=0.0, high=1101, size=(1000,))
+#zpicks = np.sort(zpicks, axis=None)
+#data_dic = {'mag':None, 'zpicks':zpicks}
 #names = ['Mcorr', 'matter']
 #values = np.array([-19.3, 0.3])
 #mag = datasim.noisy_mag(mu, sigma, names, values, data_dic, 'LCDM')
@@ -64,7 +64,7 @@ firstderivs_functions = [None
             ,'stepfall'
             ,'waterfall'
             ,'exotic'
-#            ,'late_intxde'
+            ,'late_intxde'
 #            ,'heaviside_late_int'
 #            ,'late_int'
 #            ,'expgamma'
@@ -113,7 +113,7 @@ def modelcheck():
             datasim.magn(names, values, data_dic, test_key, plot_key=True)
     return
 
-modelcheck()
+#modelcheck()
 
 def emcee():
     print('@@@@@@@ Mcor_emcee @@@@@@@')
@@ -171,7 +171,7 @@ def emcee():
 
     return
 
-#emcee()
+emcee()
 
 def errorvsdatasize():
 
