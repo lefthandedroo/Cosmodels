@@ -81,7 +81,7 @@ firstderivs_functions = [None
 #            ,'rdecay_mxde'
 #            ,'rdecay'
 #            ,'interacting'
-            ,'LCDM'
+#            ,'LCDM'
              ]
 
 def modelcheck():
@@ -150,7 +150,7 @@ def emcee():
 
             # Making sure number of parameters matches number of names given:
             if len(names) != len(values):
-                raise ValueError('len of parameters names and values are not matching')
+                raise ValueError('len(names) != len(values)')
 
             # Creating a folder for saving output.
             save_path = './results_emcee/'+str(int(time.time()))+'_'+test_key
@@ -161,8 +161,9 @@ def emcee():
             timet0 = time.time()
 
             # emcee parameter search.
-            propert, sampler = stats.stats(names, values, data_dic, sigma,
-                                           nsteps, save_path, test_key, plot=1)
+            propert, sampler = stats.stats(names, values, data_dic, 
+                                           sigma, nsteps, save_path, 
+                                           test_key, plot=1)
             # Time taken by script.
             timet1=time.time()
             tools.timer('script', timet0, timet1)

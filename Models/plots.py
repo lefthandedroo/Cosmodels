@@ -310,23 +310,24 @@ def modelcheck(mag, zpicks, plot_var, firstderivs_key):
     if np.isnan(Hz).any():
         print('plots.modelcheck got NaN value for H')
 
-#    # Fluid evolution.
-#    plt.figure()
-#    plt.xlabel('$z$')
-#    plt.ylabel(r'$\bar \Omega $')
-#    plt.grid(True)
-#    for i in range(len(fluid_arr)):
-#        plt.plot(zpicks, fluid_arr[i], label=fluid_names[i])
-#    plt.legend()
-#    plt.title(r'$\bar \Omega_{X}$ evolution'+'\n Model: %s, int_terms = %s'
-#          %(firstderivs_key, int_terms))
+    # Fluid evolution.
+    plt.figure()
+    plt.xlabel('$z$')
+    plt.ylabel(r'$\bar \Omega $')
+    plt.grid(True)
+    for i in range(len(fluid_arr)):
+        plt.plot(zpicks, fluid_arr[i], label=fluid_names[i])
+    plt.legend()
+    plt.title(r'$\bar \Omega_{X}$ evolution'
+              f'\n Model: {firstderivs_key}, int_terms = {int_terms}')
 
     # Evolution of the angular diameter distance.
     plt.figure()
-    plt.title('Angular diameter distance evolution'+'\n Model: %s, int_terms = %s'
-              %(firstderivs_key, int_terms))
+    plt.title('Angular diameter distance evolution'
+              f'\n Model: {firstderivs_key}, int_terms = {int_terms}')
     plt.xlabel('z')
-    plt.ylabel(r'$ \left( \frac{H_0}{c} \right) d_A $', fontsize=15, labelpad=10)
+    plt.ylabel(r'$ \left( \frac{H_0}{c} \right) d_A $', 
+               fontsize=15, labelpad=10)
     plt.grid(True)
 
     da_index = np.argmin(da)
@@ -336,14 +337,14 @@ def modelcheck(mag, zpicks, plot_var, firstderivs_key):
     else:
         plt.plot(zpicks, da)
 
-#    # Evolution of dV.
-#    plt.figure()
-#    plt.title(r'$d_V$ evolution'+'\n Model: %s, int_terms = %s'
-#              %(firstderivs_key, int_terms))
-#    plt.xlabel('z')
-#    plt.ylabel(r'$ d_V (z)$ [Mpc]')
-#    plt.grid(True)
-#    plt.plot(zpicks, dV)
+    # Evolution of dV.
+    plt.figure()
+    plt.title(r'$d_V$ evolution'
+              f'\n Model: {firstderivs_key}, int_terms = {int_terms}')
+    plt.xlabel('z')
+    plt.ylabel(r'$ d_V (z)$ [Mpc]')
+    plt.grid(True)
+    plt.plot(zpicks, dV)
 
 #    # Luminosity distance vs redshift.
 #    plt.figure()
