@@ -21,7 +21,7 @@ import plots
 nsteps = 100000
 
 # Statistical parameteres of noise: mean, standard deviation.
-mu, sigma = 0.0, 0.2 # sigma != 0
+mu, sigma = 0.0, 0.007 # sigma != 0
 
 # Pantheon data:
 dataname = './data/lcparam_full_long.txt'
@@ -47,15 +47,18 @@ data_dic = {'mag':mag, 'zpicks':zpicks}
 
 
 
-## Generating redshifts and LCDM mag and da.
-#zpicks = np.random.uniform(low=0.0, high=1088, size=(1000,))
-#zpicks = np.sort(zpicks, axis=None)
-#zpicks[-1] = 1089
-#data_dic = {'mag':None, 'zpicks':zpicks}
-#names = ['Mcorr', 'matter']
-#values = np.array([-19.3, 0.3])
-#mag = datasim.noisy_mag(mu, sigma, names, values, data_dic, 'LCDM')
-#data_dic = {'mag':mag, 'zpicks':zpicks}
+# Generating redshifts and LCDM mag and da.
+zpicks = np.random.uniform(low=0.0, high=1088, size=(1000000,))
+zpicks = np.sort(zpicks, axis=None)
+zpicks[-1] = 1089
+data_dic = {'mag':None, 'zpicks':zpicks}
+names = ['Mcorr', 'matter']
+values = np.array([-19.3, 0.3])
+mag, da = datasim.noisy_mag(mu, sigma, names, values, data_dic, 'LCDM')
+
+#pickle.dump(zpicks, open(f'zpicks_{zpicks[-1]}.p', 'wb'))
+
+data_dic = {'mag':mag, 'zpicks':zpicks}
 
 ## Plot param evolutions for multiple models on the same axis.
 #p1 = ['Mcorr', 'm_ombar'], np.array([-19.3, 0.0])
@@ -65,8 +68,8 @@ data_dic = {'mag':mag, 'zpicks':zpicks}
 
 firstderivs_functions = [None
             ,'stepfall'
-#            ,'waterfall'
-#            ,'exotic'
+            ,'waterfall'
+            ,'exotic'
 #            ,'late_intxde'
 #            ,'heaviside_late_int'
 #            ,'late_int'
@@ -81,7 +84,7 @@ firstderivs_functions = [None
 #            ,'rdecay_mxde'
 #            ,'rdecay'
 #            ,'interacting'
-#            ,'LCDM'
+            ,'LCDM'
              ]
 
 def modelcheck():
@@ -115,7 +118,7 @@ def modelcheck():
             datasim.magn(names, values, data_dic, test_key, plot_key=True)
     return
 
-modelcheck()
+#modelcheck()
 
 def emcee():
     print('@@@@@@@ Mcor_emcee @@@@@@@')
@@ -173,7 +176,7 @@ def emcee():
 
     return
 
-#emcee()
+emcee()
 
 def errorvsdatasize():
 
