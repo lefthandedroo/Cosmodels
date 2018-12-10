@@ -111,8 +111,7 @@ def modelcheck():
                 values = np.array([-19.3, 0.3, 0.0])
 
             # Making sure number of parameters matches number of names given:
-            if len(names) != len(values):
-                raise ValueError('len(names) != len(values)')
+            assert len(names) == len(values), "len(names) != len(values)"
             datasim.magn(names, values, data_dic, test_key, plot_key=True)
     return
 
@@ -149,8 +148,7 @@ def emcee():
                 values = np.array([-19.3, 0.3, 0.0])
 
             # Making sure number of parameters matches number of names given:
-            if len(names) != len(values):
-                raise ValueError('len(names) != len(values)')
+            assert len(names) == len(values), "len(names) != len(values)"
 
             # Creating a folder for saving output.
             save_path = './results_emcee/'+str(int(time.time()))+'_'+test_key
@@ -161,8 +159,8 @@ def emcee():
             timet0 = time.time()
 
             # emcee parameter search.
-            propert, sampler = stats.stats(names, values, data_dic, 
-                                           sigma, nsteps, save_path, 
+            propert, sampler = stats.stats(names, values, data_dic,
+                                           sigma, nsteps, save_path,
                                            test_key, plot=1)
             # Time taken by script.
             timet1=time.time()
