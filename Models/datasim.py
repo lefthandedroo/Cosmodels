@@ -67,6 +67,10 @@ def magn(names, values, data, model_key, plot_key=False):
     Returns:
         mag = np.ndarray of apparent mag corresponding to input redshits.
     """
+    if plot_key:
+        # Making sure number of parameters matches number of names given:
+        assert len(names) == len(values), "len(names) != len(values) in datasim.magn"
+
     zpicks = data['zpicks']
     # Corrected absolute magnitude M of SN.
     M = values[0]
@@ -151,7 +155,7 @@ def makensavemagnz(names, values, data, model_key, mu, sigma, filename):
     zpicks = data['zpicks']
 
     mag = magn(names, values, data, model_key)
-    
+
     mag = gnoise(mag, mu, sigma)
 
     output = mag, zpicks

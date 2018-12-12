@@ -19,7 +19,7 @@ def flist(start, stop, step):
 #    print('-flist has been called')
     i = 0
     zlist = [start]
-    
+
     while zlist[i] < stop:
         nextvalue = zlist[i] + step
         zlist.append(nextvalue)
@@ -40,31 +40,32 @@ def timer(string,i,f):
     mins, sec= divmod(sec, 60.0)
     time = string+' time:  '+str(int(mins))+'min '+str(int(sec))+'s'
     print(time)
-    
+
     return time
 
 
-def runcount(sigma, sigma_max, sigma_step,
+def runcount(test_keys, sigma, sigma_max, sigma_step,
               npoints_min, npoints_max, npoints_step):
     """
     Returns number of interations that evaluator will run.
     """
-    run = 0
-    
-    while sigma < sigma_max:
-        npoints = npoints_min
-        while npoints < npoints_max:
-            npoints += npoints_step
-            run += 1
-        sigma += sigma_step
+    run = 1
+    for key in test_keys:
+        if key:
+            while sigma < sigma_max:
+                npoints = npoints_min
+                while npoints < npoints_max:
+                    npoints += npoints_step
+                    run += 1
+                sigma += sigma_step
     return run
 
 def path():
     # Folder for saving output.
     directory = 'run'+str(int(time.time()))
     # Relative path of output folder.
-    save_path = './'+directory 
+    save_path = './'+directory
     if not os.path.exists(save_path):
         os.makedirs(save_path)
-            
+
     return save_path, directory

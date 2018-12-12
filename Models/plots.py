@@ -130,7 +130,7 @@ def stat_DNest(hue, var, var_true, var_name, slnprob, zpicks,
 
     return
 
-def precise_runs(firstderivs_key, params_dic, p, x):
+def precise_runs(firstderivs_key, names, values, p, x):
     '''
     Takes in:
         firstderivs_key = string, model tested;
@@ -326,7 +326,7 @@ def modelcheck(mag, zpicks, plot_var, firstderivs_key):
     plt.title('Angular diameter distance evolution'
               f'\n Model: {firstderivs_key}, int_terms = {int_terms}')
     plt.xlabel('z')
-    plt.ylabel(r'$ \left( \frac{H_0}{c} \right) d_A $', 
+    plt.ylabel(r'$ \left( \frac{H_0}{c} \right) d_A $',
                fontsize=15, labelpad=10)
     plt.grid(True)
 

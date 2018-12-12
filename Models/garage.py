@@ -6,7 +6,8 @@ Created on Thu Sep 21 15:50:29 2017
 @author: BallBlueMeercat
 """
 import numpy.random as rng
-
+import pickle
+import matplotlib.pyplot as plt
 def wrap(x, a, b):
     assert b > a
     return (x - a)%(b - a) + a
@@ -30,12 +31,45 @@ ombar_w08 = rng.rand()
 ombar_w08 = wrap(ombar_w08, lower, upper)
 ombar_wde = density_left - ombar_w01 - ombar_w05 - ombar_w08
 
-print('ombar_m = ',ombar_wm)
-print('ombar_r = ',ombar_wr)
-print('ombar_w(-0.1) = ',ombar_w01)
-print('ombar_w(-0.5) = ',ombar_w05)
-print('ombar_w(-0.8) = ',ombar_w08)
-print('ombar_de = ',ombar_wde)
+#print('ombar_m = ',ombar_wm)
+#print('ombar_r = ',ombar_wr)
+#print('ombar_w(-0.1) = ',ombar_w01)
+#print('ombar_w(-0.5) = ',ombar_w05)
+#print('ombar_w(-0.8) = ',ombar_w08)
+#print('ombar_de = ',ombar_wde)
 
 total = ombar_wm +ombar_wr +ombar_w01 +ombar_w05 +ombar_w08 +ombar_wde
 print('total =',total)
+
+import datasim
+import numpy as np
+try:
+    with open('zpicks_1089.p','rb') as rfp: zpicks = pickle.load(rfp)
+except:
+    print("zpicks_1089.p didnt't open")
+print(len(zpicks))
+data_dic = {'zpicks':zpicks}
+mag, da = datasim.magn(['Mcorr', 'matter'], np.array([-19.3, 0.3]), data_dic, 'LCDM', plot_key=False)
+plt.figure()
+plt.title(f'Artificial data, zpicks_1089')
+plt.scatter(zpicks, mag)
+
+try:
+    with open('zpicks_10890.p','rb') as rfp: zpicks = pickle.load(rfp)
+except:
+    print("zpicks_10890.p didnt't open")
+print(len(zpicks))
+
+data_dic = {'zpicks':zpicks}
+mag, da = datasim.magn(['Mcorr', 'matter'], np.array([-19.3, 0.3]), data_dic, 'LCDM', plot_key=False)
+plt.figure()
+plt.title(f'Artificial data, zpicks_10890')
+plt.scatter(zpicks, mag)
+
+plt.show()
+
+# Generating and saving redshifts.
+zpicks = np.random.uniform(low=0.0001, high=3, size=(1048,))
+zpicks = np.sort(zpicks, axis=None)
+zpicks[-1] = 3
+pickle.dump(zpicks, open(f'zpicks_{len(zpicks)}_{zpicks[-1]}.p', 'wb'))

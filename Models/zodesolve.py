@@ -60,9 +60,6 @@ def zodesolve(names, values, zpicks, model, plot_key):
     # Pack up the initial conditions and interaction terms.
     int_terms = []
 
-#    fluid_in = index[0]
-#    int_in = index[1]
-
     if model == 'waterfall':
         int_in = 6
     elif model == 'stepfall':
@@ -75,23 +72,21 @@ def zodesolve(names, values, zpicks, model, plot_key):
         int_in = 2
 
     int_terms = values[int_in:]
-#    fluids = values[fluid_in:int_in]
     fluids = values[1:int_in]
     ombar_de0 = rho_c0/rho_c0 - np.sum(fluids)
 
     t0a0 = np.array([t0, a0])
     de0z0dl0 = np.array([ombar_de0, z0, dl0])
+
     # Remember that you lost precision when concatenating arr over using a list.
     v0 = np.concatenate((t0a0, fluids, de0z0dl0))
 
     # Extracting the parsed mode of interaction.
     firstderivs_function = firstderivs_functions.get(model,0)
-    if firstderivs_function == 0:
-        raise ValueError("zodesolve doesn't have this firstderivs_key at the top")
+    assert firstderivs_function != 0, "zodesolve doesn't have this firstderivs_key at the top"
 
     # Call the ODE solver.
-    vsol = odeint(firstderivs_function, v0, zpicks, args=(int_terms,H0),
-                  atol=1.0e-8, rtol=1.0e-6)
+    vsol = odeint(firstderivs_function, v0, zpicks, args=(int_terms,H0),mxstep=5000000, atol=1.0e-8, rtol=1.0e-6)
     z = vsol[1:,-2]
     dl = vsol[1:,-1] * (1+z)        # in units of dl*(H0/c)
     da = dl * (1.0+z)**(-2.0)       # in units of dl*(H0/c)

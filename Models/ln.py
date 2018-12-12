@@ -42,81 +42,87 @@ def lnprior(th, key):
         -np.inf if theta values are outside of prior.
     '''
     Mcorr_min, Mcorr_max = -20, -18
+    assert len(th) > 0, f'len(th) = 0, theta = {th}'
 
-    if Mcorr_min < th[0] < Mcorr_max:
-        if (0 < th[1] < 1 or th[1] == 1): # matter
+    # Corrected magnitude of SN Ia and Omega_bar matter
+    if Mcorr_min < th[0] < Mcorr_max and (0 < th[1] < 1 or th[1] == 1):
 
-            if key == 'waterfall':
-                # radiation, a_ombar, b_ombar, c_ombar
-                if 0 < th[2] < 1 and 0 < th[3] < 1:
-                    if 0 < th[4] < 1 and 0 < th[5] < 1:
-                        l = 1
-                        # v_in, w_in, x_in, y_in, z_in
-                        if abs(th[6]) < l and abs(th[7]) < l and -0.5< th[8] < l:
-                            if abs(th[9]) < l and abs(th[10]) < l:
-                                return 0.0
-
-            elif key == 'stepfall':
-                # radiation, a_ombar
-                if 0 < th[2] < 1 and 0 < th[3] < 1:
-                    # v_in, w_in, x_in
+        if key == 'waterfall':
+            # ombar_radiation, a_ombar, b_ombar, c_ombar
+            if 0 < th[2] < 1 and 0 < th[3] < 1:
+                if 0 < th[4] < 1 and 0 < th[5] < 1:
                     l = 1
-                    if abs(th[4]) < l and abs(th[5]) < l and abs(th[6]) < l:
-                        return 0.0
+                    # v_in, w_in, x_in, y_in, z_in
+                    if -0.01 < th[6] < l and -0.01 < th[7] < l and -0.01 < th[8] < l:
+                        if -0.01 < th[9] < l and -0.01 < th[10] < l:
+#                    if abs(th[6]) < l and abs(th[7]) < l and -0.5< th[8] < l:
+#                        if abs(th[9]) < l and abs(th[10]) < l:
+                            return 0.0
 
-            elif key == 'exotic':
-                # radiation
-                if 0 < th[2] < 1:
-                    # gamma, zeta
-                    if -2 < th[3] < 0.1 and -1.5 < abs(th[4]) < 3.5:
-                        return 0.0
-
-            elif key == 'late_intxde':
-                if -2 < th[2] < 0.1: # interaction terms
+        elif key == 'stepfall':
+            assert len(th) > 3, f'len(thet) = {len(th)}, theta = {th}'
+            # ombar_radiation, a_ombar
+            if 0 < th[2] < 1 and 0 < th[3] < 1:
+                # v_in, w_in, x_in
+                l = 0.2
+                if -0.01 < th[4] < l and -0.01 <th[5] < l and -0.01 < th[6] < l:
                     return 0.0
 
-            elif key == 'heaviside_late_int':
-                if -1.45 < th[2] < 0.1: # interaction terms
+        elif key == 'exotic':
+            # ombar_radiation
+            if 0 < th[2] < 1:
+                # gamma, zeta
+#                if -100 < th[3] < 100 and -100 < th[4] < 100:
+                if -0.01 < th[3] < 0.01 and -0.01 < th[4] < 0.01:
+
                     return 0.0
 
-            elif key == 'late_int':
-                if -15 < th[2] < 0.1: # interaction terms
-                    return 0.0
-
-            elif key == 'expgamma':
-                if -0.1 < th[2] < 1.5: # interaction terms
-                    return 0.0
-
-            elif key == 'txgamma':
-                if -0.5 < th[2] < 0.1: # interaction terms
-                    return 0.0
-
-            elif key == 'zxgamma':
-                if -10 < th[2] < 0.1: # interaction terms
-                    return 0.0
-
-            elif key == 'zxxgamma':
-                if -0.1 < th[2] < 12: # interaction terms
-                    return 0.0
-
-            elif key == 'gammaxxz':
-                if -1 < th[2] < 1: # interaction terms
-                    return 0.0
-
-            elif key == 'rdecay':
-                if -2 < th[2] < 0.1: # interaction terms
-                    return 0.0
-
-            elif key == 'interacting':
-                if -1.5 < th[2] < 0.1: # interaction terms
-                    return 0.0
-
-            elif key == 'LCDM':
+        elif key == 'late_intxde':
+            if -2 < th[2] < 0.1: # interaction term
                 return 0.0
 
-            else:
-                if abs(th[4]) < 10: # interaction terms
-                    return 0.0
+        elif key == 'heaviside_late_int':
+            if -1.45 < th[2] < 0.1: # interaction term
+                return 0.0
+
+        elif key == 'late_int':
+            if -15 < th[2] < 0.1: # interaction term
+                return 0.0
+
+        elif key == 'expgamma':
+            if -0.1 < th[2] < 1.5: # interaction term
+                return 0.0
+
+        elif key == 'txgamma':
+            if -0.5 < th[2] < 0.1: # interaction term
+                return 0.0
+
+        elif key == 'zxgamma':
+            if -10 < th[2] < 0.1: # interaction term
+                return 0.0
+
+        elif key == 'zxxgamma':
+            if -0.1 < th[2] < 12: # interaction term
+                return 0.0
+
+        elif key == 'gammaxxz':
+            if -1 < th[2] < 1: # interaction term
+                return 0.0
+
+        elif key == 'rdecay':
+            if -2 < th[2] < 0.1: # interaction term
+                return 0.0
+
+        elif key == 'interacting':
+            if -1.5 < th[2] < 0.1: # interaction term
+                return 0.0
+
+        elif key == 'LCDM':
+            return 0.0
+
+        else:
+            if abs(th[2]) < 10: # interaction term
+                return 0.0
 
     return -np.inf
 

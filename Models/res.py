@@ -5,6 +5,7 @@ Created on Mon Nov 19 18:06:28 2018
 
 @author: usyd
 """
+from pathlib import Path
 import pickle
 import numpy as np
 import matplotlib.pyplot as plt
@@ -32,31 +33,123 @@ import datasim
 #zpicks = np.sort(zpicks, axis=None)
 #pickle.dump(zpicks, open(f'zpicks_{zpicks[-1]}.p', 'wb'))
 
-
+# Extracting pre-made redshifts z=0 to z=1089.
 try:
-    with open('zpicks_1089.p','rb') as rfp:
-        zpicks = pickle.load(rfp)
+    with open('data/zpicks_1000_1089.p','rb') as rfp: zpicks = pickle.load(rfp)
 except:
-    print("zpicks_1089.p didnt't open")
+    print("zpicks_1000_1089.p didnt't open")
 
 data_dic = {'zpicks':zpicks}
 
-# LCDM mag and da.
-names = ['Mcorr', 'matter']
-values = np.array([-19.3, 0.3])
-mmag, mda = datasim.magn(names, values, data_dic, 'LCDM', plot_key=False)
+## LCDM mag and da.
+#names = ['Mcorr', 'matter']
+#values = np.array([-19.3, 0.3])
+#mmag, mda = datasim.magn(names, values, data_dic, 'LCDM', plot_key=False)
 
-# Adding noise to LCDM mag and da.
-mag_mu, mag_sd = 0.0, 0.2
-nmag = datasim.gnoise(mmag, mag_mu, mag_sd)
+## Adding noise to LCDM mag and da.
+#mag_mu, mag_sd = 0.0, 0.2
+#nmag = datasim.gnoise(mmag, mag_mu, mag_sd)
 
-test_key = 'exotic'
+timed = False
+
+if timed:
+    import cProfile, pstats, io
+    pr = cProfile.Profile()
+    pr.enable()
+
+
+
+models = 'LCDM', 'stepfall', 'waterfall'
+noise_options = 0.001, 0.07, 0.14
+npoints_options = 1048, 10480, 104800
+
+#noise = 0.14
+#npoints = 10480
+
+for npoints in npoints_options:
+    for noise in noise_options:
+        da_list = []
+        for test_key in models:
+            file_path = f'results_error_vs_data/{test_key}/sigma{noise}_npoints{npoints}.p'
+            my_file = Path(file_path)
+            if my_file.is_file():
+                # results of emcee runs
+                with open(file_path,'rb') as rfp: propert, sampler = pickle.load(rfp)
+            else:
+                print(f"Couldn't open {file_path}")
+            # Collecting every skip-th set of parameters and da they produce.
+            skip = 200
+            da_distrib = []
+            for i in range(0, len(sampler.flatchain), skip):
+                values = sampler.flatchain[i, :] # no parsing real names as not needed
+                names = np.zeros(len(values)).tolist()
+                mag, da = datasim.magn(names, values, data_dic,
+                                       test_key, plot_key=False)
+                da_distrib.append(da[-1])
+            da_list.append(da_distrib)
+
+        c = 'palevioletred', 'lightseagreen', 'slateblue', 'saddlebrown'
+        ec = 'lightpink', 'greenyellow', 'lightblue', 'lightgray'
+
+#        plt.figure()
+#        plt.title(f'Angular diameter distances at z = {zpicks[-1]}')
+#        plt.ylabel('$(H_0 /c) * D_A$')
+#        plt.xlabel('z')
+#        plt.grid(True)
+#        plt.ylim(0.002,0.005)
+#        for i in range(len(models)):
+#            da_distrib = da_list[i]
+#            z_array = np.ones(len(da_distrib))*1089
+#            plt.scatter(z_array, da_distrib, s=40, facecolors='none', edgecolors=c[i], label=models[i])
+#        plt.legend()
+
+        plt.figure()
+        plt.title(f'Histogram of angular diameter distances at z = {zpicks[-1]}'+
+        f'\n noise on data = {noise}, dataset size = {npoints}')
+        plt.xlabel('$(H_0 /c) * D_A$')
+        for i in range(len(models)):
+            da_distrib = da_list[i]
+            plt.hist(da_distrib, bins = 50, normed=True, color=c[i], histtype='step', stacked=True, fill=False, label=models[i])
+        plt.legend()
+
+        plt.figure()
+        plt.title(f'$\mu$ and $\sigma$ of the angular diameter distance distribution'+
+        f'\n noise on data = {noise}, dataset size = {npoints}')
+        plt.xlabel('$(H_0 /c) * D_A$')
+        plt.ylabel(r'$z$')
+        for i in range(len(models)):
+            da_distrib = np.asarray(da_list[i])
+            da_mean = np.mean(da_distrib)
+            da_sd = np.std(da_distrib)
+            if da_sd < da_mean/100:
+                print(f'da_sd = {da_sd}, model = {test_key}, mean/100 = {da_mean/100}')
+            plt.errorbar(da_mean, 1089, xerr=da_sd, fmt='-o', color=c[i], ecolor=ec[i], elinewidth=3, capsize=0, label=models[i])
+        plt.legend()
+        plt.show()
+
+if timed:
+    pr.disable()
+    s = io.StringIO()
+    sortby = 'cumulative'
+    ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+    ps.print_stats()
+    print (s.getvalue())
+
+
+
 
 ## Does test_key reduce to LCDM?
-#names = ['Mcorr','matter', 'radiation', 'a_ombar', 'b_ombar', 'c_ombar',
-#         'v_in', 'w_in', 'x_in', 'y_in', 'z_in']
-#values = np.array([-19.3, 0.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+#names = ['Mcorr', 'matter', 'radiation', 'y_in', 'z_in']
+#values = np.array([-19.3, 0.3, 0.0, 0.0, 0.0])
 #mag0, da0 = datasim.magn(names, values, data_dic, test_key, plot_key=False)
+
+
+#plt.figure()
+#plt.plot(zpicks, mmag, label='LCDM')
+#plt.plot(zpicks, mag0, label=f'{test_key} in LCDM mode')
+#plt.plot(zpicks, mmag-mag0, label='residual')
+#plt.legend()
+#plt.show()
 
 ## Model for test_key with fluids but no interaction.
 #if test_key == 'waterfall':
@@ -74,60 +167,6 @@ test_key = 'exotic'
 #    names = ['Mcorr', 'matter', 'radiation', 'gamma', 'zeta']
 #    values = np.array([-19.3, 0.3, 0.025, 0.0, 0.0])
 #mag1, da1 = datasim.magn(names, values, data_dic, test_key, plot_key=False)
-
-# Sampler from chosen test_key run.
-# sd 0.07
-
-from pathlib import Path
-sigma_string = 0.07
-size_string = 1000
-all_model_da_list = []
-models = 'waterfall', 'stepfall', 'LCDM', 'exotic'
-
-for test_key in models:
-    file_path = f'results_emcee/long/{sigma_string}_{test_key}/sampler.p'
-    my_file = Path(file_path)
-    if my_file.is_file():
-        with open(file_path,'rb') as rfp:
-            sampler007 = pickle.load(rfp)
-    flatlnprobability007 = sampler007.flatlnprobability
-    transposed_flatchain = sampler007.flatchain.transpose()
-    flat_sorted007 = np.vstack([transposed_flatchain, flatlnprobability007])
-    flat_sorted007.sort(axis=-1)
-
-    da_list = []
-
-    for i in range(0, len(sampler007.flatchain), 500):
-        values = sampler007.flatchain[i, :]
-        mag, da = datasim.magn(names, values, data_dic, test_key, plot_key=False)
-        da_list.append(da[-1])
-    all_model_da_list.append(da_list)
-
-colours = 'red', 'green', 'blue', 'black'
-
-#plt.figure()
-#plt.title(f'Angular diameter distances at z = {zpicks[-1]}')#, model: {models[i]}')
-#plt.ylabel('$(H_0 /c) * D_A$')
-#plt.xlabel('z')
-#plt.grid(True)
-#plt.ylim(0.0015,0.007)
-#for i in range(len(models)):
-#    da_list = all_model_da_list[i]
-#    for da in da_list:
-#        plt.scatter(1089, da, s=40, facecolors='none', edgecolors=colours[i])
-#    plt.scatter(1089, da, s=40, facecolors='none', edgecolors=colours[i], label=models[i])
-##    if legend is not None:
-##        remove.legend
-#plt.legend()
-
-plt.figure()
-plt.title(f'Histogram of angular diameter distances at z = {zpicks[-1]}')
-plt.xlabel('$(H_0 /c) * D_A$')
-for i in range(len(models)):
-    da_list = all_model_da_list[i]
-    plt.hist(da_list, bins = 1000, histtype='step', stacked=True, fill=False, label=f'model: {models[i]}')
-plt.legend()
-
 
 ## Mag from parameters with max likelihood.
 #bi_007 = np.argmax(sampler007.flatlnprobability)

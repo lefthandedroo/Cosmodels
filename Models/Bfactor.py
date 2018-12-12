@@ -16,7 +16,7 @@ import datasim
 import results
 import tools
 
-speed = 3       # From prior = 0, short = 1, medium = 2, long = 3.
+speed = 2       # From prior = 0, short = 1, medium = 2, long = 3.
 timed = False
 plot = True
 mu, sigma = 0.0, 0.07    # Mean and standard deviation of the noise on the data.
@@ -35,11 +35,11 @@ zpicks = data[-1]
 #zpicks = zpicks.tolist()
 data_dic = {'mag':mag, 'zpicks':zpicks}
 
-# Generating LCDM data.
-names = ['Mcorr', 'matter']
-values = np.array([-19.3, 0.3])
-mag = datasim.noisy_mag(mu, sigma, names, values, data_dic, 'LCDM')
-data_dic = {'mag':mag, 'zpicks':zpicks}
+## Generating LCDM data.
+#names = ['Mcorr', 'matter']
+#values = np.array([-19.3, 0.3])
+#mag = datasim.noisy_mag(mu, sigma, names, values, data_dic, 'LCDM')
+#data_dic = {'mag':mag, 'zpicks':zpicks}
 
 class Model(object):
     """
@@ -108,10 +108,10 @@ class Model(object):
 
 
 firstderivs_functions = [None
-            ,'stepfall'
-            ,'waterfall'
-#            ,'exotic'
-#            ,'late_intxde'
+#            ,'stepfall'
+#            ,'waterfall'
+            ,'exotic'
+            ,'late_intxde'
 #            ,'heaviside_late_int'
 #            ,'late_int'
 #            ,'expgamma'
