@@ -1,0 +1,7 @@
+Bfactor time:  8min 59s
+model = zxxgamma
+data = ./data/lcparam_full_long.txt
+sigma = 0.07
+log(Z) = 754.5667599441588
+Information = 9.59239526089118
+speed = 2

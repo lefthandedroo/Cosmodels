@@ -110,21 +110,21 @@ class Model(object):
 firstderivs_functions = [None
 #            ,'stepfall'
 #            ,'waterfall'
-            ,'exotic'
+#            ,'exotic'
             ,'late_intxde'
-#            ,'heaviside_late_int'
-#            ,'late_int'
-#            ,'expgamma'
-#            ,'txgamma'         # doesn't converge
-#            ,'zxgamma'
-#            ,'gamma_over_z'    # doesn't converge
-#            ,'zxxgamma'        # gamma forced positive in firstderivs
-#            ,'gammaxxz'        # gamma forced positive in firstderivs
-#            ,'rdecay_m'
-#            ,'rdecay_de'
-#            ,'rdecay_mxde'
-#            ,'rdecay'
-#            ,'interacting'
+            ,'heaviside_late_int'
+            ,'late_int'
+            ,'expgamma'
+            ,'txgamma'         # doesn't converge
+            ,'zxgamma'
+            ,'gamma_over_z'    # doesn't converge
+            ,'zxxgamma'        # gamma forced positive in firstderivs
+            ,'gammaxxz'        # gamma forced positive in firstderivs
+            ,'rdecay_m'
+            ,'rdecay_de'
+            ,'rdecay_mxde'
+            ,'rdecay'
+            ,'interacting'
 #            ,'LCDM'
              ]
 

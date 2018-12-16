@@ -1,0 +1,7 @@
+Bfactor time:  12min 28s
+model = late_int
+data = ./data/lcparam_full_long.txt
+sigma = 0.07
+log(Z) = 766.9780361732377
+Information = 12.2652632923199
+speed = 2

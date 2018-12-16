@@ -1,0 +1,7 @@
+Bfactor time:  9min 19s
+model = rdecay_m
+data = ./data/lcparam_full_long.txt
+sigma = 0.07
+log(Z) = 769.850550278228
+Information = 9.77627675988947
+speed = 2
