@@ -1,7 +1,0 @@
-Bfactor time:  3min 43s
-model = expgamma
-data = Amanullah_sorted1
-sigma = 0.5
-log(Z) = -158.9608940461836
-Information = 2.1354010085020434
-speed = 2

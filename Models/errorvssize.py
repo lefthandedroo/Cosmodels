@@ -4,6 +4,8 @@
 Created on Mon Dec 10 18:31:51 2018
 
 @author: BallBlueMeercat
+
+Runs through given sigma (error on data) and npoints (dataset size), use pre-made artificial mag or create new mag using pre-made zpicks. Saves sampler.p for each run.
 """
 import matplotlib.pyplot as plt
 import numpy as np
@@ -25,7 +27,7 @@ mu = 0.0        # Mean of noise added to LCDM to simulate data.
 test_keys = [None
             ,'stepfall'
             ,'waterfall'
-#            ,'exotic'           # NaN field at recombination
+            ,'exotic'
 #            ,'late_intxde'
 #            ,'heaviside_late_int'
 #            ,'late_int'
@@ -58,12 +60,8 @@ except:
 #sampler_list = []
 
 for key in test_keys:
-    sigma = 0.001
-    sigma_max = 0.2
-    sigma_step = 0.7
-    npoints_min = 104800
-    npoints_max = 104801
-    npoints_step = 1000
+    sigma_options = 0.01, 0.07, 0.14, 0.2
+    npoints_options = 1048, 10480, 104800
     if key:
         run = 0
         if key == 'waterfall':
@@ -97,15 +95,15 @@ for key in test_keys:
         if not os.path.exists(save_path):
             os.makedirs(save_path)
 
-        while sigma < sigma_max:
-            npoints = npoints_min
-            while npoints < npoints_max:
+        for sigma in sigma_options:
+            for npoints in npoints_options:
                 run += 1
                 data_path = f'data/{npoints}_{all_zpicks[-1]}_sigma_{sigma}.p'
                 my_file = Path(data_path)
                 if my_file.is_file():
                     with open(data_path,'rb') as rfp: zpicks, nmag = pickle.load(rfp)
                 else:
+                    print(f'failed to get zpicks, nmag from {data_path}')
                     # Generating redshifts.
 #                    n = len(zpicks)//npoints
 #                    print(f'n = {n}')
@@ -155,11 +153,6 @@ for key in test_keys:
 #                sigma_list.append(sigma)
 #                npoints_list.append(npoints)
 #                sampler_list.append(sampler)
-#
-                npoints += npoints_step
-
-            sigma += sigma_step
-            sigma = round(sigma, 2)
 #
 #        for j in range(len(values)):
 #            sd = []

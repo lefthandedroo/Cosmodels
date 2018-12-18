@@ -1,7 +1,0 @@
-Bfactor time:  3min 19s
-model = LCDM
-data = Amanullah_sorted1
-sigma = 0.5
-log(Z) = -158.39317198704646
-Information = 2.1905706583235656
-speed = 2

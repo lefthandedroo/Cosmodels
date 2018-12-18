@@ -1,7 +1,0 @@
-Bfactor time:  11min 38s
-model = heaviside_late_int
-data = Amanullah_sorted1
-sigma = 0.5
-log(Z) = -155.96277359351578
-Information = 2.664951551074836
-speed = 2

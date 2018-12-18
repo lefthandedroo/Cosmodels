@@ -8,6 +8,7 @@ Created on Wed Apr 18 21:45:40 2018
 
 import numpy as np
 import time
+import pickle
 import os.path
 import results
 import tools
@@ -43,10 +44,18 @@ mu, sigma = 0.0, 0.007 # sigma != 0
 #data_dic = {'mag':mag, 'zpicks':zpicks}
 
 ########## Artificial LCDM data: ##########
-# Generating redshifts.
-zpicks = np.sort(np.random.uniform(low=0.0001, high=1088, size=(10000,)))
-zpicks[-1] = 1089
-data_dic = {'mag':None, 'zpicks':zpicks}
+## Generating redshifts.
+#zpicks = np.sort(np.random.uniform(low=0.0001, high=1088, size=(10000,)))
+#zpicks[-1] = 1089
+#data_dic = {'mag':None, 'zpicks':zpicks}
+
+# Extracting pre-made redshifts z=0 to z=1089.
+try:
+    with open('data/zpicks_1000_1089.p','rb') as rfp: zpicks = pickle.load(rfp)
+except:
+    print("zpicks_1000_1089.p didnt't open")
+
+data_dic = {'zpicks':zpicks}
 
 # Generating LCDM mag and da.
 names, values = ['Mcorr', 'matter'], np.array([-19.3, 0.3])
@@ -55,12 +64,12 @@ mag, da = datasim.magn(names, values, data_dic, 'LCDM', plot_key=False)
 # Adding noise to LCDM mag.
 nmag = datasim.gnoise(mag, mu, sigma)
 dataname = 'noisy LCDM'
-data_dic = {'mag':nmag, 'zpicks':zpicks}
+data_dic['mag'] = nmag
 
 ## Plot param evolutions for multiple models on the same axis.
 #p1 = ['Mcorr', 'm_ombar'], np.array([-19.3, 0.0])
-#p2 = ['Mcorr', 'm_ombar', 'r_ombar', 'a_ombar','v_in', 'w_in', 'x_in'], np.array([-19.3, 0.3, 0.025, 0.1, 0.0, 0.0, 0.0])
-#datasim.model_comparison([p1, p2], zpicks, ['LCDM', 'stepfall'], plot_key=True)
+#p2 = ['Mcorr', 'm_ombar', 'r_ombar','gamma', 'zeta'], np.array([-19.3, 0.3, 0.025, 0.008349769211323153, 0.00991971520315343])
+#datasim.model_comparison([p1, p2], zpicks, ['LCDM', 'exotic'], plot_key=True)
 
 
 firstderivs_functions = [None
@@ -115,7 +124,7 @@ def modelcheck():
             datasim.magn(names, values, data_dic, test_key, plot_key=True)
     return
 
-#modelcheck()
+modelcheck()
 
 def emcee():
     print('@@@@@@@ emcee @@@@@@@')
@@ -173,4 +182,4 @@ def emcee():
 
     return
 
-emcee()
+#emcee()

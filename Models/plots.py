@@ -165,7 +165,7 @@ def precise_runs(firstderivs_key, names, values, p, x):
         sigma_list += load(folder, 'sigma_list.p')
         npoints_list += load(folder, 'npoints_list.p')
 
-    n_param = len(params_dic)   # How many parameters were fitted.
+    n_param = len(values)   # How many parameters were fitted.
     n_run = int(len(vc_list) / n_param)   # How many runs were recorded.
 
     # For each parameter:
@@ -337,14 +337,14 @@ def modelcheck(mag, zpicks, plot_var, firstderivs_key):
     else:
         plt.plot(zpicks, da)
 
-    # Evolution of dV.
-    plt.figure()
-    plt.title(r'$d_V$ evolution'
-              f'\n Model: {firstderivs_key}, int_terms = {int_terms}')
-    plt.xlabel('z')
-    plt.ylabel(r'$ d_V (z)$ [Mpc]')
-    plt.grid(True)
-    plt.plot(zpicks, dV)
+#    # Evolution of dV.
+#    plt.figure()
+#    plt.title(r'$d_V$ evolution'
+#              f'\n Model: {firstderivs_key}, int_terms = {int_terms}')
+#    plt.xlabel('z')
+#    plt.ylabel(r'$ d_V (z)$ [Mpc]')
+#    plt.grid(True)
+#    plt.plot(zpicks, dV)
 
 #    # Luminosity distance vs redshift.
 #    plt.figure()
@@ -355,14 +355,14 @@ def modelcheck(mag, zpicks, plot_var, firstderivs_key):
 #    plt.title('$d_L$ evolution'+'\n Model: %s, int_terms = %s'
 #              %(firstderivs_key, int_terms))
 
-#    # H vs redshift.
-#    plt.figure()
-#    plt.xlabel('$z$')
-#    plt.ylabel('H')
-#    plt.grid(True)
-#    plt.plot(zpicks, Hz, color='xkcd:blue', lw=1)
-#    plt.title(r'$H(z)$ evolution'+'\n Model: %s, int_terms = %s'
-#              %(firstderivs_key, int_terms))
+    # H vs redshift.
+    plt.figure()
+    plt.xlabel('$z$')
+    plt.ylabel('H')
+    plt.grid(True)
+    plt.plot(zpicks, Hz, color='xkcd:blue', lw=1)
+    plt.title(r'$H(z)$ evolution'+'\n Model: %s, int_terms = %s'
+              %(firstderivs_key, int_terms))
 
 #    # Scale factor vs redshift.
 #    plt.figure()
@@ -467,14 +467,14 @@ def multi_modelcheck(zpicks, keys, plot_var_list):
         plt.plot(zpicks, da[i], label=int_terms[i])
     plt.legend()
 
-     # Evolution of dV.
-    plt.figure()
-    plt.title(r'$d_V$ evolution, models: %s'%(keys))
-    plt.xlabel('z')
-    plt.ylabel(r'$ d_V (z)$ [Mpc]')
-    for i in range(len(dV)):
-        plt.plot(zpicks, dV[i], label=int_terms[i])
-    plt.legend()
+#     # Evolution of dV.
+#    plt.figure()
+#    plt.title(r'$d_V$ evolution, models: %s'%(keys))
+#    plt.xlabel('z')
+#    plt.ylabel(r'$ d_V (z)$ [Mpc]')
+#    for i in range(len(dV)):
+#        plt.plot(zpicks, dV[i], label=int_terms[i])
+#    plt.legend()
 
     # Luminosity distance vs redshift.
     plt.figure()

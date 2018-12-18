@@ -104,45 +104,45 @@ class Model(object):
         """
         model_mag, model_da = datasim.magn(self.names, theta, data_dic, key)
         var = sigma**2.0
-        return -0.5*np.sum((mag-model_mag)**2.0 /var +0.5*np.log(2.0*np.pi*var))
+        like = -0.5*np.sum((mag-model_mag)**2.0 /var +np.log(2.0*np.pi*var))
+        return like
 
 
 firstderivs_functions = [None
-#            ,'stepfall'
+            ,'stepfall'
 #            ,'waterfall'
 #            ,'exotic'
-            ,'late_intxde'
-            ,'heaviside_late_int'
-            ,'late_int'
-            ,'expgamma'
-            ,'txgamma'         # doesn't converge
-            ,'zxgamma'
-            ,'gamma_over_z'    # doesn't converge
-            ,'zxxgamma'        # gamma forced positive in firstderivs
-            ,'gammaxxz'        # gamma forced positive in firstderivs
-            ,'rdecay_m'
-            ,'rdecay_de'
-            ,'rdecay_mxde'
-            ,'rdecay'
-            ,'interacting'
-#            ,'LCDM'
+#            ,'late_intxde'
+#            ,'heaviside_late_int'
+#            ,'late_int'
+#            ,'expgamma'
+#            ,'txgamma'         # doesn't converge
+#            ,'zxgamma'
+#            ,'gamma_over_z'    # doesn't converge
+#            ,'zxxgamma'        # gamma forced positive in firstderivs
+#            ,'gammaxxz'        # gamma forced positive in firstderivs
+#            ,'rdecay_m'
+#            ,'rdecay_de'
+#            ,'rdecay_mxde'
+#            ,'rdecay'
+#            ,'interacting'
+            ,'LCDM'
              ]
 
 
 for key in firstderivs_functions:
     if key:
         if key == 'stepfall':
-            int_lim = [[-0.1, 0.1], [-0.1, 0.1], [-0.1, 0.1]]
-            int_lim = [[-1, 1], [-1, 1], [-0.8, 1]]
+            int_lim = [[-0.01, 1], [-0.01, 1], [-0.01, 1]]
             names = ['Mcorr','matter','radiation','a_ombar',
                      'v_in','w_in','x_in']
         elif key =='waterfall':
-            int_lim = [[-1, 1], [-1, 1], [-1, 1],[-1, 1], [-1, 1]]
+            int_lim = [[-0.01, 1], [-0.01, 1], [-0.01, 1],[-0.01, 1], [-0.01, 1]]
             names = ['Mcorr','matter','radiation','a_ombar','b_ombar','c_ombar',
                      'v_in','w_in','x_in','y_in','z_in']
         elif key == 'exotic':
             names = ['Mcorr','matter','radiation','gamma','zeta']
-            int_lim = [[-2, 0.1],[-1.5, 2.5]]
+            int_lim = [[-0.01, 1],[-0.01, 1]]
         elif key == 'LCDM':
             int_lim = None
             names = ['Mcorr','matter']

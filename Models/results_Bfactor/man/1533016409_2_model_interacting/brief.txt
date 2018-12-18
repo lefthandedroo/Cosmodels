@@ -1,7 +1,0 @@
-Bfactor time:  4min 20s
-model = interacting
-data = mag_z_LCDM_1000_sigma_0.07
-sigma = 0.07
-log(Z) = 350.3377156000296
-Information = 7.684413213744108
-speed = 2

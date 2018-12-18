@@ -10,9 +10,9 @@ import numpy as np
 import os
 import results
 
-# Data_name options 'man, 'sn', 'compare'.
-data_name = 'man'     # fitted to aritifical LCDM data
-#data_name = 'compare' # fitted to Pantheon
+# Data_name options 'synth, 'amanullah', 'pantheon'.
+data_name = 'synth'     # fitted to synthetic LCDM data
+data_name = 'pantheon'  # fitted to Pantheon
 
 rootdir = os.path.join('./results_Bfactor', data_name)
 LCDM_log_Z = None

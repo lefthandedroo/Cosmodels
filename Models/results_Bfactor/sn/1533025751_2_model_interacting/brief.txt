@@ -1,7 +1,0 @@
-Bfactor time:  3min 43s
-model = interacting
-data = Amanullah_sorted1
-sigma = 0.5
-log(Z) = -155.90375505622183
-Information = 2.610934576656689
-speed = 2

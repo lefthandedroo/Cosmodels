@@ -282,9 +282,9 @@ def exotic(double[:] v, redshifts, in_terms, double H0):
 
     cdef double dtdz = -1.0/((1.0+z) * Hz)
     cdef double dadz = -(1.0+z)**(-2.0)
-    cdef double domdz = (3.0*ombar_m +gamma *ombar_m /Hz) /(1.0+z)
-    cdef double dordz = (4.0*ombar_r -(gamma *ombar_m -zeta *ombar_r) /Hz ) /(1.0+z)
-    cdef double dodedz = -zeta * ombar_r /(1.0+z) /Hz
+    cdef double domdz = (3.0*ombar_m +gamma*ombar_m*ombar_r /Hz) /(1.0+z)
+    cdef double dordz = (4.0*ombar_r -(gamma*ombar_m*ombar_r -zeta*ombar_r*ombar_de) /Hz ) /(1.0+z)
+    cdef double dodedz = -zeta*ombar_r*ombar_de/(1.0+z) /Hz
     cdef double ddldz = 1.0/Hz
 
     # first derivatives of functions I want to find:

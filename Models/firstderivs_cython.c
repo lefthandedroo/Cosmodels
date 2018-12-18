@@ -5879,7 +5879,7 @@ static PyObject *__pyx_pf_18firstderivs_cython_6exotic(CYTHON_UNUSED PyObject *_
  * 
  *     cdef double dtdz = -1.0/((1.0+z) * Hz)             # <<<<<<<<<<<<<<
  *     cdef double dadz = -(1.0+z)**(-2.0)
- *     cdef double domdz = (3.0*ombar_m +gamma *ombar_m /Hz) /(1.0+z)
+ *     cdef double domdz = (3.0*ombar_m +gamma*ombar_m*ombar_r /Hz) /(1.0+z)
  */
   __pyx_t_10 = ((1.0 + __pyx_v_z) * __pyx_v_Hz);
   if (unlikely(__pyx_t_10 == 0)) {
@@ -5892,19 +5892,19 @@ static PyObject *__pyx_pf_18firstderivs_cython_6exotic(CYTHON_UNUSED PyObject *_
  * 
  *     cdef double dtdz = -1.0/((1.0+z) * Hz)
  *     cdef double dadz = -(1.0+z)**(-2.0)             # <<<<<<<<<<<<<<
- *     cdef double domdz = (3.0*ombar_m +gamma *ombar_m /Hz) /(1.0+z)
- *     cdef double dordz = (4.0*ombar_r -(gamma *ombar_m -zeta *ombar_r) /Hz ) /(1.0+z)
+ *     cdef double domdz = (3.0*ombar_m +gamma*ombar_m*ombar_r /Hz) /(1.0+z)
+ *     cdef double dordz = (4.0*ombar_r -(gamma*ombar_m*ombar_r -zeta*ombar_r*ombar_de) /Hz ) /(1.0+z)
  */
   __pyx_v_dadz = (-pow((1.0 + __pyx_v_z), -2.0));
 
   /* "firstderivs_cython.pyx":285
  *     cdef double dtdz = -1.0/((1.0+z) * Hz)
  *     cdef double dadz = -(1.0+z)**(-2.0)
- *     cdef double domdz = (3.0*ombar_m +gamma *ombar_m /Hz) /(1.0+z)             # <<<<<<<<<<<<<<
- *     cdef double dordz = (4.0*ombar_r -(gamma *ombar_m -zeta *ombar_r) /Hz ) /(1.0+z)
- *     cdef double dodedz = -zeta * ombar_r /(1.0+z) /Hz
+ *     cdef double domdz = (3.0*ombar_m +gamma*ombar_m*ombar_r /Hz) /(1.0+z)             # <<<<<<<<<<<<<<
+ *     cdef double dordz = (4.0*ombar_r -(gamma*ombar_m*ombar_r -zeta*ombar_r*ombar_de) /Hz ) /(1.0+z)
+ *     cdef double dodedz = -zeta*ombar_r*ombar_de/(1.0+z) /Hz
  */
-  __pyx_t_10 = (__pyx_v_gamma * __pyx_v_ombar_m);
+  __pyx_t_10 = ((__pyx_v_gamma * __pyx_v_ombar_m) * __pyx_v_ombar_r);
   if (unlikely(__pyx_v_Hz == 0)) {
     PyErr_SetString(PyExc_ZeroDivisionError, "float division");
     __PYX_ERR(0, 285, __pyx_L1_error)
@@ -5919,12 +5919,12 @@ static PyObject *__pyx_pf_18firstderivs_cython_6exotic(CYTHON_UNUSED PyObject *_
 
   /* "firstderivs_cython.pyx":286
  *     cdef double dadz = -(1.0+z)**(-2.0)
- *     cdef double domdz = (3.0*ombar_m +gamma *ombar_m /Hz) /(1.0+z)
- *     cdef double dordz = (4.0*ombar_r -(gamma *ombar_m -zeta *ombar_r) /Hz ) /(1.0+z)             # <<<<<<<<<<<<<<
- *     cdef double dodedz = -zeta * ombar_r /(1.0+z) /Hz
+ *     cdef double domdz = (3.0*ombar_m +gamma*ombar_m*ombar_r /Hz) /(1.0+z)
+ *     cdef double dordz = (4.0*ombar_r -(gamma*ombar_m*ombar_r -zeta*ombar_r*ombar_de) /Hz ) /(1.0+z)             # <<<<<<<<<<<<<<
+ *     cdef double dodedz = -zeta*ombar_r*ombar_de/(1.0+z) /Hz
  *     cdef double ddldz = 1.0/Hz
  */
-  __pyx_t_10 = ((__pyx_v_gamma * __pyx_v_ombar_m) - (__pyx_v_zeta * __pyx_v_ombar_r));
+  __pyx_t_10 = (((__pyx_v_gamma * __pyx_v_ombar_m) * __pyx_v_ombar_r) - ((__pyx_v_zeta * __pyx_v_ombar_r) * __pyx_v_ombar_de));
   if (unlikely(__pyx_v_Hz == 0)) {
     PyErr_SetString(PyExc_ZeroDivisionError, "float division");
     __PYX_ERR(0, 286, __pyx_L1_error)
@@ -5938,13 +5938,13 @@ static PyObject *__pyx_pf_18firstderivs_cython_6exotic(CYTHON_UNUSED PyObject *_
   __pyx_v_dordz = (__pyx_t_16 / __pyx_t_10);
 
   /* "firstderivs_cython.pyx":287
- *     cdef double domdz = (3.0*ombar_m +gamma *ombar_m /Hz) /(1.0+z)
- *     cdef double dordz = (4.0*ombar_r -(gamma *ombar_m -zeta *ombar_r) /Hz ) /(1.0+z)
- *     cdef double dodedz = -zeta * ombar_r /(1.0+z) /Hz             # <<<<<<<<<<<<<<
+ *     cdef double domdz = (3.0*ombar_m +gamma*ombar_m*ombar_r /Hz) /(1.0+z)
+ *     cdef double dordz = (4.0*ombar_r -(gamma*ombar_m*ombar_r -zeta*ombar_r*ombar_de) /Hz ) /(1.0+z)
+ *     cdef double dodedz = -zeta*ombar_r*ombar_de/(1.0+z) /Hz             # <<<<<<<<<<<<<<
  *     cdef double ddldz = 1.0/Hz
  * 
  */
-  __pyx_t_10 = ((-__pyx_v_zeta) * __pyx_v_ombar_r);
+  __pyx_t_10 = (((-__pyx_v_zeta) * __pyx_v_ombar_r) * __pyx_v_ombar_de);
   __pyx_t_16 = (1.0 + __pyx_v_z);
   if (unlikely(__pyx_t_16 == 0)) {
     PyErr_SetString(PyExc_ZeroDivisionError, "float division");
@@ -5958,8 +5958,8 @@ static PyObject *__pyx_pf_18firstderivs_cython_6exotic(CYTHON_UNUSED PyObject *_
   __pyx_v_dodedz = (__pyx_t_17 / __pyx_v_Hz);
 
   /* "firstderivs_cython.pyx":288
- *     cdef double dordz = (4.0*ombar_r -(gamma *ombar_m -zeta *ombar_r) /Hz ) /(1.0+z)
- *     cdef double dodedz = -zeta * ombar_r /(1.0+z) /Hz
+ *     cdef double dordz = (4.0*ombar_r -(gamma*ombar_m*ombar_r -zeta*ombar_r*ombar_de) /Hz ) /(1.0+z)
+ *     cdef double dodedz = -zeta*ombar_r*ombar_de/(1.0+z) /Hz
  *     cdef double ddldz = 1.0/Hz             # <<<<<<<<<<<<<<
  * 
  *     # first derivatives of functions I want to find:

@@ -1,7 +1,0 @@
-Bfactor time:  9min 30s
-model = expgamma
-data = ./data/lcparam_full_long.txt
-sigma = 0.07
-log(Z) = 768.4302989625537
-Information = 10.433889727645237
-speed = 2

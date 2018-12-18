@@ -1,7 +1,0 @@
-Bfactor time:  14min 33s
-model = gamma_over_z
-data = ./data/lcparam_full_long.txt
-sigma = 0.07
-log(Z) = 764.1731190405754
-Information = 15.151513509132997
-speed = 2

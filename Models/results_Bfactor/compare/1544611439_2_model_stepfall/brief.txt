@@ -1,7 +1,0 @@
-Bfactor time:  9min 36s
-model = stepfall
-data = ./data/lcparam_full_long.txt
-sigma = 0.07
-log(Z) = 764.5405153333083
-Information = 14.581547758930697
-speed = 2

@@ -1,7 +1,0 @@
-Bfactor time:  3min 37s
-model = rdecay_m
-data = Amanullah_sorted1
-sigma = 0.5
-log(Z) = -156.46823454055325
-Information = 2.3951751682585893
-speed = 2

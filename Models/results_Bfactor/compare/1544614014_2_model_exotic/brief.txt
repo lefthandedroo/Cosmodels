@@ -1,7 +1,0 @@
-Bfactor time:  8min 37s
-model = exotic
-data = ./data/lcparam_full_long.txt
-sigma = 0.07
-log(Z) = 767.2145367106186
-Information = 12.314495972707391
-speed = 2

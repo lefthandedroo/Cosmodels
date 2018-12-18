@@ -1,7 +1,0 @@
-Bfactor time:  6min 8s
-model = gamma_over_z
-data = Amanullah_sorted1
-sigma = 0.5
-log(Z) = -157.51448695103812
-Information = 4.065296239222278
-speed = 2

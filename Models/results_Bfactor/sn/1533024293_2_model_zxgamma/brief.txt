@@ -1,7 +1,0 @@
-Bfactor time:  3min 33s
-model = zxgamma
-data = Amanullah_sorted1
-sigma = 0.5
-log(Z) = -158.25432303324496
-Information = 2.3286754161177896
-speed = 2

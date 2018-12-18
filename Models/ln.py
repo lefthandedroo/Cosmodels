@@ -29,7 +29,7 @@ def lnlike(theta, data, sigma, firstderivs_key, names):
     mag = data['mag']
     model_mag, model_da = magn(names, theta, data, firstderivs_key) # mag, but with theta params
     var = sigma**2
-    likelihood = -0.5*np.sum((mag-model_mag)**2 /var +0.5*np.log(2*np.pi*var))
+    likelihood = -0.5*np.sum((mag-model_mag)**2.0 /var +np.log(2.0*np.pi*var))
     return likelihood
 
 def lnprior(th, key):
@@ -64,7 +64,7 @@ def lnprior(th, key):
             # ombar_radiation, a_ombar
             if 0 < th[2] < 1 and 0 < th[3] < 1:
                 # v_in, w_in, x_in
-                l = 0.2
+                l = 1
                 if -0.01 < th[4] < l and -0.01 <th[5] < l and -0.01 < th[6] < l:
                     return 0.0
 
@@ -73,7 +73,7 @@ def lnprior(th, key):
             if 0 < th[2] < 1:
                 # gamma, zeta
 #                if -100 < th[3] < 100 and -100 < th[4] < 100:
-                if -0.01 < th[3] < 0.01 and -0.01 < th[4] < 0.01:
+                if -0.01 < th[3] < 1 and -0.01 < th[4] < 1:
 
                     return 0.0
 

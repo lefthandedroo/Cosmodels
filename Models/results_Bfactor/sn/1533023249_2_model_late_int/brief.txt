@@ -1,7 +1,0 @@
-Bfactor time:  6min 56s
-model = late_int
-data = Amanullah_sorted1
-sigma = 0.5
-log(Z) = -155.9006077361197
-Information = 2.568221186955526
-speed = 2
