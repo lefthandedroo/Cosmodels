@@ -156,3 +156,41 @@ if timed:
     ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
     ps.print_stats()
     print (s.getvalue())
+
+## Angular diameter distance plots:
+#plt.figure()
+#plt.title('Angular diameter distances')
+#plt.ylabel('$(H_0 /c) * D_A$')
+#plt.xlabel('z')
+#plt.plot(zpicks, mda, label='LCDM', color='red')
+##plt.plot(zpicks, da0, label=test_key+' in LCDM mode')
+##plt.plot(zpicks, da1, label=test_key+' w no interaction')
+#plt.plot(zpicks, da_max_007, label= test_key+' max likelihood, $\sigma = 0.07$')
+#plt.plot(zpicks, da_max_02, label= test_key+' max likelihood, $\sigma = 0.2$')
+##plt.plot(zpicks, da_2max_007, label= test_key+' 2nd highest likelihood, $\sigma = 0.07$')
+##plt.plot(zpicks, da_2max_02, label= test_key+' 2nd highest likelihood, $\sigma = 0.2$')
+##plt.plot(zpicks, da_min_007, label= test_key+' lowest likelihood, $\sigma = 0.07$')
+##plt.plot(zpicks, da_min_02, label= test_key+' lowest likelihood, $\sigma = 0.2$')
+#plt.grid(True)
+#plt.legend()
+#
+#dabest_diff_007 = mda - da_max_007             # LCDM - max like sd=0.07
+#dasecond_best_diff_007 = mda - da_2max_007     # LCDM - 2 highest like sd=0.07
+##daworst_diff_007 = mda - da_min_007            # LCDM - lowest like sd=0.07
+#dabest_diff_02 = mda - da_max_02               # LCDM - max like sd=0.2
+#dasecond_best_diff_02 = mda - da_2max_02       # LCDM - 2 highest like sd=0.2
+##daworst_diff_02 = mda - da_min_02              # LCDM - lowest like sd=0.2
+#
+## Residuals:
+#plt.figure()
+#plt.title('Angular diameter distance residuals')
+#plt.ylabel('$(H_0 /c) * D_A$')
+#plt.xlabel('z')
+#plt.plot(zpicks, dabest_diff_007, label='LCDM - max likelihood, $\sigma = 0.07$')
+##plt.plot(zpicks, dasecond_best_diff_007, label='LCDM - 2nd highest likelihood, $\sigma = 0.07$')
+##plt.plot(zpicks, daworst_diff_007, label='LCDM - lowest likelihood, $\sigma = 0.07$')
+#plt.plot(zpicks, dabest_diff_02, label='LCDM - max likelihood, $\sigma = 0.2$')
+##plt.plot(zpicks, dasecond_best_diff_02, label='LCDM - 2nd highest likelihood, $\sigma = 0.2$')
+##plt.plot(zpicks, daworst_diff_02, label='LCDM - lowest likelihood, $\sigma = 0.2$')
+#plt.grid(True)
+#plt.legend()

@@ -8,7 +8,6 @@ Created on Tue Jun 12 20:20:03 2018
 import time
 import dnest4
 import numpy as np
-import pandas as pd
 import numpy.random as rng
 import matplotlib.pyplot as plt
 import pickle
@@ -21,18 +20,26 @@ timed = False
 plot = True
 mu, sigma = 0.0, 0.07    # Mean and standard deviation of the noise on the data.
 
-# Loading pantheon SNIa data:
-dataname = './data/lcparam_full_long.txt'
-pantheon = pd.read_csv(dataname, sep=" ")
-# Reading each txt file column of interest as numpy.ndarray.
-mag = pantheon.mb.values
-zpicks = pantheon.zhel.values
-# Stacking np.arrays together and sorting by accending redshift.
-data = np.stack((mag,zpicks), axis=0)
-data.sort(axis=-1)
-mag = data[0]
-zpicks = data[-1]
-#zpicks = zpicks.tolist()
+## Loading pantheon SN Ia data:
+#import pandas as pd
+#dataname = './data/lcparam_full_long.txt'
+#pantheon = pd.read_csv(dataname, sep=" ")
+## Reading each txt file column of interest as numpy.ndarray.
+#mag = pantheon.mb.values
+#zpicks = pantheon.zhel.values
+## Stacking np.arrays together and sorting by accending redshift.
+#data = np.stack((mag,zpicks), axis=0)
+#data.sort(axis=-1)
+#mag = data[0]
+#zpicks = data[-1]
+#data_dic = {'mag':mag, 'zpicks':zpicks}
+
+# Loading artificial LCDM SN Ia data:
+from pathlib import Path
+dataname = f'data/1048_3.0_sigma_0.07.p'
+my_file = Path(dataname)
+if my_file.is_file():
+    with open(dataname,'rb') as rfp: zpicks, mag = pickle.load(rfp)
 data_dic = {'mag':mag, 'zpicks':zpicks}
 
 ## Generating LCDM data.

@@ -9,19 +9,32 @@ import matplotlib.pyplot as plt
 import numpy as np
 import datasim
 
-# Pantheon data:
-import pandas as pd
-pantheon = pd.read_csv('./data/lcparam_full_long.txt', sep=" ")
-# Stacking arrays together and sorting by accending redshift.
-data = np.stack((pantheon.mb.values,pantheon.zhel.values), axis=0)
-data.sort(axis=-1)
-pmag = data[0]
-zpicks = data[-1]
-data_dic = {'zpicks':zpicks}
+data_name = 'synth'
+#data_name = 'pantheon'
+
+if data_name == 'pantheon':
+    # Pantheon data:
+    import pandas as pd
+    pantheon = pd.read_csv('./data/lcparam_full_long.txt', sep=" ")
+    # Stacking arrays together and sorting by accending redshift.
+    data = np.stack((pantheon.mb.values,pantheon.zhel.values), axis=0)
+    data.sort(axis=-1)
+    pmag = data[0]
+    zpicks = data[-1]
+    data_dic = {'mag':pmag, 'zpicks':zpicks}
+elif data_name == 'synth':
+    # Loading artificial LCDM SN Ia data:
+    from pathlib import Path
+    import pickle
+    dataname = f'data/1048_3.0_sigma_0.07.p'
+    my_file = Path(dataname)
+    if my_file.is_file():
+        with open(dataname,'rb') as rfp: zpicks, mag = pickle.load(rfp)
+    data_dic = {'mag':mag, 'zpicks':zpicks}
 
 
 # LCDM model magnitude and da
-mmag, mda = datasim.magn(['Mcorr', 'matter'], np.array([-19.3, 0.3]), data_dic, 'LCDM')
+#mmag, mda = datasim.magn(['Mcorr', 'matter'], np.array([-19.3, 0.3]), data_dic, 'LCDM')
 
 ## Does test_key reduce to LCDM?
 #names = ['Mcorr', 'matter', 'radiation', 'y_in', 'z_in']
@@ -50,13 +63,12 @@ mmag, mda = datasim.magn(['Mcorr', 'matter'], np.array([-19.3, 0.3]), data_dic, 
 #elif test_key == 'exotic':
 #    names = ['Mcorr', 'matter', 'radiation', 'gamma', 'zeta']
 #    values = np.array([-19.3, 0.3, 0.025, 0.0, 0.0])
-#mag0, da0 = datasim.magn(names, values, data_dic, test_key, plot_key=False)
-
+#mag, da = datasim.magn(names, values, data_dic, test_key, plot_key=False)
 
 
 test_key = 'stepfall'
-sample = np.loadtxt('./results_Bfactor/no05/2_model_stepfall/sample.txt')
-sample_info = np.loadtxt('./results_Bfactor/no05/2_model_stepfall/sample_info.txt')
+sample = np.loadtxt(f'./results_Bfactor/{data_name}/2_model_stepfall/sample.txt')
+sample_info = np.loadtxt(f'./results_Bfactor/{data_name}/2_model_stepfall/sample_info.txt')
 transposed_sample_info = sample_info.transpose()
 maxlike_index = np.argmax(transposed_sample_info[1])
 
@@ -66,10 +78,11 @@ mag1, da1 = datasim.magn(names, values, data_dic, test_key, plot_key=False)
 
 
 test_key = 'LCDM'
-sample = np.loadtxt('./results_Bfactor/no05/2_model_LCDM/sample.txt')
-sample_info = np.loadtxt('./results_Bfactor/no05/2_model_LCDM/sample_info.txt')
+sample = np.loadtxt(f'./results_Bfactor/{data_name}/2_model_LCDM/sample.txt')
+sample_info = np.loadtxt(f'./results_Bfactor/{data_name}/2_model_LCDM/sample_info.txt')
 transposed_sample_info = sample_info.transpose()
 maxlike_index = np.argmax(transposed_sample_info[1])
+
 names = ['Mcorr', 'm_ombar']
 values = sample[maxlike_index,:]
 mag0, da0 = datasim.magn(names, values, data_dic, test_key, plot_key=False)
@@ -80,66 +93,22 @@ plt.figure()
 plt.title('SN Ia magnitudes '+'\n Noise parameters: $\mu = 0.0$, $\sigma = 0.07$')
 plt.xlabel('z')
 plt.ylabel('Mag')
-plt.scatter(zpicks, pmag, label='pantheon', marker=',', s=1)
+plt.scatter(zpicks, data_dic['mag'], label=data_name, marker=',', s=1)
 plt.plot(zpicks, mag0, label='LCDM')
 plt.plot(zpicks, mag1, label='stepfall')
 plt.legend()
-plt.show()
-
-
-m_p_diff = pmag - mmag                          # pantheon - LCDM
-mbest_stepfall_diff = mmag - mag1               # LCDM - stepfall
-mbest_LCDM_diff = mmag - mag0                   # LCDM - DNest LCDM params
 
 # Residuals:
 plt.figure()
 plt.title('SN Ia magnitude residuals')
 plt.ylabel('Mag')
 plt.xlabel('z')
-plt.scatter(zpicks, m_p_diff, label='pantheon SN Ia data - LCDM', marker=',', s=1)
-plt.scatter(zpicks, mbest_stepfall_diff, label='LCDM - stepfall', marker=',', s=1)
-plt.scatter(zpicks, mbest_LCDM_diff, label='LCDM - DNest LCDM', marker=',', s=1)
+#plt.xlim(0.5,1)
+plt.scatter(zpicks, data_dic['mag'] - mag0, label=f'{data_name} SN Ia data - DNest LCDM', marker=',', s=1)
+plt.scatter(zpicks, mag0 - mag1, label='DNest LCDM - DNest stepfall', marker=',', s=1)
+#plt.scatter(zpicks, mbest_LCDM_diff, label='LCDM - DNest LCDM', marker=',', s=1)
 plt.grid(True)
 plt.legend()
 
 
-
-
-
-## Angular diameter distance plots:
-#plt.figure()
-#plt.title('Angular diameter distances')
-#plt.ylabel('$(H_0 /c) * D_A$')
-#plt.xlabel('z')
-#plt.plot(zpicks, mda, label='LCDM', color='red')
-##plt.plot(zpicks, da0, label=test_key+' in LCDM mode')
-##plt.plot(zpicks, da1, label=test_key+' w no interaction')
-#plt.plot(zpicks, da_max_007, label= test_key+' max likelihood, $\sigma = 0.07$')
-#plt.plot(zpicks, da_max_02, label= test_key+' max likelihood, $\sigma = 0.2$')
-##plt.plot(zpicks, da_2max_007, label= test_key+' 2nd highest likelihood, $\sigma = 0.07$')
-##plt.plot(zpicks, da_2max_02, label= test_key+' 2nd highest likelihood, $\sigma = 0.2$')
-##plt.plot(zpicks, da_min_007, label= test_key+' lowest likelihood, $\sigma = 0.07$')
-##plt.plot(zpicks, da_min_02, label= test_key+' lowest likelihood, $\sigma = 0.2$')
-#plt.grid(True)
-#plt.legend()
-#
-#dabest_diff_007 = mda - da_max_007             # LCDM - max like sd=0.07
-#dasecond_best_diff_007 = mda - da_2max_007     # LCDM - 2 highest like sd=0.07
-##daworst_diff_007 = mda - da_min_007            # LCDM - lowest like sd=0.07
-#dabest_diff_02 = mda - da_max_02               # LCDM - max like sd=0.2
-#dasecond_best_diff_02 = mda - da_2max_02       # LCDM - 2 highest like sd=0.2
-##daworst_diff_02 = mda - da_min_02              # LCDM - lowest like sd=0.2
-#
-## Residuals:
-#plt.figure()
-#plt.title('Angular diameter distance residuals')
-#plt.ylabel('$(H_0 /c) * D_A$')
-#plt.xlabel('z')
-#plt.plot(zpicks, dabest_diff_007, label='LCDM - max likelihood, $\sigma = 0.07$')
-##plt.plot(zpicks, dasecond_best_diff_007, label='LCDM - 2nd highest likelihood, $\sigma = 0.07$')
-##plt.plot(zpicks, daworst_diff_007, label='LCDM - lowest likelihood, $\sigma = 0.07$')
-#plt.plot(zpicks, dabest_diff_02, label='LCDM - max likelihood, $\sigma = 0.2$')
-##plt.plot(zpicks, dasecond_best_diff_02, label='LCDM - 2nd highest likelihood, $\sigma = 0.2$')
-##plt.plot(zpicks, daworst_diff_02, label='LCDM - lowest likelihood, $\sigma = 0.2$')
-#plt.grid(True)
-#plt.legend()
+plt.show()
