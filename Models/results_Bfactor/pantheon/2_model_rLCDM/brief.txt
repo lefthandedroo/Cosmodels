@@ -1,0 +1,7 @@
+Bfactor time:  8min 12s
+model = rLCDM
+data = ./data/lcparam_full_long.txt
+sigma = 0.07
+log(Z) = 1679.9971020453474
+Information = 11.712906094896425
+speed = 2

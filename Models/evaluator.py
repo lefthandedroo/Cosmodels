@@ -66,16 +66,16 @@ nmag = datasim.gnoise(mag, mu, sigma)
 dataname = 'noisy LCDM'
 data_dic['mag'] = nmag
 
-## Plot param evolutions for multiple models on the same axis.
-#p1 = ['Mcorr', 'm_ombar'], np.array([-19.3, 0.0])
-#p2 = ['Mcorr', 'm_ombar', 'r_ombar','gamma', 'zeta'], np.array([-19.3, 0.3, 0.025, 0.008349769211323153, 0.00991971520315343])
-#datasim.model_comparison([p1, p2], zpicks, ['LCDM', 'exotic'], plot_key=True)
+# Plot param evolutions for multiple models on the same axis.
+p1 = ['Mcorr', 'm_ombar'], np.array([-19.3, 0.3])
+p2 = ['Mcorr', 'm_ombar', 'r_ombar'], np.array([-19.3, 0.3, 0.025])
+datasim.model_comparison([p1, p2], zpicks, ['LCDM', 'rLCDM'], plot_key=True)
 
 
 firstderivs_functions = [None
 #            ,'stepfall'
 #            ,'waterfall'
-            ,'exotic'
+#            ,'exotic'
 #            ,'late_intxde'
 #            ,'heaviside_late_int'
 #            ,'late_int'
@@ -91,6 +91,7 @@ firstderivs_functions = [None
 #            ,'rdecay'
 #            ,'interacting'
 #            ,'LCDM'
+            ,'rLCDM'
              ]
 
 def modelcheck():
@@ -112,6 +113,9 @@ def modelcheck():
             elif test_key == 'exotic':
                 names = ['Mcorr', 'm_ombar', 'r_ombar', 'gamma', 'zeta']
                 values = np.array([-19.3, 0.3, 0.025, 0.0, 0.0])
+            elif test_key == 'rLCDM':
+                names = ['Mcorr', 'm_ombar', 'r_ombar']
+                values = np.array([-19.3, 0.3, 0.025])
             elif test_key == 'LCDM':
                 names = ['Mcorr', 'm_ombar']
                 values = np.array([-19.3, 0.3])
@@ -124,7 +128,7 @@ def modelcheck():
             datasim.magn(names, values, data_dic, test_key, plot_key=True)
     return
 
-modelcheck()
+#modelcheck()
 
 def emcee():
     print('@@@@@@@ emcee @@@@@@@')

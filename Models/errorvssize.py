@@ -26,8 +26,8 @@ mu = 0.0        # Mean of noise added to LCDM to simulate data.
 #Model, errors on data and dataset sizes to iterate through:
 test_keys = [None
             ,'stepfall'
-            ,'waterfall'
-            ,'exotic'
+#            ,'waterfall'
+#            ,'exotic'
 #            ,'late_intxde'
 #            ,'heaviside_late_int'
 #            ,'late_int'
@@ -43,6 +43,7 @@ test_keys = [None
 #            ,'rdecay'
 #            ,'interacting'
             ,'LCDM'
+#            ,'rLCDM'
              ]
 
 # Extracting pre-made redshifts z=0 to z=3.

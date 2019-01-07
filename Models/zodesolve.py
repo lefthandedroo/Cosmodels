@@ -29,7 +29,8 @@ firstderivs_functions = {
         'rdecay_mxde':f.rdecay_mxde,
         'rdecay':f.rdecay,
         'interacting':f.interacting,
-        'LCDM':f.LCDM
+        'LCDM':f.LCDM,
+        'rLCDM':f.rLCDM
         }
 
 def zodesolve(names, values, zpicks, model, plot_key):
@@ -66,7 +67,7 @@ def zodesolve(names, values, zpicks, model, plot_key):
         int_in = 4
     elif model == 'exotic':
         int_in = 3
-    elif model == 'LCDM':
+    elif model == 'LCDM' or model == 'rLCDM':
         int_in = len(values)
     else:
         int_in = 2

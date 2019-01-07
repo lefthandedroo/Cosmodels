@@ -20,27 +20,27 @@ timed = False
 plot = True
 mu, sigma = 0.0, 0.07    # Mean and standard deviation of the noise on the data.
 
-## Loading pantheon SN Ia data:
-#import pandas as pd
-#dataname = './data/lcparam_full_long.txt'
-#pantheon = pd.read_csv(dataname, sep=" ")
-## Reading each txt file column of interest as numpy.ndarray.
-#mag = pantheon.mb.values
-#zpicks = pantheon.zhel.values
-## Stacking np.arrays together and sorting by accending redshift.
-#data = np.stack((mag,zpicks), axis=0)
-#data.sort(axis=-1)
-#mag = data[0]
-#zpicks = data[-1]
-#data_dic = {'mag':mag, 'zpicks':zpicks}
-
-# Loading artificial LCDM SN Ia data:
-from pathlib import Path
-dataname = f'data/1048_3.0_sigma_0.07.p'
-my_file = Path(dataname)
-if my_file.is_file():
-    with open(dataname,'rb') as rfp: zpicks, mag = pickle.load(rfp)
+# Loading pantheon SN Ia data:
+import pandas as pd
+dataname = './data/lcparam_full_long.txt'
+pantheon = pd.read_csv(dataname, sep=" ")
+# Reading each txt file column of interest as numpy.ndarray.
+mag = pantheon.mb.values
+zpicks = pantheon.zhel.values
+# Stacking np.arrays together and sorting by accending redshift.
+data = np.stack((mag,zpicks), axis=0)
+data.sort(axis=-1)
+mag = data[0]
+zpicks = data[-1]
 data_dic = {'mag':mag, 'zpicks':zpicks}
+
+## Loading artificial LCDM SN Ia data:
+#from pathlib import Path
+#dataname = f'data/1048_3.0_sigma_0.07.p'
+#my_file = Path(dataname)
+#if my_file.is_file():
+#    with open(dataname,'rb') as rfp: zpicks, mag = pickle.load(rfp)
+#data_dic = {'mag':mag, 'zpicks':zpicks}
 
 ## Generating LCDM data.
 #names = ['Mcorr', 'matter']
@@ -116,7 +116,7 @@ class Model(object):
 
 
 firstderivs_functions = [None
-            ,'stepfall'
+#            ,'stepfall'
 #            ,'waterfall'
 #            ,'exotic'
 #            ,'late_intxde'
@@ -133,7 +133,8 @@ firstderivs_functions = [None
 #            ,'rdecay_mxde'
 #            ,'rdecay'
 #            ,'interacting'
-            ,'LCDM'
+#            ,'LCDM'
+            ,'rLCDM'
              ]
 
 
@@ -150,6 +151,9 @@ for key in firstderivs_functions:
         elif key == 'exotic':
             names = ['Mcorr','matter','radiation','gamma','zeta']
             int_lim = [[-0.01, 1],[-0.01, 1]]
+        elif key == 'rLCDM':
+            int_lim = None
+            names = ['Mcorr','matter', 'radiation']
         elif key == 'LCDM':
             int_lim = None
             names = ['Mcorr','matter']
