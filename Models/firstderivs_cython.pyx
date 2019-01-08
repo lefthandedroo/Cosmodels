@@ -969,9 +969,6 @@ def LCDM(double[:] v, redshifts, in_terms, double H0):
 
     return f
 
-def hello():
-    print('hello')
-    return
 
 def rLCDM(double[:] v, redshifts, in_terms, double H0):
     """
