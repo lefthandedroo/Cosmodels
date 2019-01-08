@@ -57,9 +57,9 @@ if timed:
     pr = cProfile.Profile()
     pr.enable()
 
-models = 'LCDM', 'stepfall', 'waterfall'
+#models = 'LCDM', 'stepfall', 'waterfall'
 models = 'exotic', 'LCDM'
-noise_options = 0.001, 0.07#, 0.14
+noise_options = 0.01, 0.07#, 0.14
 npoints_options = 1048, 10480#, 104800
 yaxis_tick = 1, 2, 3 # creating non real y values for visual separation of da's. da's plotted are all at z=1089.
 

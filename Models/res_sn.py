@@ -78,7 +78,7 @@ mag1, da1 = datasim.magn(names, values, data_dic, test_key1, plot_key=False)
 
 
 test_key0 = 'LCDM'
-#test_key0 = 'rLCDM'
+test_key0 = 'rLCDM'
 sample = np.loadtxt(f'./results_Bfactor/{data_name}/2_model_{test_key0}/sample.txt')
 sample_info = np.loadtxt(f'./results_Bfactor/{data_name}/2_model_{test_key0}/sample_info.txt')
 transposed_sample_info = sample_info.transpose()
