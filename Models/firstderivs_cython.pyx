@@ -10,6 +10,7 @@ from cpython cimport array
 import array
 import math
 
+# 'stepfall'
 # 'exotic'
 # 'late_intxde'
 # 'heaviside_late_int'
@@ -26,6 +27,7 @@ import math
 # 'rdecay'
 # 'interacting'
 # 'LCDM'
+# 'rLCDM'
 
 # Eq of state parameters for known fluids:
 cdef double w_r = 1/3     # radiation

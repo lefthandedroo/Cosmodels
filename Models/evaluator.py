@@ -128,7 +128,7 @@ def modelcheck():
             datasim.magn(names, values, data_dic, test_key, plot_key=True)
     return
 
-#modelcheck()
+modelcheck()
 
 def emcee():
     print('@@@@@@@ emcee @@@@@@@')
