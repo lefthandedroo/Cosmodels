@@ -66,10 +66,10 @@ nmag = datasim.gnoise(mag, mu, sigma)
 dataname = 'noisy LCDM'
 data_dic['mag'] = nmag
 
-# Plot param evolutions for multiple models on the same axis.
-p1 = ['Mcorr', 'm_ombar'], np.array([-19.3, 0.3])
-p2 = ['Mcorr', 'm_ombar', 'r_ombar'], np.array([-19.3, 0.3, 0.025])
-datasim.model_comparison([p1, p2], zpicks, ['LCDM', 'rLCDM'], plot_key=True)
+## Plot param evolutions for multiple models on the same axis.
+#p1 = ['Mcorr', 'm_ombar'], np.array([-19.3, 0.3])
+#p2 = ['Mcorr', 'm_ombar', 'r_ombar'], np.array([-19.3, 0.3, 0.025])
+#datasim.model_comparison([p1, p2], zpicks, ['LCDM', 'rLCDM'], plot_key=True)
 
 
 firstderivs_functions = [None
