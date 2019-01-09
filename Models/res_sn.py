@@ -77,7 +77,7 @@ values = sample[maxlike_index,:]
 mag1, da1 = datasim.magn(names, values, data_dic, test_key1, plot_key=False)
 
 
-test_key0 = 'LCDM'
+#test_key0 = 'LCDM'
 test_key0 = 'rLCDM'
 sample = np.loadtxt(f'./results_Bfactor/{data_name}/2_model_{test_key0}/sample.txt')
 sample_info = np.loadtxt(f'./results_Bfactor/{data_name}/2_model_{test_key0}/sample_info.txt')
@@ -87,6 +87,11 @@ maxlike_index = np.argmax(transposed_sample_info[1])
 names = ['Mcorr', 'm_ombar']
 values = sample[maxlike_index,:]
 mag0, da0 = datasim.magn(names, values, data_dic, test_key0, plot_key=False)
+
+
+
+
+
 
 # SN Ia plots:
 plt.figure()
@@ -110,5 +115,73 @@ plt.scatter(zpicks, mag0 - mag1, label=f'DNest {test_key0} - DNest {test_key1}',
 plt.grid(True)
 plt.legend()
 
+approx_corr_zpicks = [
+0.30012
+,0.14761
+,0.22853
+,0.1388
+,0.14343
+,0.09201
+,0.1568
+,0.23851
+,0.14949
+,0.50718
+,0.25249
+,0.28397
+,0.2368
+,0.34092
+,0.26388]
+
+corr_zpicks = []
+
+Mcorr = [
+21.71
+,19.89
+,20.97
+,19.82
+,19.88
+,18.95
+,20.12
+,21.20
+,20.15
+,22.99
+,21.21
+,21.32
+,21.02
+,21.89
+,21.06]
+
+datamag = []
+mag0 = []
+i = 0
+names = ['Mcorr', 'm_ombar']
+test_key0 = 'LCDM'
+
+for z in approx_corr_zpicks:
+    index = np.argmax(zpicks == z)
+    if index == 0:
+        index = np.argmax(zpicks > z)
+    corr_zpicks.append(zpicks[index])
+    datamag.append(mag[index])
+    values = [Mcorr[i], 0.310]
+    print(values, z)
+    values = np.asarray(values)
+    i+=1
+    data_dic['zpicks'] = z
+    magnitude, da = datasim.magn(names, values, data_dic, test_key0, plot_key=False)
+    mag0.append(magnitude)
+
+datamag = np.asarray(datamag)
+mag0 = np.asarray(mag0)
+mag0 = mag0.flatten()
+# Residuals:
+plt.figure()
+plt.title(f'SN Ia magnitude residuals, data = {data_name}')
+plt.ylabel('Mag')
+plt.xlabel('z')
+#plt.xlim(0.5,1)
+plt.scatter(corr_zpicks, datamag - mag0, label=f'{data_name} SN Ia data - pantheon parameters', marker=',', s=1)
+plt.grid(True)
+plt.legend()
 
 plt.show()
