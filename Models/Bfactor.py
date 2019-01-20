@@ -21,32 +21,31 @@ plot = True
 mu, sigma = 0.0, 0.07    # Mean and standard deviation of the noise on the data.
 
 # Loading pantheon SN Ia data:
-import pandas as pd
-dataname = './data/lcparam_full_long.txt'
-pantheon = pd.read_csv(dataname, sep=" ")
-# Reading each txt file column of interest as numpy.ndarray.
-mag = pantheon.mb.values
-zpicks = pantheon.zhel.values
-# Stacking np.arrays together and sorting by accending redshift.
-data = np.stack((mag,zpicks), axis=0)
-data.sort(axis=-1)
-mag = data[0]
-zpicks = data[-1]
-data_dic = {'mag':mag, 'zpicks':zpicks}
-
-## Loading artificial LCDM SN Ia data:
-#from pathlib import Path
-#dataname = f'data/1048_3.0_sigma_0.07.p'
-#my_file = Path(dataname)
-#if my_file.is_file():
-#    with open(dataname,'rb') as rfp: zpicks, mag = pickle.load(rfp)
-#data_dic = {'mag':mag, 'zpicks':zpicks}
-
-## Generating LCDM data.
-#names = ['Mcorr', 'matter']
-#values = np.array([-19.3, 0.3])
-#mag = datasim.noisy_mag(mu, sigma, names, values, data_dic, 'LCDM')
-#data_dic = {'mag':mag, 'zpicks':zpicks}
+dataname = 'pantheon'
+if dataname == 'pantheon':
+    import pandas as pd
+    print('-----Using pantheon')
+    # Pantheon data:
+    pantheon = pd.read_csv('./data/lcparam_full_long.txt', sep=" ")
+    pantheon.set_index('name', inplace=True)
+    pantheon.sort_values('zhel', inplace=True)
+    mag = pantheon.mb.values
+    zpicks = pantheon.zhel.values
+    data_dic = {'mag':mag, 'zpicks':zpicks}
+elif dataname == 'synth':
+    # Loading artificial LCDM SN Ia data:
+    from pathlib import Path
+    dataname = f'data/1048_3.0_sigma_0.07.p'
+    my_file = Path(dataname)
+    if my_file.is_file():
+        with open(dataname,'rb') as rfp: zpicks, mag = pickle.load(rfp)
+    data_dic = {'mag':mag, 'zpicks':zpicks}
+elif dataname == 'generated synth':
+    # Generating LCDM data.
+    names = ['Mcorr', 'matter']
+    values = np.array([-19.3, 0.3])
+    mag = datasim.noisy_mag(mu, sigma, names, values, data_dic, 'LCDM')
+    data_dic = {'mag':mag, 'zpicks':zpicks}
 
 class Model(object):
     """
@@ -116,8 +115,8 @@ class Model(object):
 
 
 firstderivs_functions = [None
-#            ,'stepfall'
-#            ,'waterfall'
+            ,'stepfall'
+            ,'waterfall'
 #            ,'exotic'
 #            ,'late_intxde'
 #            ,'heaviside_late_int'
@@ -133,7 +132,7 @@ firstderivs_functions = [None
 #            ,'rdecay_mxde'
 #            ,'rdecay'
 #            ,'interacting'
-#            ,'LCDM'
+            ,'LCDM'
             ,'rLCDM'
              ]
 

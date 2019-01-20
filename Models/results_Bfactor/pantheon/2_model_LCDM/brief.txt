@@ -1,7 +1,7 @@
-Bfactor time:  8min 8s
+Bfactor time:  7min 41s
 model = LCDM
-data = ./data/lcparam_full_long.txt
+data = pantheon
 sigma = 0.07
-log(Z) = 1669.2643636464122
-Information = 9.022192176810677
+log(Z) = -372.32550810684705
+Information = 9.134351958950731
 speed = 2

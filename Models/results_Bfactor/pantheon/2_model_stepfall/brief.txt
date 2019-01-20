@@ -1,7 +1,7 @@
-Bfactor time:  9min 3s
+Bfactor time:  8min 16s
 model = stepfall
-data = ./data/lcparam_full_long.txt
+data = pantheon
 sigma = 0.07
-log(Z) = 1677.160747513354
-Information = 14.248883875679212
+log(Z) = -362.0234242500059
+Information = 14.485623838482354
 speed = 2

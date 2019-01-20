@@ -1,4 +1,4 @@
-#name zcmb zhel dz mb dmb x1 dx1 color dcolor 3rdvar d3rdvar cov_m_s cov_m_c cov_s_c set ra dec biascor 
+name zcmb zhel dz mb dmb x1 dx1 color dcolor 3rdvar d3rdvar cov_m_s cov_m_c cov_s_c set ra dec biascor 
 03D1au 0.50309 0.50309 0.0 22.93445 0.12605 0 0 0 0 0 0 0 0 0 0 0 0
 03D1ax 0.4948 0.4948 0.0 22.8802 0.11765 0 0 0 0 0 0 0 0 0 0 0 0
 03D1co 0.67767 0.67767 0.0 24.0377 0.2056 0 0 0 0 0 0 0 0 0 0 0 0

@@ -1,7 +1,7 @@
-Bfactor time:  8min 12s
+Bfactor time:  8min 9s
 model = rLCDM
-data = ./data/lcparam_full_long.txt
+data = pantheon
 sigma = 0.07
-log(Z) = 1679.9971020453474
-Information = 11.712906094896425
+log(Z) = -359.3155022975436
+Information = 11.934475685708037
 speed = 2

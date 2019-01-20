@@ -12,14 +12,13 @@ import matplotlib.pyplot as plt
 import datasim
 
 ## Pantheon data:
-#import pandas as pd
-#pantheon = pd.read_csv('./data/lcparam_full_long.txt', sep=" ")
-## Stacking arrays together and sorting by accending redshift.
-#data = np.stack((pantheon.mb.values,pantheon.zhel.values), axis=0)
-#data.sort(axis=-1)
-#pmag = data[0]
-#zpicks = data[-1]
-#data_dic = {'zpicks':zpicks}
+import pandas as pd
+pantheon = pd.read_csv('./data/lcparam_full_long.txt', sep=" ")
+pantheon.set_index('name', inplace=True)
+pantheon.sort_values('zhel', inplace=True)
+mag = pantheon.mb.values
+zpicks = pantheon.zhel.values
+data_dic = {'zpicks':zpicks}
 ## Pantheon data plot.
 #plt.figure()
 #plt.title('Pantheon')

@@ -5,7 +5,6 @@ Created on Wed Apr 18 21:45:40 2018
 
 @author: BallBlueMeercat
 """
-
 import numpy as np
 import time
 import pickle
@@ -22,38 +21,27 @@ nsteps = 10000
 # Statistical parameteres of noise: mean, standard deviation.
 mu, sigma = 0.0, 0.007 # sigma != 0
 
-########### Pantheon LCDM data: ##########
-#import pandas as pd
-#dataname = './data/lcparam_full_long.txt'
-#pantheon = pd.read_csv(dataname, sep=" ")
-#
-## Reading each txt file column of interest as numpy.ndarray
-#mag = pantheon.mb.values
-#x1 = pantheon.x1.values
-#colour = pantheon.color.values
-#zpicks = pantheon.zhel.values
-#
-## Stacking arrays together and sorting by accending redshift.
-#data = np.stack((mag,x1,colour,zpicks), axis=0)
-#data.sort(axis=-1)
-#
-#mag = data[0]
-##x1 = data[1]
-##colour = data[2]
-#zpicks = data[3]
-#data_dic = {'mag':mag, 'zpicks':zpicks}
-
-########## Artificial LCDM data: ##########
-## Generating redshifts.
-#zpicks = np.sort(np.random.uniform(low=0.0001, high=1088, size=(10000,)))
-#zpicks[-1] = 1089
-#data_dic = {'mag':None, 'zpicks':zpicks}
-
-# Extracting pre-made redshifts z=0 to z=1089.
-try:
-    with open('data/zpicks_1000_1089.p','rb') as rfp: zpicks = pickle.load(rfp)
-except:
-    print("zpicks_1000_1089.p didnt't open")
+dataname = 'pantheon'
+if dataname == 'pantheon':
+    import pandas as pd
+    print('-----Using pantheon')
+    # Pantheon data:
+    pantheon = pd.read_csv('./data/lcparam_full_long.txt', sep=" ")
+    pantheon.set_index('name', inplace=True)
+    pantheon.sort_values('zhel', inplace=True)
+    mag = pantheon.mb.values
+    zpicks = pantheon.zhel.values
+elif dataname == 'generated synth':
+    ######### Artificial LCDM data: ##########
+    # Generating redshifts.
+    zpicks = np.sort(np.random.uniform(low=0.0001, high=1088, size=(10000,)))
+    zpicks[-1] = 1089
+elif dataname == 'pre-made zpicks':
+    # Extracting pre-made redshifts z=0 to z=1089.
+    try:
+        with open('data/zpicks_1000_1089.p','rb') as rfp: zpicks = pickle.load(rfp)
+    except:
+        print("zpicks_1000_1089.p didnt't open")
 
 data_dic = {'zpicks':zpicks}
 

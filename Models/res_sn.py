@@ -7,22 +7,44 @@ Created on Tue Dec 18 13:14:13 2018
 """
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import datasim
 
 #data_name = 'synth'
 data_name = 'pantheon'
+#data_name = 'scolnic'
+#data_name = 'table'
 
 if data_name == 'pantheon':
     print('-----Using pantheon')
     # Pantheon data:
-    import pandas as pd
     pantheon = pd.read_csv('./data/lcparam_full_long.txt', sep=" ")
-    # Stacking arrays together and sorting by accending redshift.
-    data = np.stack((pantheon.mb.values,pantheon.zhel.values), axis=0)
-    data.sort(axis=-1)
-    mag = data[0]
-    zpicks = data[-1]
+    pantheon.set_index('name', inplace=True)
+    pantheon.sort_values('zhel', inplace=True)
+    mag = pantheon.mb.values
+    zpicks = pantheon.zhel.values
     data_dic = {'mag':mag, 'zpicks':zpicks}
+
+elif data_name == 'scolnic':
+    print('-----Using scolnic')
+    # scolnic data:
+    scolnic = pd.read_csv('./data/hlsp_ps1cosmo_panstarrs_gpc1_all_model_v1_lcparam-full.txt', sep=" ")
+    scolnic.set_index('name', inplace=True)
+    scolnic.sort_values('zhel', inplace=True)
+    mag = scolnic.mb.values
+    zpicks = scolnic.zhel.values
+    data_dic = {'mag':mag, 'zpicks':zpicks}
+
+elif data_name == 'table':
+    print('-----Using table')
+    # table data:
+    table = pd.read_csv('./data/table.txt', sep=" ")
+    table.set_index('name', inplace=True)
+    table.sort_values('zhel', inplace=True)
+    mag = table.mb.values
+    zpicks = table.zhel.values
+    data_dic = {'mag':mag, 'zpicks':zpicks}
+
 elif data_name == 'synth':
     print('-----Using artificial data')
     # Loading artificial LCDM SN Ia data:
@@ -34,7 +56,9 @@ elif data_name == 'synth':
         with open(dataname,'rb') as rfp: zpicks, mag = pickle.load(rfp)
     data_dic = {'mag':mag, 'zpicks':zpicks}
 
-scolnic_Mcorr_zpicks = [
+
+
+scolnic_muM_z = [
 0.30012
 ,0.14761
 ,0.22853
@@ -51,8 +75,7 @@ scolnic_Mcorr_zpicks = [
 ,0.34092
 ,0.26388]
 
-
-scolnic_Mcorr = [
+scolnic_muM = [
 21.71
 ,19.89
 ,20.97
@@ -69,23 +92,25 @@ scolnic_Mcorr = [
 ,21.89
 ,21.06]
 
-scolnic_data_mag = np.zeros(len(scolnic_Mcorr))
+scolnic_z_mag = np.zeros(len(scolnic_muM_z))
 
 i=0
-for z in scolnic_Mcorr_zpicks:
+for z in scolnic_muM_z:
     index = np.argmax(zpicks == z)
     if index == 0:
         print(f"Didn't find an exact z = {z} match")
         index = np.argmax(zpicks > z)
         print(f'but found closest z = {zpicks[index]}')
-#    print(index)
-    scolnic_data_mag[i] = mag[index]
+    print(index)
+    scolnic_z_mag[i] = mag[index]
     i+=1
 
 plt.figure()
 plt.title(f'SN Ia mag from Scolnic and mag at Scolnic paper redshifts')
-plt.scatter(scolnic_Mcorr_zpicks, scolnic_Mcorr, label='scolnic paper mag')
-plt.scatter(scolnic_Mcorr_zpicks, scolnic_data_mag, label=f'{data_name} data at scolnic z')
+plt.xlabel('z')
+plt.ylabel('mag')
+plt.scatter(scolnic_muM_z, scolnic_muM, label='scolnic paper mag')
+plt.scatter(scolnic_muM_z, scolnic_z_mag, label=f'{data_name} data at scolnic z')
 plt.legend()
 
 
@@ -175,9 +200,9 @@ for omega_m in scolnic_omega_m:
     plt.ylabel('Mag')
     plt.xlabel('z')
     #plt.xlim(0.5,1)
-    plt.scatter(zpicks, data_dic['mag'] - mag00, label=f'{data_name} SN Ia data - scolnic omega_m {test_key00}', marker=',', s=1)
+    plt.scatter(zpicks, data_dic['mag'] - mag0, label=f'{data_name} SN Ia data - DNest {test_key0}', marker=',', s=1)
     plt.scatter(zpicks, mag0 - mag1, label=f'DNest {test_key0} - DNest {test_key1}', marker=',', s=1)
-    plt.scatter(zpicks, mag00 - mag1, label='LCDM w scolnic omega_m - DNest {test_key1}', marker=',', s=1)
+    plt.scatter(zpicks, mag00 - mag1, label=f'LCDM w scolnic omega_m - DNest {test_key1}', marker=',', s=1)
     plt.grid(True)
     plt.legend()
 
