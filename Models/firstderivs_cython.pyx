@@ -374,7 +374,7 @@ def heaviside_late_int(double[:] v, redshifts, in_terms, double H0):
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
 
-    irate = gamma/(1.0+z)/Hz * np.heaviside(0.9-z, 1)
+    irate = gamma/(1.0+z)/Hz * np.heaviside(0.9-z, 0.5)
 
     cdef double dtdz = -1.0/((1.0+z) * Hz)
     cdef double dadz = -(1.0+z)**(-2.0)

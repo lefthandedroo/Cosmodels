@@ -54,10 +54,10 @@ nmag = datasim.gnoise(mag, mu, sigma)
 dataname = 'noisy LCDM'
 data_dic['mag'] = nmag
 
-## Plot param evolutions for multiple models on the same axis.
-#p1 = ['Mcorr', 'm_ombar'], np.array([-19.3, 0.3])
-#p2 = ['Mcorr', 'm_ombar', 'r_ombar'], np.array([-19.3, 0.3, 0.025])
-#datasim.model_comparison([p1, p2], zpicks, ['LCDM', 'rLCDM'], plot_key=True)
+# Plot param evolutions for multiple models on the same axis.
+p1 = ['Mcorr', 'm_ombar', 'gamma'], np.array([-19.3, 0.3, 1])
+p2 = ['Mcorr', 'm_ombar', 'gamma'], np.array([-19.3, 0.3, 1])
+datasim.model_comparison([p1, p2], zpicks, ['late_intxde', 'heaviside_late_int'], plot_key=True)
 
 
 firstderivs_functions = [None
@@ -76,10 +76,10 @@ firstderivs_functions = [None
 #            ,'rdecay_m'
 #            ,'rdecay_de'
 #            ,'rdecay_mxde'
-#            ,'rdecay'
+            ,'rdecay'
 #            ,'interacting'
 #            ,'LCDM'
-            ,'rLCDM'
+#            ,'rLCDM'
              ]
 
 def modelcheck():
@@ -109,14 +109,14 @@ def modelcheck():
                 values = np.array([-19.3, 0.3])
             else:
                 names = ['Mcorr', 'm_ombar','gamma']
-                values = np.array([-19.3, 0.3, 0.0])
+                values = np.array([-19.3, 0.3, -0.0])
 
             # Making sure number of parameters matches number of names given:
             assert len(names) == len(values), "len(names) != len(values)"
             datasim.magn(names, values, data_dic, test_key, plot_key=True)
     return
 
-modelcheck()
+#modelcheck()
 
 def emcee():
     print('@@@@@@@ emcee @@@@@@@')

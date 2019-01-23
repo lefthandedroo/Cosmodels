@@ -115,11 +115,11 @@ class Model(object):
 
 
 firstderivs_functions = [None
-            ,'stepfall'
-            ,'waterfall'
+#            ,'stepfall'
+#            ,'waterfall'
 #            ,'exotic'
 #            ,'late_intxde'
-#            ,'heaviside_late_int'
+            ,'heaviside_late_int'
 #            ,'late_int'
 #            ,'expgamma'
 #            ,'txgamma'         # doesn't converge
@@ -132,8 +132,8 @@ firstderivs_functions = [None
 #            ,'rdecay_mxde'
 #            ,'rdecay'
 #            ,'interacting'
-            ,'LCDM'
-            ,'rLCDM'
+#            ,'LCDM'
+#            ,'rLCDM'
              ]
 
 

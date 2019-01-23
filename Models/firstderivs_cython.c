@@ -2267,6 +2267,7 @@ static PyObject *__pyx_tp_new_Enum(PyTypeObject *t, PyObject *a, PyObject *k); /
 static PyObject *__pyx_tp_new_memoryview(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new__memoryviewslice(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_float_0_0;
+static PyObject *__pyx_float_0_5;
 static PyObject *__pyx_float_1_0;
 static PyObject *__pyx_int_0;
 static PyObject *__pyx_int_1;
@@ -7053,7 +7054,7 @@ static PyObject *__pyx_pf_18firstderivs_cython_10heaviside_late_int(CYTHON_UNUSE
  *         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
  *               %(z, Hz, gamma, ombar_m, ombar_de))             # <<<<<<<<<<<<<<
  * 
- *     irate = gamma/(1.0+z)/Hz * np.heaviside(0.9-z, 1)
+ *     irate = gamma/(1.0+z)/Hz * np.heaviside(0.9-z, 0.5)
  */
     __pyx_t_8 = PyFloat_FromDouble(__pyx_v_z); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 375, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
@@ -7100,7 +7101,7 @@ static PyObject *__pyx_pf_18firstderivs_cython_10heaviside_late_int(CYTHON_UNUSE
   /* "firstderivs_cython.pyx":377
  *               %(z, Hz, gamma, ombar_m, ombar_de))
  * 
- *     irate = gamma/(1.0+z)/Hz * np.heaviside(0.9-z, 1)             # <<<<<<<<<<<<<<
+ *     irate = gamma/(1.0+z)/Hz * np.heaviside(0.9-z, 0.5)             # <<<<<<<<<<<<<<
  * 
  *     cdef double dtdz = -1.0/((1.0+z) * Hz)
  */
@@ -7137,7 +7138,7 @@ static PyObject *__pyx_pf_18firstderivs_cython_10heaviside_late_int(CYTHON_UNUSE
   }
   #if CYTHON_FAST_PYCALL
   if (PyFunction_Check(__pyx_t_13)) {
-    PyObject *__pyx_temp[3] = {__pyx_t_11, __pyx_t_10, __pyx_int_1};
+    PyObject *__pyx_temp[3] = {__pyx_t_11, __pyx_t_10, __pyx_float_0_5};
     __pyx_t_15 = __Pyx_PyFunction_FastCall(__pyx_t_13, __pyx_temp+1-__pyx_t_2, 2+__pyx_t_2); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 377, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_11); __pyx_t_11 = 0;
     __Pyx_GOTREF(__pyx_t_15);
@@ -7146,7 +7147,7 @@ static PyObject *__pyx_pf_18firstderivs_cython_10heaviside_late_int(CYTHON_UNUSE
   #endif
   #if CYTHON_FAST_PYCCALL
   if (__Pyx_PyFastCFunction_Check(__pyx_t_13)) {
-    PyObject *__pyx_temp[3] = {__pyx_t_11, __pyx_t_10, __pyx_int_1};
+    PyObject *__pyx_temp[3] = {__pyx_t_11, __pyx_t_10, __pyx_float_0_5};
     __pyx_t_15 = __Pyx_PyCFunction_FastCall(__pyx_t_13, __pyx_temp+1-__pyx_t_2, 2+__pyx_t_2); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 377, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_11); __pyx_t_11 = 0;
     __Pyx_GOTREF(__pyx_t_15);
@@ -7161,9 +7162,9 @@ static PyObject *__pyx_pf_18firstderivs_cython_10heaviside_late_int(CYTHON_UNUSE
     }
     __Pyx_GIVEREF(__pyx_t_10);
     PyTuple_SET_ITEM(__pyx_t_8, 0+__pyx_t_2, __pyx_t_10);
-    __Pyx_INCREF(__pyx_int_1);
-    __Pyx_GIVEREF(__pyx_int_1);
-    PyTuple_SET_ITEM(__pyx_t_8, 1+__pyx_t_2, __pyx_int_1);
+    __Pyx_INCREF(__pyx_float_0_5);
+    __Pyx_GIVEREF(__pyx_float_0_5);
+    PyTuple_SET_ITEM(__pyx_t_8, 1+__pyx_t_2, __pyx_float_0_5);
     __pyx_t_10 = 0;
     __pyx_t_15 = __Pyx_PyObject_Call(__pyx_t_13, __pyx_t_8, NULL); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 377, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_15);
@@ -7178,7 +7179,7 @@ static PyObject *__pyx_pf_18firstderivs_cython_10heaviside_late_int(CYTHON_UNUSE
   __pyx_t_13 = 0;
 
   /* "firstderivs_cython.pyx":379
- *     irate = gamma/(1.0+z)/Hz * np.heaviside(0.9-z, 1)
+ *     irate = gamma/(1.0+z)/Hz * np.heaviside(0.9-z, 0.5)
  * 
  *     cdef double dtdz = -1.0/((1.0+z) * Hz)             # <<<<<<<<<<<<<<
  *     cdef double dadz = -(1.0+z)**(-2.0)
@@ -30376,6 +30377,7 @@ static int __Pyx_InitCachedConstants(void) {
 static int __Pyx_InitGlobals(void) {
   if (__Pyx_InitStrings(__pyx_string_tab) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
   __pyx_float_0_0 = PyFloat_FromDouble(0.0); if (unlikely(!__pyx_float_0_0)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_float_0_5 = PyFloat_FromDouble(0.5); if (unlikely(!__pyx_float_0_5)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_float_1_0 = PyFloat_FromDouble(1.0); if (unlikely(!__pyx_float_1_0)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_0 = PyInt_FromLong(0); if (unlikely(!__pyx_int_0)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_1 = PyInt_FromLong(1); if (unlikely(!__pyx_int_1)) __PYX_ERR(0, 1, __pyx_L1_error)
