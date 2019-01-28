@@ -17,6 +17,7 @@ firstderivs_functions = {
         'exotic':f.exotic,
         'late_intxde':f.late_intxde,
         'heaviside_late_int':f.heaviside_late_int,
+        'heaviside_sudden':f.heaviside_sudden,
         'late_int':f.late_int,
         'expgamma':f.expgamma,
         'txgamma':f.txgamma,

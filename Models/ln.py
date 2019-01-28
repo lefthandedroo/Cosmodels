@@ -110,7 +110,8 @@ def lnprior(th, key):
                 return 0.0
 
         elif key == 'rdecay':
-            if -2 < th[2] < 0.1: # interaction term
+#            if -2 < th[2] < 0.1: # interaction term
+            if -10 < th[2] < 1: # interaction term
                 return 0.0
 
         elif key == 'interacting':

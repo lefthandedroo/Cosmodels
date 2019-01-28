@@ -19,9 +19,13 @@ import stats
 nsteps = 10000
 
 # Statistical parameteres of noise: mean, standard deviation.
-mu, sigma = 0.0, 0.007 # sigma != 0
+mu, sigma = 0.0, 0.03 # sigma != 0
+
+data_dic = {}
 
 dataname = 'pantheon'
+#dataname = 'LCDM_to_1089'
+#dataname = 'specific_z'
 if dataname == 'pantheon':
     import pandas as pd
     print('-----Using pantheon')
@@ -31,33 +35,37 @@ if dataname == 'pantheon':
     pantheon.sort_values('zhel', inplace=True)
     mag = pantheon.mb.values
     zpicks = pantheon.zhel.values
-elif dataname == 'generated synth':
-    ######### Artificial LCDM data: ##########
-    # Generating redshifts.
+    data_dic['mag'] = mag
+elif dataname == 'LCDM_to_1089':
+    print('-----Generating z up to z=1089')
+    # Generating artificial redshifts.
     zpicks = np.sort(np.random.uniform(low=0.0001, high=1088, size=(10000,)))
     zpicks[-1] = 1089
-elif dataname == 'pre-made zpicks':
+    # Generating LCDM mag and da.
+    names, values = ['Mcorr', 'matter'], np.array([-19.3, 0.3])
+    mag, da = datasim.magn(names, values, {'zpicks':zpicks}, 'LCDM', plot_key=False)
+    # Adding noise to LCDM mag.
+    nmag = datasim.gnoise(mag, mu, sigma)
+    data_dic['mag'] = nmag
+elif dataname == 'pre-made_zpicks':
+    print('-----Using pre-made z')
     # Extracting pre-made redshifts z=0 to z=1089.
     try:
         with open('data/zpicks_1000_1089.p','rb') as rfp: zpicks = pickle.load(rfp)
     except:
         print("zpicks_1000_1089.p didnt't open")
+elif dataname == 'specific_z':
+    zpicks = [1, 1.2, 1.2600444250620284, 1.3, 1.4, 1.5, 1.6]
+    print(f'-----Using z={zpicks}')
 
-data_dic = {'zpicks':zpicks}
+data_dic['zpicks'] = zpicks
 
-# Generating LCDM mag and da.
-names, values = ['Mcorr', 'matter'], np.array([-19.3, 0.3])
-mag, da = datasim.magn(names, values, data_dic, 'LCDM', plot_key=False)
 
-# Adding noise to LCDM mag.
-nmag = datasim.gnoise(mag, mu, sigma)
-dataname = 'noisy LCDM'
-data_dic['mag'] = nmag
 
-# Plot param evolutions for multiple models on the same axis.
-p1 = ['Mcorr', 'm_ombar', 'gamma'], np.array([-19.3, 0.3, 1])
-p2 = ['Mcorr', 'm_ombar', 'gamma'], np.array([-19.3, 0.3, 1])
-datasim.model_comparison([p1, p2], zpicks, ['late_intxde', 'heaviside_late_int'], plot_key=True)
+## Plot param evolutions for multiple models on the same axis.
+#p1 = ['Mcorr', 'm_ombar', 'gamma'], np.array([-19.3, 0.3, 1])
+#p2 = ['Mcorr', 'm_ombar', 'gamma'], np.array([-19.3, 0.3, 0])
+#datasim.model_comparison([p1, p2], zpicks, ['rdecay', 'rdecay'], plot_key=True)
 
 
 firstderivs_functions = [None
@@ -66,6 +74,7 @@ firstderivs_functions = [None
 #            ,'exotic'
 #            ,'late_intxde'
 #            ,'heaviside_late_int'
+#            ,'heaviside_sudden'
 #            ,'late_int'
 #            ,'expgamma'
 #            ,'txgamma'         # doesn't converge
@@ -174,4 +183,4 @@ def emcee():
 
     return
 
-#emcee()
+emcee()

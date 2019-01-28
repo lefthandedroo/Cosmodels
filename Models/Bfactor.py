@@ -15,10 +15,12 @@ import datasim
 import results
 import tools
 
-speed = 2       # From prior = 0, short = 1, medium = 2, long = 3.
+speed = 0       # From prior = 0, short = 1, medium = 2, long = 3.
 timed = False
 plot = True
 mu, sigma = 0.0, 0.07    # Mean and standard deviation of the noise on the data.
+
+print('Bfactor')
 
 # Loading pantheon SN Ia data:
 dataname = 'pantheon'
@@ -119,7 +121,7 @@ firstderivs_functions = [None
 #            ,'waterfall'
 #            ,'exotic'
 #            ,'late_intxde'
-            ,'heaviside_late_int'
+#            ,'heaviside_late_int'
 #            ,'late_int'
 #            ,'expgamma'
 #            ,'txgamma'         # doesn't converge
@@ -130,7 +132,7 @@ firstderivs_functions = [None
 #            ,'rdecay_m'
 #            ,'rdecay_de'
 #            ,'rdecay_mxde'
-#            ,'rdecay'
+            ,'rdecay'
 #            ,'interacting'
 #            ,'LCDM'
 #            ,'rLCDM'
@@ -141,6 +143,8 @@ for key in firstderivs_functions:
     if key:
         if key == 'stepfall':
             int_lim = [[-0.01, 1], [-0.01, 1], [-0.01, 1]]
+#            int_lim = [[-0.01, 0], [-0.01, 0], [-0.01, 0]]
+#            int_lim = [[0, 0.01], [0, 0.01], [0, 0.01]]
             names = ['Mcorr','matter','radiation','a_ombar',
                      'v_in','w_in','x_in']
         elif key =='waterfall':
@@ -177,7 +181,7 @@ for key in firstderivs_functions:
             elif key == 'rdecay_m':
                 int_lim = [[-3, 0]]
             elif key == 'rdecay':
-                int_lim = [[-2, 0]]
+                int_lim = [[-10, 1]]
             elif key == 'interacting':
                 int_lim = [[-1.5, 0.1]]
             else:

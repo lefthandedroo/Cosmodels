@@ -5,6 +5,7 @@ Created on Fri Feb 23 16:02:10 2018
 
 @author: BallBlueMeercat
 """
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 from emcee import EnsembleSampler
 import numpy as np
@@ -134,6 +135,7 @@ def stats(names, values, data_dict, sigma, nsteps,
 
         # Corner plot (walkers' walk + histogram).
         import corner
+        mpl.style.use('default')
         samples = sampler.chain[:, :, :].reshape((-1, ndim))
         corner.corner(samples, labels=names, truths=values)
         stamp = str(int(time.time()))

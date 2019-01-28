@@ -66,7 +66,7 @@ def stepfall(double[:] v, redshifts, in_terms, double H0):
 
     cdef double Hz = H0 * (ombar_m +ombar_r +ombar_a +ombar_de)**(0.5)
 
-    if math.isnan(Hz):
+    if ombar_m < 0 or ombar_de < 0 or ombar_r < 0 or ombar_a < 0 or math.isnan(Hz):
         print('stepfall')
         print('z = %s, Hz = %s, in_terms = %s'% (z, Hz, in_terms))
         print('ombar_m = ',ombar_m,'ombar_r = ',ombar_r,
@@ -127,7 +127,7 @@ def waterfall(double[:] v, redshifts, in_terms, double H0):
     cdef double Hz = H0 * (ombar_m +ombar_r +ombar_a
                            +ombar_b +ombar_c +ombar_de)**(0.5)
 
-    if math.isnan(Hz):
+    if ombar_m < 0 or ombar_de < 0 or ombar_r < 0 or ombar_a < 0 or ombar_b < 0 or ombar_c < 0 or math.isnan(Hz):
         print('waterfall')
         print('z = %s, Hz = %s, in_terms = %s'% (z, Hz, in_terms))
         print('ombar_r = ',ombar_r,'ombar_m = ',ombar_m,
@@ -207,7 +207,7 @@ def rainbow(double[:] v, redshifts, in_terms, double H0):
                            +ombar_d +ombar_e +ombar_f +ombar_g +ombar_h
                            +ombar_i +ombar_de)**(0.5)
 
-    if math.isnan(Hz):
+    if ombar_m < 0 or ombar_de < 0 or math.isnan(Hz):
         print('rainbow')
         print('z = %s, Hz = %s, in_terms = %s'% (z, Hz, in_terms))
         print('ombar_m = %s, ombar_r = %s, ombar_de = %s'
@@ -276,7 +276,7 @@ def exotic(double[:] v, redshifts, in_terms, double H0):
 
     cdef double Hz = H0 * (ombar_m +ombar_r +ombar_de)**(0.5)
 
-    if math.isnan(Hz):
+    if ombar_m < 0 or ombar_de < 0 or math.isnan(Hz):
         print('exotic')
         print('z = %s, Hz = %s, gamma = %s, zeta = %s'% (z, Hz, gamma, zeta))
         print('ombar_m = %s, ombar_r = %s, ombar_de = %s'
@@ -322,7 +322,7 @@ def late_intxde(double[:] v, redshifts, in_terms, double H0):
 
     cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
 
-    if math.isnan(Hz):
+    if ombar_m < 0 or ombar_de < 0 or math.isnan(Hz):
         print('late_intxde')
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
@@ -369,12 +369,56 @@ def heaviside_late_int(double[:] v, redshifts, in_terms, double H0):
 
     cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
 
-    if math.isnan(Hz):
+    if ombar_m < 0 or ombar_de < 0 or math.isnan(Hz):
         print('late_int')
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
 
     irate = gamma/(1.0+z)/Hz * np.heaviside(0.9-z, 0.5)
+
+    cdef double dtdz = -1.0/((1.0+z) * Hz)
+    cdef double dadz = -(1.0+z)**(-2.0)
+    cdef double domdz = 3.0*ombar_m /(1.0+z) - irate
+    cdef double ddldz = 1.0/Hz
+
+    # first derivatives of functions I want to find:
+    f = [dtdz,# dt/dz (= f.d wrt z of time)
+         dadz,# d(a)/dz (= f.d wrt z of scale factor)
+         domdz,# d(ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
+         irate,# d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit density(t0))
+         1.0,# d(z)/dz (= f.d wrt z of redshift)
+         ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
+
+    return f
+
+def heaviside_sudden(double[:] v, redshifts, in_terms, double H0):
+    """
+    Takes in:
+        v = values at z=0;
+        t = list of redshifts to integrate over;
+        gamma = interaction term.
+
+    Returns a function f =     [dt/dz, d(a)/dz,
+                                d(e'_m)/dz, d(e'_de)/dz,
+                                d(z)/dz,
+                                d(dl)/dz]
+    """
+    cdef double t = v[0]
+    cdef double a = v[1]
+    cdef double ombar_m = v[2]
+    cdef double ombar_de = v[3]
+    cdef double z = v[4]
+    cdef double dl = v[5]
+    cdef double gamma = in_terms[0]
+
+    cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
+
+    if ombar_m < 0 or ombar_de < 0 or math.isnan(Hz):
+        print('late_int')
+        print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
+              %(z, Hz, gamma, ombar_m, ombar_de))
+
+    irate = gamma/(1.0+z)/Hz * np.heaviside(0.9-z, 1.0)
 
     cdef double dtdz = -1.0/((1.0+z) * Hz)
     cdef double dadz = -(1.0+z)**(-2.0)
@@ -413,7 +457,7 @@ def late_int(double[:] v, redshifts, in_terms, double H0):
 
     cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
 
-    if math.isnan(Hz):
+    if ombar_m < 0 or ombar_de < 0 or math.isnan(Hz):
         print('late_int')
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
@@ -460,7 +504,7 @@ def expgamma(double[:] v, redshifts, in_terms, double H0):
 
     cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
 
-    if math.isnan(Hz):
+    if ombar_m < 0 or ombar_de < 0 or math.isnan(Hz):
         print('expgamma')
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
@@ -504,7 +548,7 @@ def txgamma(double[:] v, redshifts, in_terms, double H0):
 
     cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
 
-    if math.isnan(Hz):
+    if ombar_m < 0 or ombar_de < 0 or math.isnan(Hz):
         print('txgamma')
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
@@ -548,7 +592,7 @@ def zxgamma(double[:] v, redshifts, in_terms, double H0):
 
     cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
 
-    if math.isnan(Hz):
+    if ombar_m < 0 or ombar_de < 0 or math.isnan(Hz):
         print('zxgamma')
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
@@ -592,7 +636,7 @@ def gamma_over_z(double[:] v, redshifts, in_terms, double H0):
 
     cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
 
-    if math.isnan(Hz):
+    if ombar_m < 0 or ombar_de < 0 or math.isnan(Hz):
         print('gamma_over_z')
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
@@ -638,7 +682,7 @@ def zxxgamma(double[:] v, redshifts, in_terms, double H0):
 
     gamma = abs(gamma)
 
-    if math.isnan(Hz):
+    if ombar_m < 0 or ombar_de < 0 or math.isnan(Hz):
         print('zxxgamma')
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
@@ -684,7 +728,7 @@ def gammaxxz(double[:] v, redshifts, in_terms, double H0):
 
     gamma = abs(gamma)
 
-    if math.isnan(Hz):
+    if ombar_m < 0 or ombar_de < 0 or math.isnan(Hz):
         print('gammaxxz')
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
@@ -728,7 +772,7 @@ def rdecay_m(double[:] v, redshifts, in_terms, double H0):
 
     cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
 
-    if math.isnan(Hz):
+    if ombar_m < 0 or ombar_de < 0 or math.isnan(Hz):
         print('rdecay_m')
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
@@ -772,7 +816,7 @@ def rdecay_de(double[:] v, redshifts, in_terms, double H0):
 
     cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
 
-    if math.isnan(Hz):
+    if ombar_m < 0 or ombar_de < 0 or math.isnan(Hz):
         print('rdecay_de')
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
@@ -816,7 +860,7 @@ def rdecay_mxde(double[:] v, redshifts, in_terms, double H0):
 
     cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
 
-    if math.isnan(Hz):
+    if ombar_m < 0 or ombar_de < 0 or math.isnan(Hz):
         print('rdecay_mxde')
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
@@ -860,7 +904,7 @@ def rdecay(double[:] v, redshifts, in_terms, double H0):
 
     cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
 
-    if math.isnan(Hz):
+    if ombar_m < 0 or ombar_de < 0 or math.isnan(Hz):
         print('rdecay')
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
@@ -906,7 +950,7 @@ def interacting(double[:] v, redshifts, in_terms, double H0):
 
     cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
 
-    if math.isnan(Hz):
+    if ombar_m < 0 or ombar_de < 0 or math.isnan(Hz):
         print('interacting')
         print('z = %s, Hz = %s, gamma = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, gamma, ombar_m, ombar_de))
@@ -949,7 +993,7 @@ def LCDM(double[:] v, redshifts, in_terms, double H0):
 
     cdef double Hz = H0 * (ombar_m + ombar_de)**(0.5)
 
-    if math.isnan(Hz):
+    if ombar_m < 0 or ombar_de < 0 or math.isnan(Hz):
         print('LCDM')
         print('z = %s, Hz = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, ombar_m, ombar_de))
@@ -992,7 +1036,7 @@ def rLCDM(double[:] v, redshifts, in_terms, double H0):
 
     cdef double Hz = H0 * (ombar_m + ombar_r + ombar_de)**(0.5)
 
-    if math.isnan(Hz):
+    if ombar_m < 0 or ombar_de < 0 or ombar_r < 0 or math.isnan(Hz):
         print('LCDM')
         print('z = %s, Hz = %s, ombar_m = %s, ombar_de = %s'
               %(z, Hz, ombar_m, ombar_de))

@@ -7,18 +7,16 @@ Created on Tue Feb 27 12:40:48 2018
 
 
 """
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import os
 import time
 from results import load
 
-import seaborn as sns
-sns.set(style='ticks', palette='Set2')
-
 def stat_emcee(hue, var, var_true, var_name, slnprob, zpicks,
           mag, sigma, nsteps, nwalkers, save_path, firstderivs_key):
-
+    mpl.style.use('fivethirtyeight')
     initial = var_name.lower()[:1]
     name_true = var_name[:1] + '_true'
     hue_name = hue
@@ -76,7 +74,7 @@ def stat_emcee(hue, var, var_true, var_name, slnprob, zpicks,
 
 def stat_DNest(hue, var, var_true, var_name, slnprob, zpicks,
           mag, sigma, nsteps, nwalkers, save_path, firstderivs_key):
-
+    mpl.style.use('fivethirtyeight')
     initial = var_name.lower()[:1]
     name_true = var_name[:1] + '_true'
     hue_name = hue
@@ -141,7 +139,7 @@ def precise_runs(firstderivs_key, names, values, p, x):
         x = flot/int, cutoff precision for s.d.
     '''
 
-
+    mpl.style.use('fivethirtyeight')
     # Results folder to search through.
     directory = os.path.join('./results_error_vs_data/'+firstderivs_key)
 
@@ -296,7 +294,7 @@ def precise_runs(firstderivs_key, names, values, p, x):
 
 
 def modelcheck(mag, zpicks, plot_var, firstderivs_key):
-
+    mpl.style.use('fivethirtyeight')
     t = plot_var.get('t')
     dl = plot_var.get('dl')
     a = plot_var.get('a')
@@ -328,86 +326,85 @@ def modelcheck(mag, zpicks, plot_var, firstderivs_key):
     plt.title('Angular diameter distance evolution'
               f'\n Model: {firstderivs_key}, int_terms = {int_terms}')
     plt.xlabel('z')
-    plt.ylabel(r'$ \left( \frac{H_0}{c} \right) d_A $',
-               fontsize=15, labelpad=10)
+    plt.ylabel(r'$ d_A (H_0 / c)$')
     plt.grid(True)
-
     da_index = np.argmin(da)
     if da[da_index] < 0:
-        plt.plot(zpicks[:,da_index], da[:, da_index], color = 'g')
-        plt.plot(zpicks[da_index, :], da[da_index, :], color = 'r')
+        plt.plot(zpicks[:,da_index], da[:, da_index])
+        plt.plot(zpicks[da_index, :], da[da_index, :])
     else:
         plt.plot(zpicks, da)
 
-#    # Evolution of dV.
-#    plt.figure()
-#    plt.title(r'$d_V$ evolution'
-#              f'\n Model: {firstderivs_key}, int_terms = {int_terms}')
-#    plt.xlabel('z')
-#    plt.ylabel(r'$ d_V (z)$ [Mpc]')
-#    plt.grid(True)
-#    plt.plot(zpicks, dV)
+    # Evolution of dV.
+    plt.figure()
+    plt.title(r'$d_V$ evolution'
+              f'\n Model: {firstderivs_key}, int_terms = {int_terms}')
+    plt.xlabel('z')
+    plt.ylabel(r'$ d_V (z)$ [Mpc]')
+    plt.grid(True)
+    plt.plot(zpicks, dV)
 
-#    # Luminosity distance vs redshift.
-#    plt.figure()
-#    plt.xlabel('$z$')
-#    plt.ylabel('$d_L$*($H_0$/c)')
-#    plt.grid(True)
-#    plt.plot(zpicks, dl, 'xkcd:lightgreen', lw=1)
-#    plt.title('$d_L$ evolution'+'\n Model: %s, int_terms = %s'
-#              %(firstderivs_key, int_terms))
+    # Luminosity distance vs redshift.
+    plt.figure()
+    plt.xlabel('$z$')
+    plt.ylabel('$d_L$*($H_0$/c)')
+    plt.grid(True)
+    plt.plot(zpicks, dl)
+    plt.title('$d_L$ evolution'+'\n Model: %s, int_terms = %s'
+              %(firstderivs_key, int_terms))
 
     # H vs redshift.
     plt.figure()
     plt.xlabel('$z$')
     plt.ylabel('H')
     plt.grid(True)
-    plt.plot(zpicks, Hz, color='xkcd:blue', lw=1)
+    plt.plot(zpicks, Hz)
     plt.title(r'$H(z)$ evolution'+'\n Model: %s, int_terms = %s'
               %(firstderivs_key, int_terms))
 
-#    # Scale factor vs redshift.
-#    plt.figure()
-#    plt.xlabel('$z$')
-#    plt.ylabel('a')
-#    plt.grid(True)
-#    plt.plot(zpicks, a, 'xkcd:crimson', lw=1)
-#    plt.title('Scale factor evolution with redshift '
-#              +'\n Model: %s, int_terms = %s'
-#              %(firstderivs_key, int_terms))
-#
-#    # Scale factor vs age.
-#    plt.figure()
-#    plt.xlabel('age')
-#    plt.ylabel('a')
-#    plt.grid(True)
-#    plt.plot(t, a, color='xkcd:crimson', lw=1)
-#    plt.title('Scale factor evolution with time'+'\n Model: %s, int_terms = %s'
-#          %(firstderivs_key, int_terms))
-#
-#    # Redshift vs age.
-#    plt.figure()
-#    plt.xlabel('age')
-#    plt.ylabel('$z$')
-#    plt.grid(True)
-#    plt.plot(t, zpicks, 'm', lw=1)
-#    plt.title('Redshift evolution'+'\n Model: %s, int_terms = %s'
-#          %(firstderivs_key, int_terms))
-#
-#    # Magnitude vs redshift.
-#    plt.figure()
-#    plt.xlabel('$z$')
-#    plt.ylabel('magnitude')
-#    plt.title('Magnitude evolution'+'\n Model: %s, int_terms = %s'
-#          %(firstderivs_key, int_terms))
-#    plt.scatter(zpicks, mag, marker='.', lw='1', c='xkcd:tomato')
+    # Scale factor vs redshift.
+    plt.figure()
+    plt.xlabel('$z$')
+    plt.ylabel('a')
+    plt.grid(True)
+    plt.plot(zpicks, a)
+    plt.title('Scale factor evolution with redshift '
+              +'\n Model: %s, int_terms = %s'
+              %(firstderivs_key, int_terms))
+
+    # Scale factor vs age.
+    plt.figure()
+    plt.xlabel('Age')
+    plt.ylabel('a')
+    plt.grid(True)
+    plt.plot(t, a)
+    plt.title('Scale factor evolution with time'+'\n Model: %s, int_terms = %s'
+          %(firstderivs_key, int_terms))
+
+    # Redshift vs age.
+    plt.figure()
+    plt.xlabel('Age')
+    plt.ylabel('$z$')
+    plt.grid(True)
+    plt.plot(t, zpicks)
+    plt.title('Redshift evolution'+'\n Model: %s, int_terms = %s'
+          %(firstderivs_key, int_terms))
+
+    # Magnitude vs redshift.
+    plt.figure()
+    plt.xlabel('$z$')
+    plt.ylabel('Magnitude')
+    plt.title('Magnitude evolution'+'\n Model: %s, int_terms = %s'
+          %(firstderivs_key, int_terms))
+    plt.scatter(zpicks, mag, marker='.')
 
     plt.show()
     return
 
 
 def multi_modelcheck(zpicks, keys, plot_var_list):
-
+    print('multi_modelcheck')
+    mpl.style.use('fivethirtyeight')
     model_names = ''
     for model_name in keys:
         model_names += model_name+', '
@@ -448,8 +445,11 @@ def multi_modelcheck(zpicks, keys, plot_var_list):
     plt.ylabel(r'$\bar \Omega $')
     for i in range(len(fluid_arr)):
         for j in range(len(fluid_arr[i])):
-            plt.plot(zpicks, fluid_arr[i][j], label=f'{fluid_names[i][j]}, {keys[i]}')
-    plt.title(r'$\bar \Omega_{X}$, models: %s.'%(model_names))
+            if j % 2 == 0:
+                plt.plot(zpicks, fluid_arr[i][j], label=f'{fluid_names[i][j]}, {keys[i]}')
+            else:
+                 plt.plot(zpicks, fluid_arr[i][j], ls= '-.', label=f'{fluid_names[i][j]}, {keys[i]}')
+#    plt.title(r'$\bar \Omega_{X}$, models: %s.'%(model_names))
     plt.legend()
 
     # Fluid evolution vs redshift log x axis.
@@ -458,8 +458,11 @@ def multi_modelcheck(zpicks, keys, plot_var_list):
     plt.ylabel(r'$\bar \Omega $')
     for i in range(len(fluid_arr)):
         for j in range(len(fluid_arr[i])):
-            plt.semilogx(zpicks, fluid_arr[i][j], label=f'{fluid_names[i][j]}, {keys[i]}')
-    plt.title(r'$\bar \Omega_{X}$, models: %s.'%(model_names))
+            if j % 2 == 0:
+                plt.semilogx(zpicks, fluid_arr[i][j], label=f'{fluid_names[i][j]}, {keys[i]}')
+            else:
+                plt.semilogx(zpicks, fluid_arr[i][j], ls='-.', label=f'{fluid_names[i][j]}, {keys[i]}')
+#    plt.title(r'$\bar \Omega_{X}$, models: %s.'%(model_names))
 
     plt.legend()
 
@@ -467,7 +470,8 @@ def multi_modelcheck(zpicks, keys, plot_var_list):
     plt.figure()
     plt.title('Angular diameter distance evolution'+f'\n Models: {model_names}')
     plt.xlabel('z')
-    plt.ylabel(r'$ \left( \frac{H_0}{c} \right) d_A $', fontsize=15, labelpad=10)
+#    plt.ylabel(r'$ \left( \frac{H_0}{c} \right) d_A $', fontsize=15, labelpad=10)
+    plt.ylabel(r'$ (H_0/c) \ d_A $', fontsize=15, labelpad=10)
     for i in range(len(da)):
         plt.plot(zpicks, da[i], label=f'{int_terms[i]}, {keys[i]}')
     plt.legend()
@@ -505,7 +509,7 @@ def multi_modelcheck(zpicks, keys, plot_var_list):
     plt.ylabel('a')
     for i in range(len(a)):
         plt.plot(zpicks, a[0], label=f'{int_terms[i]}, {keys[i]}')
-    plt.title('Scale factor evolution, models: %s.'%(model_names))
+#    plt.title('Scale factor evolution, models: %s.'%(model_names))
     plt.legend()
 
     # Scale factor vs age.
@@ -514,7 +518,7 @@ def multi_modelcheck(zpicks, keys, plot_var_list):
     plt.ylabel('a')
     for i in range(len(age)):
         plt.plot(age[i], a[i], label=f'{int_terms[i]}, {keys[i]}')
-    plt.title('Scale factor evolution, models: %s.'%(model_names))
+#    plt.title('Scale factor evolution, models: %s.'%(model_names))
     plt.legend()
 
     # Redshift vs age.
@@ -523,7 +527,7 @@ def multi_modelcheck(zpicks, keys, plot_var_list):
     plt.ylabel('$z$')
     for i in range(len(age)):
         plt.plot(age[i], zpicks, label=int_terms[i])
-    plt.title('Redshift evolution, models: %s.'%(model_names))
+#    plt.title('Redshift evolution, models: %s.'%(model_names))
     plt.legend()
 
     # Magnitude vs redshift.
@@ -531,8 +535,8 @@ def multi_modelcheck(zpicks, keys, plot_var_list):
     plt.xlabel('$z$')
     plt.ylabel('Magnitude')
     for i in range(len(mag)):
-        plt.scatter(zpicks, mag[i], marker='.', lw=0.1, label=int_terms[i])
-    plt.title('Magnitude evolution, models: %s.'%(model_names))
+        plt.scatter(zpicks, mag[i], marker='.', label=int_terms[i])
+#    plt.title('Magnitude evolution, models: %s.'%(model_names))
     plt.legend()
 
     plt.show()
