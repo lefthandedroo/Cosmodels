@@ -47,17 +47,34 @@ def lnprior(th, key):
     # Corrected magnitude of SN Ia and Omega_bar matter
     if Mcorr_min < th[0] < Mcorr_max and (0 < th[1] < 1 or th[1] == 1):
 
-        if key == 'waterfall':
+        if key == 'rainbow':
             # ombar_radiation, a_ombar, b_ombar, c_ombar
-            if 0 < th[2] < 1 and 0 < th[3] < 1:
-                if 0 < th[4] < 1 and 0 < th[5] < 1:
-                    l = 1
-                    # v_in, w_in, x_in, y_in, z_in
-                    if -0.01 < th[6] < l and -0.01 < th[7] < l and -0.01 < th[8] < l:
-                        if -0.01 < th[9] < l and -0.01 < th[10] < l:
+            if 0 < th[2] < 1 and 0 < th[3] < 1 and 0 < th[4] < 1 and 0 < th[5] < 1:
+                # , d_ombar, e_ombar, f_ombar, g_ombar
+                if 0 < th[6] < 1 and 0 < th[7] < 1 and 0 < th[8] < 1 and 0 < th[9] < 1:
+                    # h_ombar, i_ombar
+                    if 0 < th[10] < 1 and 0 < th[11] < 1:
+                        l = 0.01
+                        # a_in, b_in, c_in
+                        if -l < th[-11] < l and -l < th[-10] < l and -l < th[-9] < l:
+                            # d_in, e_in, f_in
+                            if  -l < th[-8] < l and -l < th[-7] < l and -l < th[-6] < l:
+                                # g_in, h_in, i_in
+                                if -l < th[-5] < l and -l < th[-4] < l and -l < th[-3] < l:
+                                     #j_in, k_in
+                                     if -l < th[-2] < l and -l < th[-1] < l:
+                                         return 0.0
+
+        elif key == 'waterfall':
+            # ombar_radiation, a_ombar, b_ombar, c_ombar
+            if 0 < th[2] < 1 and 0 < th[3] < 1 and 0 < th[4] < 1 and 0 < th[5] < 1:
+                l = 1
+                # v_in, w_in, x_in, y_in, z_in
+                if -0.01 < th[6] < l and -0.01 < th[7] < l and -0.01 < th[8] < l:
+                    if -0.01 < th[9] < l and -0.01 < th[10] < l:
 #                    if abs(th[6]) < l and abs(th[7]) < l and -0.5< th[8] < l:
 #                        if abs(th[9]) < l and abs(th[10]) < l:
-                            return 0.0
+                        return 0.0
 
         elif key == 'stepfall':
             assert len(th) > 3, f'len(thet) = {len(th)}, theta = {th}'

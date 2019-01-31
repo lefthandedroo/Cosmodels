@@ -92,7 +92,7 @@ def magn(names, values, data, model_key, plot_key=False):
     return mag, da
 
 
-def model_comparison(params, zpicks, model_key, plot_key=False):
+def model_comparison(params, data, model_key, plot_key=False):
     """
     Takes in:
             params = list of 3 lists of dictionaries with model parameters;
@@ -105,6 +105,8 @@ def model_comparison(params, zpicks, model_key, plot_key=False):
     import plots
 
     plot_var_list = []
+
+    zpicks = data['zpicks']
 
     for i in range(len(params)):
         names, values = params[i]
@@ -121,7 +123,7 @@ def model_comparison(params, zpicks, model_key, plot_key=False):
         plot_var['mag'] = mag
         plot_var_list.append(plot_var)
 
-    plots.multi_modelcheck(zpicks, model_key, plot_var_list)
+    plots.multi_modelcheck(data, model_key, plot_var_list)
     return
 
 

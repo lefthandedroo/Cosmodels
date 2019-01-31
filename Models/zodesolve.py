@@ -62,7 +62,9 @@ def zodesolve(names, values, zpicks, model, plot_key):
     # Pack up the initial conditions and interaction terms.
     int_terms = []
 
-    if model == 'waterfall':
+    if model == 'rainbow':
+        int_in = 12
+    elif model == 'waterfall':
         int_in = 6
     elif model == 'stepfall':
         int_in = 4
@@ -88,7 +90,7 @@ def zodesolve(names, values, zpicks, model, plot_key):
     assert firstderivs_function != 0, "zodesolve doesn't have this firstderivs_key at the top"
 
     # Call the ODE solver.
-    vsol = odeint(firstderivs_function, v0, zpicks, args=(int_terms,H0),mxstep=5000000, atol=1.0e-8, rtol=1.0e-6)
+    vsol = odeint(firstderivs_function, v0, zpicks, args=(int_terms,H0), mxstep=5000000, atol=1.0e-8, rtol=1.0e-6)
     z = vsol[1:,-2]
     dl = vsol[1:,-1] * (1+z)        # in units of dl*(H0/c)
     da = dl * (1.0+z)**(-2.0)       # in units of dl*(H0/c)

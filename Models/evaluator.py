@@ -16,7 +16,7 @@ import stats
 
 
 # Number of emcee steps.
-nsteps = 10000
+nsteps = 100000
 
 # Statistical parameteres of noise: mean, standard deviation.
 mu, sigma = 0.0, 0.03 # sigma != 0
@@ -61,16 +61,28 @@ elif dataname == 'specific_z':
 data_dic['zpicks'] = zpicks
 
 
+#p0 = ['Mcorr', 'm_ombar', 'gamma'], np.array([-19.3, 0.3, -1])
+#p1 = ['Mcorr', 'm_ombar', 'gamma'], np.array([-19.3, 0.3, 1])
+#datasim.model_comparison([p0, p1], data_dic, ['rdecay', 'rdecay'], plot_key=True)
 
 ## Plot param evolutions for multiple models on the same axis.
-#p1 = ['Mcorr', 'm_ombar', 'gamma'], np.array([-19.3, 0.3, 1])
-#p2 = ['Mcorr', 'm_ombar', 'gamma'], np.array([-19.3, 0.3, 0])
-#datasim.model_comparison([p1, p2], zpicks, ['rdecay', 'rdecay'], plot_key=True)
+#p2 = ['Mcorr', 'm_ombar', 'gamma'], np.array([-19.3, 0.3, 1])
+#p3 = ['Mcorr', 'm_ombar', 'gamma'], np.array([-19.3, 0.3, -1])
+#p4 = ['Mcorr', 'm_ombar', 'gamma'], np.array([-19.3, 0.3, -3])
+#p5 = ['Mcorr', 'm_ombar', 'gamma'], np.array([-19.3, 0.3, -6])
+#datasim.model_comparison([p2, p3, p4, p5], data_dic, ['interacting', 'interacting', 'interacting', 'interacting'], plot_key=True)
 
+#p1 = ['Mcorr','m_ombar', 'r_ombar', 'a_ombar', 'b_ombar', 'c_ombar',
+#     'd_ombar', 'e_ombar', 'f_ombar', 'g_ombar', 'h_ombar',
+#     'i_ombar','a_in', 'b_in', 'c_in', 'd_in', 'e_in', 'f_in',
+#     'g_in', 'h_in', 'i_in', 'j_in', 'k_in'], np.array([-19.3,0.3, 0.025, 0, 0,
+#    0, 0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+#datasim.model_comparison([p1], data_dic, ['rainbow'], plot_key=True)
 
 firstderivs_functions = [None
 #            ,'stepfall'
 #            ,'waterfall'
+            ,'rainbow'
 #            ,'exotic'
 #            ,'late_intxde'
 #            ,'heaviside_late_int'
@@ -85,7 +97,7 @@ firstderivs_functions = [None
 #            ,'rdecay_m'
 #            ,'rdecay_de'
 #            ,'rdecay_mxde'
-            ,'rdecay'
+#            ,'rdecay'
 #            ,'interacting'
 #            ,'LCDM'
 #            ,'rLCDM'
@@ -96,7 +108,19 @@ def modelcheck():
     for test_key in firstderivs_functions:
         if test_key:
             print('---',test_key)
-            if test_key == 'waterfall':
+            if test_key =='rainbow':
+                names = ['Mcorr',
+                         'm_ombar', 'r_ombar', 'a_ombar', 'b_ombar', 'c_ombar',
+                         'd_ombar', 'e_ombar', 'f_ombar', 'g_ombar', 'h_ombar',
+                         'i_ombar',
+                         'a_in', 'b_in', 'c_in', 'd_in', 'e_in', 'f_in',
+                         'g_in', 'h_in', 'i_in', 'j_in', 'k_in']
+                values = np.array([-19.3,
+                                   0.3, 0.025, 0.01, 0.01, 0.01, 0.01,
+                                   0.01, 0.01, 0.01, 0.01, 0.01,
+                                   0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                   0.0, 0.0, 0.0, 0.0, 0.0])
+            elif test_key == 'waterfall':
                 names = ['Mcorr',
                          'm_ombar', 'r_ombar', 'a_ombar', 'b_ombar', 'c_ombar',
                          'v_in', 'w_in', 'x_in', 'y_in', 'z_in']
@@ -134,8 +158,19 @@ def emcee():
 
         if test_key:
             print('---',test_key)
-
-            if test_key == 'waterfall':
+            if test_key =='rainbow':
+                names = ['Mcorr',
+                         'm_ombar', 'r_ombar', 'a_ombar', 'b_ombar', 'c_ombar',
+                         'd_ombar', 'e_ombar', 'f_ombar', 'g_ombar', 'h_ombar',
+                         'i_ombar',
+                         'a_in', 'b_in', 'c_in', 'd_in', 'e_in', 'f_in',
+                         'g_in', 'h_in', 'i_in', 'j_in', 'k_in']
+                values = np.array([-19.3,
+                                   0.3, 0.025, 0.01, 0.01, 0.01, 0.01,
+                                   0.01, 0.01, 0.01, 0.01, 0.01,
+                                   0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                   0.0, 0.0, 0.0, 0.0, 0.0])
+            elif test_key == 'waterfall':
                 names = ['Mcorr',
                          'm_ombar', 'r_ombar', 'a_ombar', 'b_ombar', 'c_ombar',
                          'v_in', 'w_in', 'x_in', 'y_in', 'z_in']

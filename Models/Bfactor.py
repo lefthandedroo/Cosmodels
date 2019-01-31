@@ -15,7 +15,7 @@ import datasim
 import results
 import tools
 
-speed = 0       # From prior = 0, short = 1, medium = 2, long = 3.
+speed = 2       # From prior = 0, short = 1, medium = 2, long = 3.
 timed = False
 plot = True
 mu, sigma = 0.0, 0.07    # Mean and standard deviation of the noise on the data.
@@ -119,6 +119,7 @@ class Model(object):
 firstderivs_functions = [None
 #            ,'stepfall'
 #            ,'waterfall'
+            ,'rainbow'
 #            ,'exotic'
 #            ,'late_intxde'
 #            ,'heaviside_late_int'
@@ -132,7 +133,7 @@ firstderivs_functions = [None
 #            ,'rdecay_m'
 #            ,'rdecay_de'
 #            ,'rdecay_mxde'
-            ,'rdecay'
+#            ,'rdecay'
 #            ,'interacting'
 #            ,'LCDM'
 #            ,'rLCDM'
@@ -151,6 +152,16 @@ for key in firstderivs_functions:
             int_lim = [[-0.01, 1], [-0.01, 1], [-0.01, 1],[-0.01, 1], [-0.01, 1]]
             names = ['Mcorr','matter','radiation','a_ombar','b_ombar','c_ombar',
                      'v_in','w_in','x_in','y_in','z_in']
+        elif key == 'rainbow':
+            int_lim = [[-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01],
+                       [-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01],
+                       [-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01]]
+            names = ['Mcorr',
+                         'm_ombar', 'r_ombar', 'a_ombar', 'b_ombar', 'c_ombar',
+                         'd_ombar', 'e_ombar', 'f_ombar', 'g_ombar', 'h_ombar',
+                         'i_ombar',
+                         'a_in', 'b_in', 'c_in', 'd_in', 'e_in', 'f_in',
+                         'g_in', 'h_in', 'i_in', 'j_in', 'k_in']
         elif key == 'exotic':
             names = ['Mcorr','matter','radiation','gamma','zeta']
             int_lim = [[-0.01, 1],[-0.01, 1]]
@@ -248,9 +259,11 @@ for key in firstderivs_functions:
         DNest_distr = {}
 
         if plot:
-            hue = ['light red', 'berry', 'coral', 'amber', 'apple',
-                        'aquamarine', 'raspberry', 'green blue', 'deep blue',
-                        'emerald', 'blue violet', 'dark violet', 'yellow orange']
+            hue = ['light red', 'berry', 'coral', 'amber', 'apple', 'aquamarine',
+               'raspberry', 'green blue', 'deep blue', 'emerald', 'blue violet',
+               'dark violet', 'yellow orange', 'light red', 'berry', 'coral',
+               'amber', 'apple', 'aquamarine', 'raspberry', 'green blue',
+               'deep blue', 'emerald', 'blue violet', 'dark violet', 'black']
 #            ndim = len(array[0,:])
             ndim = len(names)
             for i in range(ndim):
