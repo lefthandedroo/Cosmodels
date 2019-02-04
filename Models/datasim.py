@@ -67,9 +67,8 @@ def magn(names, values, data, model_key, plot_key=False):
     Returns:
         mag = np.ndarray of apparent mag corresponding to input redshits.
     """
-    if plot_key:
-        # Making sure number of parameters matches number of names given:
-        assert len(names) == len(values), "len(names) != len(values) in datasim.magn"
+    # Making sure number of parameters matches number of names given:
+    assert len(names) == len(values), "len(names) != len(values) in datasim.magn"
 
     zpicks = data['zpicks']
     # Corrected absolute magnitude M of SN.

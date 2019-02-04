@@ -7,12 +7,18 @@ Created on Tue Feb 27 12:40:48 2018
 
 
 """
-import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import os
 import time
 from results import load
+
+import matplotlib as mpl
+mpl.style.use('default') # has to be switched on to set figure size
+mpl.style.use('fivethirtyeight')
+plt.rcParams['axes.facecolor'] = 'white'
+plt.rcParams['figure.facecolor'] = 'white'
+plt.rcParams['grid.color'] = 'white'
 
 def stat_emcee(hue, var, var_true, var_name, slnprob, zpicks,
           mag, sigma, nsteps, nwalkers, save_path, firstderivs_key):
@@ -74,7 +80,6 @@ def stat_emcee(hue, var, var_true, var_name, slnprob, zpicks,
 
 def stat_DNest(hue, var, var_true, var_name, slnprob, zpicks,
           mag, sigma, nsteps, nwalkers, save_path, firstderivs_key):
-    mpl.style.use('fivethirtyeight')
     initial = var_name.lower()[:1]
     name_true = var_name[:1] + '_true'
     hue_name = hue
@@ -139,7 +144,6 @@ def precise_runs(firstderivs_key, names, values, p, x):
         x = flot/int, cutoff precision for s.d.
     '''
 
-    mpl.style.use('fivethirtyeight')
     # Results folder to search through.
     directory = os.path.join('./results_error_vs_data/'+firstderivs_key)
 
@@ -294,7 +298,6 @@ def precise_runs(firstderivs_key, names, values, p, x):
 
 
 def modelcheck(mag, zpicks, plot_var, firstderivs_key):
-    mpl.style.use('fivethirtyeight')
     t = plot_var.get('t')
     dl = plot_var.get('dl')
     a = plot_var.get('a')
@@ -404,13 +407,10 @@ def modelcheck(mag, zpicks, plot_var, firstderivs_key):
 
 def multi_modelcheck(data, keys, plot_var_list):
     print('multi_modelcheck')
-    mpl.style.use('default') # has to be switched on to make figure large
-    mpl.style.use('fivethirtyeight')
 
-
-    plt.rcParams['axes.facecolor'] = 'white'
-    plt.rcParams['figure.facecolor'] = 'white'
-    plt.rcParams['grid.color'] = 'white'
+#    plt.rcParams['axes.facecolor'] = 'white'
+#    plt.rcParams['figure.facecolor'] = 'white'
+#    plt.rcParams['grid.color'] = 'white'
 #    plt.rcParams['axes.edgecolor'] = 'black' # frame
 
     zpicks = data['zpicks']

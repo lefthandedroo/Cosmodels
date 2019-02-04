@@ -16,7 +16,7 @@ import stats
 
 
 # Number of emcee steps.
-nsteps = 100000
+nsteps = 10000
 
 # Statistical parameteres of noise: mean, standard deviation.
 mu, sigma = 0.0, 0.03 # sigma != 0
@@ -80,9 +80,10 @@ data_dic['zpicks'] = zpicks
 #datasim.model_comparison([p1], data_dic, ['rainbow'], plot_key=True)
 
 firstderivs_functions = [None
-#            ,'stepfall'
-#            ,'waterfall'
             ,'rainbow'
+#            ,'kanangra'
+#            ,'waterfall'
+#            ,'stepfall'
 #            ,'exotic'
 #            ,'late_intxde'
 #            ,'heaviside_late_int'
@@ -100,56 +101,19 @@ firstderivs_functions = [None
 #            ,'rdecay'
 #            ,'interacting'
 #            ,'LCDM'
-#            ,'rLCDM'
-             ]
+            ,'rLCDM'
+            ]
 
 def modelcheck():
 
     for test_key in firstderivs_functions:
         if test_key:
             print('---',test_key)
-            if test_key =='rainbow':
-                names = ['Mcorr',
-                         'm_ombar', 'r_ombar', 'a_ombar', 'b_ombar', 'c_ombar',
-                         'd_ombar', 'e_ombar', 'f_ombar', 'g_ombar', 'h_ombar',
-                         'i_ombar',
-                         'a_in', 'b_in', 'c_in', 'd_in', 'e_in', 'f_in',
-                         'g_in', 'h_in', 'i_in', 'j_in', 'k_in']
-                values = np.array([-19.3,
-                                   0.3, 0.025, 0.01, 0.01, 0.01, 0.01,
-                                   0.01, 0.01, 0.01, 0.01, 0.01,
-                                   0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                                   0.0, 0.0, 0.0, 0.0, 0.0])
-            elif test_key == 'waterfall':
-                names = ['Mcorr',
-                         'm_ombar', 'r_ombar', 'a_ombar', 'b_ombar', 'c_ombar',
-                         'v_in', 'w_in', 'x_in', 'y_in', 'z_in']
-                values = np.array([-19.3,
-                                   0.3, 0.025, 0.1, 0.1, 0.1,
-                                   0.0, 0.0, 0.0, 0.0, 0.0])
-            elif test_key == 'stepfall':
-                names = ['Mcorr', 'm_ombar', 'r_ombar', 'a_ombar',
-                         'v_in', 'w_in', 'x_in']
-                values = np.array([-19.3, 0.3, 0.025, 0.1, 0.0, 0.0, 0.0])
-            elif test_key == 'exotic':
-                names = ['Mcorr', 'm_ombar', 'r_ombar', 'gamma', 'zeta']
-                values = np.array([-19.3, 0.3, 0.025, 0.0, 0.0])
-            elif test_key == 'rLCDM':
-                names = ['Mcorr', 'm_ombar', 'r_ombar']
-                values = np.array([-19.3, 0.3, 0.025])
-            elif test_key == 'LCDM':
-                names = ['Mcorr', 'm_ombar']
-                values = np.array([-19.3, 0.3])
-            else:
-                names = ['Mcorr', 'm_ombar','gamma']
-                values = np.array([-19.3, 0.3, -0.0])
-
-            # Making sure number of parameters matches number of names given:
-            assert len(names) == len(values), "len(names) != len(values)"
+            names, values = tools.names_values(test_key)
             datasim.magn(names, values, data_dic, test_key, plot_key=True)
     return
 
-#modelcheck()
+modelcheck()
 
 def emcee():
     print('@@@@@@@ emcee @@@@@@@')
@@ -158,42 +122,7 @@ def emcee():
 
         if test_key:
             print('---',test_key)
-            if test_key =='rainbow':
-                names = ['Mcorr',
-                         'm_ombar', 'r_ombar', 'a_ombar', 'b_ombar', 'c_ombar',
-                         'd_ombar', 'e_ombar', 'f_ombar', 'g_ombar', 'h_ombar',
-                         'i_ombar',
-                         'a_in', 'b_in', 'c_in', 'd_in', 'e_in', 'f_in',
-                         'g_in', 'h_in', 'i_in', 'j_in', 'k_in']
-                values = np.array([-19.3,
-                                   0.3, 0.025, 0.01, 0.01, 0.01, 0.01,
-                                   0.01, 0.01, 0.01, 0.01, 0.01,
-                                   0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                                   0.0, 0.0, 0.0, 0.0, 0.0])
-            elif test_key == 'waterfall':
-                names = ['Mcorr',
-                         'm_ombar', 'r_ombar', 'a_ombar', 'b_ombar', 'c_ombar',
-                         'v_in', 'w_in', 'x_in', 'y_in', 'z_in']
-                values = np.array([-19.3,
-                                   0.3, 0.025, 0.1, 0.1, 0.1,
-                                   0.0, 0.0, 0.0, 0.0, 0.0])
-            elif test_key == 'stepfall':
-                names = ['Mcorr', 'm_ombar', 'r_ombar', 'a_ombar',
-                         'v_in', 'w_in', 'x_in']
-                values = np.array([-19.3, 0.3, 0.025, 0.1, 0.0, 0.0, 0.0])
-            elif test_key == 'exotic':
-                names = ['Mcorr', 'm_ombar', 'r_ombar', 'gamma', 'zeta']
-                values = np.array([-19.3, 0.3, 0.025, 0.0, 0.0])
-            elif test_key == 'LCDM':
-                names = ['Mcorr', 'm_ombar']
-                values = np.array([-19.3, 0.3])
-
-            else:
-                names = ['Mcorr', 'm_ombar','gamma']
-                values = np.array([-19.3, 0.3, 0.0])
-
-            # Making sure number of parameters matches number of names given:
-            assert len(names) == len(values), "len(names) != len(values)"
+            names, values = tools.names_values(test_key)
 
             # Creating a folder for saving output.
             save_path = './results_emcee/'+str(int(time.time()))+'_'+test_key
@@ -218,4 +147,4 @@ def emcee():
 
     return
 
-emcee()
+#emcee()

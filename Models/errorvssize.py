@@ -25,11 +25,14 @@ mu = 0.0        # Mean of noise added to LCDM to simulate data.
 
 #Model, errors on data and dataset sizes to iterate through:
 test_keys = [None
-            ,'stepfall'
+#            ,'rainbow'
+#            ,'kanangra'
 #            ,'waterfall'
-#            ,'exotic'
+#            ,'stepfall'
+            ,'exotic'
 #            ,'late_intxde'
 #            ,'heaviside_late_int'
+#            ,'heaviside_sudden'
 #            ,'late_int'
 #            ,'expgamma'
 #            ,'txgamma'         # doesn't converge
@@ -44,7 +47,7 @@ test_keys = [None
 #            ,'interacting'
             ,'LCDM'
 #            ,'rLCDM'
-             ]
+            ]
 
 # Extracting pre-made redshifts z=0 to z=3.
 try:
@@ -61,34 +64,11 @@ except:
 #sampler_list = []
 
 for key in test_keys:
-    sigma_options = 0.01, 0.07, 0.14, 0.2
-    npoints_options = 1048, 10480, 104800
+    sigma_options = 0.01, 0.07 #0.14, 0.2 #0.0001, 0.005
+    npoints_options = 1048000, 104800#1048, 10480, 104800 #1048000, 10480000
     if key:
         run = 0
-        if key == 'waterfall':
-            names = ['Mcorr',
-                     'm_ombar', 'r_ombar', 'a_ombar', 'b_ombar', 'c_ombar',
-                     'v_in', 'w_in', 'x_in', 'y_in', 'z_in']
-            values = np.array([-19.3,
-                               0.3, 0.025, 0.1, 0.1, 0.1,
-                               0.0, 0.0, 0.0, 0.0, 0.0])
-        elif key == 'stepfall':
-            names = ['Mcorr', 'm_ombar', 'r_ombar', 'a_ombar',
-                     'v_in', 'w_in', 'x_in']
-            values = np.array([-19.3, 0.3, 0.025, 0.1, 0.0, 0.0, 0.0])
-        elif key == 'exotic':
-            names = ['Mcorr', 'm_ombar', 'r_ombar', 'gamma', 'zeta']
-            values = np.array([-19.3, 0.3, 0.025, 0.0, 0.0])
-        elif key == 'LCDM':
-            names = ['Mcorr', 'm_ombar']
-            values = np.array([-19.3, 0.3])
-        else:
-            names = ['Mcorr', 'm_ombar','gamma']
-            values = np.array([-19.3, 0.3, 0.0])
-
-        # Making sure number of parameters matches number of names given:
-        assert len(names) == len(values), "len(names) != len(values)"
-
+        names, values = tools.names_values(key)
         # Folder for saving output.
         directory = f'{int(time.time())}_{key}'
         # Relative path of output folder.
@@ -106,14 +86,10 @@ for key in test_keys:
                 else:
                     print(f'failed to get zpicks, nmag from {data_path}')
                     # Generating redshifts.
-#                    n = len(zpicks)//npoints
-#                    print(f'n = {n}')
-#                    zpicks = all_zpicks[0::n]
-#                    zpicks[1] = 0.0001
-#                    zpicks[-1] = 3
-#                    npoints = len(zpicks)
-#                    print(f'npoints = {npoints}')
-                    zpicks = all_zpicks
+                    zpicks = np.random.uniform(low=0.0001, high=3, size=(npoints,))
+                    zpicks = np.sort(zpicks, axis=None)
+                    if zpicks[-1] != 3:
+                        zpicks[-1] = 3
                     data_dic = {'zpicks':zpicks}
                     # Generating LCDM mag and da.
                     mag, da = datasim.magn(['Mcorr', 'matter'], np.array([-19.3, 0.3]), data_dic, 'LCDM', plot_key=False)
@@ -121,7 +97,7 @@ for key in test_keys:
                     nmag = datasim.gnoise(mag, mu, sigma)
 
                     plt.figure()
-                    plt.title('Artificial data')
+                    plt.title(f'Artificial data N={len(zpicks)}, $\sigma$={sigma}')
                     plt.scatter(zpicks, nmag)
                     plt.show()
 

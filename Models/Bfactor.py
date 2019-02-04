@@ -15,6 +15,13 @@ import datasim
 import results
 import tools
 
+import matplotlib as mpl
+mpl.style.use('default') # has to be switched on to set figure size
+mpl.style.use('fivethirtyeight')
+plt.rcParams['axes.facecolor'] = 'white'
+plt.rcParams['figure.facecolor'] = 'white'
+plt.rcParams['grid.color'] = 'white'
+
 speed = 2       # From prior = 0, short = 1, medium = 2, long = 3.
 timed = False
 plot = True
@@ -117,12 +124,14 @@ class Model(object):
 
 
 firstderivs_functions = [None
-#            ,'stepfall'
+#            ,'rainbow'
+            ,'kanangra'
 #            ,'waterfall'
-            ,'rainbow'
+#            ,'stepfall'
 #            ,'exotic'
 #            ,'late_intxde'
 #            ,'heaviside_late_int'
+#            ,'heaviside_sudden'
 #            ,'late_int'
 #            ,'expgamma'
 #            ,'txgamma'         # doesn't converge
@@ -137,22 +146,11 @@ firstderivs_functions = [None
 #            ,'interacting'
 #            ,'LCDM'
 #            ,'rLCDM'
-             ]
-
+            ]
 
 for key in firstderivs_functions:
     if key:
-        if key == 'stepfall':
-            int_lim = [[-0.01, 1], [-0.01, 1], [-0.01, 1]]
-#            int_lim = [[-0.01, 0], [-0.01, 0], [-0.01, 0]]
-#            int_lim = [[0, 0.01], [0, 0.01], [0, 0.01]]
-            names = ['Mcorr','matter','radiation','a_ombar',
-                     'v_in','w_in','x_in']
-        elif key =='waterfall':
-            int_lim = [[-0.01, 1], [-0.01, 1], [-0.01, 1],[-0.01, 1], [-0.01, 1]]
-            names = ['Mcorr','matter','radiation','a_ombar','b_ombar','c_ombar',
-                     'v_in','w_in','x_in','y_in','z_in']
-        elif key == 'rainbow':
+        if key == 'rainbow':
             int_lim = [[-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01],
                        [-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01],
                        [-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01]]
@@ -162,6 +160,24 @@ for key in firstderivs_functions:
                          'i_ombar',
                          'a_in', 'b_in', 'c_in', 'd_in', 'e_in', 'f_in',
                          'g_in', 'h_in', 'i_in', 'j_in', 'k_in']
+        elif key == 'kanangra':
+            int_lim = [[-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01],
+                       [-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01]]
+            names = ['Mcorr',
+                         'm_ombar', 'r_ombar', 'a_ombar', 'b_ombar', 'c_ombar',
+                         'd_ombar', 'e_ombar',
+                         'a_in', 'b_in', 'c_in', 'd_in', 'e_in', 'f_in',
+                         'g_in']
+        elif key == 'waterfall':
+            int_lim = [[-0.01, 1], [-0.01, 1], [-0.01, 1],[-0.01, 1], [-0.01, 1]]
+            names = ['Mcorr','matter','radiation','a_ombar','b_ombar','c_ombar',
+                     'v_in','w_in','x_in','y_in','z_in']
+        elif key == 'stepfall':
+            int_lim = [[-0.01, 1], [-0.01, 1], [-0.01, 1]]
+#            int_lim = [[-0.01, 0], [-0.01, 0], [-0.01, 0]]
+#            int_lim = [[0, 0.01], [0, 0.01], [0, 0.01]]
+            names = ['Mcorr','matter','radiation','a_ombar',
+                     'v_in','w_in','x_in']
         elif key == 'exotic':
             names = ['Mcorr','matter','radiation','gamma','zeta']
             int_lim = [[-0.01, 1],[-0.01, 1]]

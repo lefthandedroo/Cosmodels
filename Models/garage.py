@@ -10,17 +10,7 @@ import pickle
 import matplotlib.pyplot as plt
 import numpy as np
 
-fig = plt.figure()
-ax = fig.add_subplot(111)
 
-t = np.arange(5)
-cycle = plt.rcParams['axes.prop_cycle'].by_key()['color']
-
-for i in range(4):
-    ax.plot(t,i*(t+1),   color="C{}".format(i), linestyle = '-')
-    ax.plot(t,i*(t+1)+1,color="C{}".format(i), linestyle = ':')
-
-plt.show()
 #def wrap(x, a, b):
 #    assert b > a
 #    return (x - a)%(b - a) + a
@@ -67,11 +57,12 @@ plt.show()
 #plt.title(f'Artificial data, zpicks_1089')
 #plt.scatter(zpicks, mag)
 #
-#try:
-#    with open('zpicks_10890.p','rb') as rfp: zpicks = pickle.load(rfp)
-#except:
-#    print("zpicks_10890.p didnt't open")
-#print(len(zpicks))
+
+
+try:
+    with open('data/zpicks_1048_3.p','rb') as rfp: all_zpicks = pickle.load(rfp)
+except:
+    print("zpicks_1048_3.p didnt't open")
 #
 #data_dic = {'zpicks':zpicks}
 #mag, da = datasim.magn(['Mcorr', 'matter'], np.array([-19.3, 0.3]), data_dic, 'LCDM', plot_key=False)

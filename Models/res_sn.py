@@ -10,8 +10,16 @@ import numpy as np
 import pandas as pd
 import datasim
 
+import matplotlib as mpl
+mpl.style.use('default') # has to be switched on to set figure size
+mpl.style.use('fivethirtyeight')
+plt.rcParams['axes.facecolor'] = 'white'
+plt.rcParams['figure.facecolor'] = 'white'
+plt.rcParams['grid.color'] = 'white'
+
 #data_name = 'synth'
 data_name = 'pantheon'
+#data_name = 'wrong_pantheon'
 #data_name = 'scolnic'
 #data_name = 'table'
 
@@ -24,6 +32,21 @@ if data_name == 'pantheon':
     mag = pantheon.mb.values
     zpicks = pantheon.zhel.values
     data_dic = {'mag':mag, 'zpicks':zpicks}
+
+elif data_name == 'wrong_pantheon':
+    # Loading pantheon SN Ia data incorrectly:
+    import pandas as pd
+    pantheon = pd.read_csv('./data/lcparam_full_long.txt', sep=" ")
+    # Reading each txt file column of interest as numpy.ndarray.
+    mag = pantheon.mb.values
+    zpicks = pantheon.zhel.values
+    # Stacking np.arrays together and sorting by accending redshift.
+    data = np.stack((mag,zpicks), axis=0)
+    data.sort(axis=-1)
+    mag = data[0]
+    zpicks = data[-1]
+    data_dic = {'mag':mag, 'zpicks':zpicks}
+    data_name = 'pantheon'
 
 elif data_name == 'scolnic':
     print('-----Using scolnic')
@@ -50,10 +73,9 @@ elif data_name == 'synth':
     # Loading artificial LCDM SN Ia data:
     from pathlib import Path
     import pickle
-    dataname = f'data/1048_3.0_sigma_0.07.p'
-    my_file = Path(dataname)
+    my_file = Path('data/1048_3.0_sigma_0.07.p')
     if my_file.is_file():
-        with open(dataname,'rb') as rfp: zpicks, mag = pickle.load(rfp)
+        with open('data/1048_3.0_sigma_0.07.p','rb') as rfp: zpicks, mag = pickle.load(rfp)
     data_dic = {'mag':mag, 'zpicks':zpicks}
 
 
@@ -101,17 +123,17 @@ for z in scolnic_muM_z:
         print(f"Didn't find an exact z = {z} match")
         index = np.argmax(zpicks > z)
         print(f'but found closest z = {zpicks[index]}')
-    print(index)
+#    print(index)
     scolnic_z_mag[i] = mag[index]
     i+=1
 
-plt.figure()
-plt.title(f'SN Ia mag from Scolnic and mag at Scolnic paper redshifts')
-plt.xlabel('z')
-plt.ylabel('mag')
-plt.scatter(scolnic_muM_z, scolnic_muM, label='scolnic paper mag')
-plt.scatter(scolnic_muM_z, scolnic_z_mag, label=f'{data_name} data at scolnic z')
-plt.legend()
+#plt.figure()
+#plt.title(f'SN Ia mag from Scolnic and mag at Scolnic paper redshifts')
+#plt.xlabel('z')
+#plt.ylabel('mag')
+#plt.scatter(scolnic_muM_z, scolnic_muM, label='scolnic paper mag')
+#plt.scatter(scolnic_muM_z, scolnic_z_mag, label=f'{data_name} data at scolnic z')
+#plt.legend()
 
 
 
@@ -153,7 +175,7 @@ sample0 = np.loadtxt(f'./results_Bfactor/{data_name}/2_model_{test_key0}/sample.
 sample_info0 = np.loadtxt(f'./results_Bfactor/{data_name}/2_model_{test_key0}/sample_info.txt')
 transposed_sample_info0 = sample_info0.transpose()
 maxlike_index0 = np.argmax(transposed_sample_info0[1]) # The 1st (staring column 0th) in sample_info is the log-likelihood value.
-names0 = ['Mcorr', 'm_ombar']
+names0 = ['Mcorr', 'm_ombar', 'r_ombar']
 values0 = sample0[maxlike_index0,:]
 #print('values0',values0)
 mag0, da0 = datasim.magn(names0, values0, data_dic, test_key0, plot_key=False)
@@ -170,11 +192,12 @@ mag1, da1 = datasim.magn(names1, values1, data_dic, test_key1, plot_key=False)
 
 scolnic_omega_m = [
 0.304
-,0.317
-,0.289
-,0.281
-,0.301
-,0.307]
+#,0.317
+#,0.289
+#,0.281
+#,0.301
+#,0.307
+]
 
 for omega_m in scolnic_omega_m:
     test_key00 = 'LCDM'
@@ -196,15 +219,17 @@ for omega_m in scolnic_omega_m:
 
     # Residuals:
     plt.figure()
-    plt.title(f'SN Ia magnitude residuals, data = {data_name}')
+#    plt.title(f'SN Ia magnitude residuals, data = {data_name}')
     plt.ylabel('Mag')
     plt.xlabel('z')
     #plt.xlim(0.5,1)
-    plt.scatter(zpicks, data_dic['mag'] - mag0, label=f'{data_name} SN Ia data - DNest {test_key0}', marker=',', s=1)
-    plt.scatter(zpicks, mag0 - mag1, label=f'DNest {test_key0} - DNest {test_key1}', marker=',', s=1)
-    plt.scatter(zpicks, mag00 - mag1, label=f'LCDM w scolnic omega_m - DNest {test_key1}', marker=',', s=1)
+    plt.scatter(zpicks, data_dic['mag'] - mag0, label=f'{data_name} - DNest {test_key0}', s=10)
+    lgnd = plt.legend(loc="lower right", scatterpoints=1)
+    lgnd.legendHandles[0]._sizes = [30]
+#    plt.scatter(zpicks, mag0 - mag1, label=f'DNest {test_key0} - DNest {test_key1}', marker=',', s=1)
+#    plt.scatter(zpicks, mag00 - mag1, label=f'{test_key00} (scolnic $\Omega_m$) - DNest {test_key1}', marker=',', s=1)
     plt.grid(True)
-    plt.legend()
+#    plt.legend()
 
 
 plt.show()

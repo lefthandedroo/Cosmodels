@@ -11,9 +11,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 firstderivs_functions = {
-        'stepfall':f.stepfall,
-        'waterfall':f.waterfall,
         'rainbow':f.rainbow,
+        'kanangra':f.kanangra,
+        'waterfall':f.waterfall,
+        'stepfall':f.stepfall,
         'exotic':f.exotic,
         'late_intxde':f.late_intxde,
         'heaviside_late_int':f.heaviside_late_int,
@@ -64,6 +65,8 @@ def zodesolve(names, values, zpicks, model, plot_key):
 
     if model == 'rainbow':
         int_in = 12
+    elif model == 'kanangra':
+        int_in = 8
     elif model == 'waterfall':
         int_in = 6
     elif model == 'stepfall':

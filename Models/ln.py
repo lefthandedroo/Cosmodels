@@ -56,14 +56,24 @@ def lnprior(th, key):
                     if 0 < th[10] < 1 and 0 < th[11] < 1:
                         l = 0.01
                         # a_in, b_in, c_in
-                        if -l < th[-11] < l and -l < th[-10] < l and -l < th[-9] < l:
+                        if -l < th[12] < l and -l < th[13] < l and -l < th[14] < l:
                             # d_in, e_in, f_in
-                            if  -l < th[-8] < l and -l < th[-7] < l and -l < th[-6] < l:
+                            if  -l < th[15] < l and -l < th[16] < l and -l < th[17] < l:
                                 # g_in, h_in, i_in
-                                if -l < th[-5] < l and -l < th[-4] < l and -l < th[-3] < l:
+                                if -l < th[18] < l and -l < th[19] < l and -l < th[20] < l:
                                      #j_in, k_in
-                                     if -l < th[-2] < l and -l < th[-1] < l:
+                                     if -l < th[21] < l and -l < th[22] < l:
                                          return 0.0
+        elif key == 'kanangra':
+            # ombar_radiation, a_ombar, b_ombar, c_ombar
+            if 0 < th[2] < 1 and 0 < th[3] < 1 and 0 < th[4] < 1 and 0 < th[5] < 1:
+                # d_ombar, e_ombar
+                if 0 < th[6] < 1 and 0 < th[7] < 1:
+                    l = 1
+                    # a_in, b_in, c_in, d_in, e_in, f_in, g_in
+                    if -l<th[8]<l and -l<th[9]<l and -l<th[10]<l:
+                        if -l<th[11]<l and -l<th[12]<l and -l<th[13]<l and -l<th[14]<l:
+                            return 0.0
 
         elif key == 'waterfall':
             # ombar_radiation, a_ombar, b_ombar, c_ombar
