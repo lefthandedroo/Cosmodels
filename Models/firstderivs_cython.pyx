@@ -71,17 +71,17 @@ def rainbow(double[:] v, redshifts, in_terms, double H0):
     cdef double z = v[14]
     cdef double dl = v[15]
 
-    cdef double in_a = in_terms[0]
-    cdef double in_b = in_terms[1]
-    cdef double in_c = in_terms[2]
-    cdef double in_d = in_terms[3]
-    cdef double in_e = in_terms[4]
-    cdef double in_f = in_terms[5]
-    cdef double in_g = in_terms[6]
-    cdef double in_h = in_terms[7]
-    cdef double in_i = in_terms[8]
-    cdef double in_j = in_terms[9]
-    cdef double in_k = in_terms[10]
+    cdef double in_p = in_terms[0]
+    cdef double in_q = in_terms[1]
+    cdef double in_r = in_terms[2]
+    cdef double in_s = in_terms[3]
+    cdef double in_t = in_terms[4]
+    cdef double in_u = in_terms[5]
+    cdef double in_v = in_terms[6]
+    cdef double in_w = in_terms[7]
+    cdef double in_x = in_terms[8]
+    cdef double in_y = in_terms[9]
+    cdef double in_z = in_terms[10]
 
 
     cdef double Hz = H0 * (ombar_m +ombar_r  +ombar_a +ombar_b
@@ -101,18 +101,18 @@ def rainbow(double[:] v, redshifts, in_terms, double H0):
     cdef double dtdz = -1.0/((1.0+z) * Hz)
     cdef double dadz = -(1.0+z)**(-2.0)
 
-    cdef double domdz = (3.0*ombar_m +in_a*ombar_m*ombar_r/Hz)/(1.0+z) # w = 0
-    cdef double dordz = (4.0*ombar_r -in_a*ombar_m*ombar_r/Hz +in_b*ombar_r*ombar_a/Hz)/(1.0+z) # w = 1/3
-    cdef double doadz = (2.7*ombar_a -in_b*ombar_r*ombar_a/Hz +in_c*ombar_a*ombar_b/Hz)/(1.0+z) # w = -0.1
-    cdef double dobdz = (2.4*ombar_b -in_c*ombar_a*ombar_b/Hz +in_d*ombar_b*ombar_c/Hz)/(1.0+z) # w = -0.2
-    cdef double docdz = (2.1*ombar_c -in_d*ombar_b*ombar_c/Hz +in_e*ombar_c*ombar_d/Hz)/(1.0+z) # w = -0.3
-    cdef double doddz = (1.8*ombar_d -in_e*ombar_c*ombar_d/Hz +in_f*ombar_d*ombar_e/Hz)/(1.0+z) # w = -0.4
-    cdef double doedz = (1.5*ombar_e -in_f*ombar_d*ombar_e/Hz +in_g*ombar_e*ombar_f/Hz)/(1.0+z) # w = -0.5
-    cdef double dofdz = (1.2*ombar_f -in_g*ombar_e*ombar_f/Hz +in_h*ombar_f*ombar_g/Hz)/(1.0+z) # w = -0.6
-    cdef double dogdz = (0.9*ombar_g -in_h*ombar_f*ombar_g/Hz +in_i*ombar_g*ombar_h/Hz)/(1.0+z) # w = -0.7
-    cdef double dohdz = (0.6*ombar_h -in_i*ombar_g*ombar_h/Hz +in_j*ombar_h*ombar_i/Hz)/(1.0+z) # w = -0.8
-    cdef double doidz = (0.3*ombar_i -in_j*ombar_h*ombar_i/Hz +in_k*ombar_i*ombar_de/Hz)/(1.0+z)# w = -0.9
-    cdef double dodedz = -in_k*ombar_i*ombar_de/(1.0+z)/Hz # w = -1
+    cdef double domdz = (3.0*ombar_m +in_p*ombar_m*ombar_r/Hz)/(1.0+z) # w = 0
+    cdef double dordz = (4.0*ombar_r -in_p*ombar_m*ombar_r/Hz +in_q*ombar_r*ombar_a/Hz)/(1.0+z) # w = 1/3
+    cdef double doadz = (2.7*ombar_a -in_q*ombar_r*ombar_a/Hz +in_r*ombar_a*ombar_b/Hz)/(1.0+z) # w = -0.1
+    cdef double dobdz = (2.4*ombar_b -in_r*ombar_a*ombar_b/Hz +in_s*ombar_b*ombar_c/Hz)/(1.0+z) # w = -0.2
+    cdef double docdz = (2.1*ombar_c -in_s*ombar_b*ombar_c/Hz +in_t*ombar_c*ombar_d/Hz)/(1.0+z) # w = -0.3
+    cdef double doddz = (1.8*ombar_d -in_t*ombar_c*ombar_d/Hz +in_u*ombar_d*ombar_e/Hz)/(1.0+z) # w = -0.4
+    cdef double doedz = (1.5*ombar_e -in_u*ombar_d*ombar_e/Hz +in_v*ombar_e*ombar_f/Hz)/(1.0+z) # w = -0.5
+    cdef double dofdz = (1.2*ombar_f -in_v*ombar_e*ombar_f/Hz +in_w*ombar_f*ombar_g/Hz)/(1.0+z) # w = -0.6
+    cdef double dogdz = (0.9*ombar_g -in_w*ombar_f*ombar_g/Hz +in_x*ombar_g*ombar_h/Hz)/(1.0+z) # w = -0.7
+    cdef double dohdz = (0.6*ombar_h -in_x*ombar_g*ombar_h/Hz +in_y*ombar_h*ombar_i/Hz)/(1.0+z) # w = -0.8
+    cdef double doidz = (0.3*ombar_i -in_y*ombar_h*ombar_i/Hz +in_z*ombar_i*ombar_de/Hz)/(1.0+z)# w = -0.9
+    cdef double dodedz = -in_z*ombar_i*ombar_de/(1.0+z)/Hz # w = -1
 
     cdef double ddldz = 1.0/Hz
 
@@ -163,13 +163,13 @@ def kanangra(double[:] v, redshifts, in_terms, double H0):
     cdef double z = v[10]
     cdef double dl = v[11]
 
-    cdef double in_a = in_terms[0]
-    cdef double in_b = in_terms[1]
-    cdef double in_c = in_terms[2]
-    cdef double in_d = in_terms[3]
-    cdef double in_e = in_terms[4]
-    cdef double in_f = in_terms[5]
-    cdef double in_g = in_terms[6]
+    cdef double in_t = in_terms[0]
+    cdef double in_u = in_terms[1]
+    cdef double in_v = in_terms[2]
+    cdef double in_w = in_terms[3]
+    cdef double in_x = in_terms[4]
+    cdef double in_y = in_terms[5]
+    cdef double in_z = in_terms[6]
 
     cdef double Hz = H0 * (ombar_m +ombar_r  +ombar_a +ombar_b
                            +ombar_c +ombar_d +ombar_e +ombar_de)**(0.5)
@@ -187,14 +187,14 @@ def kanangra(double[:] v, redshifts, in_terms, double H0):
     cdef double dtdz = -1.0/((1.0+z) * Hz)
     cdef double dadz = -(1.0+z)**(-2.0)
 
-    cdef double domdz = (3.0*ombar_m +in_a*ombar_m*ombar_r/Hz)/(1.0+z)                          # w = 0
-    cdef double dordz = (4.0*ombar_r -in_a*ombar_m*ombar_r/Hz +in_b*ombar_r*ombar_a/Hz)/(1.0+z) # w = 1/3
-    cdef double doadz = (2.7*ombar_a -in_b*ombar_r*ombar_a/Hz +in_c*ombar_a*ombar_b/Hz)/(1.0+z) # w = -0.1
-    cdef double dobdz = (2.1*ombar_b -in_c*ombar_a*ombar_b/Hz +in_d*ombar_b*ombar_c/Hz)/(1.0+z) # w = -0.3
-    cdef double docdz = (1.5*ombar_c -in_d*ombar_b*ombar_c/Hz +in_e*ombar_c*ombar_d/Hz)/(1.0+z) # w = -0.5
-    cdef double doddz = (0.9*ombar_d -in_e*ombar_c*ombar_d/Hz +in_f*ombar_d*ombar_e/Hz)/(1.0+z) # w = -0.7
-    cdef double doedz = (0.3*ombar_e -in_f*ombar_d*ombar_e/Hz +in_g*ombar_e*ombar_de/Hz)/(1.0+z)# w = -0.9
-    cdef double dodedz = -in_g*ombar_e*ombar_de/(1.0+z)/Hz                                      # w = -1
+    cdef double domdz = (3.0*ombar_m +in_t*ombar_m*ombar_r/Hz)/(1.0+z)                          # w = 0
+    cdef double dordz = (4.0*ombar_r -in_t*ombar_m*ombar_r/Hz +in_u*ombar_r*ombar_a/Hz)/(1.0+z) # w = 1/3
+    cdef double doadz = (2.7*ombar_a -in_u*ombar_r*ombar_a/Hz +in_v*ombar_a*ombar_b/Hz)/(1.0+z) # w = -0.1
+    cdef double dobdz = (2.1*ombar_b -in_v*ombar_a*ombar_b/Hz +in_w*ombar_b*ombar_c/Hz)/(1.0+z) # w = -0.3
+    cdef double docdz = (1.5*ombar_c -in_w*ombar_b*ombar_c/Hz +in_x*ombar_c*ombar_d/Hz)/(1.0+z) # w = -0.5
+    cdef double doddz = (0.9*ombar_d -in_x*ombar_c*ombar_d/Hz +in_y*ombar_d*ombar_e/Hz)/(1.0+z) # w = -0.7
+    cdef double doedz = (0.3*ombar_e -in_y*ombar_d*ombar_e/Hz +in_z*ombar_e*ombar_de/Hz)/(1.0+z)# w = -0.9
+    cdef double dodedz = -in_z*ombar_e*ombar_de/(1.0+z)/Hz                                      # w = -1
 
     cdef double ddldz = 1.0/Hz
 

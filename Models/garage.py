@@ -10,6 +10,8 @@ import pickle
 import matplotlib.pyplot as plt
 import numpy as np
 
+a = np.arange(5)
+hist, bin_edges = np.histogram(a, density=True)
 
 #def wrap(x, a, b):
 #    assert b > a

@@ -76,8 +76,8 @@ def names_values(test_key):
                  'm_ombar', 'r_ombar', 'a_ombar', 'b_ombar', 'c_ombar',
                  'd_ombar', 'e_ombar', 'f_ombar', 'g_ombar', 'h_ombar',
                  'i_ombar',
-                 'a_in', 'b_in', 'c_in', 'd_in', 'e_in', 'f_in',
-                 'g_in', 'h_in', 'i_in', 'j_in', 'k_in']
+                 'p_in', 'q_in', 'r_in', 's_in', 't_in', 'u_in',
+                 'v_in', 'w_in', 'x_in', 'y_in', 'z_in']
         values = np.array([-19.3,
                            0.3, 0.025, 0.01, 0.01, 0.01, 0.01,
                            0.01, 0.01, 0.01, 0.01, 0.01,
@@ -87,7 +87,7 @@ def names_values(test_key):
         names = ['Mcorr',
                  'm_ombar', 'r_ombar', 'a_ombar', 'b_ombar', 'c_ombar',
                  'd_ombar', 'e_ombar',
-                 'a_in', 'b_in', 'c_in', 'd_in', 'e_in', 'f_in', 'g_in']
+                 't_in', 'u_in', 'v_in', 'w_in', 'x_in', 'y_in', 'z_in']
         values = np.array([-19.3,
                            0.3, 0.025, 0.01, 0.01, 0.01,
                            0.01,0.01,

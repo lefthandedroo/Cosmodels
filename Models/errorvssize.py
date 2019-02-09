@@ -64,8 +64,8 @@ except:
 #sampler_list = []
 
 for key in test_keys:
-    sigma_options = 0.01, 0.07 #0.14, 0.2 #0.0001, 0.005
-    npoints_options = 1048000, 104800#1048, 10480, 104800 #1048000, 10480000
+    sigma_options = None, 0.001 #0.14, 0.2 #0.0001, 0.005, 0.007
+    npoints_options = None, 10480000 #1048, 10480, 104800 #1048000, 10480000
     if key:
         run = 0
         names, values = tools.names_values(key)
@@ -77,7 +77,15 @@ for key in test_keys:
             os.makedirs(save_path)
 
         for sigma in sigma_options:
+            if sigma:
+                pass
+            else:
+                continue
             for npoints in npoints_options:
+                if npoints:
+                    pass
+                else:
+                    continue
                 run += 1
                 data_path = f'data/{npoints}_{all_zpicks[-1]}_sigma_{sigma}.p'
                 my_file = Path(data_path)

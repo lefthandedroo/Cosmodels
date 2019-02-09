@@ -16,7 +16,7 @@ import stats
 
 
 # Number of emcee steps.
-nsteps = 10000
+nsteps = 100000
 
 # Statistical parameteres of noise: mean, standard deviation.
 mu, sigma = 0.0, 0.03 # sigma != 0
@@ -80,7 +80,7 @@ data_dic['zpicks'] = zpicks
 #datasim.model_comparison([p1], data_dic, ['rainbow'], plot_key=True)
 
 firstderivs_functions = [None
-            ,'rainbow'
+#            ,'rainbow'
 #            ,'kanangra'
 #            ,'waterfall'
 #            ,'stepfall'
@@ -100,12 +100,11 @@ firstderivs_functions = [None
 #            ,'rdecay_mxde'
 #            ,'rdecay'
 #            ,'interacting'
-#            ,'LCDM'
-            ,'rLCDM'
+            ,'LCDM'
+#            ,'rLCDM'
             ]
 
 def modelcheck():
-
     for test_key in firstderivs_functions:
         if test_key:
             print('---',test_key)
@@ -113,7 +112,7 @@ def modelcheck():
             datasim.magn(names, values, data_dic, test_key, plot_key=True)
     return
 
-modelcheck()
+#modelcheck()
 
 def emcee():
     print('@@@@@@@ emcee @@@@@@@')
@@ -147,4 +146,4 @@ def emcee():
 
     return
 
-#emcee()
+emcee()

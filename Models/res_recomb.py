@@ -11,6 +11,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import datasim
 
+import matplotlib as mpl
+#mpl.style.use('default') # has to be switched on to set figure size
+mpl.style.use('fivethirtyeight')
+plt.rcParams['axes.facecolor'] = 'white'
+plt.rcParams['figure.facecolor'] = 'white'
+plt.rcParams['grid.color'] = 'white'
+
 zpicks = np.array([1089])
 data_dic = {'zpicks':zpicks}
 
@@ -22,15 +29,19 @@ if timed:
     pr.enable()
 
 models = 'exotic', 'LCDM'
-noise_options = 0.01, 0.07, 0.14
-npoints_options = 1048, 10480, 104800
+noise_options = 0.001, None      #0.01, 0.07, 0.14, 0.2
+npoints_options = None, 1048000  #1048, 10480, 104800, 1048000
 # creating non-real y values for visual separation of da's. da's plotted are all at z=1089.
 yaxis_tick = 1, 2, 3
 #noise = 0.14
 #npoints = 10480
 
 for npoints in npoints_options:
+    if not npoints: # skipping the None to allow comparing a list of 1
+        continue
     for noise in noise_options:
+        if not noise:
+            continue
         da_list = []
         ml_da_list = [] # max likelihood da's
         for test_key in models:
@@ -63,48 +74,99 @@ for npoints in npoints_options:
             ec = 'lightpink', 'lightgreen', 'lightblue', 'chocolate'
 
         plt.figure()
-        plt.title(f'Angular diameter distances at z = {zpicks[-1]},'
-                +f'\n $\sigma$ on data={noise}, number of SN Ia used = {npoints}')
-        plt.ylabel('$(H_0 /c) * D_A$')
-        plt.xlabel('z')
+        plt.title(f'\n $\sigma$ on data = {noise}, {npoints} SN Ia used')
+        plt.ylabel(r'$z = 1089$')
+        plt.xlabel('$(H_0 /c) * D_A$')
         plt.grid(True)
-        plt.ylim(0.002,0.005)
+        plt.xlim(0.00285,0.00295)
         for i in range(len(models)):
             da_distrib = da_list[i]
             z_array = np.ones(len(da_distrib))*1089
-            plt.scatter(z_array, da_distrib, s=40, facecolors='none',
-                        edgecolors=c[i], label=models[i])
-        plt.legend()
-        plt.show()
-
-        plt.figure()
-        plt.title(f'Histogram of angular diameter distances at z = {zpicks[-1]},'+
-        f'\n $\sigma$ on data = {noise}, number of SN Ia used = {npoints}')
-        plt.xlabel('$(H_0 /c) * D_A$')
-        for i in range(len(models)):
-            da_distrib = da_list[i]
-            plt.hist(da_distrib, bins = 50, normed=True, color=c[i], histtype='step',
-                     stacked=True, fill=False, label=models[i])
-        plt.legend()
-        plt.show()
-
-        plt.figure()
-        plt.title(f'$\mu$ and $\sigma$ of the angular diameter distance distribution'+
-        f'\n $\sigma$ on data = {noise}, number of SN Ia used = {npoints}')
-        plt.xlabel('$(H_0 /c) * D_A$')
-        plt.ylabel(r'$z = 1089$')
-        for i in range(len(models)):
-            da_distrib = np.asarray(da_list[i])
-            da_mean = np.mean(da_distrib)
-            da_sd = np.std(da_distrib)
-            if da_sd < da_mean/100:
-                print(f'da_sd = {da_sd}, model = {test_key}, mean/100 = {da_mean/100}')
-            plt.errorbar(da_mean, yaxis_tick[i], xerr=da_sd, fmt='-o', color=c[i],
-                         ecolor=ec[i], elinewidth=3, capsize=0, label=models[i])
-        plt.ylim(-4,8)
+            plt.scatter(da_distrib, z_array, s=60, facecolors='none', edgecolors="C{}".format(i), label=models[i])
+        plt.locator_params(axis='x', nbins=4)
         plt.yticks([])
         plt.legend()
         plt.show()
+
+
+
+#        plt.figure()
+#        plt.title(f'$D_A$ at z = {zpicks[-1]},'
+#                +f'\n $\sigma$ on data = {noise}, {npoints} SN Ia used')
+#        plt.xlabel('$(H_0 /c) * D_A$')
+#        for i in range(len(models)):
+#            da_distrib = da_list[i]
+#            plt.hist(da_distrib, normed=False, histtype='step',
+#                     stacked=True, label=models[i])
+#        plt.locator_params(axis='x', nbins=5)
+#        plt.legend()
+#        plt.show()
+
+        plt.figure()
+        for i in range(len(models)):
+            da_distrib = da_list[i]
+            y, x = np.histogram(da_distrib)
+#            print('y = ',y, 'max(y)=', max(y))
+            y_norm = y/max(y)
+#            print('y_norm = ',y_norm, 'max(y_norm)=', max(y_norm))
+            print('x = ',x)
+            x = (x-0.0029)*(10**5)
+            x = x[1:]
+            print('x[1:] = ',x[1:])
+            plt.title("$D_A$'s using all guessed parameters")
+            plt.plot(x, y_norm, label=f'{models[i]}')
+            plt.locator_params(axis='x', nbins=5)
+            plt.legend()
+        plt.show()
+
+        plt.figure()
+        for i in range(len(models)):
+            da_distrib = da_list[i]
+            y, x = np.histogram(da_distrib)
+            y_norm = y/max(y)
+            print('x = ',x)
+            x = (x-0.0029)*(10**5)
+            x = x[:-1]
+            print('x[:-1] = ',x[1:])
+            plt.title("$D_A$'s using all guessed parameters")
+            plt.plot(x, y_norm, label=f'{models[i]}')
+            plt.locator_params(axis='x', nbins=5)
+            plt.legend()
+        plt.show()
+
+#        for i in range(len(models)):
+#            plt.figure()
+#            da_distrib = da_list[i]
+#            y, x = np.histogram(da_distrib)
+#            y_norm = y/max(y)
+#            x = x[1:]
+#            plt.title("$D_A$'s using all guessed parameters")
+#            plt.plot(x, y_norm, label=f'{models[i]}')
+#            plt.xlim(0.00285,0.003)
+#            plt.locator_params(axis='x', nbins=5)
+#            plt.legend()
+#        plt.show()
+
+#        plt.figure()
+#        plt.title(f'$\mu$ and $\sigma$ of the $D_A$ distribution'
+#                  +f'\n $\sigma$ on data = {noise}, {npoints} SN Ia used')
+#        plt.xlabel('$(H_0 /c) * D_A$')
+#        plt.ylabel(r'$z = 1089$')
+#        for i in range(len(models)):
+#            da_distrib = np.asarray(da_list[i])
+#            da_mean = np.mean(da_distrib)
+#            da_sd = np.std(da_distrib)
+#            if da_sd < da_mean/100:
+#                print(f'{test_key} da_sd (={da_sd}) < mean/100 (={da_mean/100})')
+##            plt.errorbar(da_mean, yaxis_tick[i], xerr=da_sd, fmt='-o',
+##        color=c[i], ecolor=ec[i], elinewidth=3, capsize=0, label=models[i])
+#            plt.errorbar(da_mean, yaxis_tick[i], xerr=da_sd, fmt='o', label=models[i])
+#        plt.locator_params(axis='x', nbins=5)
+#        plt.ylim(-4,8)
+#        plt.yticks([])
+#        plt.legend()
+#        plt.show()
+
 
 if timed:
     pr.disable()

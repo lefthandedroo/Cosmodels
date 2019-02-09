@@ -22,7 +22,6 @@ plt.rcParams['grid.color'] = 'white'
 
 def stat_emcee(hue, var, var_true, var_name, slnprob, zpicks,
           mag, sigma, nsteps, nwalkers, save_path, firstderivs_key):
-    mpl.style.use('fivethirtyeight')
     initial = var_name.lower()[:1]
     name_true = var_name[:1] + '_true'
     hue_name = hue
@@ -32,10 +31,11 @@ def stat_emcee(hue, var, var_true, var_name, slnprob, zpicks,
     plt.figure()
 #    plt.xlabel(r'$\{}$'.format(name_l))
     plt.xlabel(var_name)
-    plt.title('model: '+firstderivs_key+'\n Marginalised distribution of '
-              +var_name+' \n nsteps: '+str(nsteps)+', noise: '+str(sigma)
-              +', npoints: '+str(len(zpicks))+' '+firstderivs_key)
+#    plt.title('model: '+firstderivs_key+'\n Marginalised distribution of '
+#              +var_name+' \n nsteps: '+str(nsteps)+', noise: '+str(sigma)
+#              +', npoints: '+str(len(zpicks))+' '+firstderivs_key)
     plt.hist(var, 50, facecolor=hue)
+    plt.locator_params(axis='x', nbins=5)
     stamp = str(int(time.time()))
     filename = str(stamp)+'_'+initial+'_mhist__nsteps_'+str(nsteps) \
     +'_nwalkers_'+str(nwalkers)+'_noise_'+str(sigma) \
@@ -46,10 +46,11 @@ def stat_emcee(hue, var, var_true, var_name, slnprob, zpicks,
     # Walker steps.
     plt.figure()
     plt.xlabel(var_name)
-    plt.title('model: '+firstderivs_key+'\n lnprobability of '+var_name
-              +' \n nsteps: '+str(nsteps)+', noise: '+str(sigma)
-              +', npoints: '+str(len(zpicks)))
+#    plt.title('model: '+firstderivs_key+'\n lnprobability of '+var_name
+#              +' \n nsteps: '+str(nsteps)+', noise: '+str(sigma)
+#              +', npoints: '+str(len(zpicks)))
     plt.plot(var, slnprob, '.', color=hue)
+    plt.locator_params(axis='x', nbins=5)
     stamp = str(int(time.time()))
     filename = str(stamp)+'_'+initial+'_steps__nsteps_'+str(nsteps) \
     +'_nwalkers_'+str(nwalkers)+'_noise_'+str(sigma) \
@@ -62,11 +63,13 @@ def stat_emcee(hue, var, var_true, var_name, slnprob, zpicks,
     plt.xlabel('step number')
 #    plt.ylabel(r'$\{}$'.format(name_l))
     plt.ylabel(var_name)
-    plt.title('model: '+firstderivs_key+'\n flatchains, '+name_true+
-              ' in '+hue_name+' \n nsteps: '+str(nsteps)+', noise: '
-              +str(sigma)+', npoints: '+str(len(zpicks)))
-    plt.plot(var.T, '-', color='k', alpha=0.3, lw=2)
-    plt.axhline(var_true, color=hue, lw=2)
+#    plt.title('model: '+firstderivs_key+'\n flatchains, '+name_true+
+#              ' in '+hue_name+' \n nsteps: '+str(nsteps)+', noise: '
+#              +str(sigma)+', npoints: '+str(len(zpicks)))
+    plt.plot(var.T, '-', color='k', alpha=0.3, lw=2, label='chain')
+    plt.axhline(var_true, color=hue, lw=2, label='input value')
+    plt.locator_params(axis='x', nbins=5)
+    plt.legend()
     stamp = str(int(time.time()))
     filename = str(stamp)+'_'+initial+'_chain__nsteps_'+str(nsteps) \
     +'_nwalkers_'+str(nwalkers)+'_noise_'+str(sigma) \
@@ -407,11 +410,6 @@ def modelcheck(mag, zpicks, plot_var, firstderivs_key):
 
 def multi_modelcheck(data, keys, plot_var_list):
     print('multi_modelcheck')
-
-#    plt.rcParams['axes.facecolor'] = 'white'
-#    plt.rcParams['figure.facecolor'] = 'white'
-#    plt.rcParams['grid.color'] = 'white'
-#    plt.rcParams['axes.edgecolor'] = 'black' # frame
 
     zpicks = data['zpicks']
     data_mag = data['mag']
