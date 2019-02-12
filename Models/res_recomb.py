@@ -29,8 +29,8 @@ if timed:
     pr.enable()
 
 models = 'exotic', 'LCDM'
-noise_options = 0.01, None      #0.001, 0.01, 0.07, 0.14, 0.2
-npoints_options = 1048, 10480, 1048000  #1048, 10480, 104800, 1048000
+noise_options = 0.001, None      #0.001, 0.01, 0.07, 0.14, 0.2
+npoints_options = None, 1048000  #1048, 10480, 104800, 1048000
 yaxis_tick = 1, 2, 3 #fake y values for visual separation of da's. da's plotted are all at z=1089.
 msize = 70, 20  # marker sizes to differentiate between scatter plots
 n_bin = 100 # histogram bin number
@@ -102,7 +102,7 @@ for npoints in npoints_options:
         plt.figure()
         smallest_da = 1
         largest_da = 0
-        plt.title(f'scatter of $D_A$ histogram $y > {cutoff}$'
+        plt.title(f'scatter of x[1:] $D_A$ histogram $y > {cutoff}$'
                   +'\n from all guessed parameter sets')
         for i in range(len(models)):
             face_color = 'none', "C{}".format(i)
@@ -131,7 +131,7 @@ for npoints in npoints_options:
         plt.figure()
         smallest_da = 1
         largest_da = 0
-        plt.title(f'scatter of $D_A$ histogram $y > {cutoff}$'
+        plt.title(f'scatter of x[:-1] $D_A$ histogram $y > {cutoff}$'
                   +'\n from all guessed parameter sets')
         for i in range(len(models)):
             face_color = 'none', "C{}".format(i)
@@ -157,6 +157,8 @@ for npoints in npoints_options:
         plt.show()
 
         plt.figure()
+        smallest_da = 1
+        largest_da = 0
         plt.title('scatter of complete $D_A$ histogram'
                   +'\n from all guessed parameter sets')
         for i in range(len(models)):
@@ -169,8 +171,12 @@ for npoints in npoints_options:
 #            print('scatter x[:-1] = ',x)
 #            print('scatter y = ',y)
 #            print('scatter y_norm = ',y_norm)
+            if min(x) < smallest_da:
+                smallest_da = min(x)
+            if max(x) > largest_da:
+                largest_da = max(x)
             plt.scatter(x, y_norm, s=msize[i], facecolors=face_color[i], edgecolors="C{}".format(i), label=f'{models[i]}')
-        plt.xlim(0.00284,0.00294)
+        plt.xlim((smallest_da-0.000001),(largest_da+0.000001))
         plt.locator_params(axis='x', nbins=5)
         plt.legend()
         plt.show()
