@@ -33,6 +33,7 @@ noise_options = 0.01, None      #0.001, 0.01, 0.07, 0.14, 0.2
 npoints_options = 1048, 10480, 1048000  #1048, 10480, 104800, 1048000
 yaxis_tick = 1, 2, 3 #fake y values for visual separation of da's. da's plotted are all at z=1089.
 msize = 70, 20  # marker sizes to differentiate between scatter plots
+n_bin = 100 # histogram bin number
 
 for npoints in npoints_options:
     if not npoints: # skipping the None to allow comparing a list of 1
@@ -51,8 +52,9 @@ for npoints in npoints_options:
                     with open(file_path,'rb') as rfp: propert, sampler = pickle.load(rfp)
                 else:
                     print(f"Couldn't open {file_path}")
-                # Collecting every skip-th set of parameters and da they produce.
-                skip = 100
+                # get da for every skip-th set of params, keep skip < n_bin
+                # skip=50 and n_bin=50 works
+                skip = 10
                 da_distrib = []
                 for i in range(0, len(sampler.flatchain), skip):
                     values = sampler.flatchain[i, :]
@@ -69,7 +71,7 @@ for npoints in npoints_options:
                 ml_da_list.append(ml_da[-1])
 
         plt.figure()
-        plt.title(f'\n $\sigma$ on data = {noise}, {npoints} SN Ia used')
+        plt.title(f'$\sigma$ on data = {noise}, {npoints} SN Ia used')
         plt.ylabel(r'$z = 1089$')
         plt.xlabel('$(H_0 /c) * D_A$')
         plt.grid(True)
@@ -96,34 +98,71 @@ for npoints in npoints_options:
 #        plt.legend()
 #        plt.show()
 
+        cutoff = 0.1
         plt.figure()
-        plt.xlim(0.00285,0.00295)
-        plt.title("scatter of histogram $ D_A$'s"
-                  +"\n using all guessed parameters")
+        smallest_da = 1
+        largest_da = 0
+        plt.title(f'scatter of $D_A$ histogram $y > {cutoff}$'
+                  +'\n from all guessed parameter sets')
         for i in range(len(models)):
             face_color = 'none', "C{}".format(i)
             da_distrib = da_list[i]
-            y, x = np.histogram(da_distrib)
+            y, x = np.histogram(da_distrib, bins=n_bin)
 #            print('x = ',x)
             y_norm = y/max(y)
             x = x[1:]
 #            print('scatter x[1:] = ',x)
 #            print('scatter y = ',y)
 #            print('scatter y_norm = ',y_norm)
+            indices = np.where(y_norm > cutoff)
+            y_norm = y_norm[indices]
+            x = x[indices]
+            if min(x) < smallest_da:
+                smallest_da = min(x)
+            if max(x) > largest_da:
+                largest_da = max(x)
             plt.scatter(x, y_norm, s=msize[i], facecolors=face_color[i], edgecolors="C{}".format(i), label=f'{models[i]}')
+        plt.xlim((smallest_da-0.000001),(largest_da+0.000001))
         plt.locator_params(axis='x', nbins=5)
         plt.legend()
         plt.show()
 
 
         plt.figure()
-        plt.title("scatter of histogram $ D_A$'s"
-                      +"\n using all guessed parameters")
-        plt.xlim(0.00285,0.00295)
+        smallest_da = 1
+        largest_da = 0
+        plt.title(f'scatter of $D_A$ histogram $y > {cutoff}$'
+                  +'\n from all guessed parameter sets')
         for i in range(len(models)):
             face_color = 'none', "C{}".format(i)
             da_distrib = da_list[i]
-            y, x = np.histogram(da_distrib)
+            y, x = np.histogram(da_distrib, bins=n_bin)
+#            print('x = ',x)
+            y_norm = y/max(y)
+            x = x[:-1]
+#            print('scatter x[:-1] = ',x)
+#            print('scatter y = ',y)
+#            print('scatter y_norm = ',y_norm)
+            indices = np.where(y_norm > cutoff)
+            y_norm = y_norm[indices]
+            x = x[indices]
+            if min(x) < smallest_da:
+                smallest_da = min(x)
+            if max(x) > largest_da:
+                largest_da = max(x)
+            plt.scatter(x, y_norm, s=msize[i], facecolors=face_color[i], edgecolors="C{}".format(i), label=f'{models[i]}')
+        plt.xlim((smallest_da-0.000001),(largest_da+0.000001))
+        plt.locator_params(axis='x', nbins=5)
+        plt.legend()
+        plt.show()
+
+        plt.figure()
+        plt.title('scatter of complete $D_A$ histogram'
+                  +'\n from all guessed parameter sets')
+        for i in range(len(models)):
+            face_color = 'none', "C{}".format(i)
+            da_distrib = da_list[i]
+            y, x = np.histogram(da_distrib, bins=n_bin)
 #            print('scatter x = ',x)
             y_norm = y/max(y)
             x = x[:-1]
@@ -131,6 +170,7 @@ for npoints in npoints_options:
 #            print('scatter y = ',y)
 #            print('scatter y_norm = ',y_norm)
             plt.scatter(x, y_norm, s=msize[i], facecolors=face_color[i], edgecolors="C{}".format(i), label=f'{models[i]}')
+        plt.xlim(0.00284,0.00294)
         plt.locator_params(axis='x', nbins=5)
         plt.legend()
         plt.show()
