@@ -29,12 +29,10 @@ if timed:
     pr.enable()
 
 models = 'exotic', 'LCDM'
-noise_options = 0.001, None      #0.01, 0.07, 0.14, 0.2
-npoints_options = None, 1048000  #1048, 10480, 104800, 1048000
-# creating non-real y values for visual separation of da's. da's plotted are all at z=1089.
-yaxis_tick = 1, 2, 3
-#noise = 0.14
-#npoints = 10480
+noise_options = 0.01, None      #0.001, 0.01, 0.07, 0.14, 0.2
+npoints_options = 1048, 10480, 1048000  #1048, 10480, 104800, 1048000
+yaxis_tick = 1, 2, 3 #fake y values for visual separation of da's. da's plotted are all at z=1089.
+msize = 70, 20  # marker sizes to differentiate between scatter plots
 
 for npoints in npoints_options:
     if not npoints: # skipping the None to allow comparing a list of 1
@@ -70,9 +68,6 @@ for npoints in npoints_options:
                 da_list.append(da_distrib)
                 ml_da_list.append(ml_da[-1])
 
-            c = 'palevioletred', 'seagreen', 'slateblue', 'saddlebrown'
-            ec = 'lightpink', 'lightgreen', 'lightblue', 'chocolate'
-
         plt.figure()
         plt.title(f'\n $\sigma$ on data = {noise}, {npoints} SN Ia used')
         plt.ylabel(r'$z = 1089$')
@@ -82,14 +77,13 @@ for npoints in npoints_options:
         for i in range(len(models)):
             da_distrib = da_list[i]
             z_array = np.ones(len(da_distrib))*1089
-            plt.scatter(da_distrib, z_array, s=60, facecolors='none', edgecolors="C{}".format(i), label=models[i])
+            plt.scatter(da_distrib, z_array, s=msize[i], facecolors='none', edgecolors="C{}".format(i), label=models[i])
         plt.locator_params(axis='x', nbins=4)
         plt.yticks([])
         plt.legend()
         plt.show()
 
-
-
+#        # Non-normalised histogram
 #        plt.figure()
 #        plt.title(f'$D_A$ at z = {zpicks[-1]},'
 #                +f'\n $\sigma$ on data = {noise}, {npoints} SN Ia used')
@@ -103,36 +97,47 @@ for npoints in npoints_options:
 #        plt.show()
 
         plt.figure()
+        plt.xlim(0.00285,0.00295)
+        plt.title("scatter of histogram $ D_A$'s"
+                  +"\n using all guessed parameters")
         for i in range(len(models)):
+            face_color = 'none', "C{}".format(i)
             da_distrib = da_list[i]
             y, x = np.histogram(da_distrib)
-#            print('y = ',y, 'max(y)=', max(y))
+#            print('x = ',x)
             y_norm = y/max(y)
-#            print('y_norm = ',y_norm, 'max(y_norm)=', max(y_norm))
-            print('x = ',x)
-            x = (x-0.0029)*(10**5)
             x = x[1:]
-            print('x[1:] = ',x[1:])
-            plt.title("$D_A$'s using all guessed parameters")
-            plt.plot(x, y_norm, label=f'{models[i]}')
-            plt.locator_params(axis='x', nbins=5)
-            plt.legend()
+#            print('scatter x[1:] = ',x)
+#            print('scatter y = ',y)
+#            print('scatter y_norm = ',y_norm)
+            plt.scatter(x, y_norm, s=msize[i], facecolors=face_color[i], edgecolors="C{}".format(i), label=f'{models[i]}')
+        plt.locator_params(axis='x', nbins=5)
+        plt.legend()
         plt.show()
 
+
         plt.figure()
+        plt.title("scatter of histogram $ D_A$'s"
+                      +"\n using all guessed parameters")
+        plt.xlim(0.00285,0.00295)
         for i in range(len(models)):
+            face_color = 'none', "C{}".format(i)
             da_distrib = da_list[i]
             y, x = np.histogram(da_distrib)
+#            print('scatter x = ',x)
             y_norm = y/max(y)
-            print('x = ',x)
-            x = (x-0.0029)*(10**5)
             x = x[:-1]
-            print('x[:-1] = ',x[1:])
-            plt.title("$D_A$'s using all guessed parameters")
-            plt.plot(x, y_norm, label=f'{models[i]}')
-            plt.locator_params(axis='x', nbins=5)
-            plt.legend()
+#            print('scatter x[:-1] = ',x)
+#            print('scatter y = ',y)
+#            print('scatter y_norm = ',y_norm)
+            plt.scatter(x, y_norm, s=msize[i], facecolors=face_color[i], edgecolors="C{}".format(i), label=f'{models[i]}')
+        plt.locator_params(axis='x', nbins=5)
+        plt.legend()
         plt.show()
+
+
+
+
 
 #        for i in range(len(models)):
 #            plt.figure()

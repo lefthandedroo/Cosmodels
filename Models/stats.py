@@ -88,11 +88,12 @@ def stats(names, values, data_dict, sigma, nsteps,
     propert = {}
     propert['trace'] = sampler.chain[:, burnin:, :].reshape(-1, ndim) #trace
 
-    colours = ['black', 'berry', 'coral', 'amber', 'apple', 'aquamarine',
-               'raspberry', 'green blue', 'deep blue', 'emerald', 'blue violet',
-               'dark violet', 'yellow orange', 'light red', 'berry', 'coral',
-               'amber', 'apple', 'aquamarine', 'raspberry', 'green blue',
-               'deep blue', 'emerald', 'blue violet', 'dark violet', 'black']
+    colours = ['light red','berry', 'coral', 'amber', 'apple',
+        'aquamarine', 'raspberry', 'green blue', 'deep blue',
+        'emerald', 'blue violet', 'dark violet', 'yellow orange',
+        'light red', 'berry', 'coral', 'amber', 'apple', 'aquamarine',
+        'raspberry', 'green blue', 'deep blue', 'emerald', 'blue violet',
+        'dark violet', 'black']
 
     for i in range(ndim):
         param_initial = names[i][0]

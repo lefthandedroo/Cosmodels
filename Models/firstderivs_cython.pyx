@@ -11,6 +11,7 @@ import array
 import math
 
 # 'rainbow'
+# 'niagara'
 # 'kanangra'
 # 'waterfall'
 # 'stepfall'
@@ -137,6 +138,91 @@ def rainbow(double[:] v, redshifts, in_terms, double H0):
     return f
 
 
+def niagara(double[:] v, redshifts, in_terms, double H0):
+    """
+    Takes in:
+        v = values at z=0;
+        redshifts = list of redshifts to integrate over;
+        in_terms = np.array of floats interaction terms.
+
+    Returns a function f =     [dt/dz, d(a)/dz,
+                                d(e'_m)/dz, d(e'_de)/dz,
+                                d(z)/dz,
+                                d(dl)/dz]
+    """
+
+    cdef double t = v[0]
+    cdef double a = v[1]
+    cdef double ombar_m = v[2]
+    cdef double ombar_r = v[3]
+    cdef double ombar_a = v[4]
+    cdef double ombar_b = v[5]
+    cdef double ombar_c = v[6]
+    cdef double ombar_d = v[7]
+    cdef double ombar_e = v[8]
+    cdef double ombar_f = v[9]
+    cdef double ombar_g = v[10]
+    cdef double ombar_de = v[11]
+    cdef double z = v[12]
+    cdef double dl = v[13]
+
+    cdef double in_r = in_terms[0]
+    cdef double in_s = in_terms[1]
+    cdef double in_t = in_terms[2]
+    cdef double in_u = in_terms[3]
+    cdef double in_v = in_terms[4]
+    cdef double in_w = in_terms[5]
+    cdef double in_x = in_terms[6]
+    cdef double in_y = in_terms[7]
+    cdef double in_z = in_terms[8]
+
+    cdef double Hz = H0 * (ombar_m +ombar_r  +ombar_a +ombar_b
+                           +ombar_c +ombar_d +ombar_e +ombar_f
+                           +ombar_g +ombar_de)**(0.5)
+
+#    if ombar_m < 0 or ombar_de < 0:
+#        print('niagara')
+#        print('z = %s, Hz = %s, in_terms = %s'% (z, Hz, in_terms))
+#        print(f'omegas = {v[2:12]}')
+
+    if math.isnan(Hz):
+            print('niagara')
+            print('z = %s, Hz = %s, in_terms = %s'% (z, Hz, in_terms))
+            print(f'omegas = {v[2:12]}')
+
+    cdef double dtdz = -1.0/((1.0+z) * Hz)
+    cdef double dadz = -(1.0+z)**(-2.0)
+
+    cdef double domdz = (3.0*ombar_m +in_r*ombar_m*ombar_r/Hz)/(1.0+z)                          # w = 0
+    cdef double dordz = (4.0*ombar_r -in_r*ombar_m*ombar_r/Hz +in_s*ombar_r*ombar_a/Hz)/(1.0+z) # w = 1/3
+    cdef double doadz = (2.7*ombar_a -in_s*ombar_r*ombar_a/Hz +in_t*ombar_a*ombar_b/Hz)/(1.0+z) # w = -0.1
+    cdef double dobdz = (2.4*ombar_b -in_t*ombar_a*ombar_b/Hz +in_u*ombar_b*ombar_c/Hz)/(1.0+z) # w = -0.2
+    cdef double docdz = (1.8*ombar_c -in_u*ombar_b*ombar_c/Hz +in_v*ombar_c*ombar_d/Hz)/(1.0+z) # w = -0.4
+    cdef double doddz = (1.2*ombar_d -in_v*ombar_c*ombar_d/Hz +in_w*ombar_d*ombar_e/Hz)/(1.0+z) # w = -0.6
+    cdef double doedz = (0.9*ombar_e -in_w*ombar_d*ombar_e/Hz +in_x*ombar_e*ombar_f/Hz)/(1.0+z) # w = -0.7
+    cdef double dofdz = (0.6*ombar_f -in_x*ombar_e*ombar_f/Hz +in_y*ombar_f*ombar_g/Hz)/(1.0+z) # w = -0.8
+    cdef double dogdz = (0.3*ombar_g -in_y*ombar_f*ombar_g/Hz +in_z*ombar_g*ombar_de/Hz)/(1.0+z)# w = -0.9
+    cdef double dodedz = -in_z*ombar_g*ombar_de/(1.0+z)/Hz                                      # w = -1
+
+    cdef double ddldz = 1.0/Hz
+
+    # first derivatives of functions I want to find:
+    f = [dtdz,# dt/dz (= f.d wrt z of time)
+         dadz,# d(a)/dz (= f.d wrt z of scale factor)
+         domdz,# dw = 0, (ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
+         dordz,# w = 1/3, d(ombar_r)/dz   (= f.d wrt z of density_r(t) / crit density(t0))
+         doadz,# w = -0.1
+         dobdz,# w = -0.3
+         docdz,# w = -0.5
+         doddz,# w = -0.7
+         doedz,# w = -0.9
+         dodedz,# w = -1, d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit density(t0))
+         1.0,# d(z)/dz (= f.d wrt z of redshift)
+         ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)
+
+    return f
+
+
 def kanangra(double[:] v, redshifts, in_terms, double H0):
     """
     Takes in:
@@ -177,12 +263,12 @@ def kanangra(double[:] v, redshifts, in_terms, double H0):
 #    if ombar_m < 0 or ombar_de < 0:
 #        print('kanangra')
 #        print('z = %s, Hz = %s, in_terms = %s'% (z, Hz, in_terms))
-#        print(f'omegas = {v[2:14]}')
+#        print(f'omegas = {v[2:10]}')
 
     if math.isnan(Hz):
             print('kanangra')
             print('z = %s, Hz = %s, in_terms = %s'% (z, Hz, in_terms))
-            print(f'omegas = {v[2:14]}')
+            print(f'omegas = {v[2:10]}')
 
     cdef double dtdz = -1.0/((1.0+z) * Hz)
     cdef double dadz = -(1.0+z)**(-2.0)
