@@ -16,7 +16,7 @@ import results
 import tools
 
 import matplotlib as mpl
-mpl.style.use('default') # has to be switched on to set figure size
+#mpl.style.use('default') # has to be switched on to set figure size
 mpl.style.use('fivethirtyeight')
 plt.rcParams['axes.facecolor'] = 'white'
 plt.rcParams['figure.facecolor'] = 'white'
@@ -144,8 +144,8 @@ firstderivs_functions = [None
 #            ,'rdecay_mxde'
 #            ,'rdecay'
 #            ,'interacting'
-#            ,'LCDM'
-#            ,'rLCDM'
+            ,'LCDM'
+            ,'rLCDM'
             ]
 
 for key in firstderivs_functions:
