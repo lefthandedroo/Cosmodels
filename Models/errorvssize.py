@@ -20,13 +20,13 @@ import pickle
 # Script timer.
 timet0 = time.time()
 
-nsteps = 10000   # Number of emcee steps.
+nsteps = 100000   # Number of emcee steps.
 mu = 0.0        # Mean of noise added to LCDM to simulate data.
 
 #Model, errors on data and dataset sizes to iterate through:
 test_keys = [None
 #            ,'rainbow'
-#            ,'kanangra'
+            ,'kanangra'
 #            ,'waterfall'
 #            ,'stepfall'
             ,'exotic'
@@ -49,11 +49,7 @@ test_keys = [None
 #            ,'rLCDM'
             ]
 
-# Extracting pre-made redshifts z=0 to z=3.
-try:
-    with open('data/zpicks_1048_3.p','rb') as rfp: all_zpicks = pickle.load(rfp)
-except:
-    print("zpicks_1048_3.p didnt't open")
+max_z = 3 # highest expected redshift for a type Ia supernova
 
 #sd_list = []
 #mean_list = []
@@ -65,7 +61,7 @@ except:
 
 for key in test_keys:
     sigma_options = None, 0.001 #0.14, 0.2 #0.0001, 0.005, 0.007
-    npoints_options = None, 10480000 #1048, 10480, 104800 #1048000, 10480000
+    npoints_options = None, 104800 #1048, 10480, 104800 #1048000, 10480000
     if key:
         run = 0
         names, values = tools.names_values(key)
@@ -87,7 +83,7 @@ for key in test_keys:
                 else:
                     continue
                 run += 1
-                data_path = f'data/{npoints}_{all_zpicks[-1]}_sigma_{sigma}.p'
+                data_path = f'data/{npoints}_{max_z}_sigma_{sigma}.p'
                 my_file = Path(data_path)
                 if my_file.is_file():
                     with open(data_path,'rb') as rfp: zpicks, nmag = pickle.load(rfp)
@@ -119,7 +115,7 @@ for key in test_keys:
                                                sigma, nsteps, save_path,
                                                key, plot=False)
                 output = propert, sampler
-                output_path = os.path.join(save_path, f'sigma{sigma}_npoints{npoints}.p')
+                output_path = os.path.join(save_path, f'{key}_sigma{sigma}_npoints{npoints}.p')
                 pickle.dump(output, open(output_path, 'wb'))
 
 #                import results

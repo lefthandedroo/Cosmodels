@@ -5,7 +5,7 @@ Created on Fri Oct  5 19:05:26 2018
 
 @author: BallBlueMeercat
 """
-import numpy as np 
+import numpy as np
 import matplotlib.pyplot as plt
 import time
 import os
@@ -15,12 +15,167 @@ import datasim
 import results
 
 
+res_recomb.py
+
+#                mlfilename = f'maxlike_da_distrib_{test_key}_{noise}_{npoints}'
+#                ml_da_list.append(ml_da[-1])
+#                pickle.dump(ml_da_list, open(mlfilename, 'wb'))
+
+#        plt.figure()
+#        plt.title(f'$\sigma$ on data = {noise}, {npoints} SN Ia used')
+#        plt.ylabel(r'$z = 1089$')
+#        plt.xlabel('$(H_0 /c) * D_A$')
+#        plt.grid(True)
+#        plt.xlim(0.00285,0.00295)
+#        for i in range(len(models)):
+#            da_distrib = da_list[i]
+#            z_array = np.ones(len(da_distrib))*1089
+#            plt.scatter(da_distrib, z_array, s=msize[i], facecolors='none', edgecolors="C{}".format(i), label=models[i])
+#        plt.locator_params(axis='x', nbins=4)
+#        plt.yticks([])
+#        plt.legend()
+#        plt.show()
+#
+##        # Non-normalised histogram
+##        plt.figure()
+##        plt.title(f'$D_A$ at z = {zpicks[-1]},'
+##                +f'\n $\sigma$ on data = {noise}, {npoints} SN Ia used')
+##        plt.xlabel('$(H_0 /c) * D_A$')
+##        for i in range(len(models)):
+##            da_distrib = da_list[i]
+##            plt.hist(da_distrib, normed=False, histtype='step',
+##                     stacked=True, label=models[i])
+##        plt.locator_params(axis='x', nbins=5)
+##        plt.legend()
+##        plt.show()
+#
+#        cutoff = 0.1
+#        plt.figure()
+#        smallest_da = 1
+#        largest_da = 0
+#        plt.title(f'scatter of x[1:] $D_A$ histogram $y > {cutoff}$'
+#                  +'\n from all guessed parameter sets')
+#        for i in range(len(models)):
+#            face_color = 'none', "C{}".format(i)
+#            da_distrib = da_list[i]
+#            y, x = np.histogram(da_distrib, bins=n_bin)
+##            print('x = ',x)
+#            y_norm = y/max(y)
+#            x = x[1:]
+##            print('scatter x[1:] = ',x)
+##            print('scatter y = ',y)
+##            print('scatter y_norm = ',y_norm)
+#            indices = np.where(y_norm > cutoff)
+#            y_norm = y_norm[indices]
+#            x = x[indices]
+#            if min(x) < smallest_da:
+#                smallest_da = min(x)
+#            if max(x) > largest_da:
+#                largest_da = max(x)
+#            plt.scatter(x, y_norm, s=msize[i], facecolors=face_color[i], edgecolors="C{}".format(i), label=f'{models[i]}')
+#        plt.xlim((smallest_da-0.000001),(largest_da+0.000001))
+#        plt.locator_params(axis='x', nbins=5)
+#        plt.legend()
+#        plt.show()
+#
+#
+#        plt.figure()
+#        smallest_da = 1
+#        largest_da = 0
+#        plt.title(f'scatter of x[:-1] $D_A$ histogram $y > {cutoff}$'
+#                  +'\n from all guessed parameter sets')
+#        for i in range(len(models)):
+#            face_color = 'none', "C{}".format(i)
+#            da_distrib = da_list[i]
+#            y, x = np.histogram(da_distrib, bins=n_bin)
+##            print('x = ',x)
+#            y_norm = y/max(y)
+#            x = x[:-1]
+##            print('scatter x[:-1] = ',x)
+##            print('scatter y = ',y)
+##            print('scatter y_norm = ',y_norm)
+#            indices = np.where(y_norm > cutoff)
+#            y_norm = y_norm[indices]
+#            x = x[indices]
+#            if min(x) < smallest_da:
+#                smallest_da = min(x)
+#            if max(x) > largest_da:
+#                largest_da = max(x)
+#            plt.scatter(x, y_norm, s=msize[i], facecolors=face_color[i], edgecolors="C{}".format(i), label=f'{models[i]}')
+#        plt.xlim((smallest_da-0.000001),(largest_da+0.000001))
+#        plt.locator_params(axis='x', nbins=5)
+#        plt.legend()
+#        plt.show()
+#
+#        plt.figure()
+#        smallest_da = 1
+#        largest_da = 0
+#        plt.title('scatter of complete $D_A$ histogram'
+#                  +'\n from all guessed parameter sets')
+#        for i in range(len(models)):
+#            face_color = 'none', "C{}".format(i)
+#            da_distrib = da_list[i]
+#            y, x = np.histogram(da_distrib, bins=n_bin)
+##            print('scatter x = ',x)
+#            y_norm = y/max(y)
+#            x = x[:-1]
+##            print('scatter x[:-1] = ',x)
+##            print('scatter y = ',y)
+##            print('scatter y_norm = ',y_norm)
+#            if min(x) < smallest_da:
+#                smallest_da = min(x)
+#            if max(x) > largest_da:
+#                largest_da = max(x)
+#            plt.scatter(x, y_norm, s=msize[i], facecolors=face_color[i], edgecolors="C{}".format(i), label=f'{models[i]}')
+#        plt.xlim((smallest_da-0.000001),(largest_da+0.000001))
+#        plt.locator_params(axis='x', nbins=5)
+#        plt.legend()
+#        plt.show()
+#
+#
+#
+#
+#
+##        for i in range(len(models)):
+##            plt.figure()
+##            da_distrib = da_list[i]
+##            y, x = np.histogram(da_distrib)
+##            y_norm = y/max(y)
+##            x = x[1:]
+##            plt.title("$D_A$'s using all guessed parameters")
+##            plt.plot(x, y_norm, label=f'{models[i]}')
+##            plt.xlim(0.00285,0.003)
+##            plt.locator_params(axis='x', nbins=5)
+##            plt.legend()
+##        plt.show()
+#
+##        plt.figure()
+##        plt.title(f'$\mu$ and $\sigma$ of the $D_A$ distribution'
+##                  +f'\n $\sigma$ on data = {noise}, {npoints} SN Ia used')
+##        plt.xlabel('$(H_0 /c) * D_A$')
+##        plt.ylabel(r'$z = 1089$')
+##        for i in range(len(models)):
+##            da_distrib = np.asarray(da_list[i])
+##            da_mean = np.mean(da_distrib)
+##            da_sd = np.std(da_distrib)
+##            if da_sd < da_mean/100:
+##                print(f'{test_key} da_sd (={da_sd}) < mean/100 (={da_mean/100})')
+###            plt.errorbar(da_mean, yaxis_tick[i], xerr=da_sd, fmt='-o',
+###        color=c[i], ecolor=ec[i], elinewidth=3, capsize=0, label=models[i])
+##            plt.errorbar(da_mean, yaxis_tick[i], xerr=da_sd, fmt='o', label=models[i])
+##        plt.locator_params(axis='x', nbins=5)
+##        plt.ylim(-4,8)
+##        plt.yticks([])
+##        plt.legend()
+##        plt.show()
+
+
 datasim.py
 
 #def magn(params, data, firstderivs_key, plot_key=False):
 #    """
 #    Finding matter density m, interaction gamma.
-#    
+#
 #    Takes in:
 #            params = dictionary with true parameters;
 #            zpicks = list of redshifts to integrate over, in accending order;
@@ -33,14 +188,14 @@ datasim.py
 #    if firstderivs_key == 'LCDM':
 #        params['gamma'] = 0
 #        del params['gamma']
-#    
+#
 #    zpicks = data['zpicks']
-#    
+#
 #    # Absolute brightness of supernovae.
 #    M = -19
-#    
+#
 #    dlpc, plot_var = zodesolve.zodesolve(params, zpicks, firstderivs_key)
-#    
+#
 #    # Calculating apparent magnitudes of supernovae at the simulated
 #    # luminosity distances using the distance modulus formula.
 #    mag = 5 * np.log10(dlpc/10) + M
@@ -49,7 +204,7 @@ datasim.py
 #        # Checking evolution of the model.
 #        import plots
 #        plots.modelcheck(mag, zpicks, plot_var, firstderivs_key)
-#        
+#
 #    return mag
 
 #def magn(params, data, firstderivs_key, plot_key=False):
@@ -67,18 +222,18 @@ datasim.py
 #    if firstderivs_key == 'LCDM':
 #        params['gamma'] = 0
 #        del params['gamma']
-#    
+#
 #    zpicks = data['zpicks']
 #    x1 = data['x1']
 #    colour = data['colour']
-#    
+#
 #    # Absolute brightness of supernovae.
 #    M = params['M']
 #    alpha = params['alpha']
 #    beta = params['beta']
-#    
+#
 #    dlpc, plot_var = zodesolve.zodesolve(params, zpicks, firstderivs_key)
-#    
+#
 #    # Calculating apparent magnitudes of supernovae at the simulated
 #    # luminosity distances using the distance modulus formula.
 #    mag = 5 * np.log10(dlpc/10) + M - alpha*x1 +beta*colour
@@ -87,13 +242,13 @@ datasim.py
 #        # Checking evolution of the model.
 #        import plots
 #        plots.modelcheck(mag, zpicks, plot_var, firstderivs_key)
-#        
+#
 #    return mag
-    
+
 # Slow mag calculation
 #    # Calculating apparent magnitudes of supernovae at the simulated
 #    # luminosity distances using the distance modulus formula.
-#    mag = []   
+#    mag = []
 #    for i in range(len(dlpc)):
 #        if dlpc[i] == 0:
 #            magnitude = M
@@ -101,9 +256,9 @@ datasim.py
 #            # magnitude from the distance modulus formula
 #            magnitude = 5 * math.log10(dlpc[i]/10) + M
 #        mag.append(magnitude)
-    
+
 evaluator.py
-    
+
 #dataname = 'mag_z_LCDM_1000_sigma_'+str(sigma)
 
 # Number of datapoints to be simulated
@@ -116,22 +271,22 @@ evaluator.py
 
 #    Making redshifts to use in this script.
 #zpicks = datasim.redshift_picks(0.005, zmax, npoints)
-    
+
 
 ln.py
-    
+
 #def lnlike(theta, data, sigma, firstderivs_key, ndim):
 #    '''
 #    Finding matter density m, interaction gamma.
 #    '''
 #    mag = data['mag']
-#    
+#
 #    params = {}
 #    if ndim == 1:
 #        params = {'m':theta}
 #    elif ndim == 2:
 #        params = {'m':theta[0],'gamma':theta[1]}
-#    
+#
 #    model = magn(params, data, firstderivs_key)
 #    var = sigma**2
 #    return -0.5*np.sum((mag-model)**2 /var +0.5*np.log(2*np.pi*var))
@@ -140,24 +295,24 @@ ln.py
 #def lnlike(theta, data, sigma, firstderivs_key, ndim):
 #    '''
 #    Finding matter density m, corrected absolute mag M, interaction gamma.
-#    '''    
+#    '''
 #    mag = data['mag']
-#    
+#
 #    params = {}
 #    if ndim == 2:
 #        params = {'m':theta[0], 'M':theta[1]}
 #    elif ndim == 3:
 #        params = {'m':theta[0],'M':theta[1], 'gamma':theta[2]}
-#    
+#
 #    model = magn(params, data, firstderivs_key)
 #    var = sigma**2
 #    return -0.5*np.sum((mag-model)**2 /var +0.5*np.log(2*np.pi*var))
-    
+
 #def lnprior(theta, key):
 #    '''
 #    Finding matter density m, interaction gamma.
 #    '''
-#    
+#
 #    if key == 'LCDM':
 #        m = theta
 #        if 0 < m < 1 or m == 1:
@@ -165,7 +320,7 @@ ln.py
 #    elif key == 'late_int' or 'heaviside_late_int' or 'late_intxde':
 #        m, gamma = theta
 #        if (0 < m < 1 or m == 1) and -1.45 < gamma < 0.2:
-#            return 0.0       
+#            return 0.0
 #    elif key == 'rdecay':
 #        m, gamma = theta
 #        if (0 < m < 1 or m == 1) and -10 < gamma < 0:
@@ -181,24 +336,24 @@ ln.py
 #    elif key == 'zxxgamma' or 'gammaxxz':
 #        m, gamma = theta
 #        if (0 < m < 1 or m == 1) and 0 < gamma < 10:
-#            return 0.0        
+#            return 0.0
 #    else:
 #        m, gamma = theta
 #        if (0 < m < 1 or m == 1) and abs(gamma) < 10:
 #            return 0.0
-#        
+#
 #    return -np.inf
-#    
+#
 #
 #def lnprior(theta, key):
 #    '''
 #    Finding matter density m, corrected absolute mag M, interaction gamma.
-#    '''  
-#    
+#    '''
+#
 #    Mmin = -20
-#    
+#
 #    Mmax = -18
-#    
+#
 #    if key == 'LCDM':
 #        m, M = theta
 #        if (0 < m < 1 or m == 1) and Mmin < M < Mmax:
@@ -206,7 +361,7 @@ ln.py
 #    elif key == 'late_int' or 'heaviside_late_int' or 'late_intxde':
 #        m, M, gamma = theta
 #        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and -1.45 < gamma < 0.2:
-#            return 0.0       
+#            return 0.0
 #    elif key == 'rdecay':
 #        m, M, gamma = theta
 #        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and -10 < gamma < 0 :
@@ -222,26 +377,26 @@ ln.py
 #    elif key == 'zxxgamma' or 'gammaxxz':
 #        m, M, gamma = theta
 #        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and 0 < gamma < 10:
-#            return 0.0        
+#            return 0.0
 #    else:
 #        m, M, gamma = theta
 #        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and abs(gamma) < 10:
 #            return 0.0
-#        
+#
 #    return -np.inf
-#    
+#
 #
 #def lnprior(theta, key):
 #    '''
 #    Finding matter density m, absolute M, alpha, beta, interaction gamma.
-#    '''  
-#    
+#    '''
+#
 #    Mmin, Mmax = -20, -18
 #    amax = 5
 #    bmax = 5
-#    
+#
 #    print('key ln prior gets is = ',key)
-#    
+#
 #    if key == 'LCDM':
 #        m, M, alpha, beta = theta
 #        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and abs(alpha) < amax and abs(beta) < bmax:
@@ -249,7 +404,7 @@ ln.py
 #    elif key == 'late_int' or key == 'heaviside_late_int' or key == 'late_intxde':
 #        m, M, alpha, beta, gamma = theta
 #        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and abs(alpha) < amax and abs(beta) < bmax and -1.45 < gamma < 0.2:
-#            return 0.0       
+#            return 0.0
 #    elif key == 'rdecay':
 #        m, M, alpha, beta, gamma = theta
 #        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and abs(alpha) < amax and abs(beta) < bmax and -10 < gamma < 0 :
@@ -274,9 +429,9 @@ ln.py
 #        m, M, alpha, beta, gamma = theta
 #        if (0 < m < 1 or m == 1) and Mmin < M < Mmax and abs(alpha) < amax and abs(beta) < bmax and abs(gamma) < 10:
 #            return 0.0
-#        
+#
 #    return -np.inf
-    
+
 zodesolve.py
 
 #def odesolve(params, zpicks, firstderivs_key):
@@ -285,43 +440,43 @@ zodesolve.py
 #        gamma = interaction constant;
 #        m = e_m(t)/ec(t0) at t=t0;
 ##        de = e_de(t)/ec(t0) at t=t0.
-#    Returns: 
+#    Returns:
 #        z = numpoints number of redshifts zmin<z<zmax;
 #        dlpc = luminosity distance in pc.
-#    
+#
 #    """
 ##    print('@@ zodesolve has been called')
 #
 #    # Inserting 0 at the front of redshifts to allow initial conditions.
 #    zpicks = [0.0] + zpicks
-#    
+#
 #    # Standard cosmological parameters.
 #    H0 = 1
 #    c_over_H0 = 4167 * 10**6    # c/H0 in parsecs
-#    
+#
 #    # Initial conditions at z = 0 (now).
 #    dl0 = 0             # luminosity distance
 #    rho_c0 = H0**2      # critical density
 #    ombar_m0 = params.get('m', 0)                        # e_m(z)/ec(z=0)
 #    gamma = params.get('gamma',0)
 #    ombar_de0 = params.get('de', rho_c0/rho_c0 -ombar_m0)# e_de(z)/ec(z=0)
-#    
+#
 #    # ODE solver parameters:
 #    abserr = 1.0e-8
 #    relerr = 1.0e-6
-#    
+#
 #    # Pack up the initial conditions and eq of state parameters.
 #    v0 = [ombar_m0, ombar_de0, dl0]
-#    
+#
 #    # Extracting the parsed mode of interaction.
 #    firstderivs_function = firstderivs_functions.get(firstderivs_key,0)
 #    if firstderivs_function == 0:
 #        print("firstderivs_functions dict didn't have the key zodeosolve asked for")
-#    
+#
 #    # Call the ODE solver.
-#    vsol = odeint(firstderivs_function, v0, zpicks, args=(gamma,H0), 
+#    vsol = odeint(firstderivs_function, v0, zpicks, args=(gamma,H0),
 #                  atol=abserr, rtol=relerr)
-#            
+#
 #    # Separate results into their own arrays:
 #    z = np.asarray(zpicks)
 #    z = z[1:]
@@ -329,9 +484,9 @@ zodesolve.py
 #    ombar_de = vsol[1:,1]
 #    dl = vsol[1:,2] * (1+z)  # in units of dl*(H0/c)
 #    dlpc = dl * c_over_H0    # dl in parsecs (= vsol[dl] * c/H0)
-#    
+#
 #    plot_var = dlpc, dl, ombar_m, gamma, ombar_de, ombar_m0, ombar_de0
-#    
+#
 #    return dlpc, plot_var
 
 Bfactor.py
@@ -352,7 +507,7 @@ Bfactor.py
 
 #import six
 #import sys
-## Run the postprocessing to get marginal likelihood and generate posterior 
+## Run the postprocessing to get marginal likelihood and generate posterior
 #samples logZdnest4, infogaindnest4, plot = dnest4.postprocess()
 #
 #postsamples = np.loadtxt('posterior_sample.txt')

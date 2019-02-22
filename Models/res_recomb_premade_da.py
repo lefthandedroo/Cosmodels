@@ -4,6 +4,10 @@
 Created on Wed Feb 13 11:45:04 2019
 
 @author: BallBlueMeercat
+
+This script runs through proposed models, noise on data and dataset size options
+to collect the distribution of angular diameter distance assosiated with each,
+then plots these distributions as scatter and as a normalised histogram.
 """
 
 import pickle
@@ -17,9 +21,6 @@ plt.rcParams['axes.facecolor'] = 'white'
 plt.rcParams['figure.facecolor'] = 'white'
 plt.rcParams['grid.color'] = 'white'
 
-zpicks = np.array([1089])
-data_dic = {'zpicks':zpicks}
-
 timed = False
 
 if timed:
@@ -30,7 +31,8 @@ if timed:
 models = 'LCDM', 'exotic'
 noise_options = 0.01, None      #0.001, 0.01, 0.07, 0.14, 0.2
 npoints_options = None, 1048000  #1048, 10480, 104800, 1048000
-yaxis_tick = 1, 2, 3 #fake y values for visual separation of da's. da's plotted are all at z=1089.
+#yaxis_tick = fake y values for visual separation of da's (which are all at z=1089)
+yaxis_tick = 1, 2, 3
 msize = 70, 20  # marker sizes to differentiate between scatter plots
 n_bin = 4000 # histogram bin number
 y_ind = {}  # all non-normalised y values (frequency of D_A values), as well as those corresponding to normalised y > 0.1
@@ -46,11 +48,13 @@ for npoints in npoints_options:
             if test_key:
                 filename = f'da_distrib_folder/da_distrib_{test_key}_{noise}_{npoints}'
                 try:
-                    with open(filename,'rb') as rfp:
-                        da_distrib = pickle.load(rfp)
+                    with open(filename,'rb') as rfp: da_distrib = pickle.load(rfp)
+                    file_open_indicator = 1
                 except:
                     print("didnt't open",filename)
-
+                    file_open_indicator = 0
+                # assert ensures only da_distrib from intended file_path is used
+                assert file_open_indicator > 0, f"{filename} didn't have a da_distrib"
                 da_list.append(da_distrib)
                 pickle.dump(da_distrib, open(filename, 'wb'))
         # Scatter plot of all D_A
