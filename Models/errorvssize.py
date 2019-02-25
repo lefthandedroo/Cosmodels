@@ -26,10 +26,10 @@ mu = 0.0        # Mean of noise added to LCDM to simulate data.
 #Model, errors on data and dataset sizes to iterate through:
 test_keys = [None
 #            ,'rainbow'
-            ,'kanangra'
+#            ,'kanangra'
 #            ,'waterfall'
 #            ,'stepfall'
-            ,'exotic'
+#            ,'exotic'
 #            ,'late_intxde'
 #            ,'heaviside_late_int'
 #            ,'heaviside_sudden'
@@ -45,11 +45,11 @@ test_keys = [None
 #            ,'rdecay_mxde'
 #            ,'rdecay'
 #            ,'interacting'
-            ,'LCDM'
+#            ,'LCDM'
 #            ,'rLCDM'
             ]
 
-max_z = 3 # highest expected redshift for a type Ia supernova
+max_z = 3.0 # highest expected redshift for a type Ia supernova
 
 #sd_list = []
 #mean_list = []
@@ -59,11 +59,12 @@ max_z = 3 # highest expected redshift for a type Ia supernova
 #npoints_list = []
 #sampler_list = []
 
+sigma_options = None, 0.001 #0.14, 0.2 #0.0001, 0.005, 0.007
+npoints_options = None, 104800 #1048, 10480, 104800 #1048000, 10480000
+run = 0
+
 for key in test_keys:
-    sigma_options = None, 0.001 #0.14, 0.2 #0.0001, 0.005, 0.007
-    npoints_options = None, 104800 #1048, 10480, 104800 #1048000, 10480000
     if key:
-        run = 0
         names, values = tools.names_values(key)
         # Folder for saving output.
         directory = f'{int(time.time())}_{key}'
@@ -71,7 +72,6 @@ for key in test_keys:
         save_path = os.path.join('results_error_vs_data',directory)
         if not os.path.exists(save_path):
             os.makedirs(save_path)
-
         for sigma in sigma_options:
             if sigma:
                 pass
@@ -90,13 +90,13 @@ for key in test_keys:
                 else:
                     print(f'failed to get zpicks, nmag from {data_path}')
                     # Generating redshifts.
-                    zpicks = np.random.uniform(low=0.0001, high=3, size=(npoints,))
+                    zpicks = np.random.uniform(low=0.0001, high=max_z, size=(npoints,))
                     zpicks = np.sort(zpicks, axis=None)
-                    if zpicks[-1] != 3:
-                        zpicks[-1] = 3
+                    if zpicks[-1] != max_z:
+                        zpicks[-1] = max_z
                     data_dic = {'zpicks':zpicks}
                     # Generating LCDM mag and da.
-                    mag, da = datasim.magn(['Mcorr', 'matter'], np.array([-19.3, 0.3]), data_dic, 'LCDM', plot_key=False)
+                    mag, da = datasim.magn(['Mcorr', 'matter'], np.array([-19.3, 0.3]), data_dic, 'LCDM')
                     # Adding noise to LCDM mag.
                     nmag = datasim.gnoise(mag, mu, sigma)
 

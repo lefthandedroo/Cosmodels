@@ -97,7 +97,7 @@ def rainbow(double[:] v, redshifts, in_terms, double H0):
     if math.isnan(Hz):
             print('rainbow')
             print('z = %s, Hz = %s, in_terms = %s'% (z, Hz, in_terms))
-            print(f'omegas = {v[2:14]}')
+            print(f'ombar_m = {ombar_m}, ombar_r = {ombar_r}, ombar_a = {ombar_a}, ombar_b = {ombar_b}, ombar_c = {ombar_c}, ombar_d = {ombar_d}, ombar_e = {ombar_e}, ombar_f = {ombar_f}, ombar_g = {ombar_g}, ombar_h = {ombar_h}, ombar_i = {ombar_i}, ombar_de = {ombar_de}')
 
     cdef double dtdz = -1.0/((1.0+z) * Hz)
     cdef double dadz = -(1.0+z)**(-2.0)
@@ -188,7 +188,7 @@ def niagara(double[:] v, redshifts, in_terms, double H0):
     if math.isnan(Hz):
             print('niagara')
             print('z = %s, Hz = %s, in_terms = %s'% (z, Hz, in_terms))
-            print(f'omegas = {v[2:12]}')
+            print(f'ombar_m = {ombar_m}, ombar_r = {ombar_r}, ombar_a = {ombar_a}, ombar_b = {ombar_b}, ombar_c = {ombar_c}, ombar_d = {ombar_d}, ombar_e = {ombar_e}, ombar_f = {ombar_f}, ombar_g = {ombar_g}, ombar_de = {ombar_de}')
 
     cdef double dtdz = -1.0/((1.0+z) * Hz)
     cdef double dadz = -(1.0+z)**(-2.0)
@@ -268,7 +268,7 @@ def kanangra(double[:] v, redshifts, in_terms, double H0):
     if math.isnan(Hz):
             print('kanangra')
             print('z = %s, Hz = %s, in_terms = %s'% (z, Hz, in_terms))
-            print(f'omegas = {v[2:10]}')
+            print(f'ombar_m = {ombar_m}, ombar_r = {ombar_r}, ombar_a = {ombar_a}, ombar_b = {ombar_b}, ombar_c = {ombar_c}, ombar_d = {ombar_d}, ombar_e = {ombar_e}, ombar_de = {ombar_de}')
 
     cdef double dtdz = -1.0/((1.0+z) * Hz)
     cdef double dadz = -(1.0+z)**(-2.0)
