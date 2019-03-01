@@ -148,7 +148,7 @@ def precise_runs(firstderivs_key, names, values, p, x):
     '''
 
     # Results folder to search through.
-    directory = os.path.join('./results_error_vs_data/'+firstderivs_key)
+    directory = os.path.join('./results_error_vs_data_plots/'+firstderivs_key)
 
     # Lists to be populated with contents of results folders.
     sd_list = []

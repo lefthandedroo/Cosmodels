@@ -28,7 +28,7 @@ test_keys = [None
 #            ,'rainbow'
 #            ,'kanangra'
 #            ,'waterfall'
-#            ,'stepfall'
+            ,'stepfall'
 #            ,'exotic'
 #            ,'late_intxde'
 #            ,'heaviside_late_int'
@@ -50,14 +50,6 @@ test_keys = [None
             ]
 
 max_z = 3.0 # highest expected redshift for a type Ia supernova
-
-#sd_list = []
-#mean_list = []
-#vc_list = []
-#
-#sigma_list = []
-#npoints_list = []
-#sampler_list = []
 
 sigma_options = None, 0.001 #0.14, 0.2 #0.0001, 0.005, 0.007
 npoints_options = None, 104800 #1048, 10480, 104800 #1048000, 10480000
@@ -117,107 +109,6 @@ for key in test_keys:
                 output = propert, sampler
                 output_path = os.path.join(save_path, f'{key}_sigma{sigma}_npoints{npoints}.p')
                 pickle.dump(output, open(output_path, 'wb'))
-
-#                import results
-#                import plots
-#                for key in propert:
-#                    if 'sd' in key:
-#                        sd = propert.get(key,0)
-#                        sd_list.append([key, sd])
-#                    elif 'mean' in key:
-#                        mean = propert.get(key,0)
-#                        mean_list.append([key, mean])
-#                        if mean != 0:
-#                            vc = sd/mean * 100
-#                            vc_list.append([key[0]+'_vc', vc])
-#
-#                sigma_list.append(sigma)
-#                npoints_list.append(npoints)
-#                sampler_list.append(sampler)
-#
-#        for j in range(len(values)):
-#            sd = []
-#            mean = []
-#            vc = []
-#            for i in range(N):
-#                index = i*len(values)+j
-#
-#                sd_name = sd_list[index][0]
-#                sd_initial = sd_name[0]
-#                sd.append(sd_list[index][1])
-#
-#                mean_name = mean_list[index][0]
-#                mean_initial = mean_name[0]
-#                mean.append(mean_list[index][1])
-#
-#                vc_name = vc_list[index][0]
-#                vc_initial = vc_name[0]
-#                vc.append(vc_list[index][1])
-#
-#                i+=1
-#
-#            fig, ax = plt.subplots()
-#            ax.scatter(npoints_list, sd, c='r')
-#
-#            # Plotting SD vs dataset size.
-#            for i, txt in enumerate(sigma_list):
-#                txt = 'sd = '+ str(txt)
-#                ax.annotate(txt, (npoints_list[i], sd[i]))
-#
-#            plt.xlabel('Dataset size')
-#            plt.ylabel('s.d. of a marginalised distribution')
-#            plt.title(sd_name+' vs dataset size'+
-#                      '\n s.d. of noise labeled, model '+key)
-#            stamp = str(int(time.time()))
-#            filename = str(stamp)+'_sd_of_'+sd_initial+'_.png'
-#            filename = os.path.join(save_path, filename)
-#            plt.savefig(filename)
-#
-#            # Plotting mean vs dataset size.
-#            fig, ax = plt.subplots()
-#            ax.scatter(npoints_list, mean, c='c')
-#            for i, txt in enumerate(sigma_list):
-#                txt = 'sd = '+ str(txt)
-#                ax.annotate(txt, (npoints_list[i], mean[i]))
-#
-#            plt.xlabel('Dataset size')
-#            plt.ylabel('Mean of a marginalised distribution')
-#            plt.title(mean_name+' vs dataset size'+
-#                      '\n s.d. of noise labeled, model '+key)
-#            stamp = str(int(time.time()))
-#            filename = str(stamp)+'_mean_of_'+mean_initial+'_.png'
-#            filename = os.path.join(save_path, filename)
-#            plt.savefig(filename)
-#
-#            # Plotting variance coefficient vs dataset size.
-#            if len(vc) == N:
-#                fig, ax = plt.subplots()
-#                ax.scatter(npoints_list, vc, c='g')
-#                for i, txt in enumerate(sigma_list):
-#                    txt = 'sd = '+ str(txt)
-#                    ax.annotate(txt, (npoints_list[i], vc[i]))
-#
-#                plt.xlabel('Dataset size')
-#                plt.ylabel('s.d. /mean x100 of a marginalised distribution')
-#                plt.title(vc_name+' vs dataset size'+
-#                          '\n s.d. of noise labeled, model '+key)
-#                stamp = str(int(time.time()))
-#                filename = str(stamp)+'_vc_of_'+vc_initial+'_.png'
-#                filename = os.path.join(save_path, filename)
-#                plt.savefig(filename)
-#
-#                j+=1
-#
-#        plt.show()
-#
-##     Saving results to directory.
-#results.save(save_path, 'vc_list', vc_list)
-#results.save(save_path, 'sd_list', sd_list)
-#results.save(save_path, 'mean_list', mean_list)
-#
-#results.save(save_path, 'sigma_list', sigma_list)
-#results.save(save_path, 'npoints_list', npoints_list)
-#results.save(save_path, 'sampler_list', sampler_list)
 
 print('directory:',directory)
 

@@ -30,12 +30,12 @@ if timed:
 
 models = 'LCDM', 'exotic', 'stepfall'
 noise_options = 0.001, None      #0.001, 0.01, 0.07, 0.14, 0.2
-npoints_options = None, 104800  #1048, 10480, 104800, 1048000
+npoints_options = None, 1048000  #1048, 10480, 104800, 1048000
 #yaxis_tick = fake y values for visual separation of da's (which are all at z=1089)
 yaxis_tick = 1, 2, 3
-msize = 70, 20, 10  # marker sizes to differentiate between scatter plots
+msize = 70, 20, 50  # marker sizes to differentiate between scatter plots
 n_bin = 30, 10000 # histogram bin number
-n_bin = 30, 10000, 10000
+n_bin = 30, 10000, 1000
 f_dic = {}  # all non-normalised frequencies of D_A, as well as non-normalised frequencies corresponding to indecies where normalised y > 0.1.
 
 for npoints in npoints_options:
@@ -90,7 +90,7 @@ for npoints in npoints_options:
         plt.xlabel('$D_A (H_0 /c)$')
         plt.ylabel('$f$')
         for i in range(len(models)):
-            face_color = 'none', "C{}".format(i), "C{}".format(i)
+            face_color = 'none', "C{}".format(i), 'none'
             da_distrib = da_list[i]
             y, x = np.histogram(da_distrib, bins=n_bin[i])
             y_norm = y/max(y)
@@ -145,7 +145,7 @@ for npoints in npoints_options:
         plt.xlabel('$D_A (H_0 /c)$')
         plt.ylabel('$f$')
         for i in range(len(models)):
-            face_color = 'none', "C{}".format(i), "C{}".format(i)
+            face_color = 'none', "C{}".format(i), 'none'
             da_distrib = da_list[i]
             y, x = np.histogram(da_distrib, bins=n_bin[i])
             y_norm = y/max(y)
