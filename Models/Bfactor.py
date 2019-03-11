@@ -22,17 +22,19 @@ plt.rcParams['axes.facecolor'] = 'white'
 plt.rcParams['figure.facecolor'] = 'white'
 plt.rcParams['grid.color'] = 'white'
 
-speed = 1       # From prior = 0, short = 1, medium = 2, long = 3.
-timed = False
+speed = 2       # From prior = 0, short = 1, medium = 2, long = 3.
+timed = True
 plot = True
-mu, sigma = 0.0, 0.07    # Mean and standard deviation of the noise on the data.
 
 print('Bfactor')
 
 # Loading pantheon SN Ia data:
 dataname = 'pantheon'
+#dataname = 'synth'
+
 if dataname == 'pantheon':
     import pandas as pd
+    sigma = 0.07
     print('-----Using pantheon')
     # Pantheon data:
     pantheon = pd.read_csv('./data/lcparam_full_long.txt', sep=" ")
@@ -41,20 +43,49 @@ if dataname == 'pantheon':
     mag = pantheon.mb.values
     zpicks = pantheon.zhel.values
     data_dic = {'mag':mag, 'zpicks':zpicks}
+    plt.figure()
+    plt.title('Pantheon')
+    plt.scatter(zpicks, mag)
+    plt.show()
 elif dataname == 'synth':
+    mu, sigma = 0.0, 0.07    # Mean and standard deviation of the noise on the data.
+    npoints = 1048000
+    min_z = 0.01012
+    max_z = 2.26
     # Loading artificial LCDM SN Ia data:
     from pathlib import Path
-    dataname = f'data/1048_3.0_sigma_0.07.p'
+    dataname = f'data/{npoints}_{max_z}_sigma_{sigma}.p'
     my_file = Path(dataname)
     if my_file.is_file():
         with open(dataname,'rb') as rfp: zpicks, mag = pickle.load(rfp)
-    data_dic = {'mag':mag, 'zpicks':zpicks}
-elif dataname == 'generated synth':
-    # Generating LCDM data.
-    names = ['Mcorr', 'matter']
-    values = np.array([-19.3, 0.3])
-    mag = datasim.noisy_mag(mu, sigma, names, values, data_dic, 'LCDM')
-    data_dic = {'mag':mag, 'zpicks':zpicks}
+        plt.figure()
+        plt.title(f'Artificial data being used N={len(zpicks)}, $\sigma$={sigma}')
+        plt.scatter(zpicks, mag)
+        plt.show()
+        data_dic = {'mag':mag, 'zpicks':zpicks}
+    else:
+        print(f'failed to get zpicks, mag from {dataname}')
+        print('generating zpicks and mag')
+        # Generating redshifts.
+        zpicks = np.random.uniform(low=min_z, high=max_z, size=(npoints,))
+        zpicks = np.sort(zpicks, axis=None)
+        if zpicks[-1] != max_z:
+            zpicks[-1] = max_z
+        data_dic = {'zpicks':zpicks}
+        # Generating LCDM mag and da.
+        mag, da = datasim.magn(['Mcorr', 'matter'], np.array([-19.3, 0.3]), data_dic, 'LCDM')
+        # Adding noise to LCDM mag.
+        mag = datasim.gnoise(mag, mu, sigma)
+
+        plt.figure()
+        plt.title(f'Artificial data N={len(zpicks)}, $\sigma$={sigma}')
+        plt.scatter(zpicks, mag)
+        plt.show()
+
+        data = zpicks, mag
+        pickle.dump(data, open(dataname, 'wb'))
+        data_dic = {'mag':mag, 'zpicks':zpicks}
+
 
 class Model(object):
     """
@@ -124,10 +155,10 @@ class Model(object):
 
 
 firstderivs_functions = [None
-#            ,'rainbow'
-#            ,'kanangra'
-#            ,'waterfall'
-#            ,'stepfall'
+            ,'rainbow'
+            ,'kanangra'
+            ,'waterfall'
+            ,'stepfall'
             ,'exotic'
 #            ,'late_intxde'
 #            ,'heaviside_late_int'
@@ -144,8 +175,8 @@ firstderivs_functions = [None
 #            ,'rdecay_mxde'
 #            ,'rdecay'
 #            ,'interacting'
-            ,'LCDM'
-            ,'rLCDM'
+#            ,'LCDM'
+#            ,'rLCDM'
             ]
 
 for key in firstderivs_functions:
@@ -258,7 +289,7 @@ for key in firstderivs_functions:
         if timed:
             pr.disable()
             s = io.StringIO()
-            sortby = 'cumulative'
+            sortby = 'tottime'
             ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
             ps.print_stats()
             print (s.getvalue())
@@ -275,8 +306,7 @@ for key in firstderivs_functions:
         DNest_distr = {}
 
         if plot: # ['light red', 'berry', 'purple', 'black']
-            hue = [
-                'light red', 'coral', 'amber', 'apple', 'aquamarine',
+            hue = ['coral', 'amber', 'apple', 'aquamarine',
                 'raspberry', 'green blue', 'deep blue', 'emerald',
                 'blue violet', 'dark violet', 'yellow orange',
                 'light red', 'berry', 'coral', 'amber', 'apple',
@@ -325,3 +355,7 @@ for key in firstderivs_functions:
             results.relocate('plot_1.pdf', speed, key)
             results.relocate('plot_2.pdf', speed, key)
             results.relocate('plot_3.pdf', speed, key)
+
+if speed > 1:
+    import os
+    os.system("say 'the Befactor script has finished my love' &")

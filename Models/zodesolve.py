@@ -6,9 +6,9 @@ Created on Thu Feb 15 13:38:48 2018
 @author: BallBlueMeercat
 """
 from scipy.integrate import odeint
+from scipy.interpolate import interp1d
 import firstderivs_cython as f
 import numpy as np
-import matplotlib.pyplot as plt
 
 firstderivs_functions = {
         'rainbow':f.rainbow,
@@ -35,7 +35,7 @@ firstderivs_functions = {
         'rLCDM':f.rLCDM
         }
 
-def zodesolve(names, values, zpicks, model, plot_key):
+def zodesolve(names, values, zpicks, model, plot_key, interpolate=False):
     """
     Takes in:
         names = list of strings, names of parameters to be fitted;
@@ -44,6 +44,11 @@ def zodesolve(names, values, zpicks, model, plot_key):
         model = string, name of model being tested.
 
     """
+    all_zpicks = zpicks
+
+    if len(zpicks) > 1048: # larger than pantheon sample
+        interpolate = True
+        zpicks = np.linspace(zpicks[0], zpicks[-1], num=100, endpoint=True)
 
     # Inserting 0 at the front of redshifts to use initial conditions.
     zpicks = np.insert(zpicks, 0, 0.0)
@@ -92,31 +97,18 @@ def zodesolve(names, values, zpicks, model, plot_key):
     firstderivs_function = firstderivs_functions.get(model,0)
     assert firstderivs_function != 0, "zodesolve doesn't have this firstderivs_key at the top"
 
-    # Call the ODE solver.
+    # Call the ODE solver with all zpicks or cut_zpicks if len(zpicks) > 2000.
     vsol = odeint(firstderivs_function, v0, zpicks, args=(int_terms,H0), mxstep=5000000, atol=1.0e-8, rtol=1.0e-6)
+
+
     z = vsol[1:,-2]
     dl = vsol[1:,-1] * (1+z)        # in units of dl*(H0/c)
     da = dl * (1.0+z)**(-2.0)       # in units of dl*(H0/c)
     dlpc = dl * c_over_H0           # dl in parsecs (= vsol[dl] * c/H0)
     dapc = dlpc * (1.0+z)**(-2.0)   # in units of pc
     dapc = dapc / 10**3             # in units of kpc
-#    theta = dl/da
-#    print('theta',theta[-1])
-#    print(model,'redshift = ',z[-1],'da =',da[-1])
-#    plt.figure()
-#    plt.title('Angular diameter distance vs redshift')
-#    plt.xlabel('z')
-#    plt.ylabel('D_A')
-#    plt.plot(z, da, label='da')
-#    plt.legend()
-#
-#    plt.figure()
-#    plt.title('Angular diameter vs redshift')
-#    plt.xlabel('z')
-#    plt.ylabel(r'$\theta$')
-#    plt.plot(z, theta, label='theta')
-#    plt.legend()
-#    plt.show()
+
+#    integrated_dlpc = dlpc
 
     plot_var = {}
     if plot_key:
@@ -141,11 +133,6 @@ def zodesolve(names, values, zpicks, model, plot_key):
 
         plot_var['da'] = da
 
-#        plt.figure()
-#        plt.title('Angular diameter distance evolution')
-#        plt.xlabel('z')
-#        plt.ylabel(r'$ \left( \frac{H_0}{c} \right) d_A $', fontsize=15, labelpad=10)
-#        plt.plot(z, da)
 
         Hz = H0 * (np.sum(fluid_arr, axis=0))**(0.5)
         plot_var['Hz'] = Hz
@@ -153,34 +140,13 @@ def zodesolve(names, values, zpicks, model, plot_key):
         daMpc = dlpc/10**6 * (1.0+z)**(-2.0) # in units of dl in Mpc*(H0/c)
         dV = (daMpc**2 * c*z/Hz)**(1/3) # combines radial and transverse dilation
         plot_var['dV'] = dV
-#        plt.figure()
-#        plt.title(r'$d_V$ evolution')
-#        plt.xlabel('z')
-#        plt.ylabel(r'$ d_V (z)$ [Mpc]')
-#        plt.grid(True)
-#        plt.plot(z, dV)
 
+    if interpolate:
+        # Interpolating results to give output for all zpicks:
+        interp_dlpc = interp1d(zpicks[1:], dlpc)
+        interp_da = interp1d(zpicks[1:], da)
+        dlpc = interp_dlpc(all_zpicks)
+        da = interp_da(all_zpicks)
 
-#        Dv = ((1+z)**2 * daMpc**2 * c*z/Hz)**(1/3)
-#        plt.figure()
-#        plt.title(r'$D_v$ evolution')
-#        plt.xlabel('z')
-#        plt.ylabel(r'$ D_v (z)$ [Mpc]')
-#        plt.grid(True)
-#        plt.plot(z, Dv)
-
-#        # Calculating the sound horizon
-#        ombar_m = vsol[1:,2]
-#        ombar_baryon =  ombar_m*0.04 #0.0125
-##        ombar_baryon = values[(fluid_in-1)]
-#        s = 44.5 * np.log(9.83 / ombar_m) / (1 +10 * ombar_baryon**(3/4))**(1/2)
-#        plt.figure()
-#        plt.title('Sound horizon')
-#        plt.xlabel(r'$z$')
-#        plt.ylabel('Physical length in Mpc')
-#        plt.grid(True)
-#        plt.plot(z, s, label=r'$s_H$')
-#        plt.legend()
-
-        plt.show()
+#    return dlpc, da, z, integrated_dlpc, plot_var
     return dlpc, da, plot_var

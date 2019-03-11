@@ -74,14 +74,32 @@ def magn(names, values, data, model_key, plot_key=False):
     # Corrected absolute magnitude M of SN.
     M = values[0]
 
+#    dlpc, da, integrated_zpicks, integrated_dlpc, plot_var = zodesolve.zodesolve(names, values, zpicks, model_key, plot_key)
+
     dlpc, da, plot_var = zodesolve.zodesolve(names, values, zpicks, model_key, plot_key)
 
     # Calculating apparent magnitudes of supernovae at the simulated
     # luminosity distances using the distance modulus formula.
     mag = 5 * np.log10(dlpc/10) + M
-
+#    integrated_mag = 5 * np.log10(integrated_dlpc/10) + M
 #    print('redshift =',zpicks[-1],'da =', da[-1])
 
+#    # plotting interpoated data vs input and full
+#    import matplotlib.pyplot as plt
+#    import matplotlib as mpl
+#    #mpl.style.use('default') # has to be switched on to set figure size
+#    mpl.style.use('fivethirtyeight')
+#    plt.rcParams['axes.facecolor'] = 'white'
+#    plt.rcParams['figure.facecolor'] = 'white'
+#    plt.rcParams['grid.color'] = 'white'
+#
+#    print('integrated_zpicks',integrated_zpicks[0])
+#    print('zpicks', zpicks[0])
+#
+#    plt.figure()
+#    plt.scatter(integrated_zpicks, integrated_mag, s=70, label='integrated', c="C{}".format(0))
+#    plt.plot(zpicks, mag, label='interpolated',  linestyle='-', c="C{}".format(1))
+#    plt.legend()
 
     if plot_key:
         # Plotting evolution of parameters in the model.

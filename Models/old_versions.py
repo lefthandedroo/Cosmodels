@@ -434,6 +434,62 @@ ln.py
 
 zodesolve.py
 
+#    theta = dl/da
+#    print('theta',theta[-1])
+#    print(model,'redshift = ',z[-1],'da =',da[-1])
+#    plt.figure()
+#    plt.title('Angular diameter distance vs redshift')
+#    plt.xlabel('z')
+#    plt.ylabel('D_A')
+#    plt.plot(z, da, label='da')
+#    plt.legend()
+#
+#    plt.figure()
+#    plt.title('Angular diameter vs redshift')
+#    plt.xlabel('z')
+#    plt.ylabel(r'$\theta$')
+#    plt.plot(z, theta, label='theta')
+#    plt.legend()
+#    plt.show()
+
+#        plt.figure()
+#        plt.title('Angular diameter distance evolution')
+#        plt.xlabel('z')
+#        plt.ylabel(r'$ \left( \frac{H_0}{c} \right) d_A $', fontsize=15, labelpad=10)
+#        plt.plot(z, da)
+
+#        plt.figure()
+#        plt.title(r'$d_V$ evolution')
+#        plt.xlabel('z')
+#        plt.ylabel(r'$ d_V (z)$ [Mpc]')
+#        plt.grid(True)
+#        plt.plot(z, dV)
+
+
+#        Dv = ((1+z)**2 * daMpc**2 * c*z/Hz)**(1/3)
+#        plt.figure()
+#        plt.title(r'$D_v$ evolution')
+#        plt.xlabel('z')
+#        plt.ylabel(r'$ D_v (z)$ [Mpc]')
+#        plt.grid(True)
+#        plt.plot(z, Dv)
+
+#        # Calculating the sound horizon
+#        ombar_m = vsol[1:,2]
+#        ombar_baryon =  ombar_m*0.04 #0.0125
+##        ombar_baryon = values[(fluid_in-1)]
+#        s = 44.5 * np.log(9.83 / ombar_m) / (1 +10 * ombar_baryon**(3/4))**(1/2)
+#        plt.figure()
+#        plt.title('Sound horizon')
+#        plt.xlabel(r'$z$')
+#        plt.ylabel('Physical length in Mpc')
+#        plt.grid(True)
+#        plt.plot(z, s, label=r'$s_H$')
+#        plt.legend()
+
+#        plt.show()
+
+
 #def odesolve(params, zpicks, firstderivs_key):
 #    """
 #    Takes in:

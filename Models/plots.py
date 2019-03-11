@@ -300,7 +300,9 @@ def precise_runs(firstderivs_key, names, values, p, x):
     return
 
 
-def modelcheck(mag, zpicks, plot_var, firstderivs_key):
+def modelcheck(mag, input_zpicks, plot_var, firstderivs_key):
+    print(f'len of input zpicks = {len(input_zpicks)}')
+    zpicks = plot_var.get('z')
     t = plot_var.get('t')
     dl = plot_var.get('dl')
     a = plot_var.get('a')
@@ -402,7 +404,7 @@ def modelcheck(mag, zpicks, plot_var, firstderivs_key):
     plt.ylabel('Magnitude')
     plt.title('Magnitude evolution'+'\n Model: %s, int_terms = %s'
           %(firstderivs_key, int_terms))
-    plt.scatter(zpicks, mag, marker='.')
+    plt.scatter(input_zpicks, mag, marker='.')
 
     plt.show()
     return

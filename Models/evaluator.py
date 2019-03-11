@@ -14,17 +14,19 @@ import tools
 import datasim
 import stats
 
+timed = True
 
 # Number of emcee steps.
 nsteps = 100000
 
 # Statistical parameteres of noise: mean, standard deviation.
-mu, sigma = 0.0, 0.03 # sigma != 0
+mu, sigma = 0.0, 0.001 # sigma != 0
 
 data_dic = {}
 
-dataname = 'pantheon'
+#dataname = 'pantheon'
 #dataname = 'LCDM_to_1089'
+dataname = 'LCDM_to_2.26'
 #dataname = 'specific_z'
 if dataname == 'pantheon':
     import pandas as pd
@@ -39,8 +41,18 @@ if dataname == 'pantheon':
 elif dataname == 'LCDM_to_1089':
     print('-----Generating z up to z=1089')
     # Generating artificial redshifts.
-    zpicks = np.sort(np.random.uniform(low=0.0001, high=1088, size=(10000,)))
+    zpicks = np.sort(np.random.uniform(low=0.01012, high=1088, size=(10000,)))
     zpicks[-1] = 1089
+    # Generating LCDM mag and da.
+    names, values = ['Mcorr', 'matter'], np.array([-19.3, 0.3])
+    mag, da = datasim.magn(names, values, {'zpicks':zpicks}, 'LCDM', plot_key=False)
+    # Adding noise to LCDM mag.
+    nmag = datasim.gnoise(mag, mu, sigma)
+    data_dic['mag'] = nmag
+elif dataname == 'LCDM_to_2.26':
+    print('-----Generating z up to z=2.26')
+    # Generating artificial redshifts.
+    zpicks = np.sort(np.random.uniform(low=0.01012, high=2.26, size=(1048000,)))
     # Generating LCDM mag and da.
     names, values = ['Mcorr', 'matter'], np.array([-19.3, 0.3])
     mag, da = datasim.magn(names, values, {'zpicks':zpicks}, 'LCDM', plot_key=False)
@@ -104,12 +116,17 @@ firstderivs_functions = [None
 #            ,'rLCDM'
             ]
 
+if timed:
+    import cProfile, pstats, io
+    pr = cProfile.Profile()
+    pr.enable()
+
 def modelcheck():
     for test_key in firstderivs_functions:
         if test_key:
             print('---',test_key)
             names, values = tools.names_values(test_key)
-            datasim.magn(names, values, data_dic, test_key, plot_key=True)
+            datasim.magn(names, values, data_dic, test_key, plot_key=False)
     return
 
 #modelcheck()
@@ -147,3 +164,11 @@ def emcee():
     return
 
 emcee()
+
+if timed:
+    pr.disable()
+    s = io.StringIO()
+    sortby = 'tottime'
+    ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+    ps.print_stats()
+    print (s.getvalue())

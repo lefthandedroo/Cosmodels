@@ -20,7 +20,7 @@ import pickle
 # Script timer.
 timet0 = time.time()
 
-nsteps = 100000   # Number of emcee steps.
+nsteps = 25000   # Number of emcee steps.
 mu = 0.0        # Mean of noise added to LCDM to simulate data.
 
 #Model, errors on data and dataset sizes to iterate through:
@@ -28,7 +28,7 @@ test_keys = [None
 #            ,'rainbow'
 #            ,'kanangra'
 #            ,'waterfall'
-            ,'stepfall'
+#            ,'stepfall'
 #            ,'exotic'
 #            ,'late_intxde'
 #            ,'heaviside_late_int'
@@ -45,14 +45,14 @@ test_keys = [None
 #            ,'rdecay_mxde'
 #            ,'rdecay'
 #            ,'interacting'
-#            ,'LCDM'
+            ,'LCDM'
 #            ,'rLCDM'
             ]
-
-max_z = 3.0 # highest expected redshift for a type Ia supernova
+min_z = 0.01012
+max_z = 2.26 # highest expected redshift for a type Ia supernova from pantheon
 
 sigma_options = None, 0.001 #0.14, 0.2 #0.0001, 0.005, 0.007
-npoints_options = None, 104800 #1048, 10480, 104800 #1048000, 10480000
+npoints_options = None,  10480, #1048, 10480, 104800, 1048000, 10480000
 run = 0
 
 for key in test_keys:
@@ -82,7 +82,7 @@ for key in test_keys:
                 else:
                     print(f'failed to get zpicks, nmag from {data_path}')
                     # Generating redshifts.
-                    zpicks = np.random.uniform(low=0.0001, high=max_z, size=(npoints,))
+                    zpicks = np.random.uniform(low=min_z, high=max_z, size=(npoints,))
                     zpicks = np.sort(zpicks, axis=None)
                     if zpicks[-1] != max_z:
                         zpicks[-1] = max_z

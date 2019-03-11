@@ -8,14 +8,24 @@ Created on Fri Feb 23 16:02:10 2018
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from emcee import EnsembleSampler
+from emcee.utils import MPIPool
 import numpy as np
 import time
 import os.path
+import sys
 
 import datasim
 import tools
 import ln
 import plots
+
+try:
+    pool = MPIPool()
+    if not pool.is_master():
+        pool.wait()
+        sys.exit(0)
+except:
+    pool = None
 
 def stats(names, values, data_dict, sigma, nsteps,
           save_path, model_key, plot=False):
@@ -46,7 +56,7 @@ def stats(names, values, data_dict, sigma, nsteps,
 
     # emcee parameters:
     ndim = len(values)
-    nwalkers = int(ndim * 2)
+    nwalkers = int(ndim * 8)
 
     # Initializing walkers.
     pos = [values + 0.001*np.random.randn(ndim) for i in range(nwalkers)]
@@ -61,7 +71,7 @@ def stats(names, values, data_dict, sigma, nsteps,
 
     # Sampler setup.
     times0 = time.time()    # starting sampler timer
-    sampler = EnsembleSampler(nwalkers, ndim, ln.lnprob,
+    sampler = EnsembleSampler(nwalkers, ndim, ln.lnprob, pool=pool,
                               args=(data_dict, sigma, model_key, names))
 
     # Burnin.
@@ -165,3 +175,8 @@ def stats(names, values, data_dict, sigma, nsteps,
     tools.timer('sampler', times0, times1)
 
     return propert, sampler
+
+try:
+    pool.close()
+except:
+    pass

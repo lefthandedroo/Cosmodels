@@ -5,11 +5,54 @@ Created on Thu Sep 21 15:50:29 2017
 
 @author: BallBlueMeercat
 """
-import numpy.random as rng
-import pickle
-import matplotlib.pyplot as plt
-import numpy as np
 
+## Pantheon data:
+#import pandas as pd
+#pantheon = pd.read_csv('./data/lcparam_full_long.txt', sep=" ")
+#pantheon.set_index('name', inplace=True)
+#pantheon.sort_values('zhel', inplace=True)
+#mag = pantheon.mb.values
+#zpicks = pantheon.zhel.values
+#print('pantheon zpicks[-1]=',zpicks[-1])
+
+#run = 0
+#from pathlib import Path
+#import matplotlib.pyplot as plt
+#
+#sigma_options = None, 0.001#, 0.01, 0.07, 0.14, 0.2
+#npoints_options = None, 104800 #1048, 10480, 104800, 1048000
+#for sigma in sigma_options:
+#    if sigma:
+#        pass
+#    else:
+#        continue
+#    for npoints in npoints_options:
+#        if npoints:
+#            pass
+#        else:
+#            continue
+#        data_path = f'data/{npoints}_3.0_sigma_{sigma}.p'
+#        my_file = Path(data_path)
+#        if my_file.is_file():
+#            run += 1
+#            with open(data_path,'rb') as rfp: zpicks, nmag = pickle.load(rfp)
+#            plt.figure()
+#            plt.title(data_path)
+#            plt.scatter(zpicks, nmag)
+#            plt.show()
+#        else:
+#            print(data_path, "didn't open")
+#            pass
+#
+#new_zpicks = np.linspace(0.001, 2.26, num=104800, endpoint=True)
+
+
+#all_zpicks = zpicks
+#print('zpicks',zpicks)
+#print('zpicks[-1]',zpicks[-1])
+#if len(zpicks) > 2000:
+#    zpicks_cut = np.linspace(0, zpicks[-1], num=1000, endpoint=True)
+#    print('zpicks_cut[-1]',zpicks_cut[-1])
 
 #a = np.arange(5)
 #hist, bin_edges = np.histogram(a, density=True)
@@ -62,10 +105,10 @@ import numpy as np
 #
 
 
-try:
-    with open('data/zpicks_1048_3.p','rb') as rfp: all_zpicks = pickle.load(rfp)
-except:
-    print("zpicks_1048_3.p didnt't open")
+#try:
+#    with open('data/zpicks_1048_3.p','rb') as rfp: all_zpicks = pickle.load(rfp)
+#except:
+#    print("zpicks_1048_3.p didnt't open")
 #
 #data_dic = {'zpicks':zpicks}
 #mag, da = datasim.magn(['Mcorr', 'matter'], np.array([-19.3, 0.3]), data_dic, 'LCDM', plot_key=False)
