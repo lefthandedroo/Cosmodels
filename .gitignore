@@ -100,3 +100,6 @@ ENV/
 
 # mypy
 .mypy_cache/
+Models/results_error_vs_data/kanangra/kanangra_sigma0.001_npoints104800.p
+Models/results_error_vs_data/stepfall/stepfall_sigma0.001_npoints104800.p
+Models/results_error_vs_data/stepfall/stepfall_sigma0.001_npoints1048000.p
