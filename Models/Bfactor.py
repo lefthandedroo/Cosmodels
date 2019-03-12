@@ -22,7 +22,7 @@ plt.rcParams['axes.facecolor'] = 'white'
 plt.rcParams['figure.facecolor'] = 'white'
 plt.rcParams['grid.color'] = 'white'
 
-speed = 2       # From prior = 0, short = 1, medium = 2, long = 3.
+speed = 1       # From prior = 0, short = 1, medium = 2, long = 3.
 timed = True
 plot = True
 
@@ -155,11 +155,11 @@ class Model(object):
 
 
 firstderivs_functions = [None
-            ,'rainbow'
-            ,'kanangra'
-            ,'waterfall'
-            ,'stepfall'
-            ,'exotic'
+#            ,'rainbow'
+#            ,'kanangra'
+#            ,'waterfall'
+#            ,'stepfall'
+#            ,'exotic'
 #            ,'late_intxde'
 #            ,'heaviside_late_int'
 #            ,'heaviside_sudden'
@@ -175,7 +175,7 @@ firstderivs_functions = [None
 #            ,'rdecay_mxde'
 #            ,'rdecay'
 #            ,'interacting'
-#            ,'LCDM'
+            ,'LCDM'
 #            ,'rLCDM'
             ]
 
