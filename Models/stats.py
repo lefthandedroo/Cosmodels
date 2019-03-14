@@ -56,7 +56,7 @@ def stats(names, values, data_dict, sigma, nsteps,
 
     # emcee parameters:
     ndim = len(values)
-    nwalkers = int(ndim * 8)
+    nwalkers = int(ndim * 80)
 
     # Initializing walkers.
     pos = [values + 0.001*np.random.randn(ndim) for i in range(nwalkers)]

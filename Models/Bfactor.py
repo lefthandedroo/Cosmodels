@@ -16,14 +16,14 @@ import results
 import tools
 
 import matplotlib as mpl
-#mpl.style.use('default') # has to be switched on to set figure size
+mpl.style.use('default') # has to be switched on to set figure size
 mpl.style.use('fivethirtyeight')
 plt.rcParams['axes.facecolor'] = 'white'
 plt.rcParams['figure.facecolor'] = 'white'
 plt.rcParams['grid.color'] = 'white'
 
-speed = 1       # From prior = 0, short = 1, medium = 2, long = 3.
-timed = True
+speed = 2       # From prior = 0, short = 1, medium = 2, long = 3.
+timed = False
 plot = True
 
 print('Bfactor')
@@ -34,7 +34,7 @@ dataname = 'pantheon'
 
 if dataname == 'pantheon':
     import pandas as pd
-    sigma = 0.07
+    sigma = 0.3
     print('-----Using pantheon')
     # Pantheon data:
     pantheon = pd.read_csv('./data/lcparam_full_long.txt', sep=" ")
@@ -159,24 +159,24 @@ firstderivs_functions = [None
 #            ,'kanangra'
 #            ,'waterfall'
 #            ,'stepfall'
-#            ,'exotic'
-#            ,'late_intxde'
-#            ,'heaviside_late_int'
-#            ,'heaviside_sudden'
-#            ,'late_int'
-#            ,'expgamma'
-#            ,'txgamma'         # doesn't converge
-#            ,'zxgamma'
-#            ,'gamma_over_z'    # doesn't converge
-#            ,'zxxgamma'        # gamma forced positive in firstderivs
-#            ,'gammaxxz'        # gamma forced positive in firstderivs
-#            ,'rdecay_m'
-#            ,'rdecay_de'
-#            ,'rdecay_mxde'
-#            ,'rdecay'
-#            ,'interacting'
+            ,'exotic'
+            ,'late_intxde'
+            ,'heaviside_late_int'
+            ,'heaviside_sudden'
+            ,'late_int'
+            ,'expgamma'
+            ,'txgamma'         # doesn't converge
+            ,'zxgamma'
+            ,'gamma_over_z'    # doesn't converge
+            ,'zxxgamma'        # gamma forced positive in firstderivs
+            ,'gammaxxz'        # gamma forced positive in firstderivs
+            ,'rdecay_m'
+            ,'rdecay_de'
+            ,'rdecay_mxde'
+            ,'rdecay'
+            ,'interacting'
             ,'LCDM'
-#            ,'rLCDM'
+            ,'rLCDM'
             ]
 
 for key in firstderivs_functions:

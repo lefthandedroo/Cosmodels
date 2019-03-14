@@ -20,7 +20,7 @@ import pickle
 # Script timer.
 timet0 = time.time()
 
-nsteps = 25000   # Number of emcee steps.
+nsteps = 2500   # Number of emcee steps per?
 mu = 0.0        # Mean of noise added to LCDM to simulate data.
 
 #Model, errors on data and dataset sizes to iterate through:

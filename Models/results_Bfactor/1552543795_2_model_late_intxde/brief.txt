@@ -1,0 +1,7 @@
+Bfactor time:  13min 39s
+model = late_intxde
+data = pantheon
+sigma = 0.3
+log(Z) = 172.90192372966317
+Information = 6.41590619080327
+speed = 2
