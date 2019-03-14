@@ -1,0 +1,7 @@
+Bfactor time:  18min 6s
+model = expgamma
+data = pantheon
+sigma = 0.3
+log(Z) = 172.75974417370486
+Information = 6.497259387191946
+speed = 2

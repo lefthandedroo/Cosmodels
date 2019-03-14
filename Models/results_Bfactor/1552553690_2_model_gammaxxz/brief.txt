@@ -1,0 +1,7 @@
+Bfactor time:  8min 44s
+model = gammaxxz
+data = pantheon
+sigma = 0.3
+log(Z) = 171.65740709101706
+Information = 6.138235282863292
+speed = 2

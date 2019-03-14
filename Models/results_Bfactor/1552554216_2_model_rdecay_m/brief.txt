@@ -1,0 +1,7 @@
+Bfactor time:  8min 44s
+model = rdecay_m
+data = pantheon
+sigma = 0.3
+log(Z) = 173.3038517207404
+Information = 6.162273182660215
+speed = 2

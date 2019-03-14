@@ -1,0 +1,7 @@
+Bfactor time:  53min 49s
+model = heaviside_sudden
+data = pantheon
+sigma = 0.3
+log(Z) = 170.71378932172067
+Information = 8.374397851784721
+speed = 2
