@@ -98,6 +98,11 @@ ENV/
 # mkdocs documentation
 /site
 
+# artemis job files
+*.e*
+*.o*
+*.pbs
+
 # mypy
 .mypy_cache/
 Models/results_error_vs_data/kanangra/kanangra_sigma0.001_npoints104800.p
