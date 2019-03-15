@@ -17,10 +17,23 @@ import os.path
 import stats
 import pickle
 
+import sys
+import emcee
+from emcee.utils import MPIPool
+
+try:
+    pool = MPIPool()
+    if not pool.is_master():
+        pool.wait()
+        sys.exit(0)
+except:
+    print('pool = None')
+    pool = None
+
 # Script timer.
 timet0 = time.time()
 
-nsteps = 100000   # Number of emcee steps per?
+nsteps = 100#100000   # Number of emcee steps per?
 mu = 0.0        # Mean of noise added to LCDM to simulate data.
 
 #Model, errors on data and dataset sizes to iterate through:
@@ -105,10 +118,19 @@ for key in test_keys:
                 print(f'--- {key} --------- run number {run}')
                 propert, sampler = stats.stats(names, values, data_dic,
                                                sigma, nsteps, save_path,
-                                               key, plot=False)
-                output = propert, sampler
-                output_path = os.path.join(save_path, f'{key}_sigma{sigma}_npoints{npoints}.p')
-                pickle.dump(output, open(output_path, 'wb'))
+                                               key, pool=None, plot=False)
+                try:
+                    pool.close()
+                except:
+                    pass
+#                output = propert, sampler
+                output_path = os.path.join(save_path, f'{key}_sigma{sigma}_npoints{npoints}.txt')
+#                pickle.dump(output, open(output_path, 'wb'))
+                output = sampler.flatchain[:, :]
+                f = open(output_path, 'w+')
+                f.write(str(output))
+                f.close()
+
 
 print('directory:',directory)
 

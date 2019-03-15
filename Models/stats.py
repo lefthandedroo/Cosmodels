@@ -8,27 +8,17 @@ Created on Fri Feb 23 16:02:10 2018
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from emcee import EnsembleSampler
-from emcee.utils import MPIPool
 import numpy as np
 import time
 import os.path
-import sys
 
 import datasim
 import tools
 import ln
 import plots
 
-try:
-    pool = MPIPool()
-    if not pool.is_master():
-        pool.wait()
-        sys.exit(0)
-except:
-    pool = None
-
 def stats(names, values, data_dict, sigma, nsteps,
-          save_path, model_key, plot=False):
+          save_path, model_key, pool=None, plot=False):
     """
     Takes in:
         test_params = list of dictionaries {string:value} of names and
@@ -175,8 +165,3 @@ def stats(names, values, data_dict, sigma, nsteps,
     tools.timer('sampler', times0, times1)
 
     return propert, sampler
-
-try:
-    pool.close()
-except:
-    pass
