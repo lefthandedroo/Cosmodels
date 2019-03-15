@@ -76,7 +76,7 @@ for key in test_keys:
         # Relative path of output folder.
         save_path = os.path.join('results_error_vs_data',directory)
         if not os.path.exists(save_path):
-            os.makedirs(save_path)
+            os.makedirs(save_path, exist_ok=True)
         for sigma in sigma_options:
             if sigma:
                 pass
@@ -119,10 +119,10 @@ for key in test_keys:
                 propert, sampler = stats.stats(names, values, data_dic,
                                                sigma, nsteps, save_path,
                                                key, pool=None, plot=False)
-                try:
-                    pool.close()
-                except:
-                    pass
+#                try:
+#                    pool.close()
+#                except:
+#                    pass
 #                output = propert, sampler
                 output_path = os.path.join(save_path, f'{key}_sigma{sigma}_npoints{npoints}.txt')
 #                pickle.dump(output, open(output_path, 'wb'))
@@ -130,7 +130,10 @@ for key in test_keys:
                 f = open(output_path, 'w+')
                 f.write(str(output))
                 f.close()
-
+                try:
+                    pool.close()
+                except:
+                    pass
 
 print('directory:',directory)
 
