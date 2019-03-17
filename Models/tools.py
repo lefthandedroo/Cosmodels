@@ -83,6 +83,17 @@ def names_values(test_key):
                            0.01, 0.01, 0.01, 0.01, 0.01,
                            0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                            0.0, 0.0, 0.0, 0.0, 0.0])
+    elif test_key == 'niagara':
+        names = ['Mcorr',
+                 'm_ombar', 'r_ombar', 'a_ombar', 'b_ombar', 'c_ombar',
+                 'd_ombar', 'e_ombar', 'f_ombar', 'g_ombar',
+                 'r_in', 's_in', 't_in', 'u_in',
+                 'v_in', 'w_in', 'x_in', 'y_in', 'z_in']
+        values = np.array([-19.3,
+                           0.3, 0.025, 0.01, 0.01, 0.01,
+                           0.01, 0.01, 0.01, 0.01,
+                           0.0, 0.0, 0.0, 0.0,
+                           0.0, 0.0, 0.0, 0.0, 0.0])
     elif test_key == 'kanangra':
         names = ['Mcorr',
                  'm_ombar', 'r_ombar', 'a_ombar', 'b_ombar', 'c_ombar',
@@ -116,3 +127,77 @@ def names_values(test_key):
         names = ['Mcorr', 'm_ombar','gamma']
         values = np.array([-19.3, 0.3, -0.0])
     return names, values
+
+def names_intlim(key):
+    if key == 'rainbow':
+        int_lim = [[-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01],
+                   [-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01],
+                   [-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01]]
+        names = ['Mcorr',
+                 'm_ombar', 'r_ombar', 'a_ombar', 'b_ombar', 'c_ombar',
+                 'd_ombar', 'e_ombar', 'f_ombar', 'g_ombar', 'h_ombar',
+                 'i_ombar',
+                 'p_in', 'q_in', 'r_in', 's_in', 't_in', 'u_in',
+                 'v_in', 'w_in', 'x_in', 'y_in', 'z_in']
+    elif key == 'niagara':
+        int_lim = [[-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01],
+                   [-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01],
+                   [-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01]]
+        names = ['Mcorr',
+                 'm_ombar', 'r_ombar', 'a_ombar', 'b_ombar', 'c_ombar',
+                 'd_ombar', 'e_ombar', 'f_ombar', 'g_ombar',
+                 'r_in', 's_in', 't_in', 'u_in',
+                 'v_in', 'w_in', 'x_in', 'y_in', 'z_in']
+    elif key == 'kanangra':
+        int_lim = [[-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01],
+                   [-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01]]
+        names = ['Mcorr',
+                 'm_ombar', 'r_ombar', 'a_ombar', 'b_ombar', 'c_ombar',
+                 'd_ombar', 'e_ombar',
+                 't_in', 'u_in', 'v_in', 'w_in', 'x_in', 'y_in', 'z_in']
+    elif key == 'waterfall':
+        int_lim = [[-0.01, 1], [-0.01, 1], [-0.01, 1],[-0.01, 1], [-0.01, 1]]
+        names = ['Mcorr','matter','radiation','a_ombar','b_ombar','c_ombar',
+                 'v_in','w_in','x_in','y_in','z_in']
+    elif key == 'stepfall':
+        int_lim = [[-0.01, 1], [-0.01, 1], [-0.01, 1]]
+    #            int_lim = [[-0.01, 0], [-0.01, 0], [-0.01, 0]]
+    #            int_lim = [[0, 0.01], [0, 0.01], [0, 0.01]]
+        names = ['Mcorr','matter','radiation','a_ombar',
+                 'v_in','w_in','x_in']
+    elif key == 'exotic':
+        names = ['Mcorr','matter','radiation','gamma','zeta']
+        int_lim = [[-0.01, 1],[-0.01, 1]]
+    elif key == 'rLCDM':
+        int_lim = None
+        names = ['Mcorr','matter', 'radiation']
+    elif key == 'LCDM':
+        int_lim = None
+        names = ['Mcorr','matter']
+    else:
+        names = ['Mcorr','matter','gamma']
+        if  key == 'late_intxde':
+            int_lim = [[-2, 0.1]]
+        elif key == 'heaviside_late_int':
+            int_lim = [[-1.45, 0.1]]
+        elif key == 'late_int':
+            int_lim = [[-15, 0.1]]
+        elif key == 'expgamma':
+            int_lim = [[-0.1, 1.5]]
+        elif key == 'txgamma':
+            int_lim = [[-0.5, 0.1]]
+        elif key == 'zxgamma':
+            int_lim = [[-10, 0.1]]
+        elif key == 'zxxgamma':
+            int_lim = [[-0.1, 12]]
+        elif key == 'gammaxxz':
+            int_lim = [[-1, 1]]
+        elif key == 'rdecay_m':
+            int_lim = [[-3, 0]]
+        elif key == 'rdecay':
+            int_lim = [[-10, 1]]
+        elif key == 'interacting':
+            int_lim = [[-1.5, 0.1]]
+        else:
+            int_lim = [[-10,10]]
+    return names, int_lim

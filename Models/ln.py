@@ -156,6 +156,7 @@ def lnprior(th, key):
 
 def lnprob(theta, data, sigma, firstderivs_key, names):
     lp = lnprior(theta, firstderivs_key)
+    print('theta =',theta)
     if not np.isfinite(lp):
         return -np.inf
     return lp + lnlike(theta, data, sigma, firstderivs_key, names)

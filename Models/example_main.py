@@ -6,7 +6,6 @@ Created on Fri Mar 15 14:49:28 2019
 @author: BallBlueMeercat
 """
 import sys
-import emcee
 from emcee.utils import MPIPool
 
 import time

@@ -22,9 +22,9 @@ plt.rcParams['axes.facecolor'] = 'white'
 plt.rcParams['figure.facecolor'] = 'white'
 plt.rcParams['grid.color'] = 'white'
 
-speed = 2       # From prior = 0, short = 1, medium = 2, long = 3.
+speed = 3       # From prior = 0, short = 1, medium = 2, long = 3.
 timed = False
-plot = True
+plot = False
 
 print('Bfactor')
 
@@ -34,7 +34,7 @@ dataname = 'pantheon'
 
 if dataname == 'pantheon':
     import pandas as pd
-    sigma = 0.3
+    sigma = 0.11
     print('-----Using pantheon')
     # Pantheon data:
     pantheon = pd.read_csv('./data/lcparam_full_long.txt', sep=" ")
@@ -46,7 +46,7 @@ if dataname == 'pantheon':
     plt.figure()
     plt.title('Pantheon')
     plt.scatter(zpicks, mag)
-    plt.show()
+    plt.show(block=False)
 elif dataname == 'synth':
     mu, sigma = 0.0, 0.07    # Mean and standard deviation of the noise on the data.
     npoints = 1048000
@@ -61,7 +61,7 @@ elif dataname == 'synth':
         plt.figure()
         plt.title(f'Artificial data being used N={len(zpicks)}, $\sigma$={sigma}')
         plt.scatter(zpicks, mag)
-        plt.show()
+        plt.show(block=False)
         data_dic = {'mag':mag, 'zpicks':zpicks}
     else:
         print(f'failed to get zpicks, mag from {dataname}')
@@ -80,7 +80,7 @@ elif dataname == 'synth':
         plt.figure()
         plt.title(f'Artificial data N={len(zpicks)}, $\sigma$={sigma}')
         plt.scatter(zpicks, mag)
-        plt.show()
+        plt.show(block=False)
 
         data = zpicks, mag
         pickle.dump(data, open(dataname, 'wb'))
@@ -153,97 +153,36 @@ class Model(object):
         like = -0.5*np.sum((mag-model_mag)**2.0 /var +np.log(2.0*np.pi*var))
         return like
 
-
 firstderivs_functions = [None
-#            ,'rainbow'
-#            ,'kanangra'
-#            ,'waterfall'
-#            ,'stepfall'
-            ,'exotic'
-            ,'late_intxde'
-            ,'heaviside_late_int'
-            ,'heaviside_sudden'
-            ,'late_int'
-            ,'expgamma'
-            ,'txgamma'         # doesn't converge
-            ,'zxgamma'
-            ,'gamma_over_z'    # doesn't converge
-            ,'zxxgamma'        # gamma forced positive in firstderivs
-            ,'gammaxxz'        # gamma forced positive in firstderivs
-            ,'rdecay_m'
-            ,'rdecay_de'
-            ,'rdecay_mxde'
-            ,'rdecay'
-            ,'interacting'
-            ,'LCDM'
-            ,'rLCDM'
+#            ,'rainbow' # speed >3
+            ,'niagara' # speed >3
+#            ,'kanangra' # speed 3
+            ,'waterfall' # speed 3
+            ,'stepfall' # speed 3
+#            ,'exotic' # speed 3
+#            ,'late_intxde'
+#            ,'heaviside_late_int'
+#            ,'heaviside_sudden'
+#            ,'late_int'
+#            ,'expgamma'
+#            ,'txgamma'         # doesn't converge
+#            ,'zxgamma'
+#            ,'gamma_over_z'    # doesn't converge
+#            ,'zxxgamma'        # gamma forced positive in firstderivs
+#            ,'gammaxxz'        # gamma forced positive in firstderivs
+#            ,'rdecay_m'
+#            ,'rdecay_de'
+#            ,'rdecay_mxde'
+#            ,'rdecay'
+#            ,'interacting'
+#            ,'LCDM'
+#            ,'rLCDM'
             ]
 
 for key in firstderivs_functions:
     if key:
-        if key == 'rainbow':
-            int_lim = [[-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01],
-                       [-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01],
-                       [-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01]]
-            names = ['Mcorr',
-                    'm_ombar', 'r_ombar', 'a_ombar', 'b_ombar', 'c_ombar',
-                    'd_ombar', 'e_ombar', 'f_ombar', 'g_ombar', 'h_ombar',
-                    'i_ombar',
-                    'a_in', 'b_in', 'c_in', 'd_in', 'e_in', 'f_in',
-                    'g_in', 'h_in', 'i_in', 'j_in', 'k_in']
-        elif key == 'kanangra':
-            int_lim = [[-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01],
-                       [-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01]]
-            names = ['Mcorr',
-                    'm_ombar', 'r_ombar', 'a_ombar', 'b_ombar', 'c_ombar',
-                    'd_ombar', 'e_ombar',
-                    'a_in', 'b_in', 'c_in', 'd_in', 'e_in', 'f_in',
-                    'g_in']
-        elif key == 'waterfall':
-            int_lim = [[-0.01, 1], [-0.01, 1], [-0.01, 1],[-0.01, 1], [-0.01, 1]]
-            names = ['Mcorr','matter','radiation','a_ombar','b_ombar','c_ombar',
-                     'v_in','w_in','x_in','y_in','z_in']
-        elif key == 'stepfall':
-            int_lim = [[-0.01, 1], [-0.01, 1], [-0.01, 1]]
-#            int_lim = [[-0.01, 0], [-0.01, 0], [-0.01, 0]]
-#            int_lim = [[0, 0.01], [0, 0.01], [0, 0.01]]
-            names = ['Mcorr','matter','radiation','a_ombar',
-                     'v_in','w_in','x_in']
-        elif key == 'exotic':
-            names = ['Mcorr','matter','radiation','gamma','zeta']
-            int_lim = [[-0.01, 1],[-0.01, 1]]
-        elif key == 'rLCDM':
-            int_lim = None
-            names = ['Mcorr','matter', 'radiation']
-        elif key == 'LCDM':
-            int_lim = None
-            names = ['Mcorr','matter']
-        else:
-            names = ['Mcorr','matter','gamma']
-            if  key == 'late_intxde':
-                int_lim = [[-2, 0.1]]
-            elif key == 'heaviside_late_int':
-                int_lim = [[-1.45, 0.1]]
-            elif key == 'late_int':
-                int_lim = [[-15, 0.1]]
-            elif key == 'expgamma':
-                int_lim = [[-0.1, 1.5]]
-            elif key == 'txgamma':
-                int_lim = [[-0.5, 0.1]]
-            elif key == 'zxgamma':
-                int_lim = [[-10, 0.1]]
-            elif key == 'zxxgamma':
-                int_lim = [[-0.1, 12]]
-            elif key == 'gammaxxz':
-                int_lim = [[-1, 1]]
-            elif key == 'rdecay_m':
-                int_lim = [[-3, 0]]
-            elif key == 'rdecay':
-                int_lim = [[-10, 1]]
-            elif key == 'interacting':
-                int_lim = [[-1.5, 0.1]]
-            else:
-                int_lim = [[-10,10]]
+        print(key)
+        names, int_lim = tools.names_intlim(key)
 
         if int_lim:
             fluid_number = len(names) - 1 - len(int_lim)
@@ -325,7 +264,7 @@ for key in firstderivs_functions:
                 DNest_distr[name+'_sd'] = np.std(distribution)
                 DNest_distr[name+'_mean'] = np.mean(distribution)
                 DNest_distr[name] = array[:,i]
-        plt.show()
+        plt.show(block=False)
 
         # Run the postprocessing
         info = dnest4.postprocess()

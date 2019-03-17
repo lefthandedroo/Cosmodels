@@ -12,6 +12,7 @@ import numpy as np
 
 firstderivs_functions = {
         'rainbow':f.rainbow,
+        'niagara':f.niagara,
         'kanangra':f.kanangra,
         'waterfall':f.waterfall,
         'stepfall':f.stepfall,
@@ -70,6 +71,8 @@ def zodesolve(names, values, zpicks, model, plot_key, interpolate=False):
 
     if model == 'rainbow':
         int_in = 12
+    elif model == 'niagara':
+        int_in = 10
     elif model == 'kanangra':
         int_in = 8
     elif model == 'waterfall':

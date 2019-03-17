@@ -18,27 +18,37 @@ import stats
 import pickle
 
 import sys
-import emcee
 from emcee.utils import MPIPool
 
+node = 'master'
+plot = False
 try:
     pool = MPIPool()
     if not pool.is_master():
+        node = 'worker'
+        print('worker')
         pool.wait()
         sys.exit(0)
-except:
+except Exception as e:
+    print('exception is = ',e)
     print('pool = None')
     pool = None
+    plot = True
+
+f = open("output_errorvssize.txt","w+")
+f.write('pool = '+str(pool)+'\n')
+f.close()
 
 # Script timer.
 timet0 = time.time()
 
-nsteps = 100#100000   # Number of emcee steps per?
+nsteps = 2000  # Number of emcee steps per?
 mu = 0.0        # Mean of noise added to LCDM to simulate data.
 
 #Model, errors on data and dataset sizes to iterate through:
 test_keys = [None
 #            ,'rainbow'
+#             ,'niagara'
 #            ,'kanangra'
 #            ,'waterfall'
 #            ,'stepfall'
@@ -115,30 +125,41 @@ for key in test_keys:
 
                 data_dic = {'mag':nmag, 'zpicks':zpicks}
 
+                f=open("output_errorvssize.txt", "a+")
+                f.write('got to before stats')
+                f.close()
+
                 print(f'--- {key} --------- run number {run}')
                 propert, sampler = stats.stats(names, values, data_dic,
                                                sigma, nsteps, save_path,
-                                               key, pool=None, plot=False)
-#                try:
-#                    pool.close()
-#                except:
-#                    pass
-#                output = propert, sampler
-                output_path = os.path.join(save_path, f'{key}_sigma{sigma}_npoints{npoints}.txt')
-#                pickle.dump(output, open(output_path, 'wb'))
-                output = sampler.flatchain[:, :]
-                f = open(output_path, 'w+')
-                f.write(str(output))
+                                               key, pool=None, plot=plot)
+
+                f=open("output_errorvssize.txt", "a+")
+                f.write('after stats'+'\n')
                 f.close()
+
                 try:
                     pool.close()
                 except:
                     pass
+#                output = propert, sampler
+                output_path = os.path.join(save_path, f'{key}_sigma{sigma}_npoints{npoints}.txt')
+#                pickle.dump(output, open(output_path, 'wb'))
+                print('-------------------------------- f.writing')
+                print(node,' node')
+                output = sampler.flatchain[:, :]
+                f = open(output_path, 'w+')
+                f.write(str(output))
+                f.close()
+
+f=open("output_errorvssize.txt", "a+")
+f.write('after the loop')
+f.close()
 
 print('directory:',directory)
 
 # Time taken by script.
 timet1=time.time()
 tools.timer('errorvsdatasize', timet0, timet1)
-
+print(' ')
 #plots.precise_runs(key, names, values, 9, 1.2)

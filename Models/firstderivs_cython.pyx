@@ -212,10 +212,12 @@ def niagara(double[:] v, redshifts, in_terms, double H0):
          domdz,# dw = 0, (ombar_m)/dz   (= f.d wrt z of density_m(t) / crit density(t0))
          dordz,# w = 1/3, d(ombar_r)/dz   (= f.d wrt z of density_r(t) / crit density(t0))
          doadz,# w = -0.1
-         dobdz,# w = -0.3
-         docdz,# w = -0.5
-         doddz,# w = -0.7
-         doedz,# w = -0.9
+         dobdz,# w = -0.2
+         docdz,# w = -0.4
+         doddz,# w = -0.6
+         doedz,# w = -0.7
+         dofdz,# w = -0.8
+         dogdz,# w = -0.9
          dodedz,# w = -1, d(ombar_de)/dz (= f.d wrt z of density_de(t) / crit density(t0))
          1.0,# d(z)/dz (= f.d wrt z of redshift)
          ddldz]# d(dl)/dz (= f.d wrt z of luminosty distance) # H + Hdz*(1+z)

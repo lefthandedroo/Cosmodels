@@ -17,10 +17,10 @@ import stats
 timed = True
 
 # Number of emcee steps.
-nsteps = 100000
+nsteps = 1000
 
 # Statistical parameteres of noise: mean, standard deviation.
-mu, sigma = 0.0, 0.001 # sigma != 0
+mu, sigma = 0.0, 0.01 # sigma != 0
 
 data_dic = {}
 
@@ -93,6 +93,7 @@ data_dic['zpicks'] = zpicks
 
 firstderivs_functions = [None
 #            ,'rainbow'
+            ,'niagara'
 #            ,'kanangra'
 #            ,'waterfall'
 #            ,'stepfall'
@@ -112,7 +113,7 @@ firstderivs_functions = [None
 #            ,'rdecay_mxde'
 #            ,'rdecay'
 #            ,'interacting'
-            ,'LCDM'
+#            ,'LCDM'
 #            ,'rLCDM'
             ]
 
@@ -163,7 +164,7 @@ def emcee():
 
     return
 
-emcee()
+#emcee()
 
 if timed:
     pr.disable()
