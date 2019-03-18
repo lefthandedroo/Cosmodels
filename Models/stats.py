@@ -18,7 +18,7 @@ import ln
 import plots
 
 def stats(names, values, data_dict, sigma, nsteps,
-          save_path, model_key, pool=None, plot=False):
+          save_path, model_key, xwalkers=10, pool=None, plot=False, filename='print.txt'):
     """
     Takes in:
         test_params = list of dictionaries {string:value} of names and
@@ -46,7 +46,8 @@ def stats(names, values, data_dict, sigma, nsteps,
 
     # emcee parameters:
     ndim = len(values)
-    nwalkers = int(ndim * 10)
+    nwalkers = int(ndim * xwalkers)
+    print('stats xwalkers', xwalkers)
 
     # Initializing walkers.
     pos = [values + 0.001*np.random.randn(ndim) for i in range(nwalkers)]
@@ -59,7 +60,7 @@ def stats(names, values, data_dict, sigma, nsteps,
             print('~~~~~~~pos[%s] (outside of prior) = %s ~~~~~~~'
                   %(i, theta_start))
 
-    f=open("output_errorvssize.txt", "a+")
+    f=open(filename, "a+")
     f.write('inside stats pre ensemble smapler'+'\n')
     f.close()
 
@@ -68,7 +69,7 @@ def stats(names, values, data_dict, sigma, nsteps,
     sampler = EnsembleSampler(nwalkers, ndim, ln.lnprob, pool=pool,
                               args=(data_dict, sigma, model_key, names))
 
-    f=open("output_errorvssize.txt", "a+")
+    f=open(filename, "a+")
     f.write('inside stats after ensemble smapler'+'\n')
     f.close()
 
@@ -81,15 +82,20 @@ def stats(names, values, data_dict, sigma, nsteps,
     print('_____ burnin end')
     sampler.reset()
 
-    f=open("output_errorvssize.txt", "a+")
+    f=open(filename, "a+")
     f.write('inside stats after the burnin'+'\n')
     f.close()
 
     # Starting sampler after burnin.
     print('_____ sampler start')
     sampler.run_mcmc(pos, nsteps)
+
     print('_____ sampler end')
     times1=time.time()      # stopping sampler timer
+
+    f=open(filename, "a+")
+    f.write('inside stats sampler finished'+'\n')
+    f.close()
 
     # Walker steps is lnprob = sampler.flatlnprobability
     # Index of parameter values with highest post prob found by emcee.
@@ -171,7 +177,7 @@ def stats(names, values, data_dict, sigma, nsteps,
     print('nsteps:', str(nsteps))
     print('ndim:',str(ndim))
     print('nwalkers:', str(nwalkers))
-    print('len(trace):', str(len(propert['trace'])))
+    print('len(sampler.chain[:, :, :].reshape((-1, ndim))):', str(len(sampler.chain[:, :, :].reshape((-1, ndim)))))
     print('sigma:', str(sigma))
     print('npoints:', str(len(zpicks)))
     print('model:', model_key)

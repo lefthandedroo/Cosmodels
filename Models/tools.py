@@ -128,7 +128,8 @@ def names_values(test_key):
         values = np.array([-19.3, 0.3, -0.0])
     return names, values
 
-def names_intlim(key):
+def names_intlim_speed(key):
+    # speed: from prior = 0, short = 1, medium = 2, long = 3, extra long 4.
     if key == 'rainbow':
         int_lim = [[-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01],
                    [-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01],
@@ -139,6 +140,7 @@ def names_intlim(key):
                  'i_ombar',
                  'p_in', 'q_in', 'r_in', 's_in', 't_in', 'u_in',
                  'v_in', 'w_in', 'x_in', 'y_in', 'z_in']
+        speed = 5
     elif key == 'niagara':
         int_lim = [[-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01],
                    [-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01],
@@ -148,6 +150,7 @@ def names_intlim(key):
                  'd_ombar', 'e_ombar', 'f_ombar', 'g_ombar',
                  'r_in', 's_in', 't_in', 'u_in',
                  'v_in', 'w_in', 'x_in', 'y_in', 'z_in']
+        speed = 4
     elif key == 'kanangra':
         int_lim = [[-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01],
                    [-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01]]
@@ -155,26 +158,33 @@ def names_intlim(key):
                  'm_ombar', 'r_ombar', 'a_ombar', 'b_ombar', 'c_ombar',
                  'd_ombar', 'e_ombar',
                  't_in', 'u_in', 'v_in', 'w_in', 'x_in', 'y_in', 'z_in']
+        speed = 4
     elif key == 'waterfall':
         int_lim = [[-0.01, 1], [-0.01, 1], [-0.01, 1],[-0.01, 1], [-0.01, 1]]
         names = ['Mcorr','matter','radiation','a_ombar','b_ombar','c_ombar',
                  'v_in','w_in','x_in','y_in','z_in']
+        speed = 3
     elif key == 'stepfall':
         int_lim = [[-0.01, 1], [-0.01, 1], [-0.01, 1]]
     #            int_lim = [[-0.01, 0], [-0.01, 0], [-0.01, 0]]
     #            int_lim = [[0, 0.01], [0, 0.01], [0, 0.01]]
         names = ['Mcorr','matter','radiation','a_ombar',
                  'v_in','w_in','x_in']
+        speed = 3
     elif key == 'exotic':
         names = ['Mcorr','matter','radiation','gamma','zeta']
         int_lim = [[-0.01, 1],[-0.01, 1]]
+        speed = 2
     elif key == 'rLCDM':
         int_lim = None
         names = ['Mcorr','matter', 'radiation']
+        speed = 2
     elif key == 'LCDM':
         int_lim = None
         names = ['Mcorr','matter']
+        speed = 2
     else:
+        speed = 2
         names = ['Mcorr','matter','gamma']
         if  key == 'late_intxde':
             int_lim = [[-2, 0.1]]
@@ -200,4 +210,4 @@ def names_intlim(key):
             int_lim = [[-1.5, 0.1]]
         else:
             int_lim = [[-10,10]]
-    return names, int_lim
+    return names, int_lim, speed

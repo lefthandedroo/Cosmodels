@@ -8,7 +8,7 @@ Created on Sun Mar 17 11:15:20 2019
 
 import os
 
-rootdir = './results_Bfactor'
+rootdir = './results_Bfactor/recent/0.07'
 
 for subdir, dirs, files in os.walk(rootdir):
     for directory in dirs:

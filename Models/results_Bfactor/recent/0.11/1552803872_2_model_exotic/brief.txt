@@ -1,0 +1,7 @@
+Bfactor time:  8min 56s
+model = exotic
+data = pantheon
+sigma = 0.11
+log(Z) = 459.5818613630424
+Information = 10.51508532875738
+speed = 2

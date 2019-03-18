@@ -1,0 +1,7 @@
+Bfactor time:  7min 49s
+model = rLCDM
+data = pantheon
+sigma = 0.11
+log(Z) = 459.51760924309247
+Information = 10.534381644786777
+speed = 2

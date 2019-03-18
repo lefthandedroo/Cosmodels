@@ -156,7 +156,11 @@ def lnprior(th, key):
 
 def lnprob(theta, data, sigma, firstderivs_key, names):
     lp = lnprior(theta, firstderivs_key)
-    print('theta =',theta)
+#    print(theta)
+#    str_theta = str(theta[1])
+#    last_digits = int(str_theta[-3:])
+#    if last_digits == 11:
+#        print(theta)
     if not np.isfinite(lp):
         return -np.inf
     return lp + lnlike(theta, data, sigma, firstderivs_key, names)

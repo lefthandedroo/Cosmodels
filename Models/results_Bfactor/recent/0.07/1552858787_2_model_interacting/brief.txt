@@ -1,0 +1,7 @@
+Bfactor time:  7min 40s
+model = interacting
+data = pantheon
+sigma = 0.07
+log(Z) = -357.9062778595783
+Information = 10.04796761860888
+speed = 2

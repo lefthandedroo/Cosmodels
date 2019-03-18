@@ -1,0 +1,7 @@
+Bfactor time:  92min 1s
+model = stepfall
+data = pantheon
+sigma = 0.11
+log(Z) = 456.82051024299574
+Information = 12.91053831094473
+speed = 3

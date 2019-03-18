@@ -22,7 +22,6 @@ plt.rcParams['axes.facecolor'] = 'white'
 plt.rcParams['figure.facecolor'] = 'white'
 plt.rcParams['grid.color'] = 'white'
 
-speed = 3       # From prior = 0, short = 1, medium = 2, long = 3.
 timed = False
 plot = False
 
@@ -34,7 +33,7 @@ dataname = 'pantheon'
 
 if dataname == 'pantheon':
     import pandas as pd
-    sigma = 0.11
+    sigma = 0.3
     print('-----Using pantheon')
     # Pantheon data:
     pantheon = pd.read_csv('./data/lcparam_full_long.txt', sep=" ")
@@ -43,10 +42,10 @@ if dataname == 'pantheon':
     mag = pantheon.mb.values
     zpicks = pantheon.zhel.values
     data_dic = {'mag':mag, 'zpicks':zpicks}
-    plt.figure()
-    plt.title('Pantheon')
-    plt.scatter(zpicks, mag)
-    plt.show(block=False)
+#    plt.figure()
+#    plt.title('Pantheon')
+#    plt.scatter(zpicks, mag)
+#    plt.show(block=False)
 elif dataname == 'synth':
     mu, sigma = 0.0, 0.07    # Mean and standard deviation of the noise on the data.
     npoints = 1048000
@@ -154,26 +153,26 @@ class Model(object):
         return like
 
 firstderivs_functions = [None
-#            ,'rainbow' # speed >3
-            ,'niagara' # speed >3
-#            ,'kanangra' # speed 3
-            ,'waterfall' # speed 3
-            ,'stepfall' # speed 3
-#            ,'exotic' # speed 3
+            ,'rainbow' # speed 5
+            ,'niagara' # speed 4
+#            ,'kanangra' # speed 4
+#            ,'waterfall' # speed 3
+#            ,'stepfall' # speed 3
+#            ,'exotic'
 #            ,'late_intxde'
 #            ,'heaviside_late_int'
-#            ,'heaviside_sudden'
+#            ,'heaviside_sudden' # didn't converge
 #            ,'late_int'
 #            ,'expgamma'
-#            ,'txgamma'         # doesn't converge
+#            ,'txgamma'
 #            ,'zxgamma'
-#            ,'gamma_over_z'    # doesn't converge
+#            ,'gamma_over_z'
 #            ,'zxxgamma'        # gamma forced positive in firstderivs
 #            ,'gammaxxz'        # gamma forced positive in firstderivs
 #            ,'rdecay_m'
 #            ,'rdecay_de'
 #            ,'rdecay_mxde'
-#            ,'rdecay'
+#            ,'rdecay'           # didn't converge
 #            ,'interacting'
 #            ,'LCDM'
 #            ,'rLCDM'
@@ -182,7 +181,7 @@ firstderivs_functions = [None
 for key in firstderivs_functions:
     if key:
         print(key)
-        names, int_lim = tools.names_intlim(key)
+        names, int_lim, speed = tools.names_intlim_speed(key)
 
         if int_lim:
             fluid_number = len(names) - 1 - len(int_lim)
@@ -193,8 +192,13 @@ for key in firstderivs_functions:
         model = Model(names, int_lim, fluid_number)
         sampler = dnest4.DNest4Sampler(model,
                             backend=dnest4.backends.CSVBackend(".",sep=" "))
+        if speed == 5: #  extra long
+            max_lvl,nstep,new_lvl,n_per_step,th_step = 50,1000,10000,10000,100
 
-        if speed == 3: # LONG
+        elif speed == 4: # extra long
+            max_lvl,nstep,new_lvl,n_per_step,th_step = 40,1000,10000,10000,100
+
+        elif speed == 3: # LONG
             max_lvl,nstep,new_lvl,n_per_step,th_step = 30,1000,10000,10000,100
 
         elif speed == 2: # MEDIUM
