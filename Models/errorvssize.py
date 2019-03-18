@@ -109,8 +109,8 @@ test_keys = [None
 #            ,'rdecay_de'
 #            ,'rdecay_mxde'
 #            ,'rdecay'
-#            ,'interacting'
-            ,'LCDM'
+            ,'interacting'
+#            ,'LCDM'
 #            ,'rLCDM'
             ]
 min_z = 0.01012
@@ -184,12 +184,12 @@ for key in test_keys:
                     pool.close()
                 except:
                     pass
-                output = propert, sampler
+#                output = propert, sampler
                 output_path = os.path.join(save_path, f'{key}_sigma{sigma}_npoints{npoints}.txt')
 #                pickle.dump(output, open(output_path, 'wb'))
                 print('-------------------------------- f.writing')
                 print(node,' node')
-#                output = sampler.flatchain[:, :]
+                output = sampler.flatchain[:, :]
                 np.savetxt(output_path, output)
 
 f=open(filename, "a+")

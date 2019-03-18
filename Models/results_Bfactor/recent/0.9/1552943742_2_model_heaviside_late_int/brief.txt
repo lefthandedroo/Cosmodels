@@ -1,0 +1,7 @@
+Bfactor time:  16min 48s
+model = heaviside_late_int
+data = pantheon
+sigma = 0.09
+log(Z) = 236.87315904602548
+Information = 9.27377687563586
+speed = 2

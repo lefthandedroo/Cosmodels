@@ -1,0 +1,7 @@
+Bfactor time:  109min 32s
+model = rainbow
+data = pantheon
+sigma = 0.09
+log(Z) = 207.5942097955421
+Information = 34.48519777798697
+speed = 5

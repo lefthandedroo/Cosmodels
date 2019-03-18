@@ -33,7 +33,7 @@ dataname = 'pantheon'
 
 if dataname == 'pantheon':
     import pandas as pd
-    sigma = 0.3
+    sigma = 0.09
     print('-----Using pantheon')
     # Pantheon data:
     pantheon = pd.read_csv('./data/lcparam_full_long.txt', sep=" ")
@@ -155,27 +155,27 @@ class Model(object):
 firstderivs_functions = [None
             ,'rainbow' # speed 5
             ,'niagara' # speed 4
-#            ,'kanangra' # speed 4
-#            ,'waterfall' # speed 3
-#            ,'stepfall' # speed 3
-#            ,'exotic'
-#            ,'late_intxde'
-#            ,'heaviside_late_int'
-#            ,'heaviside_sudden' # didn't converge
-#            ,'late_int'
-#            ,'expgamma'
-#            ,'txgamma'
-#            ,'zxgamma'
-#            ,'gamma_over_z'
-#            ,'zxxgamma'        # gamma forced positive in firstderivs
-#            ,'gammaxxz'        # gamma forced positive in firstderivs
-#            ,'rdecay_m'
-#            ,'rdecay_de'
-#            ,'rdecay_mxde'
-#            ,'rdecay'           # didn't converge
-#            ,'interacting'
-#            ,'LCDM'
-#            ,'rLCDM'
+            ,'kanangra' # speed 4
+            ,'waterfall' # speed 3
+            ,'stepfall' # speed 3
+            ,'exotic'
+            ,'late_intxde'
+            ,'heaviside_late_int'
+            ,'heaviside_sudden' # didn't converge
+            ,'late_int'
+            ,'expgamma'
+            ,'txgamma'
+            ,'zxgamma'
+            ,'gamma_over_z'
+            ,'zxxgamma'        # gamma forced positive in firstderivs
+            ,'gammaxxz'        # gamma forced positive in firstderivs
+            ,'rdecay_m'
+            ,'rdecay_de'
+            ,'rdecay_mxde'
+            ,'rdecay'           # didn't converge
+            ,'interacting'
+            ,'LCDM'
+            ,'rLCDM'
             ]
 
 for key in firstderivs_functions:

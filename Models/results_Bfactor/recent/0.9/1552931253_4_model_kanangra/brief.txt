@@ -1,0 +1,7 @@
+Bfactor time:  92min 13s
+model = kanangra
+data = pantheon
+sigma = 0.09
+log(Z) = 221.3972114618044
+Information = 22.464608234378687
+speed = 4

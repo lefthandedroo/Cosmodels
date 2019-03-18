@@ -1,0 +1,7 @@
+Bfactor time:  87min 50s
+model = waterfall
+data = pantheon
+sigma = 0.09
+log(Z) = 227.1380354999592
+Information = 17.836061140867685
+speed = 3

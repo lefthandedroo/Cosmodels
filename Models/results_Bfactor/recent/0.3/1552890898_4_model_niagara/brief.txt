@@ -1,0 +1,7 @@
+Bfactor time:  106min 36s
+model = niagara
+data = pantheon
+sigma = 0.3
+log(Z) = 158.59372307285744
+Information = 18.463328714463273
+speed = 4
