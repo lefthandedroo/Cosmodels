@@ -1,0 +1,7 @@
+Bfactor time:  7min 39s
+model = LCDM
+data = pantheon
+sigma = 0.09
+log(Z) = 228.40672208067187
+Information = 8.660596228002504
+speed = 2

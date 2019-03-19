@@ -36,8 +36,10 @@ parser.add_argument("-f", "--filename",
                     help="name of a file to save printing of progress to")
 args = parser.parse_args()
 
-node = 'master'
+timed = False
 plot = False
+
+node = 'master'
 try:
     pool = MPIPool()
     if not pool.is_master():
@@ -50,6 +52,11 @@ except Exception as e:
     print('pool = None')
     pool = None
     plot = True
+
+if timed:
+    import cProfile, pstats, io
+    pr = cProfile.Profile()
+    pr.enable()
 
 filename = args.filename
 if filename:
@@ -109,8 +116,8 @@ test_keys = [None
 #            ,'rdecay_de'
 #            ,'rdecay_mxde'
 #            ,'rdecay'
-            ,'interacting'
-#            ,'LCDM'
+#            ,'interacting'
+            ,'LCDM'
 #            ,'rLCDM'
             ]
 min_z = 0.01012
@@ -202,4 +209,12 @@ print('directory:',directory)
 timet1=time.time()
 tools.timer('errorvsdatasize', timet0, timet1)
 print(' ')
+
+if timed:
+    pr.disable()
+    s = io.StringIO()
+    sortby = 'tottime'
+    ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+    ps.print_stats()
+    print (s.getvalue())
 #plots.precise_runs(key, names, values, 9, 1.2)

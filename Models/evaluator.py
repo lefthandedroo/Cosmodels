@@ -13,20 +13,20 @@ import results
 import tools
 import datasim
 import stats
-
-timed = True
+print('- - - - - - - - evaluator')
+timed = False
 
 # Number of emcee steps.
-nsteps = 1000
+nsteps = 2000
 
 # Statistical parameteres of noise: mean, standard deviation.
 mu, sigma = 0.0, 0.01 # sigma != 0
 
 data_dic = {}
 
-#dataname = 'pantheon'
+dataname = 'pantheon'
 #dataname = 'LCDM_to_1089'
-dataname = 'LCDM_to_2.26'
+#dataname = 'LCDM_to_2.26'
 #dataname = 'specific_z'
 if dataname == 'pantheon':
     import pandas as pd
@@ -36,6 +36,7 @@ if dataname == 'pantheon':
     pantheon.set_index('name', inplace=True)
     pantheon.sort_values('zhel', inplace=True)
     mag = pantheon.mb.values
+    sigma = pantheon.dmb.values
     zpicks = pantheon.zhel.values
     data_dic['mag'] = mag
 elif dataname == 'LCDM_to_1089':
@@ -93,7 +94,7 @@ data_dic['zpicks'] = zpicks
 
 firstderivs_functions = [None
 #            ,'rainbow'
-            ,'niagara'
+#            ,'niagara'
 #            ,'kanangra'
 #            ,'waterfall'
 #            ,'stepfall'
@@ -113,7 +114,7 @@ firstderivs_functions = [None
 #            ,'rdecay_mxde'
 #            ,'rdecay'
 #            ,'interacting'
-#            ,'LCDM'
+            ,'LCDM'
 #            ,'rLCDM'
             ]
 
@@ -127,7 +128,7 @@ def modelcheck():
         if test_key:
             print('---',test_key)
             names, values = tools.names_values(test_key)
-            datasim.magn(names, values, data_dic, test_key, plot_key=False)
+            datasim.magn(names, values, data_dic, test_key, plot_key=True)
     return
 
 #modelcheck()
@@ -142,9 +143,10 @@ def emcee():
             names, values = tools.names_values(test_key)
 
             # Creating a folder for saving output.
+
             save_path = './results_emcee/'+str(int(time.time()))+'_'+test_key
             if not os.path.exists(save_path):
-                os.makedirs(save_path)
+                    os.makedirs(save_path)
 
             # Script timer.
             timet0 = time.time()
@@ -164,7 +166,7 @@ def emcee():
 
     return
 
-#emcee()
+emcee()
 
 if timed:
     pr.disable()

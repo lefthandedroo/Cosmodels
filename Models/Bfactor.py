@@ -40,6 +40,7 @@ if dataname == 'pantheon':
     pantheon.set_index('name', inplace=True)
     pantheon.sort_values('zhel', inplace=True)
     mag = pantheon.mb.values
+    sigma = pantheon.dmb.values
     zpicks = pantheon.zhel.values
     data_dic = {'mag':mag, 'zpicks':zpicks}
 #    plt.figure()
