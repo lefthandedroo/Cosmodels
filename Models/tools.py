@@ -140,7 +140,7 @@ def names_intlim_speed(key):
                  'i_ombar',
                  'p_in', 'q_in', 'r_in', 's_in', 't_in', 'u_in',
                  'v_in', 'w_in', 'x_in', 'y_in', 'z_in']
-        speed = 5
+        speed = 6
     elif key == 'niagara':
         int_lim = [[-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01],
                    [-0.01, 0.01], [-0.01, 0.01], [-0.01, 0.01],

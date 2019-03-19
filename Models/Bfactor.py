@@ -33,7 +33,6 @@ dataname = 'pantheon'
 
 if dataname == 'pantheon':
     import pandas as pd
-    sigma = 0.09
     print('-----Using pantheon')
     # Pantheon data:
     pantheon = pd.read_csv('./data/lcparam_full_long.txt', sep=" ")
@@ -193,7 +192,11 @@ for key in firstderivs_functions:
         model = Model(names, int_lim, fluid_number)
         sampler = dnest4.DNest4Sampler(model,
                             backend=dnest4.backends.CSVBackend(".",sep=" "))
-        if speed == 5: #  extra long
+
+        if speed == 6: #  extra long
+            max_lvl,nstep,new_lvl,n_per_step,th_step = 60,1000,10000,10000,100
+
+        elif speed == 5: #  extra long
             max_lvl,nstep,new_lvl,n_per_step,th_step = 50,1000,10000,10000,100
 
         elif speed == 4: # extra long
