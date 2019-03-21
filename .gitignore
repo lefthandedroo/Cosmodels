@@ -102,6 +102,7 @@ ENV/
 *.e*
 *.o*
 *.pbs
+*.pbs~
 
 # mypy
 .mypy_cache/
