@@ -61,17 +61,14 @@ def stats(names, values, data_dict, sigma, nsteps,
                   %(i, theta_start))
 
     f=open(filename, "a+")
-    f.write('inside stats pre ensemble smapler'+'\n')
-    f.close()
+    f.write('inside stats pre EnsembleSampler'+'\n')
 
     # Sampler setup.
     times0 = time.time()    # starting sampler timer
     sampler = EnsembleSampler(nwalkers, ndim, ln.lnprob, pool=pool,
                               args=(data_dict, sigma, model_key, names))
 
-    f=open(filename, "a+")
-    f.write('inside stats after ensemble smapler'+'\n')
-    f.close()
+    f.write('inside stats starting burnin'+'\n')
 
     # Burnin.
     burnin = int(nsteps/4)  # steps to discard
@@ -82,18 +79,18 @@ def stats(names, values, data_dict, sigma, nsteps,
     print('_____ burnin end')
     sampler.reset()
 
-    f=open(filename, "a+")
-    f.write('inside stats after the burnin'+'\n')
-    f.close()
+    f.write('inside stats starting sampler'+'\n')
 
     # Starting sampler after burnin.
     print('_____ sampler start')
-    sampler.run_mcmc(pos, nsteps)
-
+#    sampler.run_mcmc(pos, nsteps)
+    for i, value in enumerate(sampler.sample(pos, iterations=nsteps)):
+        if (i+1) % 100 == 0:
+#            print("{0:5.1%}".format(float(i) / nsteps))
+            f.write("{0:5.1%}".format(float(i) / nsteps) +'\n')
     print('_____ sampler end')
     times1=time.time()      # stopping sampler timer
 
-    f=open(filename, "a+")
     f.write('inside stats sampler finished'+'\n')
     f.close()
 
@@ -102,7 +99,12 @@ def stats(names, values, data_dict, sigma, nsteps,
     bi = np.argmax(sampler.flatlnprobability)
 
     # Extracting results:
-    thetabest = np.zeros(ndim)
+    thetabest = sampler.flatchain[bi,:]
+    # Checking if best found parameters are within prior.
+    lp = ln.lnprior(thetabest, model_key)
+    if not np.isfinite(lp):
+        print('~~~~~~~thetabest outside of prior at magbest~~~~~~~')
+
     propert = {}
     propert['trace'] = sampler.chain[:, burnin:, :].reshape(-1, ndim) #trace
 
@@ -115,7 +117,6 @@ def stats(names, values, data_dict, sigma, nsteps,
 
     for i in range(ndim):
         param_initial = names[i][0]
-        best = sampler.flatchain[bi,i]
         # Fitted parameter.
         output = sampler.flatchain[:,i]
         # Standard deviation and mean of the emcee found distribution.
@@ -127,13 +128,6 @@ def stats(names, values, data_dict, sigma, nsteps,
             plots.stat_emcee(colours[i], output, values[i], names[i],
                        sampler.flatlnprobability, zpicks, mag, sigma,
                        nsteps, nwalkers, save_path, model_key)
-
-        thetabest[i] = best
-
-    # Checking if best found parameters are within prior.
-    lp = ln.lnprior(thetabest, model_key)
-    if not np.isfinite(lp):
-        print('~~~~~~~thetabest outside of prior at magbest~~~~~~~')
 
     if plot:
         # Plot of data mag and redshifts, overlayed with

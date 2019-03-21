@@ -153,7 +153,7 @@ class Model(object):
         return like
 
 firstderivs_functions = [None
-            ,'rainbow' # speed 5
+            ,'rainbow' # speed 6
             ,'niagara' # speed 4
             ,'kanangra' # speed 4
             ,'waterfall' # speed 3
