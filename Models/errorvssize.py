@@ -22,10 +22,12 @@ from emcee.utils import MPIPool
 
 import argparse
 
-parser = argparse.ArgumentParser(description="This program does stuff", usage="name_of_script --nsteps 2000 --xwalkers 10 --datapoints 10480", epilog="this is (optional) text added to the end of the help")
+parser = argparse.ArgumentParser(description="This program runs emcee on syntheitc SN Ia dataset of specified size", usage="name_of_script --model LCDM --nsteps 2000 --xwalkers 10 --datapoints 10480 --filename output.txt", epilog="this is (optional) text added to the end of the help")
 
 # argument: files to process
 # short flag (one character) followed by verbose flag
+parser.add_argument("-m", "--model",
+                    help="model to be fitted to data")
 parser.add_argument("-n", "--nsteps", type=int,
                     help="number of emcee steps per walker")
 parser.add_argument("-x", "--xwalkers", type=int,
@@ -39,19 +41,20 @@ args = parser.parse_args()
 timed = False
 plot = False
 
-node = 'master'
+node= 'master'
 try:
     pool = MPIPool()
     if not pool.is_master():
         node = 'worker'
-        print('worker')
+        print(node)
         pool.wait()
         sys.exit(0)
 except Exception as e:
     print('exception is = ',e)
-    print('pool = None')
     pool = None
-    plot = True
+    plot = False
+print('pool =', pool)
+print(node)
 
 if timed:
     import cProfile, pstats, io
@@ -66,14 +69,17 @@ else:
 
 f = open(filename,"w+")
 f.write('pool = '+str(pool)+'\n')
-f.close()
 
 # Script timer.
 timet0 = time.time()
-
+model_name = args.model
 nsteps = args.nsteps
 xwalkers = args.xwalkers
 datapoints = args.datapoints
+if model_name:
+    pass
+else:
+    model_name = 'LCDM'
 if nsteps:
     pass
 else:
@@ -117,8 +123,9 @@ test_keys = [None
 #            ,'rdecay_mxde'
 #            ,'rdecay'
 #            ,'interacting'
-            ,'LCDM'
+#            ,'LCDM'
 #            ,'rLCDM'
+             ,model_name
             ]
 min_z = 0.01012
 max_z = 2.26 # highest expected redshift for a type Ia supernova from pantheon
@@ -174,18 +181,15 @@ for key in test_keys:
 
                 data_dic = {'mag':nmag, 'zpicks':zpicks}
 
-                f=open(filename, "a+")
+                f = open(filename,"a+")
                 f.write('got to before stats'+'\n')
-                f.close()
 
                 print(f'--- {key} --------- run number {run}')
                 propert, sampler = stats.stats(names, values, data_dic,
                     sigma, nsteps, save_path, key, xwalkers=xwalkers, pool=None,
                     plot=plot, filename=filename)
 
-                f=open(filename, "a+")
                 f.write('after stats'+'\n')
-                f.close()
 
                 try:
                     pool.close()
@@ -194,12 +198,10 @@ for key in test_keys:
 #                output = propert, sampler
                 output_path = os.path.join(save_path, f'{key}_sigma{sigma}_npoints{npoints}.txt')
 #                pickle.dump(output, open(output_path, 'wb'))
-                print('-------------------------------- f.writing')
-                print(node,' node')
+                print('----------------------------- np.savetxt saving output')
                 output = sampler.flatchain[:, :]
                 np.savetxt(output_path, output)
 
-f=open(filename, "a+")
 f.write('after the loop')
 f.close()
 

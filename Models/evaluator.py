@@ -17,7 +17,7 @@ print('- - - - - - - - evaluator')
 timed = False
 
 # Number of emcee steps.
-nsteps = 2000
+nsteps = 1000
 
 # Statistical parameteres of noise: mean, standard deviation.
 mu, sigma = 0.0, 0.01 # sigma != 0

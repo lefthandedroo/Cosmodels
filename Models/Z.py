@@ -17,7 +17,7 @@ plt.rcParams['figure.facecolor'] = 'white'
 plt.rcParams['grid.color'] = 'white'
 
 # Data_name options 'synth, 'amanullah', 'pantheon', 'recent'.
-rootdir = './results_Bfactor/recent/0.07'
+rootdir = './results_Bfactor/recent/pantheon_sigma'
 
 print_marker = False
 
