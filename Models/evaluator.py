@@ -20,13 +20,13 @@ timed = False
 nsteps = 1000
 
 # Statistical parameteres of noise: mean, standard deviation.
-mu, sigma = 0.0, 0.01 # sigma != 0
+mu, sigma = 0.0, 0.001 # sigma != 0
 
 data_dic = {}
 
 dataname = 'pantheon'
 #dataname = 'LCDM_to_1089'
-#dataname = 'LCDM_to_2.26'
+dataname = 'LCDM_to_2.26'
 #dataname = 'specific_z'
 if dataname == 'pantheon':
     import pandas as pd
@@ -53,7 +53,7 @@ elif dataname == 'LCDM_to_1089':
 elif dataname == 'LCDM_to_2.26':
     print('-----Generating z up to z=2.26')
     # Generating artificial redshifts.
-    zpicks = np.sort(np.random.uniform(low=0.01012, high=2.26, size=(1048000,)))
+    zpicks = np.sort(np.random.uniform(low=0.01012, high=2.26, size=(1048,)))
     # Generating LCDM mag and da.
     names, values = ['Mcorr', 'matter'], np.array([-19.3, 0.3])
     mag, da = datasim.magn(names, values, {'zpicks':zpicks}, 'LCDM', plot_key=False)
@@ -72,7 +72,8 @@ elif dataname == 'specific_z':
     print(f'-----Using z={zpicks}')
 
 data_dic['zpicks'] = zpicks
-
+print(data_dic['zpicks'])
+print(print(data_dic['mag']))
 
 #p0 = ['Mcorr', 'm_ombar', 'gamma'], np.array([-19.3, 0.3, -1])
 #p1 = ['Mcorr', 'm_ombar', 'gamma'], np.array([-19.3, 0.3, 1])

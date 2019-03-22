@@ -64,21 +64,21 @@ for subdir, dirs, files in os.walk(rootdir):
             compare(LCDM_log_Z, model_name, model_log_Z)
 
 
-
-objects = ratio_dic.keys()
-y_pos = np.arange(len(objects))
+plt.figure()
+bfactors = np.arange(len(ratio_dic))
 performance = ratio_dic.values()
 threshold = 1
 fig, ax = plt.subplots()
-ax.bar(y_pos, performance, alpha=0.5)
+ax.bar(bfactors, performance, alpha=0.5)
 plt.axhline(y=0.1,lw=1, color="C{}".format(0), label='strong evidence for alternative')
 plt.axhline(y=0.3,lw=1, color="C{}".format(1), label='moderate evidence for alternative')
 plt.axhline(y=1,lw=1, color='k', label='weak evidence for alternative')
 plt.axhline(y=3,lw=1, color="C{}".format(2), label='weak evidence for LCDM')
 plt.axhline(y=10,lw=1,color="C{}".format(3), label='moderate evidence for LCDM')
 plt.axhline(y=10,lw=1, color="C{}".format(4), label='strong evidence for LCDM')
+for i, key in enumerate(ratio_dic):
+    plt.text(i-0.5, 30, key, {'ha': 'left', 'va': 'bottom'}, rotation=90)
 
-#plt.xticks(y_pos, objects)
+
 ax.set_yscale('log')
-plt.legend()
 plt.show()

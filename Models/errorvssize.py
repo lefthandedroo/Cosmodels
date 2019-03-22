@@ -15,7 +15,6 @@ from pathlib import Path
 import tools
 import os.path
 import stats
-import pickle
 
 import sys
 from emcee.utils import MPIPool
@@ -49,7 +48,8 @@ try:
         print(node)
         pool.wait()
         sys.exit(0)
-except Exception as e:
+except ValueError as e:
+#except Exception as e:
     print('exception is = ',e)
     pool = None
     plot = False
@@ -62,9 +62,7 @@ if timed:
     pr.enable()
 
 filename = args.filename
-if filename:
-        pass
-else:
+if not filename:
     filename = 'print.txt'
 
 f = open(filename,"w+")
@@ -72,30 +70,19 @@ f.write('pool = '+str(pool)+'\n')
 
 # Script timer.
 timet0 = time.time()
-model_name = args.model
+args_key = args.model
 nsteps = args.nsteps
 xwalkers = args.xwalkers
 datapoints = args.datapoints
-if model_name:
-    pass
-else:
-    model_name = 'LCDM'
-if nsteps:
-    pass
-else:
-    nsteps = 2000  # Number of emcee steps per walker
+if not args_key:
+    args_key = 'LCDM'
+if not nsteps:
+    nsteps = 1000  # Number of emcee steps per walker
+if not xwalkers:
+    xwalkers = 10
+if not datapoints:
+    datapoints = 10480
 print('nsteps',nsteps)
-
-if xwalkers:
-    pass
-else:
-   xwalkers = 10
-print('xwalkers',xwalkers)
-
-if datapoints:
-    pass
-else:
-   datapoints = 1048
 print('datapoints',datapoints)
 
 mu = 0.0        # Mean of noise added to LCDM to simulate data.
@@ -107,7 +94,7 @@ test_keys = [None
 #            ,'kanangra'
 #            ,'waterfall'
 #            ,'stepfall'
-#            ,'exotic'
+            ,'exotic'
 #            ,'late_intxde'
 #            ,'heaviside_late_int'
 #            ,'heaviside_sudden'
@@ -123,10 +110,11 @@ test_keys = [None
 #            ,'rdecay_mxde'
 #            ,'rdecay'
 #            ,'interacting'
+             ,args_key
 #            ,'LCDM'
 #            ,'rLCDM'
-             ,model_name
             ]
+
 min_z = 0.01012
 max_z = 2.26 # highest expected redshift for a type Ia supernova from pantheon
 
@@ -135,72 +123,75 @@ npoints_options = None,  datapoints, #1048, 10480, 104800, 1048000, 10480000
 run = 0
 
 for key in test_keys:
-    if key:
-        names, values = tools.names_values(key)
-        # Folder for saving output.
-        directory = f'{int(time.time())}_{key}'
-        # Relative path of output folder.
-        save_path = os.path.join('results_error_vs_data',directory)
-        if not os.path.exists(save_path):
-            os.makedirs(save_path, exist_ok=True)
-        for sigma in sigma_options:
-            if sigma:
-                pass
-            else:
+    if not key:
+        continue
+    names, values = tools.names_values(key)
+    # Folder for saving output.
+    directory = f'{int(time.time())}_{key}'
+    # Relative path of output folder.
+    save_path = os.path.join('results_error_vs_data',directory)
+    if not os.path.exists(save_path):
+        os.makedirs(save_path, exist_ok=True)
+    for sigma in sigma_options:
+        if not sigma:
+            continue
+        for npoints in npoints_options:
+            if not npoints:
                 continue
-            for npoints in npoints_options:
-                if npoints:
-                    pass
-                else:
-                    continue
-                run += 1
-                data_path = f'data/{npoints}_{max_z}_sigma_{sigma}.p'
-                my_file = Path(data_path)
-                if my_file.is_file():
-                    with open(data_path,'rb') as rfp: zpicks, nmag = pickle.load(rfp)
-                else:
-                    print(f'failed to get zpicks, nmag from {data_path}')
-                    # Generating redshifts.
-                    zpicks = np.random.uniform(low=min_z, high=max_z, size=(npoints,))
-                    zpicks = np.sort(zpicks, axis=None)
-                    if zpicks[-1] != max_z:
-                        zpicks[-1] = max_z
-                    data_dic = {'zpicks':zpicks}
-                    # Generating LCDM mag and da.
-                    mag, da = datasim.magn(['Mcorr', 'matter'], np.array([-19.3, 0.3]), data_dic, 'LCDM')
-                    # Adding noise to LCDM mag.
-                    nmag = datasim.gnoise(mag, mu, sigma)
+            run += 1
+            data_path = f'data/{npoints}_{max_z}_sigma_{sigma}.txt'
+            my_file = Path(data_path)
+            if my_file.is_file():
+                data = np.loadtxt(data_path)
+                zpicks, nmag = np.hsplit(data, 2)
+                plt.figure()
+                plt.scatter(zpicks, nmag)
+                plt.title('loaded data')
+                plt.show()
+            else:
+                print(f'failed to get zpicks, nmag from {data_path}')
+                # Generating redshifts.
+                zpicks = np.random.uniform(low=min_z, high=max_z, size=(npoints,))
+                zpicks = np.sort(zpicks, axis=None)
+                if zpicks[-1] != max_z:
+                    zpicks[-1] = max_z
+                data_dic = {'zpicks':zpicks}
+                # Generating LCDM mag and da.
+                mag, da = datasim.magn(['Mcorr', 'matter'], np.array([-19.3, 0.3]), data_dic, 'LCDM')
+                # Adding noise to LCDM mag.
+                nmag = datasim.gnoise(mag, mu, sigma)
 
-                    plt.figure()
-                    plt.title(f'Artificial data N={len(zpicks)}, $\sigma$={sigma}')
-                    plt.scatter(zpicks, nmag)
-                    plt.show(block=False)
+                plt.figure()
+                plt.title(f'Artificial data N={len(zpicks)}, $\sigma$={sigma}')
+                plt.scatter(zpicks, nmag)
+                plt.show(block=False)
 
-                    data = zpicks, nmag
-                    pickle.dump(data, open(data_path, 'wb'))
+                data = np.column_stack((zpicks, nmag))
+                np.savetxt(data_path, data)
+            nmag = nmag.flatten()
+            zpicks = zpicks.flatten()
+            data_dic = {'mag':nmag, 'zpicks':zpicks}
 
-                data_dic = {'mag':nmag, 'zpicks':zpicks}
+            f = open(filename,"a+")
+            f.write('got to before stats'+'\n')
 
-                f = open(filename,"a+")
-                f.write('got to before stats'+'\n')
+            print(f'--- {key} --------- run number {run}')
+            propert, sampler = stats.stats(names, values, data_dic,
+                sigma, nsteps, save_path, key, xwalkers=xwalkers, pool=None,
+                plot=plot, filename=filename)
 
-                print(f'--- {key} --------- run number {run}')
-                propert, sampler = stats.stats(names, values, data_dic,
-                    sigma, nsteps, save_path, key, xwalkers=xwalkers, pool=None,
-                    plot=plot, filename=filename)
+            f.write('after stats'+'\n')
 
-                f.write('after stats'+'\n')
-
-                try:
-                    pool.close()
-                except:
-                    pass
-#                output = propert, sampler
-                output_path = os.path.join(save_path, f'{key}_sigma{sigma}_npoints{npoints}.txt')
-#                pickle.dump(output, open(output_path, 'wb'))
-                print('----------------------------- np.savetxt saving output')
-                output = sampler.flatchain[:, :]
-                np.savetxt(output_path, output)
+            try:
+                pool.close()
+            except:
+                pass
+    #                output = propert, sampler
+            output_path = os.path.join(save_path, f'{key}_sigma{sigma}_npoints{npoints}.txt')
+    #                pickle.dump(output, open(output_path, 'wb'))
+            print('----------------------------- np.savetxt saving output')
+            output = sampler.flatchain[:, :]
+            np.savetxt(output_path, output)
 
 f.write('after the loop')
 f.close()
