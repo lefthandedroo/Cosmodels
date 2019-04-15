@@ -1,0 +1,7 @@
+Bfactor time:  15min 21s
+model = txgamma
+data = data/1048_2.26_sigma_0.001.p
+sigma = 0.001
+log(Z) = 5735.722096425429
+Information = 23.370149082212265
+speed = 2

@@ -5,6 +5,15 @@ Created on Wed Apr 18 21:45:40 2018
 
 @author: BallBlueMeercat
 """
+
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+mpl.style.use('default') # has to be switched on to set figure size
+mpl.style.use('fivethirtyeight')
+plt.rcParams['axes.facecolor'] = 'white'
+plt.rcParams['figure.facecolor'] = 'white'
+plt.rcParams['grid.color'] = 'white'
+
 import numpy as np
 import time
 import pickle
@@ -26,7 +35,7 @@ data_dic = {}
 
 dataname = 'pantheon'
 #dataname = 'LCDM_to_1089'
-dataname = 'LCDM_to_2.26'
+#dataname = 'LCDM_to_2.26'
 #dataname = 'specific_z'
 if dataname == 'pantheon':
     import pandas as pd
@@ -38,6 +47,11 @@ if dataname == 'pantheon':
     mag = pantheon.mb.values
     sigma = pantheon.dmb.values
     zpicks = pantheon.zhel.values
+    plt.figure()
+    plt.hist(sigma, 70, facecolor="C{}".format(5), label='pantheon errors')
+    plt.xlabel(r'$\delta$Mag')
+    plt.legend()
+    plt.show()
     data_dic['mag'] = mag
 elif dataname == 'LCDM_to_1089':
     print('-----Generating z up to z=1089')
@@ -72,8 +86,6 @@ elif dataname == 'specific_z':
     print(f'-----Using z={zpicks}')
 
 data_dic['zpicks'] = zpicks
-print(data_dic['zpicks'])
-print(print(data_dic['mag']))
 
 #p0 = ['Mcorr', 'm_ombar', 'gamma'], np.array([-19.3, 0.3, -1])
 #p1 = ['Mcorr', 'm_ombar', 'gamma'], np.array([-19.3, 0.3, 1])
@@ -138,7 +150,6 @@ def emcee():
     print('@@@@@@@ emcee @@@@@@@')
 
     for test_key in firstderivs_functions:
-
         if test_key:
             print('---',test_key)
             names, values = tools.names_values(test_key)
@@ -167,7 +178,7 @@ def emcee():
 
     return
 
-emcee()
+#emcee()
 
 if timed:
     pr.disable()

@@ -31,7 +31,7 @@ if timed:
 
 models = None, 'LCDM'
 noise_options = 0.001, None      #0.001, 0.01, 0.07, 0.14, 0.2
-npoints_options = None, 1048000  #1048, 10480, 104800, 1048000
+npoints_options = None, 10480000  #1048, 10480, 104800, 1048000
 
 for npoints in npoints_options:
     if not npoints: # skipping None to allow iteratng over a list of 1
@@ -76,6 +76,7 @@ for npoints in npoints_options:
                 for i in range(flatchain.ndim):
                     plt.figure()
                     plt.hist(flatchain[:,i], 50, color="C{}".format(i))
+                    plt.show()
 
 
 if timed:

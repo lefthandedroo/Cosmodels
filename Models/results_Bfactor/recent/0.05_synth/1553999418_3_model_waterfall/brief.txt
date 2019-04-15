@@ -1,0 +1,7 @@
+Bfactor time:  96min 46s
+model = waterfall
+data = data/1048_2.26_sigma_0.05.p
+sigma = 0.05
+log(Z) = 1617.1771513332644
+Information = 17.451649785783275
+speed = 3

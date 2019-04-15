@@ -86,7 +86,7 @@ def stats(names, values, data_dict, sigma, nsteps,
 #    sampler.run_mcmc(pos, nsteps)
     for i, value in enumerate(sampler.sample(pos, iterations=nsteps)):
         if (i+1) % 100 == 0:
-            print("{0:5.1%}".format(float(i) / nsteps))
+#            print("{0:5.1%}".format(float(i) / nsteps))
             f.write("{0:5.1%}".format(float(i) / nsteps) +'\n')
     print('_____ sampler end')
     times1=time.time()      # stopping sampler timer

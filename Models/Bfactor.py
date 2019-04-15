@@ -28,8 +28,8 @@ plot = False
 print('Bfactor')
 
 # Loading pantheon SN Ia data:
-dataname = 'pantheon'
-#dataname = 'synth'
+#dataname = 'pantheon'
+dataname = 'synth'
 
 if dataname == 'pantheon':
     import pandas as pd
@@ -47,8 +47,8 @@ if dataname == 'pantheon':
 #    plt.scatter(zpicks, mag)
 #    plt.show(block=False)
 elif dataname == 'synth':
-    mu, sigma = 0.0, 0.07    # Mean and standard deviation of the noise on the data.
-    npoints = 1048000
+    mu, sigma = 0.0, 0.001    # Mean and standard deviation of the noise on the data.
+    npoints = 1048
     min_z = 0.01012
     max_z = 2.26
     # Loading artificial LCDM SN Ia data:
@@ -153,7 +153,7 @@ class Model(object):
         return like
 
 firstderivs_functions = [None
-            ,'rainbow' # speed 6
+            ,'rainbow' # speed 5
             ,'niagara' # speed 4
             ,'kanangra' # speed 4
             ,'waterfall' # speed 3

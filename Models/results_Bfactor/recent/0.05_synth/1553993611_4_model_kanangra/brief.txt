@@ -1,0 +1,7 @@
+Bfactor time:  902min 38s
+model = kanangra
+data = data/1048_2.26_sigma_0.05.p
+sigma = 0.05
+log(Z) = 1613.3050922556142
+Information = 21.050263865628494
+speed = 4

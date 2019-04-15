@@ -1,0 +1,7 @@
+Bfactor time:  9min 44s
+model = rLCDM
+data = data/1048_2.26_sigma_0.9.p
+sigma = 0.9
+log(Z) = -1363.8002107056925
+Information = 6.572635642415435
+speed = 2

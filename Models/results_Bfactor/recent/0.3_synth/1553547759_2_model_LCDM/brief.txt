@@ -1,0 +1,7 @@
+Bfactor time:  7min 41s
+model = LCDM
+data = data/1048_2.26_sigma_0.3.p
+sigma = 0.3
+log(Z) = -258.67496665258255
+Information = 6.80281017821963
+speed = 2

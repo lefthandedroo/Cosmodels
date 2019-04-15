@@ -1,0 +1,7 @@
+Bfactor time:  8min 8s
+model = exotic
+data = data/1048_2.26_sigma_0.05.p
+sigma = 0.05
+log(Z) = 1619.0127453711991
+Information = 15.385154440694123
+speed = 2

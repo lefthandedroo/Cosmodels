@@ -1,0 +1,7 @@
+Bfactor time:  11min 40s
+model = late_int
+data = data/1048_2.26_sigma_0.05.p
+sigma = 0.05
+log(Z) = 1620.4371776512103
+Information = 14.312847741797668
+speed = 2

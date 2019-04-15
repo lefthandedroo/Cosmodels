@@ -1,0 +1,7 @@
+Bfactor time:  134min 56s
+model = rainbow
+data = data/1048_2.26_sigma_0.9.p
+sigma = 0.9
+log(Z) = -1372.7004838322912
+Information = 15.833651064800733
+speed = 5

@@ -1,0 +1,7 @@
+Bfactor time:  8min 26s
+model = expgamma
+data = data/1048_2.26_sigma_0.3.p
+sigma = 0.3
+log(Z) = -259.762975621634
+Information = 7.382790518901203
+speed = 2

@@ -1,0 +1,7 @@
+Bfactor time:  84min 54s
+model = stepfall
+data = data/1048_2.26_sigma_0.3.p
+sigma = 0.3
+log(Z) = -263.2490924234383
+Information = 10.897449490411276
+speed = 3

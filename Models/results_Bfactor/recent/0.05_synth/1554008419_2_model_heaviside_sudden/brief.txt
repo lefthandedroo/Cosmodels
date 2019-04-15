@@ -1,0 +1,7 @@
+Bfactor time:  23min 54s
+model = heaviside_sudden
+data = data/1048_2.26_sigma_0.05.p
+sigma = 0.05
+log(Z) = 1620.3620596454957
+Information = 14.354965266771842
+speed = 2

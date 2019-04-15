@@ -28,14 +28,14 @@ if timed:
     pr = cProfile.Profile()
     pr.enable()
 
-models = 'LCDM', 'exotic', 'stepfall'
+models = 'aLCDM', 'exotic'
 noise_options = 0.001, None      #0.001, 0.01, 0.07, 0.14, 0.2
-npoints_options = None, 1048000  #1048, 10480, 104800, 1048000
+npoints_options = None, 10480000  #1048, 10480, 104800, 1048000
 #yaxis_tick = fake y values for visual separation of da's (which are all at z=1089)
 yaxis_tick = 1, 2, 3
 msize = 70, 20, 50  # marker sizes to differentiate between scatter plots
 n_bin = 30, 10000 # histogram bin number
-n_bin = 30, 10000, 1000
+n_bin = 30, 100000, 1000
 f_dic = {}  # all non-normalised frequencies of D_A, as well as non-normalised frequencies corresponding to indecies where normalised y > 0.1.
 
 for npoints in npoints_options:
@@ -47,7 +47,7 @@ for npoints in npoints_options:
         da_list = []
         for test_key in models:
             if test_key:
-                filename = f'da_distribs/da_distrib_{test_key}_{noise}_{npoints}.p'
+                filename = f'da_distribs/txt_da_distrib_{test_key}_{noise}_{npoints}.p'
                 try:
                     with open(filename,'rb') as rfp: da_distrib = pickle.load(rfp)
                     file_open_indicator = 1

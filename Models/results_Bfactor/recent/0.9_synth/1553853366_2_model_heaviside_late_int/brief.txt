@@ -1,0 +1,7 @@
+Bfactor time:  16min 13s
+model = heaviside_late_int
+data = data/1048_2.26_sigma_0.9.p
+sigma = 0.9
+log(Z) = -1361.5692581031774
+Information = 4.547751730307027
+speed = 2

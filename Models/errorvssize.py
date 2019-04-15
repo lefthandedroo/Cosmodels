@@ -48,8 +48,8 @@ try:
         print(node)
         pool.wait()
         sys.exit(0)
-except ValueError as e:
-#except Exception as e:
+#except ValueError as e:
+except Exception as e:
     print('exception is = ',e)
     pool = None
     plot = False
@@ -94,7 +94,7 @@ test_keys = [None
 #            ,'kanangra'
 #            ,'waterfall'
 #            ,'stepfall'
-            ,'exotic'
+#            ,'exotic'
 #            ,'late_intxde'
 #            ,'heaviside_late_int'
 #            ,'heaviside_sudden'
@@ -120,6 +120,9 @@ max_z = 2.26 # highest expected redshift for a type Ia supernova from pantheon
 
 sigma_options = None, 0.001 #0.14, 0.2 #0.0001, 0.005, 0.007
 npoints_options = None,  datapoints, #1048, 10480, 104800, 1048000, 10480000
+#sigma_options = None, 0.001, #0.3, 0.15, 0.07, 0.03, 0.015, 0.007 #0.001
+#npoints_options = None, 100, 1000, 10000, 30000, 50000, 70000, 100000, 300000, 500000, 700000, 1000000 #datapoints
+
 run = 0
 
 for key in test_keys:
@@ -147,7 +150,7 @@ for key in test_keys:
                 plt.figure()
                 plt.scatter(zpicks, nmag)
                 plt.title('loaded data')
-                plt.show()
+                plt.show(block=False)
             else:
                 print(f'failed to get zpicks, nmag from {data_path}')
                 # Generating redshifts.
@@ -186,9 +189,12 @@ for key in test_keys:
                 pool.close()
             except:
                 pass
-    #                output = propert, sampler
+#            import pickle
+#            print('saving sampler with pickle as .p')
+#            output = propert, sampler
+#            output_path = os.path.join(save_path, f'{key}_sigma{sigma}_npoints{npoints}.p')
+#            pickle.dump(output, open(output_path, 'wb'))
             output_path = os.path.join(save_path, f'{key}_sigma{sigma}_npoints{npoints}.txt')
-    #                pickle.dump(output, open(output_path, 'wb'))
             print('----------------------------- np.savetxt saving output')
             output = sampler.flatchain[:, :]
             np.savetxt(output_path, output)

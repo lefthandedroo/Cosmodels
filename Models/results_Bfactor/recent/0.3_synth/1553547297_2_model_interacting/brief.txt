@@ -1,0 +1,7 @@
+Bfactor time:  7min 57s
+model = interacting
+data = data/1048_2.26_sigma_0.3.p
+sigma = 0.3
+log(Z) = -260.13238045584427
+Information = 7.735841517157411
+speed = 2

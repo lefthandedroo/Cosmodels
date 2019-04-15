@@ -1,0 +1,7 @@
+Bfactor time:  7min 51s
+model = rdecay_m
+data = data/1048_2.26_sigma_0.001.p
+sigma = 0.001
+log(Z) = 5730.083124366859
+Information = 28.573562986834986
+speed = 2

@@ -1,0 +1,7 @@
+Bfactor time:  99min 51s
+model = niagara
+data = data/1048_2.26_sigma_0.11.p
+sigma = 0.11
+log(Z) = 819.2521244306591
+Information = 21.631132902236118
+speed = 4

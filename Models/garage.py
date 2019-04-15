@@ -5,15 +5,28 @@ Created on Thu Sep 21 15:50:29 2017
 
 @author: BallBlueMeercat
 """
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+mpl.style.use('default') # has to be switched on to set figure size
+mpl.style.use('fivethirtyeight')
+plt.rcParams['axes.facecolor'] = 'white'
+plt.rcParams['figure.facecolor'] = 'white'
+plt.rcParams['grid.color'] = 'white'
 
-## Pantheon data:
-#import pandas as pd
-#pantheon = pd.read_csv('./data/lcparam_full_long.txt', sep=" ")
-#pantheon.set_index('name', inplace=True)
-#pantheon.sort_values('zhel', inplace=True)
-#mag = pantheon.mb.values
-#zpicks = pantheon.zhel.values
-#print('pantheon zpicks[-1]=',zpicks[-1])
+# Pantheon data:
+import pandas as pd
+pantheon = pd.read_csv('./data/lcparam_full_long.txt', sep=" ")
+pantheon.set_index('name', inplace=True)
+pantheon.sort_values('zhel', inplace=True)
+mag = pantheon.mb.values
+zpicks = pantheon.zhel.values
+dmag = pantheon.dmb.values
+
+plt.figure()
+data = plt.errorbar(zpicks, mag, yerr=dmag, fmt='.', lw=1, alpha=0.5)
+plt.ylabel('Mag')
+plt.xlabel(r'$z$')
+
 
 #run = 0
 #from pathlib import Path

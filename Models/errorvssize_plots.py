@@ -16,7 +16,7 @@ import os.path
 import pickle
 
 import matplotlib as mpl
-#mpl.style.use('default') # has to be switched on to set figure size
+mpl.style.use('default') # has to be switched on to set figure size
 mpl.style.use('fivethirtyeight')
 plt.rcParams['axes.facecolor'] = 'white'
 plt.rcParams['figure.facecolor'] = 'white'
@@ -59,12 +59,12 @@ sigma_list = []
 npoints_list = []
 sampler_list = []
 
-sigma_options = None, 0.01#, 0.07, 0.14, 0.2  #0.14, 0.2 #0.0001, 0.005, 0.007
-npoints_options = 1048, 10480, 104800, 1048000
+sigma_options = 0.3, 0.15, 0.07, 0.03, 0.015, 0.007 #0.001
+npoints_options = 100, 1000, 10000, 30000, 50000, 70000, 100000 #datapoints
 
-#N = len(sigma_options) * (len(npoints_options)) # Can't have None in options
-N = len(npoints_options) # Ca't have None in options
+N = len(sigma_options) * (len(npoints_options)) # Can't have None in options
 
+labels = 'M_corrected', 'Matter'
 
 for test_key in test_keys:
     if test_key:
@@ -75,17 +75,9 @@ for test_key in test_keys:
         if not os.path.exists(save_path):
             os.makedirs(save_path)
         for sigma in sigma_options:
-            if sigma:
-                pass
-            else:
-                continue
             for npoints in npoints_options:
-                if npoints:
-                    pass
-                else:
-                    continue
                 #retrieving results from errovsdatasize runs
-                file_path = f'results_error_vs_data/{test_key}/sigma{sigma}_npoints{npoints}.p'
+                file_path = f'results_error_vs_data/plots/{test_key}_sigma{sigma}_npoints{npoints}.p'
                 my_file = Path(file_path)
                 if my_file.is_file():
                     # results of emcee runs
@@ -134,53 +126,63 @@ for test_key in test_keys:
                 i+=1
 
             fig, ax = plt.subplots()
-            ax.scatter(npoints_list, sd, c="C{}".format(0))
+            ax.scatter(npoints_list, sd, c="C{}".format(1), label=labels[j])
 
             # Plotting sd vs dataset size.
             for i, txt in enumerate(sigma_list):
-                txt = str(txt) # noise on data
+                if txt == 0.3:
+                    txt = str(txt)
+                else:
+                    txt=''
                 ax.annotate(txt, (npoints_list[i], sd[i]))
 
-            plt.xlabel('Dataset size')
-            plt.ylabel('$\sigma$')
-            plt.title(sd_name+' vs dataset size'+
-                      '\n s.d. of noise labeled, model '+test_key)
+            plt.xlabel('Data set size')
+            plt.ylabel('Standard deviation')
+#            plt.xscale('log')
+#            plt.title(sd_name+' vs dataset size'+
+#                      '\n s.d. of noise labeled, model '+test_key)
+            plt.legend()
             stamp = str(int(time.time()))
             filename = str(stamp)+'_sd_of_'+sd_initial+'_.png'
             filename = os.path.join(save_path, filename)
             plt.savefig(filename)
 
-            # Plotting mean vs dataset size.
-            fig, ax = plt.subplots()
-            ax.scatter(npoints_list, mean, c="C{}".format(1))
-            for i, txt in enumerate(sigma_list):
-                txt = str(txt) # noise on data
-                ax.annotate(txt, (npoints_list[i], mean[i]))
-
-            plt.xlabel('Dataset size')
-            plt.ylabel('$\mu$')
-            plt.title(mean_name+' vs dataset size'+
-                      '\n s.d. of noise labeled, model '+test_key)
-            stamp = str(int(time.time()))
-            filename = str(stamp)+'_mean_of_'+mean_initial+'_.png'
-            filename = os.path.join(save_path, filename)
-            plt.savefig(filename)
+#            # Plotting mean vs dataset size.
+#            fig, ax = plt.subplots()
+#            ax.scatter(npoints_list, mean, c="C{}".format(1))
+#            for i, txt in enumerate(sigma_list):
+#                txt = str(txt) # noise on data
+#                ax.annotate(txt, (npoints_list[i], mean[i]))
+#
+#            plt.xlabel('Dataset size')
+#            plt.ylabel('$\mu$')
+#            plt.title(mean_name+' vs dataset size'+
+#                      '\n s.d. of noise labeled, model '+test_key)
+#            stamp = str(int(time.time()))
+#            filename = str(stamp)+'_mean_of_'+mean_initial+'_.png'
+#            filename = os.path.join(save_path, filename)
+#            plt.savefig(filename)
 
             # Plotting variance coefficient vs dataset size.
             if len(vc) == N:
                 fig, ax = plt.subplots()
-                ax.scatter(npoints_list, vc, c="C{}".format(2))
+                ax.scatter(npoints_list, vc, c="C{}".format(2), label=labels[j])
                 for i, txt in enumerate(sigma_list):
-                    txt = str(txt)
-#                    ax.annotate(txt, (npoints_list[i], vc[i]))
+                    if txt == 0.3:
+                        txt = str(txt)
+                    else:
+                        txt=''
+                    ax.annotate(txt, (npoints_list[i], vc[i]))
 
-                plt.xlabel('Dataset size')
-                plt.ylabel(r'$\sigma/ \mu \times 100$')
-                plt.title(vc_name+' vs dataset size'+
-                          '\n s.d. of noise labeled, model '+test_key)
+                plt.xlabel('Data set size')
+                plt.ylabel('Variance coefficient')
+#                plt.xscale('log')
+#                plt.title(vc_name+' vs dataset size'+
+#                          '\n s.d. of noise labeled, model '+test_key)
                 stamp = str(int(time.time()))
                 filename = str(stamp)+'_vc_of_'+vc_initial+'_.png'
                 filename = os.path.join(save_path, filename)
+                plt.legend()
                 plt.savefig(filename)
 
                 j+=1

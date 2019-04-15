@@ -1,0 +1,7 @@
+Bfactor time:  8min 10s
+model = gammaxxz
+data = data/1048_2.26_sigma_0.3.p
+sigma = 0.3
+log(Z) = -257.1942639862361
+Information = 6.393518164456651
+speed = 2

@@ -1,0 +1,7 @@
+Bfactor time:  11min 3s
+model = late_intxde
+data = data/1048_2.26_sigma_0.11.p
+sigma = 0.11
+log(Z) = 830.3502279172696
+Information = 10.239294407271927
+speed = 2
