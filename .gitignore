@@ -113,3 +113,14 @@ Models/output_errorvssize.txt
 Models/print.txt
 Models/testtt.txt
 Models/data/
+# not-yet-saved DNest4 output
+Models/levels.txt
+Models/plot_1.pdf
+Models/plot_2.pdf
+Models/plot_3.pdf
+Models/posterior_sample.txt
+Models/sample.txt
+Models/sample_info.txt
+Models/sampler_state.txt
+Models/weights.txt
+Models/hpc_times.xlsx

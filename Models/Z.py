@@ -20,11 +20,11 @@ plt.rcParams['grid.color'] = 'white'
 test_keys_order_dic = {'rainbow':22,'niagara':21,'kanangra':20,'waterfall':19,'stepfall':18,'exotic':17,'late_intxde':16,'heaviside_late_int':15,'heaviside_sudden':14,'late_int':13,'expgamma':12,'txgamma':11,'zxgamma':10,'gamma_over_z':9,'zxxgamma':8,'gammaxxz':7,'rdecay_m':6,'rdecay_de':5,'rdecay_mxde':4,'rdecay':3,'interacting':2,'LCDM':0,'rLCDM':1}
 
 # DNest4 output options sigma_synth = , sigma = 'pantheon', etc.
-#error_options = 'pantheon', 0.9, 0.3, 0.11, 0.07, 0.05, 0.001
-error_options = None, 0.9
+error_options = 'pantheon', 0.9, 0.3, 0.11, 0.07, 0.05, 0.001
+#error_options = None, 0.9
 txt_height = 25
 label_pos = 0 # 9 centre top, 0 top left
-print_marker = True
+print_marker = False
 
 for error in error_options:
 
@@ -59,6 +59,8 @@ for error in error_options:
             ndim= str(len(names))
             order = test_keys_order_dic[model_name]
             if np.isinf(Bfactor):
+                print(model_name)
+                print(log_Bfactor)
                 name_list[order] = f'{model_name} {ndim} infinite'
                 ratio_list[order] = 10e250
             else:

@@ -5,27 +5,40 @@ Created on Thu Sep 21 15:50:29 2017
 
 @author: BallBlueMeercat
 """
-import matplotlib.pyplot as plt
-import matplotlib as mpl
-mpl.style.use('default') # has to be switched on to set figure size
-mpl.style.use('fivethirtyeight')
-plt.rcParams['axes.facecolor'] = 'white'
-plt.rcParams['figure.facecolor'] = 'white'
-plt.rcParams['grid.color'] = 'white'
-
-# Pantheon data:
 import pandas as pd
-pantheon = pd.read_csv('./data/lcparam_full_long.txt', sep=" ")
-pantheon.set_index('name', inplace=True)
-pantheon.sort_values('zhel', inplace=True)
-mag = pantheon.mb.values
-zpicks = pantheon.zhel.values
-dmag = pantheon.dmb.values
+xl = pd.ExcelFile("hpc_times.xlsx")
+df = xl.parse("Sheet1")
+df_cores = df.cores.values
+df_time = df.time.values
+print(df_cores)
+print(df_time)
+#df_time_s = (df_time.dt.hour*60+df_time.dt.minute)*60 + df_time.dt.second
+#print(df_time_s)
 
-plt.figure()
-data = plt.errorbar(zpicks, mag, yerr=dmag, fmt='.', lw=1, alpha=0.5)
-plt.ylabel('Mag')
-plt.xlabel(r'$z$')
+
+
+
+#import matplotlib.pyplot as plt
+#import matplotlib as mpl
+#mpl.style.use('default') # has to be switched on to set figure size
+#mpl.style.use('fivethirtyeight')
+#plt.rcParams['axes.facecolor'] = 'white'
+#plt.rcParams['figure.facecolor'] = 'white'
+#plt.rcParams['grid.color'] = 'white'
+#
+## Pantheon data:
+#import pandas as pd
+#pantheon = pd.read_csv('./data/lcparam_full_long.txt', sep=" ")
+#pantheon.set_index('name', inplace=True)
+#pantheon.sort_values('zhel', inplace=True)
+#mag = pantheon.mb.values
+#zpicks = pantheon.zhel.values
+#dmag = pantheon.dmb.values
+#
+#plt.figure()
+#data = plt.errorbar(zpicks, mag, yerr=dmag, fmt='.', lw=1, alpha=0.5)
+#plt.ylabel('Mag')
+#plt.xlabel(r'$z$')
 
 
 #run = 0

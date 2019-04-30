@@ -23,19 +23,19 @@ import tools
 import datasim
 import stats
 print('- - - - - - - - evaluator')
-timed = False
+timed = True
 
 # Number of emcee steps.
-nsteps = 1000
+nsteps = 10000
 
 # Statistical parameteres of noise: mean, standard deviation.
 mu, sigma = 0.0, 0.001 # sigma != 0
 
 data_dic = {}
 
-dataname = 'pantheon'
+#dataname = 'pantheon'
 #dataname = 'LCDM_to_1089'
-#dataname = 'LCDM_to_2.26'
+dataname = 'LCDM_to_2.26'
 #dataname = 'specific_z'
 if dataname == 'pantheon':
     import pandas as pd
@@ -178,7 +178,7 @@ def emcee():
 
     return
 
-#emcee()
+emcee()
 
 if timed:
     pr.disable()

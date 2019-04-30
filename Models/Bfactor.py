@@ -28,8 +28,8 @@ plot = False
 print('Bfactor')
 
 # Loading pantheon SN Ia data:
-#dataname = 'pantheon'
-dataname = 'synth'
+dataname = 'pantheon'
+#dataname = 'synth'
 
 if dataname == 'pantheon':
     import pandas as pd
@@ -153,29 +153,29 @@ class Model(object):
         return like
 
 firstderivs_functions = [None
-            ,'rainbow' # speed 5
-            ,'niagara' # speed 4
-            ,'kanangra' # speed 4
-            ,'waterfall' # speed 3
-            ,'stepfall' # speed 3
-            ,'exotic'
-            ,'late_intxde'
-            ,'heaviside_late_int'
-            ,'heaviside_sudden' # didn't converge
-            ,'late_int'
-            ,'expgamma'
-            ,'txgamma'
-            ,'zxgamma'
-            ,'gamma_over_z'
-            ,'zxxgamma'        # gamma forced positive in firstderivs
-            ,'gammaxxz'        # gamma forced positive in firstderivs
-            ,'rdecay_m'
-            ,'rdecay_de'
-            ,'rdecay_mxde'
-            ,'rdecay'           # didn't converge
-            ,'interacting'
+#            ,'rainbow' # speed 5
+#            ,'niagara' # speed 4
+#            ,'kanangra' # speed 4
+#            ,'waterfall' # speed 3
+#            ,'stepfall' # speed 3
+#            ,'exotic'
+#            ,'late_intxde'
+#            ,'heaviside_late_int'
+#            ,'heaviside_sudden' # didn't converge
+#            ,'late_int'
+#            ,'expgamma'
+#            ,'txgamma'
+#            ,'zxgamma'
+#            ,'gamma_over_z'
+#            ,'zxxgamma'        # gamma forced positive in firstderivs
+#            ,'gammaxxz'        # gamma forced positive in firstderivs
+#            ,'rdecay_m'
+#            ,'rdecay_de'
+#            ,'rdecay_mxde'
+#            ,'rdecay'           # didn't converge
+#            ,'interacting'
             ,'LCDM'
-            ,'rLCDM'
+#            ,'rLCDM'
             ]
 
 for key in firstderivs_functions:
@@ -183,6 +183,7 @@ for key in firstderivs_functions:
         print(key)
         names, int_lim, speed = tools.names_intlim_speed(key)
 
+        speed = 0
         if int_lim:
             fluid_number = len(names) - 1 - len(int_lim)
         else:
