@@ -7,12 +7,12 @@ Created on Tue Feb 27 12:40:48 2018
 
 
 """
-import matplotlib.pyplot as plt
 import numpy as np
 import os
 import time
 from results import load
 
+import matplotlib.pyplot as plt
 import matplotlib as mpl
 mpl.style.use('default') # has to be switched on to set figure size
 mpl.style.use('fivethirtyeight')

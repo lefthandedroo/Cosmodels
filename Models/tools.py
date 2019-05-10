@@ -83,6 +83,7 @@ def names_values(test_key):
                            0.01, 0.01, 0.01, 0.01, 0.01,
                            0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                            0.0, 0.0, 0.0, 0.0, 0.0])
+        int_in = 12
     elif test_key == 'niagara':
         names = ['Mcorr',
                  'm_ombar', 'r_ombar', 'a_ombar', 'b_ombar', 'c_ombar',
@@ -94,6 +95,8 @@ def names_values(test_key):
                            0.01, 0.01, 0.01, 0.01,
                            0.0, 0.0, 0.0, 0.0,
                            0.0, 0.0, 0.0, 0.0, 0.0])
+        int_in = 10
+
     elif test_key == 'kanangra':
         names = ['Mcorr',
                  'm_ombar', 'r_ombar', 'a_ombar', 'b_ombar', 'c_ombar',
@@ -103,6 +106,8 @@ def names_values(test_key):
                            0.3, 0.025, 0.01, 0.01, 0.01,
                            0.01,0.01,
                            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+        int_in = 8
+
     elif test_key == 'waterfall':
         names = ['Mcorr',
                  'm_ombar', 'r_ombar', 'a_ombar', 'b_ombar', 'c_ombar',
@@ -110,23 +115,32 @@ def names_values(test_key):
         values = np.array([-19.3,
                            0.3, 0.025, 0.1, 0.1, 0.1,
                            0.0, 0.0, 0.0, 0.0, 0.0])
+        int_in = 6
+
     elif test_key == 'stepfall':
         names = ['Mcorr', 'm_ombar', 'r_ombar', 'a_ombar',
                  'v_in', 'w_in', 'x_in']
         values = np.array([-19.3, 0.3, 0.025, 0.1, 0.0, 0.0, 0.0])
+        int_in = 4
+
     elif test_key == 'exotic':
         names = ['Mcorr', 'm_ombar', 'r_ombar', 'gamma', 'zeta']
         values = np.array([-19.3, 0.3, 0.025, 0.0, 0.0])
+        int_in = 3
     elif test_key == 'rLCDM':
         names = ['Mcorr', 'm_ombar', 'r_ombar']
         values = np.array([-19.3, 0.3, 0.025])
+        int_in = len(values)
     elif test_key == 'LCDM':
         names = ['Mcorr', 'm_ombar']
         values = np.array([-19.3, 0.3])
+        int_in = len(values)
     else:
         names = ['Mcorr', 'm_ombar','gamma']
         values = np.array([-19.3, 0.3, -0.0])
-    return names, values
+        int_in = 2
+
+    return names, values, int_in
 
 def names_intlim_speed(key):
     # speed: from prior = 0, short = 1, medium = 2, long = 3, extra long 4.

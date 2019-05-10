@@ -69,7 +69,7 @@ labels = 'M_corrected', 'Matter'
 for test_key in test_keys:
     if test_key:
         # parameter names and values used as input
-        names, values = tools.names_values(test_key)
+        names, values, int_in = tools.names_values(test_key)
         # Relative path to folder for saving output.
         save_path = os.path.join('results_error_vs_data_plots',test_key)
         if not os.path.exists(save_path):

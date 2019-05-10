@@ -5,8 +5,6 @@ Created on Fri Feb 23 16:02:10 2018
 
 @author: BallBlueMeercat
 """
-import matplotlib as mpl
-import matplotlib.pyplot as plt
 from emcee import EnsembleSampler
 import numpy as np
 import time
@@ -17,8 +15,13 @@ import tools
 import ln
 import plots
 
+
+
+
+
 def stats(names, values, data_dict, sigma, nsteps,
-          save_path, model_key, xwalkers=10, pool=None, plot=False, filename='print.txt'):
+          save_path, model_key, int_in, xwalkers=10,
+          pool=None, plot=False, filename='print.txt'):
     """
     Takes in:
         test_params = list of dictionaries {string:value} of names and
@@ -41,13 +44,20 @@ def stats(names, values, data_dict, sigma, nsteps,
         propert, sampler
     """
 
+    import matplotlib as mpl
+    import matplotlib.pyplot as plt
+    mpl.style.use('default') # has to be switched on to set figure size
+    mpl.style.use('fivethirtyeight')
+    plt.rcParams['axes.facecolor'] = 'white'
+    plt.rcParams['figure.facecolor'] = 'white'
+    plt.rcParams['grid.color'] = 'white'
+
     zpicks = data_dict.get('zpicks',0)
     mag = data_dict.get('mag',0)
 
     # emcee parameters:
     ndim = len(values)
     nwalkers = int(ndim * xwalkers)
-    print('stats xwalkers', xwalkers)
 
     # Initializing walkers.
     pos = [values + 0.001*np.random.randn(ndim) for i in range(nwalkers)]
@@ -55,7 +65,7 @@ def stats(names, values, data_dict, sigma, nsteps,
     # Are walkers starting outside of prior?
     for i in range(nwalkers):
         theta_start = pos[i]
-        lp = ln.lnprior(theta_start, model_key)
+        lp = ln.lnprior(theta_start, model_key, int_in)
         if not np.isfinite(lp):
             print('~~~~~~~pos[%s] (outside of prior) = %s ~~~~~~~'
                   %(i, theta_start))
@@ -66,7 +76,7 @@ def stats(names, values, data_dict, sigma, nsteps,
     # Sampler setup.
     times0 = time.time()    # starting sampler timer
     sampler = EnsembleSampler(nwalkers, ndim, ln.lnprob, pool=pool,
-                              args=(data_dict, sigma, model_key, names))
+                              args=(data_dict, sigma, model_key, names, int_in))
 
     f.write('inside stats starting burnin'+'\n')
 
@@ -84,7 +94,8 @@ def stats(names, values, data_dict, sigma, nsteps,
     # Starting sampler after burnin.
     print('_____ sampler start')
 #    sampler.run_mcmc(pos, nsteps)
-    for i, value in enumerate(sampler.sample(pos, iterations=nsteps)):
+    for i, value in enumerate(sampler.run_mcmc(pos, nsteps)):
+#    for i, value in enumerate(sampler.sample(pos, iterations=nsteps)):
         if (i+1) % 100 == 0:
 #            print("{0:5.1%}".format(float(i) / nsteps))
             f.write("{0:5.1%}".format(float(i) / nsteps) +'\n')
@@ -101,20 +112,21 @@ def stats(names, values, data_dict, sigma, nsteps,
     # Extracting results:
     thetabest = sampler.flatchain[bi,:]
     # Checking if best found parameters are within prior.
-    lp = ln.lnprior(thetabest, model_key)
+    lp = ln.lnprior(thetabest, model_key, int_in)
     if not np.isfinite(lp):
         print('~~~~~~~thetabest outside of prior at magbest~~~~~~~')
 
     propert = {}
     propert['trace'] = sampler.chain[:, burnin:, :].reshape(-1, ndim) #trace
 
-    colours = ['light red','berry', 'coral', 'amber', 'apple',
+    colours = ['light red', 'berry', 'coral', 'amber', 'apple',
         'aquamarine', 'raspberry', 'green blue', 'deep blue',
         'emerald', 'blue violet', 'dark violet', 'yellow orange',
         'light red', 'berry', 'coral', 'amber', 'apple', 'aquamarine',
         'raspberry', 'green blue', 'deep blue', 'emerald', 'blue violet',
         'dark violet', 'black']
 
+    chain_len = len(sampler.chain[:, :, :].reshape((-1, ndim)))
     for i in range(ndim):
         param_initial = names[i][0]
         # Fitted parameter.
@@ -127,23 +139,39 @@ def stats(names, values, data_dict, sigma, nsteps,
         if plot:
             plots.stat_emcee(colours[i], output, values[i], names[i],
                        sampler.flatlnprobability, zpicks, mag, sigma,
-                       nsteps, nwalkers, save_path, model_key)
+                       chain_len, nwalkers, save_path, model_key)
 
     if plot:
         # Plot of data mag and redshifts, overlayed with
         # mag simulated using emcee best parameters and data redshifts.
         magbest, dabest = datasim.magn(names, thetabest, data_dict, model_key)
         plt.figure()
-        plt.title('model: '+model_key
-            +'\n Evolution of magnitude with redshift \n nsteps: '
-            +str(nsteps)+', noise: '+str(sigma)+', npoints: '+str(len(zpicks)))
-        data = plt.errorbar(zpicks, mag, yerr=sigma, fmt='.', alpha=0.3)
-        best_fit = plt.scatter(zpicks, magbest, lw='1', c='xkcd:tomato')
+        plt.errorbar(zpicks, mag, yerr=sigma, fmt='.', alpha=0.3, label='Data')
+        for index in np.random.randint(len(sampler.flatchain[:,:]), size=20):
+            thetaa = sampler.flatchain[index, :]
+            magg, daa = datasim.magn(names, thetaa, data_dict, model_key)
+            plt.plot(zpicks, magg, color='xkcd:berry', alpha=0.1, lw='2')
+        plt.plot(zpicks, magbest, color='xkcd:berry', alpha=0.1, lw='2', label=model_key)
         plt.ylabel('magnitude')
         plt.xlabel('z')
-        plt.legend([data, best_fit], ['LCDM', model_key])
+        plt.legend()
         stamp = str(int(time.time()))
-        filename = str(stamp)+'____magz__nsteps_'+str(nsteps)+'_nwalkers_' \
+        filename = str(stamp)+'____magz__nsteps_'+str(chain_len)+'_nwalkers_' \
+        +str(nwalkers)+'_noise_'+str(sigma)+'_numpoints_'+str(len(zpicks))+'.png'
+        filename = os.path.join(save_path, filename)
+        plt.savefig(filename)
+
+        plt.figure()
+        for index in np.random.randint(len(sampler.flatchain[:,:]), size=20):
+            thetaa = sampler.flatchain[index, :]
+            magg, daa = datasim.magn(names, thetaa, data_dict, model_key)
+            plt.plot(zpicks, mag-magg, color='xkcd:berry', alpha=0.1, lw='2')
+        plt.plot(zpicks, mag-magbest, color='xkcd:berry', alpha=0.1, lw='2', label='Data-'+model_key)
+        plt.ylabel('magnitude')
+        plt.xlabel('z')
+        plt.legend()
+        stamp = str(int(time.time()))
+        filename = str(stamp)+'____mres__nsteps_'+str(chain_len)+'_nwalkers_' \
         +str(nwalkers)+'_noise_'+str(sigma)+'_numpoints_'+str(len(zpicks))+'.png'
         filename = os.path.join(save_path, filename)
         plt.savefig(filename)
@@ -152,9 +180,9 @@ def stats(names, values, data_dict, sigma, nsteps,
         import corner
         mpl.style.use('default')
         samples = sampler.chain[:, :, :].reshape((-1, ndim))
-        corner.corner(samples, labels=names, truths=values)
+        corner.corner(samples, labels=names, quantiles=[0.16, 0.5, 0.84], truths=values, show_titles=True)
         stamp = str(int(time.time()))
-        filename = str(stamp)+'____corn__nsteps_'+str(nsteps)+'_nwalkers_' \
+        filename = 'corn_'+model_key+'__nsteps_'+str(chain_len)+'_nwalkers_' \
         +str(nwalkers)+'_noise_'+str(sigma)+'_numpoints_'+str(len(zpicks))+'.png'
         filename = os.path.join(save_path, filename)
         plt.savefig(filename)
@@ -171,7 +199,7 @@ def stats(names, values, data_dict, sigma, nsteps,
     print('nsteps:', str(nsteps))
     print('ndim:',str(ndim))
     print('nwalkers:', str(nwalkers))
-    print('len(sampler.chain[:, :, :].reshape((-1, ndim))):', str(len(sampler.chain[:, :, :].reshape((-1, ndim)))))
+    print('len chains:', str(chain_len))
     print('sigma:', str(sigma))
     print('npoints:', str(len(zpicks)))
     print('model:', model_key)

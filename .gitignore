@@ -124,3 +124,7 @@ Models/sample_info.txt
 Models/sampler_state.txt
 Models/weights.txt
 Models/hpc_times.xlsx
+Models/results_emcee/1557388963_rainbow/sampler.p
+Models/results_emcee/1557390839_niagara/sampler.p
+Models/results_emcee/1557391965_kanangra/sampler.p
+Models/results_emcee/1557392732_waterfall/sampler.p

@@ -5,26 +5,70 @@ Created on Thu Sep 21 15:50:29 2017
 
 @author: BallBlueMeercat
 """
-import pandas as pd
-xl = pd.ExcelFile("hpc_times.xlsx")
-df = xl.parse("Sheet1")
-df_cores = df.cores.values
-df_time = df.time.values
-print(df_cores)
-print(df_time)
-#df_time_s = (df_time.dt.hour*60+df_time.dt.minute)*60 + df_time.dt.second
-#print(df_time_s)
 
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+mpl.style.use('default') # has to be switched on to set figure size
+mpl.style.use('fivethirtyeight')
+plt.rcParams['axes.facecolor'] = 'white'
+plt.rcParams['figure.facecolor'] = 'white'
+plt.rcParams['grid.color'] = 'white'
 
+steps=[25, 250, 2500, 25000, 250000]
+times = [2, 4, 31, 287, 2760]
 
-
-#import matplotlib.pyplot as plt
-#import matplotlib as mpl
-#mpl.style.use('default') # has to be switched on to set figure size
-#mpl.style.use('fivethirtyeight')
-#plt.rcParams['axes.facecolor'] = 'white'
-#plt.rcParams['figure.facecolor'] = 'white'
-#plt.rcParams['grid.color'] = 'white'
+fig, ax = plt.subplots()
+ax.scatter(times, steps, color="C{}".format(6), s=70, zorder=2)
+for i, txt in enumerate(steps):
+    txt = str(txt)
+    ax.annotate(txt, (times[i], steps[i]))
+plt.plot(times, steps, zorder=1, color="C{}".format(7))
+plt.xscale('log')
+plt.ylabel('MCMC steps')
+plt.yticks([])
+plt.xlabel('Time (s)')
+plt.show()
+#
+#cores = [
+#1,1,1,1,1,2,2,2,2,2,2,2,2,4,4,4,4,7,7,7,7,7,7,10,10,10,10,13,13,13,13,15,15,15,15,18,18,18,18,19,19,19,19,19,20,20,20,20
+#]
+#
+#times =[
+#'00:03:08','00:03:27','00:03:17','00:02:32','00:03:19','00:09:37',None,None,None,'00:07:49',None,None,'00:06:42','00:31:48','00:34:07','00:32:06','00:28:57','00:55:02','00:56:28','00:53:30','00:52:05',None,None,'00:58:47','00:19:20','00:59:00','00:58:55','01:37:53','01:02:26','01:38:16','01:00:29','01:11:35','01:04:18','01:03:42','01:03:49','01:24:09','01:51:12','01:51:48','00:58:29','00:28:37','00:38:28',None,'01:07:49','00:41:56','00:47:51','00:49:21','00:59:21','00:48:16'
+#]
+#
+#cores_dic = {}
+#key = 1
+#time_list = []
+#for i, core in enumerate(cores):
+#    if core != key:
+#        cores_dic[key] = time_list
+#        key = core
+#        time_list = []
+#    str_time = times[i]
+#    if str_time:
+#        min_time = int(str_time[:2])*60 +int(str_time[3:5]) +float(str_time[6:])/60
+#        time_list.append(min_time)
+#
+#error_list = []
+#
+#for core in cores_dic:
+#    time_list = cores_dic[core]
+#    mean_time = sum(time_list)/len(time_list)
+#    time_min = min(time_list)
+#    time_max = max(time_list)
+#    cores_dic[core] = mean_time
+#    error_list.append((time_max-time_min)/2)
+#
+#times = cores_dic.values()
+#cores = cores_dic.keys()
+#
+#ax = plt.figure().gca()
+#plt.scatter(cores, times)
+#plt.errorbar(cores, times, yerr=error_list, color="C{}".format(5), fmt='.', alpha=0.3)
+#ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+#plt.ylabel('Minutes')
+#plt.xlabel('Cores')
 #
 ## Pantheon data:
 #import pandas as pd

@@ -23,7 +23,8 @@ import tools
 import datasim
 import stats
 print('- - - - - - - - evaluator')
-timed = True
+timed = False
+plot = True # emcee plots
 
 # Number of emcee steps.
 nsteps = 10000
@@ -33,9 +34,9 @@ mu, sigma = 0.0, 0.001 # sigma != 0
 
 data_dic = {}
 
-#dataname = 'pantheon'
+dataname = 'pantheon'
 #dataname = 'LCDM_to_1089'
-dataname = 'LCDM_to_2.26'
+#dataname = 'LCDM_to_2.26'
 #dataname = 'specific_z'
 if dataname == 'pantheon':
     import pandas as pd
@@ -47,11 +48,11 @@ if dataname == 'pantheon':
     mag = pantheon.mb.values
     sigma = pantheon.dmb.values
     zpicks = pantheon.zhel.values
-    plt.figure()
-    plt.hist(sigma, 70, facecolor="C{}".format(5), label='pantheon errors')
-    plt.xlabel(r'$\delta$Mag')
-    plt.legend()
-    plt.show()
+#    plt.figure()
+#    plt.hist(sigma, 70, facecolor="C{}".format(5), label='pantheon errors')
+#    plt.xlabel(r'$\delta$Mag')
+#    plt.legend()
+#    plt.show()
     data_dic['mag'] = mag
 elif dataname == 'LCDM_to_1089':
     print('-----Generating z up to z=1089')
@@ -106,29 +107,29 @@ data_dic['zpicks'] = zpicks
 #datasim.model_comparison([p1], data_dic, ['rainbow'], plot_key=True)
 
 firstderivs_functions = [None
-#            ,'rainbow'
-#            ,'niagara'
-#            ,'kanangra'
-#            ,'waterfall'
-#            ,'stepfall'
-#            ,'exotic'
-#            ,'late_intxde'
-#            ,'heaviside_late_int'
-#            ,'heaviside_sudden'
-#            ,'late_int'
-#            ,'expgamma'
-#            ,'txgamma'         # doesn't converge
-#            ,'zxgamma'
-#            ,'gamma_over_z'    # doesn't converge
-#            ,'zxxgamma'        # gamma forced positive in firstderivs
-#            ,'gammaxxz'        # gamma forced positive in firstderivs
-#            ,'rdecay_m'
-#            ,'rdecay_de'
-#            ,'rdecay_mxde'
-#            ,'rdecay'
-#            ,'interacting'
+            ,'rainbow'
+            ,'niagara'
+            ,'kanangra'
+            ,'waterfall'
+            ,'stepfall'
+            ,'exotic'
+            ,'late_intxde'
+            ,'heaviside_late_int'
+            ,'heaviside_sudden'
+            ,'late_int'
+            ,'expgamma'
+            ,'txgamma'
+            ,'zxgamma'
+            ,'gamma_over_z'
+            ,'zxxgamma'        # gamma forced positive in firstderivs
+            ,'gammaxxz'        # gamma forced positive in firstderivs
+            ,'rdecay_m'
+            ,'rdecay_de'
+            ,'rdecay_mxde'
+            ,'rdecay'
+            ,'interacting'
             ,'LCDM'
-#            ,'rLCDM'
+            ,'rLCDM'
             ]
 
 if timed:
@@ -140,8 +141,8 @@ def modelcheck():
     for test_key in firstderivs_functions:
         if test_key:
             print('---',test_key)
-            names, values = tools.names_values(test_key)
-            datasim.magn(names, values, data_dic, test_key, plot_key=True)
+            names, values, int_in = tools.names_values(test_key)
+            datasim.magn(names, values, data_dic, test_key, plot=True)
     return
 
 #modelcheck()
@@ -152,7 +153,7 @@ def emcee():
     for test_key in firstderivs_functions:
         if test_key:
             print('---',test_key)
-            names, values = tools.names_values(test_key)
+            names, values, int_in = tools.names_values(test_key)
 
             # Creating a folder for saving output.
 
@@ -166,7 +167,7 @@ def emcee():
             # emcee parameter search.
             propert, sampler = stats.stats(names, values, data_dic,
                                            sigma, nsteps, save_path,
-                                           test_key, plot=1)
+                                           test_key, int_in, plot=plot)
             # Time taken by script.
             timet1=time.time()
             tools.timer('script', timet0, timet1)

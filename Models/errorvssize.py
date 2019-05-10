@@ -128,7 +128,7 @@ run = 0
 for key in test_keys:
     if not key:
         continue
-    names, values = tools.names_values(key)
+    names, values, int_in = tools.names_values(key)
     # Folder for saving output.
     directory = f'{int(time.time())}_{key}'
     # Relative path of output folder.
@@ -180,7 +180,7 @@ for key in test_keys:
 
             print(f'--- {key} --------- run number {run}')
             propert, sampler = stats.stats(names, values, data_dic,
-                sigma, nsteps, save_path, key, xwalkers=xwalkers, pool=None,
+                sigma, nsteps, save_path, key, int_in, xwalkers=xwalkers, pool=None,
                 plot=plot, filename=filename)
 
             f.write('after stats'+'\n')

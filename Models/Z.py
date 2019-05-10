@@ -55,7 +55,7 @@ for error in error_options:
                 print(model_name, model_log_Z)
             log_Bfactor = LCDM_log_Z - model_log_Z
             Bfactor = np.exp(log_Bfactor)
-            names, values = tools.names_values(model_name)
+            names, values, int_n = tools.names_values(model_name)
             ndim= str(len(names))
             order = test_keys_order_dic[model_name]
             if np.isinf(Bfactor):

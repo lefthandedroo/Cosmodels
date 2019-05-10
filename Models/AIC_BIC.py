@@ -49,7 +49,7 @@ for error in error_options:
             model_name = directory[19:]
             order = test_keys_order_dic[model_name]
 
-            names, values = tools.names_values(model_name)
+            names, values, int_in = tools.names_values(model_name)
             ndim = len(names)
 
 
