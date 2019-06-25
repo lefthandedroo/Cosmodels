@@ -646,3 +646,68 @@ Bfactor.py
 #log(Z) = -16070.356294581907
 #Information = 9.449718869756907 nats.
 #Effective sample size = 142.47418654118337
+
+plot.py multi_modelcheck
+
+#    # Evolution of the angular diameter distance.
+#    plt.figure()
+##    plt.title('Angular diameter distance evolution'+f'\n Models: {model_names}')
+#    plt.xlabel('z')
+#    plt.ylabel(r'$ (H_0/c) \ D_A $')
+#    for i in range(len(da)):
+#        plt.plot(zpicks, da[i], label='$\gamma$ = %d, %s'%(int_terms[i], keys[i]))
+#    plt.legend()
+
+#     # Evolution of dV.
+#    plt.figure()
+##    plt.title(r'$d_V$ evolution, models: %s.'%(model_names))
+#    plt.xlabel('z')
+#    plt.ylabel(r'$ d_V (z)$ [Mpc]')
+#    for i in range(len(dV)):
+#        plt.plot(zpicks, dV[i], label='$\gamma$ = %d, %s'%(int_terms[i], keys[i]))
+#    plt.legend()
+
+#    # Luminosity distance vs redshift.
+#    plt.figure()
+#    plt.xlabel('$z$')
+#    plt.ylabel('$D_L$*($H_0$/c)')
+#    for i in range(len(dl)):
+#        plt.plot(zpicks, dl[0], label='$\gamma$ = %d, %s'%(int_terms[i], keys[i]))
+##    plt.title('$d_L$ evolution, models: %s.'%(model_names))
+#    plt.legend()
+#
+#    # H vs redshift.
+#    plt.figure()
+#    plt.xlabel('$z$')
+#    plt.ylabel('H')
+#    for i in range(len(Hz)):
+#        plt.plot(zpicks, Hz[i], label='$\gamma$ = %d, %s'%(int_terms[i], keys[i]))
+##    plt.title('H evolution, models: %s.'%(model_names))
+#    plt.legend()
+#
+#    # Scale factor vs redshift.
+#    plt.figure()
+#    plt.xlabel('$z$')
+#    plt.ylabel('a')
+#    for i in range(len(a)):
+#        plt.plot(zpicks, a[0], label='$\gamma$ = %d, %s'%(int_terms[i], keys[i]))
+##    plt.title('Scale factor evolution, models: %s.'%(model_names))
+#    plt.legend()
+#
+#    # Scale factor vs age.
+#    plt.figure()
+#    plt.xlabel('Age')
+#    plt.ylabel('a')
+#    for i in range(len(age)):
+#        plt.plot(age[i], a[i], label='$\gamma$ = %d, %s'%(int_terms[i], keys[i]))
+##    plt.title('Scale factor evolution, models: %s.'%(model_names))
+#    plt.legend()
+#
+#    # Redshift vs age.
+#    plt.figure()
+#    plt.xlabel('Age')
+#    plt.ylabel('$z$')
+#    for i in range(len(age)):
+#        plt.plot(age[i], zpicks, label='$\gamma$ = %d'%(int_terms[i]))
+##    plt.title('Redshift evolution, models: %s.'%(model_names))
+#    plt.legend()

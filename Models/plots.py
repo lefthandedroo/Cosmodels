@@ -19,6 +19,7 @@ mpl.style.use('fivethirtyeight')
 plt.rcParams['axes.facecolor'] = 'white'
 plt.rcParams['figure.facecolor'] = 'white'
 plt.rcParams['grid.color'] = 'white'
+plt.rcParams.update({'figure.autolayout': True})
 
 def stat_emcee(hue, var, var_true, var_name, slnprob, zpicks,
           mag, sigma, nsteps, nwalkers, save_path, firstderivs_key):
@@ -411,6 +412,9 @@ def modelcheck(mag, input_zpicks, plot_var, firstderivs_key):
 
 
 def multi_modelcheck(data, keys, plot_var_list):
+    '''
+    For 1 interaction term models.
+    '''
     print('multi_modelcheck')
 
     zpicks = data['zpicks']
@@ -450,109 +454,184 @@ def multi_modelcheck(data, keys, plot_var_list):
         item = -item
         age.append(item)
 
-    # Fluid evolution.
-    plt.figure()
-    plt.xlabel('$z$')
-    plt.ylabel(r'$\bar \Omega $')
-    for i in range(len(fluid_arr)):
-        for j in range(len(fluid_arr[i])):
-            if j % 2 == 0:
-                linestyle=(0, ())
-                plt.plot(zpicks, fluid_arr[i][j], lw=2, color="C{}".format(i), ls=linestyle, label='$\gamma$ = %s'%(int_terms[i]))
-            else:
-                linestyle=(0, (3, 1, 1, 1))
-                plt.plot(zpicks, fluid_arr[i][j], lw=2, color="C{}".format(i), ls=linestyle)
-#    plt.title(r'$\bar \Omega_{X}$, models: %s.'%(model_names))
-    plt.legend()
-
     # log x axis fluid evolution vs redshift.
-    plt.figure()
+    fig = plt.figure()
     plt.xlabel('$z$')
     plt.ylabel(r'$\bar \Omega $')
     for i in range(len(fluid_arr)):
         for j in range(len(fluid_arr[i])):
             if j % 2 == 0:
                 linestyle=(0, ())
-                plt.semilogx(zpicks, fluid_arr[i][j], lw=2, color="C{}".format(i), ls=linestyle, label='$\gamma$ = %s'%(int_terms[i]))
+                # making float int terms display w/o full stop in legend
+                legend_n = str(int_terms[i])[1:-1]
+                if legend_n[-1] == '.':
+                    legend_n = legend_n[0:-1]
+                plt.semilogx(zpicks, fluid_arr[i][j], lw=2, color="C{}".format(i), ls=linestyle, label=f'$\gamma$ = {legend_n}')
             else:
                 linestyle=(0, (3, 1, 1, 1))
                 plt.semilogx(zpicks, fluid_arr[i][j], lw=2, color="C{}".format(i), ls=linestyle)
 #    plt.title(r'$\bar \Omega_{X}$, models: %s.'%(model_names))
     plt.legend()
+    filename = 'a1_'+str(model_name)+'_evo_slog.png'
+    plt.savefig(filename, facecolor=fig.get_facecolor(), edgecolor='none')
 
-#    # Evolution of the angular diameter distance.
-#    plt.figure()
-##    plt.title('Angular diameter distance evolution'+f'\n Models: {model_names}')
-#    plt.xlabel('z')
-#    plt.ylabel(r'$ (H_0/c) \ D_A $')
-#    for i in range(len(da)):
-#        plt.plot(zpicks, da[i], label='$\gamma$ = %d, %s'%(int_terms[i], keys[i]))
-#    plt.legend()
 
-#     # Evolution of dV.
-#    plt.figure()
-##    plt.title(r'$d_V$ evolution, models: %s.'%(model_names))
-#    plt.xlabel('z')
-#    plt.ylabel(r'$ d_V (z)$ [Mpc]')
-#    for i in range(len(dV)):
-#        plt.plot(zpicks, dV[i], label='$\gamma$ = %d, %s'%(int_terms[i], keys[i]))
-#    plt.legend()
+    # Fluid evolution.
+    fig = plt.figure()
+    plt.xlabel('$z$')
+    plt.ylabel(r'$\bar \Omega $')
+    for i in range(len(fluid_arr)):
+        for j in range(len(fluid_arr[i])):
+            if j % 2 == 0:
+                linestyle=(0, ())
+                # making float int terms display w/o full stop in legend
+                legend_n = str(int_terms[i])[1:-1]
+                if legend_n[-1] == '.':
+                    legend_n = legend_n[0:-1]
+                plt.plot(zpicks, fluid_arr[i][j], lw=2, color="C{}".format(i), ls=linestyle, label=f'$\gamma$ = {legend_n}')
+            else:
+                linestyle=(0, (3, 1, 1, 1))
+                plt.plot(zpicks, fluid_arr[i][j], lw=2, color="C{}".format(i), ls=linestyle)
+#    plt.title(r'$\bar \Omega_{X}$, models: %s.'%(model_names))
+    plt.legend()
+    filename = 'a1_'+str(model_name)+'_evo.png'
+    plt.savefig(filename, facecolor=fig.get_facecolor(), edgecolor='none')
 
-#    # Luminosity distance vs redshift.
-#    plt.figure()
-#    plt.xlabel('$z$')
-#    plt.ylabel('$D_L$*($H_0$/c)')
-#    for i in range(len(dl)):
-#        plt.plot(zpicks, dl[0], label='$\gamma$ = %d, %s'%(int_terms[i], keys[i]))
-##    plt.title('$d_L$ evolution, models: %s.'%(model_names))
-#    plt.legend()
-#
-#    # H vs redshift.
-#    plt.figure()
-#    plt.xlabel('$z$')
-#    plt.ylabel('H')
-#    for i in range(len(Hz)):
-#        plt.plot(zpicks, Hz[i], label='$\gamma$ = %d, %s'%(int_terms[i], keys[i]))
-##    plt.title('H evolution, models: %s.'%(model_names))
-#    plt.legend()
-#
-#    # Scale factor vs redshift.
-#    plt.figure()
-#    plt.xlabel('$z$')
-#    plt.ylabel('a')
-#    for i in range(len(a)):
-#        plt.plot(zpicks, a[0], label='$\gamma$ = %d, %s'%(int_terms[i], keys[i]))
-##    plt.title('Scale factor evolution, models: %s.'%(model_names))
-#    plt.legend()
-#
-#    # Scale factor vs age.
-#    plt.figure()
-#    plt.xlabel('Age')
-#    plt.ylabel('a')
-#    for i in range(len(age)):
-#        plt.plot(age[i], a[i], label='$\gamma$ = %d, %s'%(int_terms[i], keys[i]))
-##    plt.title('Scale factor evolution, models: %s.'%(model_names))
-#    plt.legend()
-#
-#    # Redshift vs age.
-#    plt.figure()
-#    plt.xlabel('Age')
-#    plt.ylabel('$z$')
-#    for i in range(len(age)):
-#        plt.plot(age[i], zpicks, label='$\gamma$ = %d'%(int_terms[i]))
-##    plt.title('Redshift evolution, models: %s.'%(model_names))
-#    plt.legend()
 
     # Magnitude vs redshift.
-    plt.figure()
+    fig = plt.figure()
     plt.xlabel('$z$')
     plt.ylabel('Magnitude')
-
     for i in range(len(mag)):
-        plt.plot(zpicks, mag[i], lw=2, label='$\gamma$ = %s'%(int_terms[i]))
+        # making float int terms display w/o full stop in legend
+        legend_n = str(int_terms[i])[1:-1]
+        if legend_n[-1] == '.':
+            legend_n = legend_n[0:-1]
+        plt.plot(zpicks, mag[i], lw=2, label=f'$\gamma$ = {legend_n}')
 #    plt.title('Magnitude evolution, models: %s.'%(model_names))
-    plt.scatter(zpicks, data_mag, s=50, marker='o', c='darkslategrey', alpha=0.2, label='Pantheon')
+    plt.scatter(data['data_zpicks'], data_mag, s=50, marker='o', c='darkslategrey', alpha=0.2, label='Pantheon')
     plt.legend()
+    filename = 'a1_'+str(model_name)+'_mag.png'
+    plt.savefig(filename, facecolor=fig.get_facecolor(), edgecolor='none')
 
     plt.show()
     return
+
+
+def multi_modelcheck_extra(data, keys, plot_var_list):
+    '''
+    For models with multiple interaction terms.
+    '''
+    print('multi_modelcheck_extra')
+
+    zpicks = data['zpicks']
+    data_mag = data['mag']
+
+    model_names = ''
+    for model_name in keys:
+        model_names += model_name+', '
+    model_names = model_names[:-2]
+
+    mag = []
+    t = []
+    dl = []
+    a = []
+    Hz = []
+    da = []
+    dV = []
+    fluid_names = []
+    fluid_arr = []
+    int_terms = []
+
+    for plot_var in plot_var_list:
+        mag.append(plot_var.get('mag'))
+        t.append(plot_var.get('t'))
+        dl.append(plot_var.get('dl'))
+        a.append(plot_var.get('a'))
+        Hz.append(plot_var.get('Hz'))
+        da.append(plot_var.get('da'))
+        dV.append(plot_var.get('dV'))
+        fluid_names.append(plot_var.get('fluid_names'))
+        fluid_arr.append(plot_var.get('fluid_arr'))
+        int_terms.append(plot_var.get('int_terms'))
+
+    # Changing time t into age
+    age=[]
+    for item in t:
+        item = -item
+        age.append(item)
+
+#    # semilog x axis fluid evolution vs redshift.
+#    fig = plt.figure()
+#    plt.xlabel('$z$')
+#    plt.ylabel(r'$\bar \Omega $')
+#    for i in range(len(fluid_arr)):
+#        for j in range(len(fluid_arr[i])):
+#            if j == 0:
+#                legend_n = int_terms[i]
+#                linestyle = 'solid'
+#                plt.semilogx(zpicks, fluid_arr[i][j], lw=2, color="C{}".format(i), ls=linestyle, label=f'$v=w=x=${legend_n[0]}')
+#            elif j == 1:
+#                linestyle =(0, (1, 1))
+#            elif j == 2:
+#                linestyle =(0, (5, 1))
+#            elif j == 3:
+#                linestyle = (0, (3, 1, 1, 1))
+#            plt.semilogx(zpicks, fluid_arr[i][j], lw=2, color="C{}".format(i), ls=linestyle)
+#    plt.legend()
+#    filename = 'a1_'+str(model_name)+'_evo_slog.png'
+#    plt.savefig(filename, facecolor=fig.get_facecolor(), edgecolor='none')
+
+    # Fluid evolution.
+    fig = plt.figure()
+    plt.xlabel('$z$')
+    plt.ylabel(r'$\bar \Omega $')
+    for i in range(len(fluid_arr)):
+        for j in range(len(fluid_arr[i])):
+            if j == 0:
+                legend_n = int_terms[i]
+                linestyle= 'solid'
+                plt.plot(zpicks, fluid_arr[i][j], lw=2, color="C{}".format(i), ls=linestyle, label=f'$p=...=z=${legend_n[0]}')
+            elif j == 1:
+                linestyle = (0, (5, 1))
+            elif j == range(len(fluid_arr[i]))[-1]:
+                linestyle = (0, (1, 1))
+            else:
+                continue
+            plt.plot(zpicks, fluid_arr[i][j], lw=2, color="C{}".format(i), ls=linestyle)
+    plt.legend()
+    filename = 'a1_'+str(model_name)+'_evo.png'
+    plt.savefig(filename, facecolor=fig.get_facecolor(), edgecolor='none')
+
+    # Magnitude vs redshift.
+    fig = plt.figure()
+    plt.xlabel('$z$')
+    plt.ylabel('Magnitude')
+    for i in range(len(mag)):
+        legend_n = int_terms[i]
+        plt.plot(zpicks, mag[i], lw=2, label=f'$p=...=z=${legend_n[0]}')
+    plt.scatter(data['data_zpicks'], data_mag, s=50, marker='o', c='darkslategrey', alpha=0.2, label='Pantheon')
+    plt.legend()
+    filename = 'a1_'+str(model_name)+'_mag.png'
+    plt.savefig(filename, facecolor=fig.get_facecolor(), edgecolor='none')
+
+    plt.show()
+    return
+
+#linestyles = OrderedDict(
+#    [('solid',               (0, ())),
+#     ('loosely dotted',      (0, (1, 10))),
+#     ('dotted',              (0, (1, 5))),
+#     ('densely dotted',      (0, (1, 1))),
+#
+#     ('loosely dashed',      (0, (5, 10))),
+#     ('dashed',              (0, (5, 5))),
+#     ('densely dashed',      (0, (5, 1))),
+#
+#     ('loosely dashdotted',  (0, (3, 10, 1, 10))),
+#     ('dashdotted',          (0, (3, 5, 1, 5))),
+#     ('densely dashdotted',  (0, (3, 1, 1, 1))),
+#
+#     ('loosely dashdotdotted', (0, (3, 10, 1, 10, 1, 10))),
+#     ('dashdotdotted',         (0, (3, 5, 1, 5, 1, 5))),
+#     ('densely dashdotdotted', (0, (3, 1, 1, 1, 1, 1)))])

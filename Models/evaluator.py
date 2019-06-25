@@ -86,18 +86,42 @@ elif dataname == 'specific_z':
     zpicks = [1, 1.2, 1.2600444250620284, 1.3, 1.4, 1.5, 1.6]
     print(f'-----Using z={zpicks}')
 
+data_dic['data_zpicks'] = zpicks
+
+zpicks = np.sort(np.random.uniform(low=0.01012, high=zpicks[-1], size=(1000,)))
+zpicks[-1] = zpicks[-1]
 data_dic['zpicks'] = zpicks
 
-#p0 = ['Mcorr', 'm_ombar', 'gamma'], np.array([-19.3, 0.3, -1])
-#p1 = ['Mcorr', 'm_ombar', 'gamma'], np.array([-19.3, 0.3, 1])
-#datasim.model_comparison([p0, p1], data_dic, ['rdecay', 'rdecay'], plot_key=True)
+model_name = ['rdecay']
+p0 = ['Mcorr', 'm_ombar', 'gamma'], np.array([-19.3, 0.3, -1])
+p1 = ['Mcorr', 'm_ombar', 'gamma'], np.array([-19.3, 0.3, 1])
+#datasim.model_comparison([p0, p1], data_dic, model_name*2, plot_key=True)
 
-## Plot param evolutions for multiple models on the same axis.
-#p2 = ['Mcorr', 'm_ombar', 'gamma'], np.array([-19.3, 0.3, 1])
-#p3 = ['Mcorr', 'm_ombar', 'gamma'], np.array([-19.3, 0.3, -1])
-#p4 = ['Mcorr', 'm_ombar', 'gamma'], np.array([-19.3, 0.3, -3])
-#p5 = ['Mcorr', 'm_ombar', 'gamma'], np.array([-19.3, 0.3, -6])
-#datasim.model_comparison([p2, p3, p4, p5], data_dic, ['interacting', 'interacting', 'interacting', 'interacting'], plot_key=True)
+# Plot param evolutions for multiple models on the same axis.
+model_name = ['rainbow']
+names = ['Mcorr',
+                 'm_ombar', 'r_ombar', 'a_ombar', 'b_ombar', 'c_ombar',
+                 'd_ombar', 'e_ombar', 'f_ombar', 'g_ombar', 'h_ombar',
+                 'i_ombar',
+                 'p_in', 'q_in', 'r_in', 's_in', 't_in', 'u_in',
+                 'v_in', 'w_in', 'x_in', 'y_in', 'z_in']
+p2 = names, np.array([-19.3, 0.3, 0.025, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01,
+                      0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01,])
+p3 = names, np.array([-19.3, 0.3, 0.025, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01,
+                      0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005])
+p4 = names, np.array([-19.3, 0.3, 0.025, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01,
+                      -0.005, -0.005, -0.005, -0.005, -0.005, -0.005, -0.005, -0.005, -0.005, -0.005, -0.005])
+p5 = names, np.array([-19.3, 0.3, 0.025, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01,
+                      -0.01, -0.01, -0.01, -0.01, -0.01, -0.01, -0.01, -0.01, -0.01, -0.01, -0.01])
+datasim.model_comparison([p2, p3, p4, p5], data_dic, model_name*4, plot_key=True)
+
+#model_name = ['exotic']
+#names = ['Mcorr','matter','radiation', 'gamma','zeta']
+#p2 = names, np.array([-19.3, 0.3, 0.025, 1, 1])
+#p3 = names, np.array([-19.3, 0.3, 0.025, 0.7, 0.7])
+#p4 = names, np.array([-19.3, 0.3, 0.025, 0.4, 0.4])
+#p5 = names, np.array([-19.3, 0.3, 0.025, -0.01, -0.01])
+#datasim.model_comparison([p2, p3, p4, p5], data_dic, model_name*4, plot_key=True)
 
 #p1 = ['Mcorr','m_ombar', 'r_ombar', 'a_ombar', 'b_ombar', 'c_ombar',
 #     'd_ombar', 'e_ombar', 'f_ombar', 'g_ombar', 'h_ombar',
@@ -179,7 +203,7 @@ def emcee():
 
     return
 
-emcee()
+#emcee()
 
 if timed:
     pr.disable()
