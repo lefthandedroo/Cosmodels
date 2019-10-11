@@ -48,6 +48,7 @@ def zodesolve(names, values, zpicks, model, plot_key, interpolate=False):
 
     if len(zpicks) > 1048: # larger than pantheon sample
         interpolate = True
+        print(model, interpolate)
         zpicks = np.linspace(zpicks[0], zpicks[-1], num=100, endpoint=True)
 
     # Inserting 0 at the front of redshifts to use initial conditions.
@@ -98,7 +99,6 @@ def zodesolve(names, values, zpicks, model, plot_key, interpolate=False):
     # Extracting the parsed mode of interaction.
     firstderivs_function = firstderivs_functions.get(model,0)
     assert firstderivs_function != 0, "zodesolve doesn't have this firstderivs_key at the top"
-
     # Call the ODE solver with all zpicks or cut_zpicks if len(zpicks) > 2000.
     vsol = odeint(firstderivs_function, v0, zpicks, args=(int_terms,H0), mxstep=5000000, atol=1.0e-8, rtol=1.0e-6)
 

@@ -88,8 +88,8 @@ elif dataname == 'specific_z':
 
 data_dic['data_zpicks'] = zpicks
 
-zpicks = np.sort(np.random.uniform(low=0.01012, high=zpicks[-1], size=(1000,)))
-zpicks[-1] = zpicks[-1]
+#zpicks = np.sort(np.random.uniform(low=0.01012, high=zpicks[-1], size=(1000,)))
+#zpicks[-1] = zpicks[-1]
 data_dic['zpicks'] = zpicks
 
 model_name = ['rdecay']
@@ -97,23 +97,36 @@ p0 = ['Mcorr', 'm_ombar', 'gamma'], np.array([-19.3, 0.3, -1])
 p1 = ['Mcorr', 'm_ombar', 'gamma'], np.array([-19.3, 0.3, 1])
 #datasim.model_comparison([p0, p1], data_dic, model_name*2, plot_key=True)
 
+
+
+
+
+
+
+
 # Plot param evolutions for multiple models on the same axis.
-model_name = ['rainbow']
-names = ['Mcorr',
-                 'm_ombar', 'r_ombar', 'a_ombar', 'b_ombar', 'c_ombar',
-                 'd_ombar', 'e_ombar', 'f_ombar', 'g_ombar', 'h_ombar',
-                 'i_ombar',
-                 'p_in', 'q_in', 'r_in', 's_in', 't_in', 'u_in',
-                 'v_in', 'w_in', 'x_in', 'y_in', 'z_in']
-p2 = names, np.array([-19.3, 0.3, 0.025, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01,
-                      0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01,])
-p3 = names, np.array([-19.3, 0.3, 0.025, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01,
-                      0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005])
-p4 = names, np.array([-19.3, 0.3, 0.025, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01,
-                      -0.005, -0.005, -0.005, -0.005, -0.005, -0.005, -0.005, -0.005, -0.005, -0.005, -0.005])
-p5 = names, np.array([-19.3, 0.3, 0.025, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01,
-                      -0.01, -0.01, -0.01, -0.01, -0.01, -0.01, -0.01, -0.01, -0.01, -0.01, -0.01])
-datasim.model_comparison([p2, p3, p4, p5], data_dic, model_name*4, plot_key=True)
+model_name = ['interacting', 'interacting', 'rdecay_m', 'zxgamma', 'expgamma', 'heaviside_late_int', 'late_intxde']#, 'gamma_over_z']
+names = ['Mcorr','matter','gamma']
+
+p2 = names, np.array([-19.3, 0.28, 0])      # LCDM
+p3 = names, np.array([-19.31, 0.2, -0.52])  # interacting
+p4 = names, np.array([-19.3, 0.22, -0.65])  # rdecay_m
+p5 = names, np.array([-19.3, 0.28, -0.34])  # zxgamma
+p6 = names, np.array([-19.3, 0.24, 0.56])   # expgamma
+p7 = names, np.array([-19.31, 0.2, -0.52])  # heaviside_late_int
+p8 = names, np.array([-19.3, 0.26, -0.57])  # late_intxde
+#p9 = names, np.array([-19.31, 0.15, -0.23]) # gamma_over_z
+datasim.model_comparison([p2, p3, p4, p5, p6, p7, p8], data_dic, model_name, plot_key=True)
+
+
+
+
+
+
+
+
+
+
 
 #model_name = ['exotic']
 #names = ['Mcorr','matter','radiation', 'gamma','zeta']

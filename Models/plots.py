@@ -518,6 +518,64 @@ def multi_modelcheck(data, keys, plot_var_list):
     return
 
 
+def multi_model_hubble_residuals(data, keys, plot_var_list):
+    '''
+    Redshift vs magnitude residulas for 1 interaction term models.
+    '''
+
+    zpicks = data['zpicks']
+    data_mag = data['mag']
+
+
+    model_names = []
+    for model_name in keys:
+        model_names.append(model_name)
+
+    mag = []
+    t = []
+    dl = []
+    a = []
+    Hz = []
+    da = []
+    dV = []
+    fluid_names = []
+    fluid_arr = []
+    int_terms = []
+
+    for plot_var in plot_var_list:
+        mag.append(plot_var.get('mag'))
+        t.append(plot_var.get('t'))
+        dl.append(plot_var.get('dl'))
+        a.append(plot_var.get('a'))
+        Hz.append(plot_var.get('Hz'))
+        da.append(plot_var.get('da'))
+        dV.append(plot_var.get('dV'))
+        fluid_names.append(plot_var.get('fluid_names'))
+        fluid_arr.append(plot_var.get('fluid_arr'))
+        int_terms.append(plot_var.get('int_terms'))
+
+    # Magnitude vs redshift residuals.
+    fig = plt.figure()
+    plt.xlabel('$z$')
+    plt.ylabel('Magnitude')
+    for i in range(len(mag)):
+        if i == 0:
+            continue
+        # making float int terms display w/o full stop in legend
+        legend_n = str(int_terms[i])[1:-1]
+        if legend_n[-1] == '.':
+            legend_n = legend_n[0:-1]
+        plt.plot(zpicks, mag[0]-mag[i], lw=2, label=model_names[i])
+    plt.scatter(data['data_zpicks'], mag[0]-data_mag, s=50, marker='o', c='darkslategrey', alpha=0.2, label='Pantheon')
+    plt.legend()
+    filename = 'a1_'+str(model_name)+'_mag.png'
+    plt.savefig(filename, facecolor=fig.get_facecolor(), edgecolor='none')
+
+    plt.show()
+    return
+
+
+
 def multi_modelcheck_extra(data, keys, plot_var_list):
     '''
     For models with multiple interaction terms.
