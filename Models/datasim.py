@@ -137,8 +137,11 @@ def model_comparison(params, data, model_key, plot_key=False):
         mag = 5 * np.log10(dlpc/10) + M
 
         plot_var['mag'] = mag
+
+        plot_var['dlpc'] = dlpc # for the Hubble diagram
         plot_var_list.append(plot_var)
 
+#    plots.multi_modelcheck(data, model_key, plot_var_list)
     plots.multi_model_hubble_residuals(data, model_key, plot_var_list)
 #    plots.multi_modelcheck_extra(data, model_key, plot_var_list)
     return

@@ -48,7 +48,6 @@ def zodesolve(names, values, zpicks, model, plot_key, interpolate=False):
 
     if len(zpicks) > 1048: # larger than pantheon sample
         interpolate = True
-        print(model, interpolate)
         zpicks = np.linspace(zpicks[0], zpicks[-1], num=100, endpoint=True)
 
     # Inserting 0 at the front of redshifts to use initial conditions.

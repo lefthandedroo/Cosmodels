@@ -448,54 +448,54 @@ def multi_modelcheck(data, keys, plot_var_list):
         fluid_arr.append(plot_var.get('fluid_arr'))
         int_terms.append(plot_var.get('int_terms'))
 
-    # Changing time t into age
-    age=[]
-    for item in t:
-        item = -item
-        age.append(item)
+#    # Changing time t into age
+#    age=[]
+#    for item in t:
+#        item = -item
+#        age.append(item)
+#
+#    # log x axis fluid evolution vs redshift.
+#    fig = plt.figure()
+#    plt.xlabel('$z$')
+#    plt.ylabel(r'$\bar \Omega $')
+#    for i in range(len(fluid_arr)):
+#        for j in range(len(fluid_arr[i])):
+#            if j % 2 == 0:
+#                linestyle=(0, ())
+#                # making float int terms display w/o full stop in legend
+#                legend_n = str(int_terms[i])[1:-1]
+#                if legend_n[-1] == '.':
+#                    legend_n = legend_n[0:-1]
+#                plt.semilogx(zpicks, fluid_arr[i][j], lw=2, color="C{}".format(i), ls=linestyle, label=f'$\gamma$ = {legend_n}')
+#            else:
+#                linestyle=(0, (3, 1, 1, 1))
+#                plt.semilogx(zpicks, fluid_arr[i][j], lw=2, color="C{}".format(i), ls=linestyle)
+##    plt.title(r'$\bar \Omega_{X}$, models: %s.'%(model_names))
+#    plt.legend()
+#    filename = 'a1_'+str(model_name)+'_evo_slog.png'
+#    plt.savefig(filename, facecolor=fig.get_facecolor(), edgecolor='none')
 
-    # log x axis fluid evolution vs redshift.
-    fig = plt.figure()
-    plt.xlabel('$z$')
-    plt.ylabel(r'$\bar \Omega $')
-    for i in range(len(fluid_arr)):
-        for j in range(len(fluid_arr[i])):
-            if j % 2 == 0:
-                linestyle=(0, ())
-                # making float int terms display w/o full stop in legend
-                legend_n = str(int_terms[i])[1:-1]
-                if legend_n[-1] == '.':
-                    legend_n = legend_n[0:-1]
-                plt.semilogx(zpicks, fluid_arr[i][j], lw=2, color="C{}".format(i), ls=linestyle, label=f'$\gamma$ = {legend_n}')
-            else:
-                linestyle=(0, (3, 1, 1, 1))
-                plt.semilogx(zpicks, fluid_arr[i][j], lw=2, color="C{}".format(i), ls=linestyle)
-#    plt.title(r'$\bar \Omega_{X}$, models: %s.'%(model_names))
-    plt.legend()
-    filename = 'a1_'+str(model_name)+'_evo_slog.png'
-    plt.savefig(filename, facecolor=fig.get_facecolor(), edgecolor='none')
 
-
-    # Fluid evolution.
-    fig = plt.figure()
-    plt.xlabel('$z$')
-    plt.ylabel(r'$\bar \Omega $')
-    for i in range(len(fluid_arr)):
-        for j in range(len(fluid_arr[i])):
-            if j % 2 == 0:
-                linestyle=(0, ())
-                # making float int terms display w/o full stop in legend
-                legend_n = str(int_terms[i])[1:-1]
-                if legend_n[-1] == '.':
-                    legend_n = legend_n[0:-1]
-                plt.plot(zpicks, fluid_arr[i][j], lw=2, color="C{}".format(i), ls=linestyle, label=f'$\gamma$ = {legend_n}')
-            else:
-                linestyle=(0, (3, 1, 1, 1))
-                plt.plot(zpicks, fluid_arr[i][j], lw=2, color="C{}".format(i), ls=linestyle)
-#    plt.title(r'$\bar \Omega_{X}$, models: %s.'%(model_names))
-    plt.legend()
-    filename = 'a1_'+str(model_name)+'_evo.png'
-    plt.savefig(filename, facecolor=fig.get_facecolor(), edgecolor='none')
+#    # Fluid evolution.
+#    fig = plt.figure()
+#    plt.xlabel('$z$')
+#    plt.ylabel(r'$\bar \Omega $')
+#    for i in range(len(fluid_arr)):
+#        for j in range(len(fluid_arr[i])):
+#            if j % 2 == 0:
+#                linestyle=(0, ())
+#                # making float int terms display w/o full stop in legend
+#                legend_n = str(int_terms[i])[1:-1]
+#                if legend_n[-1] == '.':
+#                    legend_n = legend_n[0:-1]
+#                plt.plot(zpicks, fluid_arr[i][j], lw=2, color="C{}".format(i), ls=linestyle, label=f'$\gamma$ = {legend_n}')
+#            else:
+#                linestyle=(0, (3, 1, 1, 1))
+#                plt.plot(zpicks, fluid_arr[i][j], lw=2, color="C{}".format(i), ls=linestyle)
+##    plt.title(r'$\bar \Omega_{X}$, models: %s.'%(model_names))
+#    plt.legend()
+#    filename = 'a1_'+str(model_name)+'_evo.png'
+#    plt.savefig(filename, facecolor=fig.get_facecolor(), edgecolor='none')
 
 
     # Magnitude vs redshift.
@@ -532,6 +532,7 @@ def multi_model_hubble_residuals(data, keys, plot_var_list):
         model_names.append(model_name)
 
     mag = []
+    dlpc = []
     t = []
     dl = []
     a = []
@@ -544,6 +545,7 @@ def multi_model_hubble_residuals(data, keys, plot_var_list):
 
     for plot_var in plot_var_list:
         mag.append(plot_var.get('mag'))
+        dlpc.append(plot_var.get('dlpc'))
         t.append(plot_var.get('t'))
         dl.append(plot_var.get('dl'))
         a.append(plot_var.get('a'))
@@ -554,24 +556,39 @@ def multi_model_hubble_residuals(data, keys, plot_var_list):
         fluid_arr.append(plot_var.get('fluid_arr'))
         int_terms.append(plot_var.get('int_terms'))
 
+    dlMpc = []
+    for i in range(len(dlpc)):
+        dlMpc.append(dlpc[i] * 10e-6)
+
     # Magnitude vs redshift residuals.
-    fig = plt.figure()
+    plt.figure()
     plt.xlabel('$z$')
     plt.ylabel('Magnitude')
-    for i in range(len(mag)):
-        if i == 0:
-            continue
-        # making float int terms display w/o full stop in legend
-        legend_n = str(int_terms[i])[1:-1]
-        if legend_n[-1] == '.':
-            legend_n = legend_n[0:-1]
+    for i in range(1,len(mag)):
         plt.plot(zpicks, mag[0]-mag[i], lw=2, label=model_names[i])
-    plt.scatter(data['data_zpicks'], mag[0]-data_mag, s=50, marker='o', c='darkslategrey', alpha=0.2, label='Pantheon')
+#    plt.scatter(data['data_zpicks'], mag[0]-data_mag, s=50, marker='o', c='darkslategrey', alpha=0.2, label='Pantheon')
     plt.legend()
-    filename = 'a1_'+str(model_name)+'_mag.png'
-    plt.savefig(filename, facecolor=fig.get_facecolor(), edgecolor='none')
+
+    # Luminosity distance vs redshift.
+    plt.figure()
+    plt.xlabel('$d_L$(Mpc)')
+    plt.ylabel('$z$')
+#    plt.title('d_L vs redshift')
+    for i in range(1,len(mag)):
+        plt.plot(dlMpc[i], zpicks, lw=2, label=model_names[i])
+    plt.legend()
+
+    # Luminocity distance vs redshift residuals.
+    plt.figure()
+#    plt.title('d_L residuals')
+    plt.xlabel('$d_L$(Mpc)')
+    plt.ylabel('$z$')
+    for i in range(1,len(mag)):
+        plt.plot(dlMpc[0]-dlMpc[i], zpicks, lw=2, label=model_names[i])
+    plt.legend()
 
     plt.show()
+
     return
 
 
